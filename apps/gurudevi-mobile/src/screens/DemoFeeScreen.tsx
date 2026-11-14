@@ -1,8 +1,9 @@
-import { Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
+import { Button, Notice, Surface, Text } from '@repo/ui/components/native';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { RoomPage } from '@/components/shell/RoomPage';
 
 export function DemoFeeScreen() {
   const { t } = useTranslation();
@@ -33,27 +34,28 @@ export function DemoFeeScreen() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [showToast]);
 
   return (
-    <VStack className="p-lg gap-lg items-center bg-phase-surface">
-      <Heading size="lg" className="text-ink">
-        {t('payments.demoTitle') || 'Demo Fee Flow'}
-      </Heading>
-      <Text className="text-mistGray text-center">
-        {t('payments.demoDescription') || 'Test the Stripe integration with a demo fee'}
-      </Text>
-      <Button
-        className="bg-sanctuarySaffron rounded-full px-xl h-[56px]"
-        onPress={handlePay}
-        isDisabled={loading}
-      >
-        <ButtonText className="text-white font-bold">
-          {loading ? 'Processing...' : 'Pay $10.00 Demo'}
-        </ButtonText>
-      </Button>
-      {error && <Text className="text-emberRed text-sm">{error}</Text>}
-    </VStack>
+    <RoomPage
+      title={t('payments.demoTitle') || 'Demo Fee Flow'}
+      intro={t('payments.demoDescription') || 'Test the Stripe integration with a demo fee'}
+      mark={{ label: 'Demo' }}
+    >
+      <Surface tone="raised" style={{ padding: 18, gap: 14 }}>
+        <Text kind="value">$10.00</Text>
+        <Button
+          label={loading ? 'Processing...' : 'Pay $10.00 Demo'}
+          variant="primary"
+          size="lg"
+          fullWidth
+          loading={loading}
+          disabled={loading}
+          onPress={handlePay}
+        />
+      </Surface>
+      {error ? <Notice tone="danger" message={error} /> : null}
+    </RoomPage>
   );
 }
 

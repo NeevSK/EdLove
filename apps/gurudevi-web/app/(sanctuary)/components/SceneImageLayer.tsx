@@ -12,6 +12,8 @@ export interface SceneImageLayerProps {
   isCrossFading?: boolean;
   fixed?: boolean;
   pure?: boolean;
+  /** The world's readability limit for a photo (see `groundLimitsOf`). Never passed. */
+  maxOpacity?: number;
 }
 
 export function SceneImageLayer({
@@ -20,6 +22,7 @@ export function SceneImageLayer({
   isCrossFading = false,
   fixed = true,
   pure = false,
+  maxOpacity = 1,
 }: Readonly<SceneImageLayerProps>) {
   // Verger decides; until it is known (server, hydration), no wallpaper is requested.
   const view = useGurudeviView();
@@ -35,11 +38,17 @@ export function SceneImageLayer({
     if (!nextPresentation?.enabled || !nextPresentation?.url) return null;
   }
 
-  const opacity = pure ? Math.min(presentation.opacity * 2.2, 0.42) : presentation.opacity;
+  const opacity = Math.min(
+    pure ? Math.min(presentation.opacity * 2.2, 0.42) : presentation.opacity,
+    maxOpacity,
+  );
 
-  const nextOpacity = pure
-    ? Math.min((nextPresentation?.opacity ?? 0.16) * 2.2, 0.42)
-    : (nextPresentation?.opacity ?? 0.16);
+  const nextOpacity = Math.min(
+    pure
+      ? Math.min((nextPresentation?.opacity ?? 0.16) * 2.2, 0.42)
+      : (nextPresentation?.opacity ?? 0.16),
+    maxOpacity,
+  );
 
   return (
     <>

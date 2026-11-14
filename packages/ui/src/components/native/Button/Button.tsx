@@ -13,16 +13,19 @@ import {
 import Animated from 'react-native-reanimated';
 import type { ButtonContract } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
+import { useFocusRing } from '../../../theme/native/focus';
 import { usePressMotion } from '../../../theme/native/motion';
 import {
   edgeStyle,
   glowStyle,
   insetRadius,
   radiusStyle,
+  systemTextAllowance,
   typeStyle,
 } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import { type HapticImpact, hapticImpact } from '../../../utils/haptics';
+import { slopFor, TOUCH_MIN } from '../touch';
 import { ButtonPulse } from './ButtonPulse';
 
 export interface ButtonProps extends ButtonContract, Omit<PressableProps, 'children' | 'style'> {
@@ -50,8 +53,12 @@ export function Button({
   style,
   ref,
   accessibilityHint,
+  onFocus,
+  onBlur,
   ...rest
 }: ButtonProps) {
+  // A hardware keyboard's focus shows as a ring in the world's focus colour.
+  const focusRing = useFocusRing(onFocus, onBlur);
   const { world, language } = useWorldContext();
   const feedback = useFeedback();
   const press = usePressMotion();
@@ -64,7 +71,7 @@ export function Button({
   const gradient = v.fill && typeof v.fill !== 'string' ? v.fill : null;
 
   const container: ViewStyle = isText
-    ? { minHeight: 44, paddingVertical: 4, alignSelf: fullWidth ? 'stretch' : 'flex-start' }
+    ? { minHeight: TOUCH_MIN, paddingVertical: 4, alignSelf: fullWidth ? 'stretch' : 'flex-start' }
     : {
         height: dims.height,
         paddingHorizontal: dims.paddingX,
@@ -90,7 +97,7 @@ export function Button({
         accessibilityHint={accessibilityHint}
         accessibilityState={{ disabled: isDisabled, busy: loading }}
         disabled={isDisabled}
-        hitSlop={isText ? { top: 4, bottom: 4, left: 8, right: 8 } : undefined}
+        hitSlop={isText ? { top: 4, bottom: 4, left: 8, right: 8 } : slopFor(dims.height)}
         onPressIn={(event: GestureResponderEvent) => {
           if (!isDisabled) {
             press.pressIn();
@@ -104,9 +111,12 @@ export function Button({
           press.pressOut();
           onPressOut?.(event);
         }}
+        onFocus={focusRing.onFocus}
+        onBlur={focusRing.onBlur}
         style={({ pressed }) => [
           styles.base,
           container,
+          focusRing.ring,
           pressed && !isDisabled ? { opacity: recipe.pressedOpacity } : null,
           isDisabled && !loading ? { opacity: recipe.disabledOpacity } : null,
           style,
@@ -166,7 +176,11 @@ export function Button({
           ) : Icon ? (
             <Icon size={Math.round(dims.fontSize * 1.2)} color={v.ink} />
           ) : null}
-          <RNText numberOfLines={1} style={[labelStyle, { color: v.ink }]}>
+          <RNText
+            numberOfLines={1}
+            maxFontSizeMultiplier={systemTextAllowance()}
+            style={[labelStyle, { color: v.ink }]}
+          >
             {label}
           </RNText>
         </View>

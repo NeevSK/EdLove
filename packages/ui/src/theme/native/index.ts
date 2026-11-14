@@ -7,6 +7,7 @@
 
 export { useSystemAccess } from './access';
 export { useErrorFeedback, useFeedback } from './feedback';
+export { useFocusRing } from './focus';
 export {
   type LivingColorKey,
   useLivingStyle,
@@ -20,8 +21,13 @@ export {
 export {
   contrastInk,
   edgeStyle,
+  getReading,
   glowStyle,
   isFontAvailable,
+  type Reading,
+  STANDARD_READING,
+  setReading,
+  subscribeWorldFonts,
   radiusStyle,
   registerAvailableFonts,
   shadowStyle,

@@ -586,6 +586,11 @@ export interface WorldDefinition {
   perch: import('./perches').PerchGroup;
   /** The mode this world is happiest in, used by previews. */
   preferredMode: WorldMode;
+  /**
+   * What lies under the rooms: the world's living scene (default), or its plain ground, tinted by
+   * the hour (Classic).
+   */
+  floor?: 'scene' | 'plain';
   palette: WorldPalette;
   style: WorldStyle;
   /** Optional per-world adjustments after recipes are built. */
@@ -601,7 +606,24 @@ export interface WorldAccess {
   contrast: 'standard' | 'more';
   /** `reduced`: no glows or see-through veils; solid layers instead. */
   transparency: 'standard' | 'reduced';
+  /**
+   * The person's comfort (not the system's): how big controls and their spacing are. `large`
+   * for older eyes and less steady hands, `compact` for people who want more on one screen.
+   * Text size is the reading setting's job; this scales the things you touch and the air
+   * between them. Left out means `standard`.
+   */
+  size?: ComfortSize;
+  /** A simpler look: plain surfaces, no ornaments or textures, clear edges. */
+  simple?: boolean;
+  /**
+   * Bright sunlight (a teacher on the school ground, a parent at the bus stop): the light
+   * palette at a neutral hour whatever the clock says, every ink near full strength, solid
+   * layers, firmer lines, and a plain floor behind the words.
+   */
+  sunlight?: boolean;
 }
+
+export type ComfortSize = 'compact' | 'standard' | 'large';
 
 export interface ResolvedWorld {
   id: WorldId;

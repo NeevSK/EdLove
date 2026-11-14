@@ -328,6 +328,11 @@
       "import": "./src/logic/workspace/*.ts",
       "default": "./src/logic/workspace/*.ts"
     },
+    "./logic/floor": {
+      "types": "./src/logic/floor/index.ts",
+      "import": "./src/logic/floor/index.ts",
+      "default": "./src/logic/floor/index.ts"
+    },
     "./logic/workbench": {
       "types": "./src/logic/workbench/index.ts",
       "import": "./src/logic/workbench/index.ts",

@@ -11,6 +11,7 @@ import { useFeedback } from '../../../theme/native/feedback';
 import { typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import { ChipPaint, chipFrame } from '../Chip/Chip';
+import { TOUCH_MIN } from '../touch';
 
 export interface TabsProps<V extends string = string> extends TabsContract<V> {
   style?: StyleProp<ViewStyle>;
@@ -79,5 +80,5 @@ export function Tabs<V extends string = string>({
 const styles = StyleSheet.create({
   wrap: { gap: 12 },
   list: { flexDirection: 'row', flexWrap: 'wrap', paddingVertical: 4 },
-  tab: { minHeight: 44, justifyContent: 'center' },
+  tab: { minHeight: TOUCH_MIN, justifyContent: 'center' },
 });

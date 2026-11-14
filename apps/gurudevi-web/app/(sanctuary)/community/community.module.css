@@ -7,8 +7,8 @@
       circle at 86% 5%,
       color-mix(in srgb, var(--lotus) 10%, transparent),
       transparent 28rem
-    ),
-    var(--paper);
+    );
+  /* No paper underneath: the world's ground (drawn by the shell) shows through. */
 }
 
 .arrival {
@@ -36,7 +36,7 @@
 
 .roleContext {
   margin: 0 0 0.45rem;
-  color: var(--w-lamp, var(--accent));
+  color: var(--w-lamp);
   font-size: 0.9rem;
   font-weight: 650;
 }
@@ -478,8 +478,8 @@
   gap: 0.5rem;
   padding: 0.6rem 1.2rem;
   border-radius: 9999px;
-  background: var(--w-action, var(--lotus));
-  color: var(--w-on-action, var(--w-ground));
+  background: var(--w-action);
+  color: var(--w-on-action);
   font-size: 0.85rem;
   font-weight: 700;
   text-decoration: none;
@@ -553,7 +553,7 @@
 }
 
 .composerTextarea:focus {
-  border-color: var(--w-action, var(--lotus));
+  border-color: var(--w-action);
 }
 
 .composerFooter {
@@ -583,9 +583,9 @@
 }
 
 .typeChipActive {
-  background: var(--w-action, var(--lotus));
-  border-color: var(--w-action, var(--lotus));
-  color: var(--w-on-action, var(--w-ground));
+  background: var(--w-action);
+  border-color: var(--w-action);
+  color: var(--w-on-action);
 }
 
 .composerActions {
@@ -613,8 +613,8 @@
   padding: 0.5rem 1.25rem;
   border-radius: 9999px;
   border: none;
-  background: var(--w-action, var(--lotus));
-  color: var(--w-on-action, var(--w-ground));
+  background: var(--w-action);
+  color: var(--w-on-action);
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
@@ -674,7 +674,7 @@
 }
 
 .postCard:hover {
-  border-color: color-mix(in srgb, var(--w-action, var(--lotus)) 30%, var(--line));
+  border-color: color-mix(in srgb, var(--w-action) 30%, var(--line));
 }
 
 .postCardHeader {
@@ -693,8 +693,8 @@
   width: 2.4rem;
   height: 2.4rem;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--w-action, var(--lotus)) 15%, var(--paper));
-  color: var(--w-action, var(--lotus));
+  background: color-mix(in srgb, var(--w-action) 15%, var(--paper));
+  color: var(--w-action);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -779,8 +779,9 @@
 }
 
 .reactionButtonActive {
-  background: color-mix(in srgb, var(--w-danger, var(--lotus)) 10%, transparent);
-  border-color: color-mix(in srgb, var(--w-danger, var(--lotus)) 30%, transparent);
+  background: color-mix(in srgb, var(--w-danger) 10%, transparent);
+  border-color: color-mix(in srgb, var(--w-danger) 30%, transparent);
+  color: var(--w-on-danger);
 }
 
 .reactionCount {
@@ -811,7 +812,7 @@
 .drawerBackdrop {
   position: fixed;
   inset: 0;
-  background: color-mix(in srgb, var(--w-ink, var(--ink)) 45%, transparent);
+  background: color-mix(in srgb, var(--w-ink) 45%, transparent);
   backdrop-filter: blur(4px);
   z-index: 9999;
   display: flex;
@@ -953,7 +954,7 @@
 }
 
 .drawerReplyInput:focus {
-  border-color: var(--w-action, var(--lotus));
+  border-color: var(--w-action);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -964,53 +965,53 @@
 .pillarNavHorizon {
   display: flex;
   align-items: center;
-  gap: var(--w-space-2, 0.5rem);
-  margin-bottom: var(--w-space-4, 1rem);
+  gap: var(--w-space-2);
+  margin-bottom: var(--w-space-4);
 }
 
 .pillarSegmentedPill {
   display: inline-flex;
   align-items: center;
-  gap: var(--w-space-1, 0.25rem);
+  gap: var(--w-space-1);
   padding: 0.3rem 0.35rem;
-  background: color-mix(in srgb, var(--w-surface, var(--paper-light)) 85%, transparent);
-  border: 1px solid var(--w-line, var(--line));
-  border-radius: var(--w-radius-full, 9999px);
-  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-ink, var(--ink)) 4%, transparent);
+  background: color-mix(in srgb, var(--w-surface) 85%, transparent);
+  border: 1px solid var(--w-line);
+  border-radius: var(--w-radius-full);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-ink) 4%, transparent);
 }
 
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: var(--w-space-2, 0.45rem);
+  gap: var(--w-space-2);
   padding: 0.4rem 0.95rem;
   border: none;
   background: transparent;
-  color: var(--w-ink-soft, var(--ink-soft));
+  color: var(--w-ink-soft);
   font-size: 0.82rem;
   font-weight: 650;
-  border-radius: var(--w-radius-full, 9999px);
+  border-radius: var(--w-radius-full);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .pill:hover {
-  color: var(--w-ink, var(--ink));
-  background: color-mix(in srgb, var(--w-action, var(--color-action)) 10%, transparent);
+  color: var(--w-ink);
+  background: color-mix(in srgb, var(--w-action) 10%, transparent);
 }
 
 .pillActive {
   display: inline-flex;
   align-items: center;
-  gap: var(--w-space-2, 0.45rem);
+  gap: var(--w-space-2);
   padding: 0.4rem 1rem;
   border: none;
-  background: var(--w-action, var(--color-action));
-  color: var(--w-ground, var(--paper-light));
+  background: var(--w-action);
+  color: var(--w-ground);
   font-size: 0.82rem;
   font-weight: 700;
-  border-radius: var(--w-radius-full, 9999px);
-  box-shadow: 0 2px 6px color-mix(in srgb, var(--w-action, var(--color-action)) 30%, transparent);
+  border-radius: var(--w-radius-full);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--w-action) 30%, transparent);
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -1022,9 +1023,9 @@
   min-width: 1.15rem;
   height: 1.15rem;
   padding: 0 0.3rem;
-  border-radius: var(--w-radius-full, 9999px);
-  background: var(--w-surface, var(--paper-light));
-  color: var(--w-action, var(--color-action));
+  border-radius: var(--w-radius-full);
+  background: var(--w-surface);
+  color: var(--w-action);
   font-size: 0.7rem;
   font-weight: 800;
 }
@@ -1036,12 +1037,12 @@
 .dmMasterDetail {
   display: grid;
   grid-template-columns: 280px 1fr;
-  gap: var(--w-space-4, 1.25rem);
+  gap: var(--w-space-4);
   min-height: 540px;
-  border-radius: var(--w-radius-lg, 1.25rem);
-  border: 1px solid var(--w-line, var(--line));
-  background: color-mix(in srgb, var(--w-surface, var(--paper-light)) 90%, transparent);
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--w-ink, var(--ink)) 4%, transparent);
+  border-radius: var(--w-radius-lg);
+  border: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-surface) 90%, transparent);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--w-ink) 4%, transparent);
   overflow: hidden;
   container-type: inline-size;
 }
@@ -1053,22 +1054,22 @@
 }
 
 .dmConversationRail {
-  border-right: 1px solid var(--w-line, var(--line));
-  background: color-mix(in srgb, var(--w-surface, var(--paper-light)) 65%, transparent);
+  border-right: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-surface) 65%, transparent);
   display: flex;
   flex-direction: column;
 }
 
 .dmRailHeader {
   padding: 1rem 1.15rem;
-  border-bottom: 1px solid var(--w-line, var(--line));
+  border-bottom: 1px solid var(--w-line);
 }
 
 .dmRailHeader h3 {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 750;
-  color: var(--w-ink, var(--ink));
+  color: var(--w-ink);
 }
 
 .dmConversationList {
@@ -1086,7 +1087,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.65rem 0.85rem;
-  border-radius: var(--w-radius-md, 0.85rem);
+  border-radius: var(--w-radius-md);
   border: 1px solid transparent;
   background: transparent;
   cursor: pointer;
@@ -1096,31 +1097,31 @@
 }
 
 .dmConversationItem:hover {
-  background: color-mix(in srgb, var(--w-surface, var(--paper-light)) 92%, transparent);
-  border-color: var(--w-line, var(--line));
+  background: color-mix(in srgb, var(--w-surface) 92%, transparent);
+  border-color: var(--w-line);
 }
 
 .dmConversationActive {
-  background: color-mix(in srgb, var(--w-action, var(--color-action)) 12%, var(--w-surface, var(--paper-light)));
-  border-color: color-mix(in srgb, var(--w-action, var(--color-action)) 30%, transparent);
+  background: color-mix(in srgb, var(--w-action) 12%, var(--w-surface));
+  border-color: color-mix(in srgb, var(--w-action) 30%, transparent);
 }
 
 .dmAvatar {
   width: 2.3rem;
   height: 2.3rem;
-  border-radius: var(--w-radius-full, 9999px);
+  border-radius: var(--w-radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--w-action, var(--color-action));
-  background: var(--w-ground, var(--paper));
+  color: var(--w-action);
+  background: var(--w-ground);
   flex-shrink: 0;
-  border: 1px solid var(--w-line, var(--line));
+  border: 1px solid var(--w-line);
 }
 
 .dmAvatarSpecial {
-  background: color-mix(in srgb, var(--w-lamp, var(--accent)) 25%, var(--w-surface, var(--paper-light)));
-  color: var(--w-lamp, var(--accent));
+  background: color-mix(in srgb, var(--w-lamp) 25%, var(--w-surface));
+  color: var(--w-lamp);
 }
 
 .dmConversationInfo {
@@ -1138,7 +1139,7 @@
 .dmConversationName {
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--w-ink, var(--ink));
+  color: var(--w-ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1146,7 +1147,7 @@
 
 .dmConversationSnippet {
   font-size: 0.75rem;
-  color: var(--w-ink-soft, var(--ink-soft));
+  color: var(--w-ink-soft);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1157,7 +1158,7 @@
   display: flex;
   flex-direction: column;
   min-height: 540px;
-  background: var(--w-surface, var(--paper-light));
+  background: var(--w-surface);
 }
 
 .dmHeaderBar {
@@ -1165,8 +1166,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.85rem 1.25rem;
-  border-bottom: 1px solid var(--w-line, var(--line));
-  background: color-mix(in srgb, var(--w-surface, var(--paper-light)) 90%, transparent);
+  border-bottom: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-surface) 90%, transparent);
   gap: 0.75rem;
   flex-wrap: wrap;
 }
@@ -1181,13 +1182,13 @@
   margin: 0;
   font-size: 0.95rem;
   font-weight: 750;
-  color: var(--w-ink, var(--ink));
+  color: var(--w-ink);
 }
 
 .dmHeaderTarget p {
   margin: 0;
   font-size: 0.75rem;
-  color: var(--w-ink-soft, var(--ink-soft));
+  color: var(--w-ink-soft);
 }
 
 .dmIncognitoBtn {
@@ -1195,29 +1196,29 @@
   align-items: center;
   gap: 0.45rem;
   padding: 0.35rem 0.85rem;
-  border-radius: var(--w-radius-full, 9999px);
+  border-radius: var(--w-radius-full);
   font-size: 0.76rem;
   font-weight: 700;
   cursor: pointer;
-  border: 1px solid var(--w-line, var(--line));
-  background: var(--w-surface, var(--paper-light));
-  color: var(--w-ink-soft, var(--ink-soft));
+  border: 1px solid var(--w-line);
+  background: var(--w-surface);
+  color: var(--w-ink-soft);
   transition: all 0.2s ease;
 }
 
 .dmIncognitoActive {
-  background: color-mix(in srgb, var(--w-lamp, var(--accent)) 18%, var(--w-surface, var(--paper-light)));
-  border-color: var(--w-lamp, var(--accent));
-  color: var(--w-lamp, var(--accent));
-  box-shadow: 0 0 10px color-mix(in srgb, var(--w-lamp, var(--accent)) 30%, transparent);
+  background: color-mix(in srgb, var(--w-lamp) 18%, var(--w-surface));
+  border-color: var(--w-lamp);
+  color: var(--w-lamp);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--w-lamp) 30%, transparent);
 }
 
 .incognitoBanner {
-  background: color-mix(in srgb, var(--w-lamp, var(--accent)) 12%, var(--w-surface, var(--paper-light)));
-  border-bottom: 1px solid color-mix(in srgb, var(--w-lamp, var(--accent)) 25%, transparent);
+  background: color-mix(in srgb, var(--w-lamp) 12%, var(--w-surface));
+  border-bottom: 1px solid color-mix(in srgb, var(--w-lamp) 25%, transparent);
   padding: 0.45rem 1rem;
   font-size: 0.76rem;
-  color: var(--w-lamp, var(--accent));
+  color: var(--w-lamp);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -1236,21 +1237,21 @@
 .dmBubbleSelf {
   align-self: flex-end;
   max-width: 78%;
-  background: var(--w-action, var(--color-action));
-  color: var(--w-on-action, var(--w-ground));
+  background: var(--w-action);
+  color: var(--w-on-action);
   padding: 0.65rem 0.95rem;
   border-radius: 1.15rem 1.15rem 0.25rem 1.15rem;
   font-size: 0.88rem;
   line-height: 1.45;
-  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-ink, var(--ink)) 8%, transparent);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-ink) 8%, transparent);
 }
 
 .dmBubblePeer {
   align-self: flex-start;
   max-width: 78%;
-  background: var(--w-ground, var(--paper));
-  border: 1px solid var(--w-line, var(--line));
-  color: var(--w-ink, var(--ink));
+  background: var(--w-ground);
+  border: 1px solid var(--w-line);
+  color: var(--w-ink);
   padding: 0.65rem 0.95rem;
   border-radius: 1.15rem 1.15rem 1.15rem 0.25rem;
   font-size: 0.88rem;
@@ -1259,7 +1260,7 @@
 
 .dmTimeSelf {
   font-size: 0.68rem;
-  color: color-mix(in srgb, var(--w-on-action, var(--w-ground)) 80%, transparent);
+  color: color-mix(in srgb, var(--w-on-action) 80%, transparent);
   margin-top: 0.25rem;
   text-align: right;
   display: block;
@@ -1267,7 +1268,7 @@
 
 .dmTimePeer {
   font-size: 0.68rem;
-  color: var(--w-ink-soft, var(--ink-soft));
+  color: var(--w-ink-soft);
   margin-top: 0.25rem;
   display: block;
 }
@@ -1276,18 +1277,18 @@
   display: flex;
   gap: 0.4rem;
   padding: 0.5rem 1.25rem;
-  background: color-mix(in srgb, var(--w-ground, var(--paper)) 70%, transparent);
-  border-top: 1px solid var(--w-line, var(--line));
+  background: color-mix(in srgb, var(--w-ground) 70%, transparent);
+  border-top: 1px solid var(--w-line);
   overflow-x: auto;
   white-space: nowrap;
 }
 
 .tutiiChip {
   padding: 0.3rem 0.75rem;
-  border-radius: var(--w-radius-full, 9999px);
-  background: var(--w-surface, var(--paper-light));
-  border: 1px solid color-mix(in srgb, var(--w-action, var(--color-action)) 25%, transparent);
-  color: var(--w-action, var(--color-action));
+  border-radius: var(--w-radius-full);
+  background: var(--w-surface);
+  border: 1px solid color-mix(in srgb, var(--w-action) 25%, transparent);
+  color: var(--w-action);
   font-size: 0.75rem;
   font-weight: 650;
   cursor: pointer;
@@ -1295,33 +1296,33 @@
 }
 
 .tutiiChip:hover {
-  background: var(--w-action, var(--color-action));
-  color: var(--w-ground, var(--paper-light));
+  background: var(--w-action);
+  color: var(--w-ground);
 }
 
 .dmComposerForm {
   display: flex;
   gap: 0.65rem;
   padding: 0.85rem 1.25rem;
-  border-top: 1px solid var(--w-line, var(--line));
-  background: color-mix(in srgb, var(--w-surface, var(--paper-light)) 95%, transparent);
+  border-top: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-surface) 95%, transparent);
   align-items: center;
 }
 
 .dmInput {
   flex: 1;
   padding: 0.65rem 1rem;
-  border-radius: var(--w-radius-full, 9999px);
-  border: 1px solid var(--w-line, var(--line));
-  background: var(--w-surface, var(--paper-light));
+  border-radius: var(--w-radius-full);
+  border: 1px solid var(--w-line);
+  background: var(--w-surface);
   font-size: 0.88rem;
-  color: var(--w-ink, var(--ink));
+  color: var(--w-ink);
   outline: none;
 }
 
 .dmInput:focus {
-  border-color: var(--w-action, var(--color-action));
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--w-action, var(--color-action)) 20%, transparent);
+  border-color: var(--w-action);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--w-action) 20%, transparent);
 }
 
 .dmSendBtn {
@@ -1329,10 +1330,10 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.65rem 1.15rem;
-  border-radius: var(--w-radius-full, 9999px);
+  border-radius: var(--w-radius-full);
   border: none;
-  background: var(--w-action, var(--color-action));
-  color: var(--w-ground, var(--paper-light));
+  background: var(--w-action);
+  color: var(--w-ground);
   font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
@@ -1341,7 +1342,7 @@
 
 .dmSendBtn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 2px 6px color-mix(in srgb, var(--w-action, var(--color-action)) 30%, transparent);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--w-action) 30%, transparent);
 }
 
 .dmSendBtn:disabled {
@@ -1356,9 +1357,10 @@
 .groupAnnouncementsSection {
   margin: 1.25rem 0;
   padding: 1rem 1.25rem;
-  border-radius: var(--w-radius-md, 1rem);
-  background: color-mix(in srgb, var(--w-lamp, var(--accent)) 10%, var(--w-surface, var(--paper-light)));
-  border: 1px solid color-mix(in srgb, var(--w-lamp, var(--accent)) 25%, transparent);
+  border-radius: var(--w-radius-md);
+  background: color-mix(in srgb, var(--w-lamp) 10%, var(--w-surface));
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 25%, transparent);
+  color: var(--w-on-lamp);
 }
 
 .groupAnnouncementsHeader {
@@ -1372,7 +1374,7 @@
   margin: 0;
   font-size: 0.9rem;
   font-weight: 750;
-  color: var(--w-lamp, var(--accent));
+  color: var(--w-lamp);
 }
 
 .groupAnnouncementList {
@@ -1383,15 +1385,15 @@
 
 .groupAnnouncementCard {
   padding: 0.75rem 0.95rem;
-  border-radius: var(--w-radius-sm, 0.75rem);
-  background: var(--w-surface, var(--paper-light));
-  border: 1px solid color-mix(in srgb, var(--w-lamp, var(--accent)) 18%, transparent);
+  border-radius: var(--w-radius-sm);
+  background: var(--w-surface);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 18%, transparent);
 }
 
 .groupAnnouncementCard p {
   margin: 0;
   font-size: 0.85rem;
-  color: var(--w-ink, var(--ink));
+  color: var(--w-ink);
   line-height: 1.45;
 }
 
@@ -1401,7 +1403,7 @@
   justify-content: space-between;
   margin-top: 0.35rem;
   font-size: 0.72rem;
-  color: var(--w-ink-soft, var(--ink-soft));
+  color: var(--w-ink-soft);
 }
 
 

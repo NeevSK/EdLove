@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import { act, create } from 'react-test-renderer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -19,20 +18,27 @@ vi.mock('expo-router', () => ({
 
 vi.mock('react-native', () => ({ Platform: { OS: 'android' } }));
 
-vi.mock('@repo/ui', () => ({ BrandPulse: () => null }));
+vi.mock('@repo/ui/components/native', () => ({
+  WorldLoading: () => null,
+  ErrorState: ({
+    title,
+    message,
+    retry,
+  }: {
+    title: string;
+    message?: string;
+    retry?: { label: string; onPress: () => void };
+  }) => (
+    <>
+      {title}
+      {message}
+      {retry ? <button onClick={retry.onPress}>{retry.label}</button> : null}
+    </>
+  ),
+}));
 
 vi.mock('@repo/ui/components/ErrorBoundary', () => ({
   RouteErrorBoundary: () => null,
-}));
-
-vi.mock('@repo/ui/primitives', () => ({
-  Button: ({ children, onPress }: { children: ReactNode; onPress: () => void }) => (
-    <button onClick={onPress}>{children}</button>
-  ),
-  ButtonText: ({ children }: { children: ReactNode }) => <>{children}</>,
-  Center: ({ children }: { children: ReactNode }) => <>{children}</>,
-  Text: ({ children }: { children: ReactNode }) => <>{children}</>,
-  VStack: ({ children }: { children: ReactNode }) => <>{children}</>,
 }));
 
 import AuthCallbackRoute from '@/../app/auth/callback';

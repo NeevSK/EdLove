@@ -73,6 +73,7 @@ describe('resolveAuthorizedEntry', () => {
         entityId: 'SCHOOL-1',
         entityType: 'SCHOOL',
         roles: ['principal'],
+        citizenship: 'FIRST_CLASS',
       },
     });
     const [url, init] = fetcher.mock.calls[0] ?? [];

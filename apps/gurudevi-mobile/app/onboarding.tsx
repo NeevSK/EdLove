@@ -15,12 +15,24 @@ import {
   validatePreferredName,
 } from '@repo/core/types';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { Button, SceneBackdrop, Surface, Text, useScene } from '@repo/ui/components/native';
-import { useWorld } from '@repo/ui/theme/native';
+import {
+  Button,
+  celebrate,
+  RadioGroup,
+  Surface,
+  Text,
+  useFloorPresence,
+  WorldPicker,
+} from '@repo/ui/components/native';
+import { useLanguageOptional, useThemeContextOptional } from '@repo/ui/context';
+import { worldName } from '@repo/ui/theme';
+import { useWorld, WorldEnter } from '@repo/ui/theme/native';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ComfortPresets } from '@/components/comfort/ComfortPresets';
 import { PreferredNameEntry } from '@/components/PreferredNameEntry';
 import { RoleCardGrid } from '@/components/RoleCardGrid';
 import { useBootstrapRouteState } from '@/entry/bootstrapRouteState';
@@ -28,15 +40,26 @@ import { v1Client } from '@/lib/v1Client';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
+type Step = 'language' | 'comfort' | 'name' | 'role' | 'world';
+
+/** Each language named in itself, so a person who reads only that one still finds it. */
+const LANGUAGES = [
+  { value: 'si', label: 'සිංහල', hint: 'Sinhala' },
+  { value: 'ta', label: 'தமிழ்', hint: 'Tamil' },
+  { value: 'en', label: 'English', hint: 'English' },
+] as const;
+
 export default function OnboardingRoute() {
   const router = useRouter();
   const { refreshProfile } = useAuth();
   const routeState = useBootstrapRouteState('/onboarding');
   const world = useWorld();
   const wt = world.tokens;
-  const scene = useScene({ presence: 'full' });
+  useFloorPresence('full');
 
-  const [step, setStep] = useState<'name' | 'role'>('name');
+  const [step, setStep] = useState<Step>('language');
+  const { language, setLanguage } = useLanguageOptional();
+  const { worldId, setWorld } = useThemeContextOptional();
   const [displayName, setDisplayName] = useState('');
   const [detectedName, setDetectedName] = useState('');
   const [isEditingCustomName, setIsEditingCustomName] = useState(false);
@@ -88,7 +111,7 @@ export default function OnboardingRoute() {
         await completeLocalGuestOnboarding(guest.id);
         await activateLocalGuestSession(guest);
       }
-      showToast(`Welcome to Gurudevi, ${firstName}!`, 'success');
+      celebrate(`Welcome, ${firstName}`);
       router.replace('/self');
     } catch (error) {
       // No bond means no entry, so the person stays here and can try again.
@@ -101,114 +124,191 @@ export default function OnboardingRoute() {
 
   return (
     <ErrorBoundary name="OnboardingRoute">
-      <View style={[styles.root, { backgroundColor: wt.ground }]}>
-        <SceneBackdrop
-          scene={scene}
-          wash={{ colour: wt.ground, edge: 0.12, text: 1.0, textFrom: 0.35 }}
-        />
+      <View style={styles.root}>
         <SafeAreaView style={styles.safeArea}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            style={styles.container}
-          >
-            <ScrollView
+          {/* The focused field scrolls clear of the keyboard and its typing bar. */}
+          <View style={styles.container}>
+            <KeyboardAwareScrollView
+              bottomOffset={64}
               contentContainerStyle={styles.scrollContent}
               keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
             >
-              <Surface tone="raised" style={styles.cardSurface}>
-                {step === 'name' ? (
-                  <View style={styles.stepContainer}>
-                    <View style={styles.header}>
-                      <Text kind="title" align="center" tone="ink">
-                        {detectedName && !isEditingCustomName
-                          ? CANONICAL_NAME_PROMPTS.titleWithDetected(detectedName)
-                          : CANONICAL_NAME_PROMPTS.title}
-                      </Text>
-                      <Text kind="body" tone="soft" align="center" style={styles.subline}>
-                        {detectedName && !isEditingCustomName
-                          ? 'Confirm how you want to be greeted throughout your space.'
-                          : CANONICAL_NAME_PROMPTS.helperText}
-                      </Text>
-                    </View>
-
-                    <View style={styles.fieldWrapper}>
-                      <PreferredNameEntry
-                        detectedName={detectedName}
-                        displayName={displayName}
-                        isEditingCustomName={isEditingCustomName}
-                        onDisplayNameChange={setDisplayName}
-                        onSelectDetectedName={(name) => {
-                          setDisplayName(name);
-                          setStep('role');
-                        }}
-                        onStartCustomName={() => {
-                          setIsEditingCustomName(true);
-                          setDisplayName(detectedName);
-                        }}
-                        onBackToDetectedName={() => {
-                          setDisplayName(detectedName);
-                          setIsEditingCustomName(false);
-                        }}
+              {/* Each step settles in the way the world moves (a fade only when motion is low). */}
+              <WorldEnter key={step}>
+                <Surface tone="raised" style={styles.cardSurface}>
+                  {step === 'language' ? (
+                    <View style={styles.stepContainer}>
+                      <View style={styles.header}>
+                        <Text kind="title" align="center" tone="ink">
+                          ආයුබෝවන් · வணக்கம் · Welcome
+                        </Text>
+                        <Text kind="body" tone="soft" align="center" style={styles.subline}>
+                          Choose the language you read best. You can change it any time.
+                        </Text>
+                      </View>
+                      <RadioGroup
+                        label="Language"
+                        value={language}
+                        onChange={(lang) => void setLanguage(lang)}
+                        options={LANGUAGES}
                       />
-                    </View>
-
-                    <View style={styles.actionRow}>
-                      <Button
-                        label="Return to welcome"
-                        variant="secondary"
-                        onPress={() => router.replace('/welcome')}
-                      />
-                      {!detectedName || isEditingCustomName ? (
+                      <View style={styles.actionRow}>
+                        <Button
+                          label="Return to welcome"
+                          variant="secondary"
+                          onPress={() => router.replace('/welcome')}
+                        />
                         <Button
                           label="Next →"
                           variant="primary"
-                          disabled={!displayName.trim()}
-                          onPress={handleNext}
+                          onPress={() => setStep('comfort')}
                         />
-                      ) : null}
+                      </View>
                     </View>
-                  </View>
-                ) : (
-                  <View style={styles.stepContainer}>
-                    <View style={styles.header}>
-                      <Text kind="title" align="center" tone="ink">
-                        Choose your role, {firstName}
-                      </Text>
+                  ) : step === 'comfort' ? (
+                    // Asked once, early, with big previews: an older teacher never hunts for it.
+                    <View style={styles.stepContainer}>
+                      <View style={styles.header}>
+                        <Text kind="title" align="center" tone="ink">
+                          How do you like to see things?
+                        </Text>
+                        <Text kind="body" tone="soft" align="center" style={styles.subline}>
+                          Tap the one that is easiest for you. It changes at once, and you can tune
+                          it later in Reading and comfort.
+                        </Text>
+                      </View>
+                      <ComfortPresets />
+                      <View style={styles.actionRow}>
+                        <Button
+                          label="← Back"
+                          variant="secondary"
+                          onPress={() => setStep('language')}
+                        />
+                        <Button label="Next →" variant="primary" onPress={() => setStep('name')} />
+                      </View>
+                    </View>
+                  ) : step === 'name' ? (
+                    <View style={styles.stepContainer}>
+                      <View style={styles.header}>
+                        <Text kind="title" align="center" tone="ink">
+                          {detectedName && !isEditingCustomName
+                            ? CANONICAL_NAME_PROMPTS.titleWithDetected(detectedName)
+                            : CANONICAL_NAME_PROMPTS.title}
+                        </Text>
+                        <Text kind="body" tone="soft" align="center" style={styles.subline}>
+                          {detectedName && !isEditingCustomName
+                            ? 'Confirm how you want to be greeted throughout your space.'
+                            : CANONICAL_NAME_PROMPTS.helperText}
+                        </Text>
+                      </View>
+
+                      <View style={styles.fieldWrapper}>
+                        <PreferredNameEntry
+                          detectedName={detectedName}
+                          displayName={displayName}
+                          isEditingCustomName={isEditingCustomName}
+                          onDisplayNameChange={setDisplayName}
+                          onSelectDetectedName={(name) => {
+                            setDisplayName(name);
+                            setStep('role');
+                          }}
+                          onStartCustomName={() => {
+                            setIsEditingCustomName(true);
+                            setDisplayName(detectedName);
+                          }}
+                          onBackToDetectedName={() => {
+                            setDisplayName(detectedName);
+                            setIsEditingCustomName(false);
+                          }}
+                        />
+                      </View>
+
+                      <View style={styles.actionRow}>
+                        <Button
+                          label="← Back"
+                          variant="secondary"
+                          onPress={() => setStep('comfort')}
+                        />
+                        {!detectedName || isEditingCustomName ? (
+                          <Button
+                            label="Next →"
+                            variant="primary"
+                            disabled={!displayName.trim()}
+                            onPress={handleNext}
+                          />
+                        ) : null}
+                      </View>
+                    </View>
+                  ) : step === 'role' ? (
+                    <View style={styles.stepContainer}>
+                      <View style={styles.header}>
+                        <Text kind="title" align="center" tone="ink">
+                          Choose your role, {firstName}
+                        </Text>
+                        <Text kind="body" tone="soft" align="center" style={styles.subline}>
+                          We will shape your personal space around what you do.
+                        </Text>
+                      </View>
+
+                      <RoleCardGrid
+                        selectedRoleId={selectedRole}
+                        onSelectRole={setSelectedRole}
+                        roles={CANONICAL_CIVIC_ROLES}
+                      />
+
                       <Text kind="body" tone="soft" align="center" style={styles.subline}>
-                        We will shape your personal space around what you do.
+                        School leaders join by invitation.
                       </Text>
+
+                      <View style={styles.actionRow}>
+                        <Button
+                          label="← Back"
+                          variant="secondary"
+                          disabled={submitting}
+                          onPress={() => setStep('name')}
+                        />
+                        <Button label="Next →" variant="primary" onPress={() => setStep('world')} />
+                      </View>
                     </View>
+                  ) : (
+                    <View style={styles.stepContainer}>
+                      <View style={styles.header}>
+                        <Text kind="title" align="center" tone="ink">
+                          Choose your world
+                        </Text>
+                        <Text kind="body" tone="soft" align="center" style={styles.subline}>
+                          It dresses everything you see, at every hour. Classic is plain and calm;
+                          the others are alive. You can change it any time from your photo.
+                        </Text>
+                      </View>
 
-                    <RoleCardGrid
-                      selectedRoleId={selectedRole}
-                      onSelectRole={setSelectedRole}
-                      roles={CANONICAL_CIVIC_ROLES}
-                    />
-
-                    <Text kind="body" tone="soft" align="center" style={styles.subline}>
-                      School leaders join by invitation.
-                    </Text>
-
-                    <View style={styles.actionRow}>
-                      <Button
-                        label="← Back"
-                        variant="secondary"
-                        disabled={submitting}
-                        onPress={() => setStep('name')}
+                      {/* Choosing changes the floor behind this card at once: you see the world you pick. */}
+                      <WorldPicker
+                        label="Your world"
+                        value={worldId}
+                        onChange={(id) => void setWorld(id)}
                       />
-                      <Button
-                        label={submitting ? 'Entering…' : 'Enter Sanctuary →'}
-                        variant="primary"
-                        disabled={submitting}
-                        onPress={handleComplete}
-                      />
+
+                      <View style={styles.actionRow}>
+                        <Button
+                          label="← Back"
+                          variant="secondary"
+                          disabled={submitting}
+                          onPress={() => setStep('role')}
+                        />
+                        <Button
+                          label={submitting ? 'Entering…' : `Enter ${worldName(worldId)} →`}
+                          variant="primary"
+                          disabled={submitting}
+                          onPress={handleComplete}
+                        />
+                      </View>
                     </View>
-                  </View>
-                )}
-              </Surface>
-            </ScrollView>
-          </KeyboardAvoidingView>
+                  )}
+                </Surface>
+              </WorldEnter>
+            </KeyboardAwareScrollView>
+          </View>
         </SafeAreaView>
       </View>
     </ErrorBoundary>

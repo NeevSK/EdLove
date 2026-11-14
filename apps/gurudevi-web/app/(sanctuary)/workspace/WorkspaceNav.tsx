@@ -8,7 +8,7 @@ import { useDomainWorkbench } from '../../../lib/workbench';
 import { useWorkbenchScope } from '../../../lib/workbench/WorkbenchScope';
 import type { WorkspaceRoleFilter } from '../components/RoleLensSwitcher';
 import styles from './workspace-nav.module.css';
-import { filterWorkspaceFeatures, WORKSPACE_FEATURES } from './workspaceFeatureRegistry';
+import { filterWorkspaceFeatures, WORKSPACE_FEATURES } from './workspaceFeatures';
 
 interface WorkspaceNavProps {
   activeId?: string;
@@ -26,7 +26,8 @@ export function WorkspaceNav({ activeId, roleFilter = 'all' }: Readonly<Workspac
   function openFeature(item: (typeof WORKSPACE_FEATURES)[number]) {
     const route = item.id === 'attendance' ? '/workspace?task=attendance' : item.href;
     const localizedTitle = t(`workspace.features.${item.id}`);
-    const displayTitle = localizedTitle !== `workspace.features.${item.id}` ? localizedTitle : item.label;
+    const displayTitle =
+      localizedTitle !== `workspace.features.${item.id}` ? localizedTitle : item.label;
     const result = workbench.open({
       featureId: item.id,
       route,
@@ -44,7 +45,10 @@ export function WorkspaceNav({ activeId, roleFilter = 'all' }: Readonly<Workspac
   }
 
   return (
-    <nav className={styles.navContainer} aria-label={t('workspace.toolsNav') || 'Workspace tools navigation'}>
+    <nav
+      className={styles.navContainer}
+      aria-label={t('workspace.toolsNav') || 'Workspace tools navigation'}
+    >
       <ScrollArea
         orientation="horizontal"
         variant="auto"
@@ -56,7 +60,8 @@ export function WorkspaceNav({ activeId, roleFilter = 'all' }: Readonly<Workspac
           {visibleItems.map((item) => {
             const isActive = activeId ? activeId === item.id : pathname === item.href;
             const localizedLabel = t(`workspace.features.${item.id}`);
-            const displayLabel = localizedLabel !== `workspace.features.${item.id}` ? localizedLabel : item.label;
+            const displayLabel =
+              localizedLabel !== `workspace.features.${item.id}` ? localizedLabel : item.label;
             return (
               <button
                 key={item.id}

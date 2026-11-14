@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useBrowserWorkspaceAppearance } from './useBrowserWorkspaceAppearance';
 
-export type WorkspaceZone = 'today' | 'work' | 'institution' | 'outlook';
+/** The Work room's own areas. Areas belong to each room; core has no fixed list. */
+export type WorkRoomArea = 'today' | 'work' | 'institution' | 'outlook';
 
-export const DEFAULT_WORKSPACE_ZONES: readonly WorkspaceZone[] = [
+export const WORK_ROOM_AREAS: readonly WorkRoomArea[] = [
   'today',
   'work',
   'institution',
@@ -34,7 +35,7 @@ export function useWorkspaceCanvas({
 
   const appearanceHook = useBrowserWorkspaceAppearance({
     accountId,
-    defaultGroupOrder: DEFAULT_WORKSPACE_ZONES,
+    defaultGroupOrder: WORK_ROOM_AREAS,
     defaultPinnedIds: DEFAULT_WORKSPACE_PINNED,
     enableRemoteSync,
     workspaceId: 'workspace',
@@ -57,9 +58,9 @@ export function useWorkspaceCanvas({
     return () => window.removeEventListener('resize', updateViewport);
   }, []);
 
-  const pinnedZones = useMemo<WorkspaceZone[]>(() => {
-    return appearanceHook.pinnedIds.filter((id): id is WorkspaceZone =>
-      (DEFAULT_WORKSPACE_ZONES as readonly string[]).includes(id),
+  const pinnedZones = useMemo<WorkRoomArea[]>(() => {
+    return appearanceHook.pinnedIds.filter((id): id is WorkRoomArea =>
+      (WORK_ROOM_AREAS as readonly string[]).includes(id),
     );
   }, [appearanceHook.pinnedIds]);
 
@@ -85,11 +86,12 @@ export function useWorkspaceCanvas({
   return {
     viewport,
     layoutMode,
-    groupOrder: appearanceHook.groupOrder as WorkspaceZone[],
+    groupOrder: appearanceHook.groupOrder as WorkRoomArea[],
     pinnedZones,
     pinnedIds: appearanceHook.pinnedIds,
     togglePin,
     appearance: appearanceHook.appearance,
+    storedAppearance: appearanceHook.stored,
     setAppearance: appearanceHook.setAppearance,
     resetAppearance: appearanceHook.resetAppearance,
     status: appearanceHook.status,

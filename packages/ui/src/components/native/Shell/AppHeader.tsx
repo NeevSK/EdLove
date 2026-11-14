@@ -40,7 +40,7 @@ export interface AppHeaderProps extends AppHeaderContract {
 }
 
 /** An action with its count or dot, the mark said as part of its name. */
-function Action({ action }: { action: HeaderAction }) {
+export function HeaderActionButton({ action }: { action: HeaderAction }) {
   const { world, language } = useWorldContext();
   const t = world.tokens;
   const name =
@@ -51,7 +51,9 @@ function Action({ action }: { action: HeaderAction }) {
     action.badgeTone === 'danger' ? t.danger : action.badgeTone === 'quiet' ? t.inkFaint : t.lamp;
   const ink = action.badgeTone === 'danger' ? t.onDanger : t.onLamp;
   // The app's familiar round well, warming toward the lamp while its toggle is open.
-  const well = useLivingStyle({ backgroundColor: action.expanded ? mix(t.sunken, t.lamp, 0.2) : t.sunken });
+  const well = useLivingStyle({
+    backgroundColor: action.expanded ? mix(t.sunken, t.lamp, 0.2) : t.sunken,
+  });
   return (
     <Animated.View style={[styles.action, styles.well, well]}>
       <IconButton
@@ -80,6 +82,8 @@ function Action({ action }: { action: HeaderAction }) {
           style={[styles.count, { backgroundColor: fill, borderColor: t.ground }]}
         >
           <RNText
+            // A count in a small mark grows a little with large text, then the mark grows.
+            maxFontSizeMultiplier={1.3}
             style={[
               typeStyle(world.recipes.text.label, language, world, 10),
               { color: ink, textTransform: 'none' },
@@ -90,6 +94,36 @@ function Action({ action }: { action: HeaderAction }) {
         </View>
       ) : null}
     </Animated.View>
+  );
+}
+
+/** The person's photo in the header, opening their profile or "You" sheet. */
+export function HeaderAvatar({
+  name,
+  src,
+  label,
+  onPress,
+  size = 'sm',
+}: {
+  name: string;
+  src?: string;
+  label: string;
+  onPress: () => void;
+  size?: 'sm' | 'md';
+}) {
+  const feedback = useFeedback();
+  return (
+    <Pressable
+      role="button"
+      accessibilityLabel={label}
+      hitSlop={6}
+      onPress={() => {
+        feedback('press');
+        onPress();
+      }}
+    >
+      <Avatar name={name} src={src} size={size} />
+    </Pressable>
   );
 }
 
@@ -130,32 +164,36 @@ export function AppHeader({
 
   const pill = perspective ? (
     <Pressable
-                role="button"
-                accessibilityLabel={perspective.label}
-                accessibilityHint={perspective.switchLabel}
-                disabled={!perspective.onPress}
-                onPress={() => {
-                  feedback('select');
-                  perspective.onPress?.();
-                }}
-                style={[chipFrame(chip, chip.rest), styles.pill]}
-              >
-                <ChipPaint recipe={chip} selected={false} />
-                <RNText
-                  numberOfLines={1}
-                  style={[typeStyle(chip.label, language, world), { color: chip.rest.ink }]}
-                >
-                  {perspective.label}
-                </RNText>
-                {perspective.onPress ? (
-                  <RNText aria-hidden style={{ color: t.inkSoft }}>
-                    ▾
-                  </RNText>
-                ) : null}
-              </Pressable>
+      role="button"
+      accessibilityLabel={perspective.label}
+      accessibilityHint={perspective.switchLabel}
+      disabled={!perspective.onPress}
+      onPress={() => {
+        feedback('select');
+        perspective.onPress?.();
+      }}
+      style={[chipFrame(chip, chip.rest), styles.pill]}
+    >
+      <ChipPaint recipe={chip} selected={false} />
+      <RNText
+        numberOfLines={1}
+        style={[typeStyle(chip.label, language, world), { color: chip.rest.ink }]}
+      >
+        {perspective.label}
+      </RNText>
+      {perspective.onPress ? (
+        <RNText aria-hidden style={{ color: t.inkSoft }}>
+          ▾
+        </RNText>
+      ) : null}
+    </Pressable>
   ) : null;
   const heading = (
-    <RNText accessibilityRole="header" numberOfLines={1} style={[titleStyle, perspective?.beside ? { flexShrink: 1 } : null]}>
+    <RNText
+      accessibilityRole="header"
+      numberOfLines={1}
+      style={[titleStyle, perspective?.beside ? { flexShrink: 1 } : null]}
+    >
       {title}
     </RNText>
   );
@@ -182,19 +220,7 @@ export function AppHeader({
             onPress={leading.onPress}
           />
         ) : null}
-        {avatar ? (
-          <Pressable
-            role="button"
-            accessibilityLabel={avatar.label}
-            hitSlop={6}
-            onPress={() => {
-              feedback('press');
-              avatar.onPress();
-            }}
-          >
-            <Avatar name={avatar.name} src={avatar.src} size="sm" />
-          </Pressable>
-        ) : null}
+        {avatar ? <HeaderAvatar {...avatar} /> : null}
         <View style={styles.identity}>
           {status ? (
             <View
@@ -208,11 +234,21 @@ export function AppHeader({
                   styles.statusDot,
                   {
                     backgroundColor:
-                      status.tone === 'offline' ? t.inkFaint : status.tone === 'attention' ? t.danger : t.lamp,
+                      status.tone === 'offline'
+                        ? t.inkFaint
+                        : status.tone === 'attention'
+                          ? t.danger
+                          : t.lamp,
                   },
                 ]}
               />
-              <RNText numberOfLines={1} style={[typeStyle(world.recipes.text.caption, language, world), { color: t.inkSoft }]}>
+              <RNText
+                numberOfLines={1}
+                style={[
+                  typeStyle(world.recipes.text.caption, language, world),
+                  { color: t.inkSoft },
+                ]}
+              >
                 {status.label}
               </RNText>
             </View>
@@ -233,7 +269,10 @@ export function AppHeader({
             heading
           )}
           {subtitle ? (
-            <RNText numberOfLines={1} style={[typeStyle(world.recipes.text.caption, language, world), { color: t.inkSoft }]}>
+            <RNText
+              numberOfLines={1}
+              style={[typeStyle(world.recipes.text.caption, language, world), { color: t.inkSoft }]}
+            >
               {subtitle}
             </RNText>
           ) : null}
@@ -241,7 +280,7 @@ export function AppHeader({
         {actions.length > 0 || trailing ? (
           <View style={[styles.row, { gap: 4 }]}>
             {actions.map((a) => (
-              <Action key={a.key} action={a} />
+              <HeaderActionButton key={a.key} action={a} />
             ))}
             {trailing}
           </View>
@@ -298,7 +337,7 @@ const styles = StyleSheet.create({
     top: 4,
     right: 2,
     minWidth: 18,
-    height: 18,
+    minHeight: 18,
     paddingHorizontal: 4,
     borderRadius: 9,
     borderWidth: 1.5,

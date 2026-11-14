@@ -8,6 +8,7 @@ import { useLivingStyle } from '../../../theme/native/motion';
 import { radiusStyle } from '../../../theme/native/style';
 import { useWorld } from '../../../theme/native/WorldContext';
 import { Text } from '../Text/Text';
+import { TOUCH_MIN } from '../touch';
 
 export interface CheckboxProps extends CheckboxContract {
   style?: StyleProp<ViewStyle>;
@@ -94,7 +95,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 12,
-    minHeight: 44,
+    minHeight: TOUCH_MIN,
     paddingVertical: 10,
   },
   words: { flex: 1, gap: 2, paddingTop: 1 },

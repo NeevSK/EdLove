@@ -2,6 +2,7 @@ import {
   resolveSelfFeatureManifest,
   type SelfFeatureManifestItem,
 } from '@repo/self/features/featureManifest';
+import { NATIVE_SELF_DELIVERY } from '@repo/self/components/SelfFeatureRenderer';
 import { DEFAULT_SELF_PREFERENCES } from '@repo/self/features/userPreferences';
 import type { SelfViewRole } from '@repo/self/screens/self/roleResolution';
 import {
@@ -128,7 +129,12 @@ export function getSelfRegistry(
       : ['teacher'];
 
   const primaryRole = roles[0] ?? 'teacher';
-  const manifest = resolveSelfFeatureManifest(null, DEFAULT_SELF_PREFERENCES.features, 'native');
+  const manifest = resolveSelfFeatureManifest(
+    null,
+    DEFAULT_SELF_PREFERENCES.features,
+    'native',
+    NATIVE_SELF_DELIVERY,
+  );
   const runnableFeatures = manifest.all.filter((feature) => feature.delivery === 'runnable');
 
   const sorted = [...runnableFeatures].sort((left, right) => {

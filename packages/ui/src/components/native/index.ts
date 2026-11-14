@@ -28,6 +28,7 @@ export {
   MessageList,
   type MessageListProps,
 } from './Agent/Message';
+export { Autocomplete, type AutocompleteProps } from './Autocomplete/Autocomplete';
 export { Disclosure, type DisclosureProps } from './Basics/Disclosure';
 export { Notice, type NoticeProps } from './Basics/Notice';
 export { NumberStepper, type NumberStepperProps } from './Basics/NumberStepper';
@@ -38,16 +39,41 @@ export { Card, type CardProps } from './Card/Card';
 export { Carousel, type CarouselProps } from './Carousel/Carousel';
 export { Checkbox, type CheckboxProps } from './Checkbox/Checkbox';
 export { Chip, type ChipProps, Chips, type ChipsProps } from './Chip/Chip';
+export { ContextMenu, type ContextMenuProps } from './ContextMenu/ContextMenu';
 export { Dialog, type DialogProps } from './Dialog/Dialog';
+export { FloorInspector, type FloorInspectorProps } from './Floor/FloorInspector';
+export { FloorView, type FloorViewProps } from './Floor/FloorView';
+export { PatternBody, type PatternProps, type PatternWords } from './Floor/patterns';
 export { Group, type GroupProps } from './Group/Group';
 export { Icon, type IconProps } from './Icon/Icon';
 export { IconButton, type IconButtonProps } from './IconButton/IconButton';
+export {
+  closeKeypad,
+  type KeypadTarget,
+  pressKey,
+  type TypingFocus,
+  useKeypadTarget,
+  useTypingFocus,
+} from './Keyboard/focus';
+export {
+  KEYPAD_FLAT_HEIGHT,
+  KEYPAD_SIDE_WIDTH,
+  KeypadHost,
+  useKeypadSpace,
+} from './Keyboard/Keypad';
+export { TypingBar } from './Keyboard/TypingBar';
+export {
+  LanguagePicker,
+  type LanguagePickerProps,
+} from './LanguagePicker/LanguagePicker';
 export { Launcher, type LauncherProps } from './Launcher/Launcher';
 export { Grid, type GridProps } from './Layout/Grid';
 export { Inline, type InlineProps, Stack, type StackProps } from './Layout/Layout';
+export { TWO_PANE_MIN, TwoPane, type TwoPaneProps, twoPaneOf } from './Layout/TwoPane';
 export { useContainerWidth } from './Layout/useContainerWidth';
 export { Link, type LinkProps } from './Link/Link';
 export { List, type ListProps } from './List/List';
+export { LivingGround, type LivingGroundProps } from './LivingGround/LivingGround';
 export {
   type MediaAdapterSet,
   MediaAdapters,
@@ -71,9 +97,12 @@ export { Markdown, type MarkdownProps } from './Media/Markdown';
 export { Media, type MediaProps } from './Media/Media';
 export { RichTextEditor, type RichTextEditorProps } from './Media/RichTextEditor';
 export { Menu, type MenuProps } from './Menu/Menu';
-export { Perch } from './Perch/Perch';
+export { MiniChart, type MiniChartProps } from './MiniChart/MiniChart';
+export { celebrate, WorldMomentHost } from './Moment/WorldMoment';
+export { MoveControl, type MoveControlProps } from './Move/MoveControl';
 export { Pebble, type PebbleProps } from './Pebble/Pebble';
 export { PebbleCornerSlot, type PebbleCornerSlotProps } from './Pebble/PebbleCornerSlot';
+export { Perch } from './Perch/Perch';
 export { Popover, type PopoverProps } from './Popover/Popover';
 export {
   ChoiceQuestion,
@@ -86,7 +115,6 @@ export {
 export { RadioGroup, type RadioGroupProps } from './Radio/RadioGroup';
 export { Rail, type RailProps } from './Rail/Rail';
 export { Row, type RowProps } from './Row/Row';
-export { ScrollArea, type ScrollAreaProps } from './ScrollArea';
 export {
   SceneBackdrop,
   type SceneBackdropProps,
@@ -98,6 +126,7 @@ export {
   useMinuteClock,
   useScene,
 } from './Scene';
+export { ScrollArea, type ScrollAreaProps } from './ScrollArea';
 export { Section, type SectionProps } from './Section/Section';
 export { SegmentedControl, type SegmentedControlProps } from './Segmented/SegmentedControl';
 export { Select, type SelectProps } from './Select/Select';
@@ -110,11 +139,66 @@ export {
   type LinkRowProps,
 } from './Settings/SettingsRows';
 export { Sheet, type SheetProps } from './Sheet/Sheet';
-export { AppHeader, type AppHeaderProps } from './Shell/AppHeader';
+export {
+  AppHeader,
+  type AppHeaderProps,
+  HeaderActionButton,
+  HeaderAvatar,
+} from './Shell/AppHeader';
+export {
+  type ConnectionStatus,
+  type ConnectionTone,
+  connectionStatusOf,
+} from './Shell/connectionStatus';
 export { NotificationItem, type NotificationItemProps } from './Shell/NotificationItem';
 export { SwitchRow, type SwitchRowProps } from './Shell/SwitchRow';
 export { TaskTabs, type TaskTabsProps } from './Shell/TaskTabs';
+export { useRoomScroll } from './Shell/useRoomScroll';
+export { useShellLayout } from './Shell/useShellLayout';
+export { WorldHeader, type WorldHeaderLayout, type WorldHeaderProps } from './Shell/WorldHeader';
+export {
+  type RailHud,
+  WorldTabBar,
+  type WorldTabBarProps,
+  type WorldTabItem,
+} from './Shell/WorldTabBar';
+export {
+  type AssistantChoice,
+  type HeaderLayoutChoice,
+  type TabBarLayoutChoice,
+  type VisualDetailChoice,
+  YouSheet,
+  type YouSheetProps,
+} from './Shell/YouSheet';
 export { Slider, type SliderProps } from './Slider/Slider';
+export { SplitButton, type SplitButtonProps } from './SplitButton/SplitButton';
+export {
+  ArtLayerView,
+  ArtLife,
+  ArtStill,
+  clearStagePreview,
+  FloorOverlays,
+  type FloorPicture,
+  type FloorPictures,
+  floorPictureFor,
+  getStagePreview,
+  glowAt,
+  layerShows,
+  motionAt,
+  registerFloorPictures,
+  type StageContextValue,
+  type StagePreview,
+  setStagePreview,
+  splitLayers,
+  useFloorPresence,
+  useStage,
+  useStageContext,
+  useStagePreview,
+  useStageScroll,
+  WorldFloor,
+  WorldStage,
+  type WorldStageProps,
+} from './Stage';
 export {
   EmptyState,
   type EmptyStateProps,
@@ -131,19 +215,23 @@ export {
   type ProgressProps,
 } from './Status/Status';
 export { Surface, type SurfaceProps } from './Surface/Surface';
-export { LivingGround, type LivingGroundProps } from './LivingGround/LivingGround';
 export { SwipeRow, type SwipeRowProps } from './SwipeRow/SwipeRow';
 export { Switch, type SwitchProps } from './Switch/Switch';
 export { Table, type TableProps } from './Table/Table';
 export { Tabs, type TabsProps } from './Tabs/Tabs';
+export { TaskToolbar, type TaskToolbarProps } from './TaskToolbar/TaskToolbar';
 export { Text, type TextProps, toneColor } from './Text/Text';
 export { TextField, type TextFieldProps } from './TextField/TextField';
+export {
+  ThemeSwitcher,
+  type ThemeSwitcherProps,
+} from './ThemeSwitcher/ThemeSwitcher';
 export { Date, type DateProps } from './Time/Date';
-export { Time, type TimeProps } from './Time/Time';
 export { DateTimeCombo, type DateTimeComboProps } from './Time/DateTimeCombo';
 export { DateTravel, type DateTravelProps } from './Time/DateTravel';
 export { DateField, type DateFieldProps, TimeField, type TimeFieldProps } from './Time/Fields';
 export { MonthGrid, type MonthGridProps } from './Time/MonthGrid';
+export { Time, type TimeProps } from './Time/Time';
 export { TimeAgo, type TimeAgoProps } from './Time/TimeAgo';
 export { Timeline, type TimelineProps } from './Time/Timeline';
 export { ToastHost } from './Toast/ToastHost';
@@ -156,13 +244,3 @@ export {
 } from './Waiting/Waiting';
 export { WaitingSign, type WaitingSignProps } from './WaitingSign/WaitingSign';
 export { WorldPicker, type WorldPickerProps } from './WorldPicker/WorldPicker';
-export {
-  LanguagePicker,
-  type LanguagePickerProps,
-} from './LanguagePicker/LanguagePicker';
-export {
-  ThemeSwitcher,
-  type ThemeSwitcherProps,
-} from './ThemeSwitcher/ThemeSwitcher';
-
-

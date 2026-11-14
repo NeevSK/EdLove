@@ -2,7 +2,7 @@ import type { ComponentRef, Ref } from 'react';
 import { Text as RNText, type TextProps as RNTextProps } from 'react-native';
 import Animated from 'react-native-reanimated';
 import type { TextContract } from '../../../theme/contracts';
-import { typeStyle } from '../../../theme/native/style';
+import { systemTextAllowance, typeStyle } from '../../../theme/native/style';
 import { useLivingStyle } from '../../../theme/native/motion';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import type { TextTone, WorldTokens } from '../../../theme/types';
@@ -28,7 +28,15 @@ export function toneColor(t: WorldTokens, tone: TextTone): string {
   }
 }
 
-export function Text({ kind = 'body', tone, align, style, ref, ...rest }: TextProps) {
+export function Text({
+  kind = 'body',
+  tone,
+  align,
+  style,
+  ref,
+  maxFontSizeMultiplier,
+  ...rest
+}: TextProps) {
   const { world, language } = useWorldContext();
   const recipe = world.recipes.text[kind];
   const resolvedColor = tone ? toneColor(world.tokens, tone) : (recipe.color ?? world.tokens.ink);
@@ -38,6 +46,8 @@ export function Text({ kind = 'body', tone, align, style, ref, ...rest }: TextPr
     <Animated.Text
       ref={ref as any}
       accessibilityRole={kind === 'display' ? 'header' : undefined}
+      // The phone's text size and the reading size together stay under one cap.
+      maxFontSizeMultiplier={maxFontSizeMultiplier ?? systemTextAllowance()}
       {...rest}
       style={[
         typeStyle(recipe, language, world),

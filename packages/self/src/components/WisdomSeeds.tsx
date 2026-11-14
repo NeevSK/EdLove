@@ -4,6 +4,7 @@
  * Standardized to October 29+ UI Kit architecture.
  */
 
+import { useDraft } from '@repo/ui/context/Drafts';
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import { useWisdom } from '@repo/self/hooks/useWisdom';
@@ -37,7 +38,7 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
   } = useWisdom(activeUserId ?? undefined);
 
   const [showForm, setShowForm] = useState(false);
-  const [insight, setInsight] = useState('');
+  const { value: insight, setValue: setInsight } = useDraft('self:wisdom');
 
   const { mutate, isPending: isSaving } = useSafeMutation(
     async (insightText: string) => {
@@ -122,7 +123,6 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
       )}
 
       <ScrollView
-        showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
         className="flex-1"
       >

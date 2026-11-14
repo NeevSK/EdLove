@@ -1,23 +1,16 @@
 import type {
+  AreaId,
   ResolvedWorkspaceSurface,
   WorkspaceAppearance,
+  WorkspaceFloorSettings,
   WorkspaceLayout,
   WorkspaceSurfaceDefinition,
-  WorkspaceZoneId,
 } from '@repo/core/types';
 
 export const DEFAULT_WORKSPACE_APPEARANCE: WorkspaceAppearance = {
   preset: 'default',
   motion: 'off',
 };
-
-export const WORKSPACE_CANVAS_ZONES = [
-  'today',
-  'work',
-  'institution',
-  'outlook',
-  'private',
-] as const satisfies readonly WorkspaceZoneId[];
 
 /** Keep the canvas's high-attention layer within the dense-workspace limit. */
 export const MAX_PINNED_WORKSPACE_SURFACES = 4;
@@ -39,13 +32,32 @@ export function getMaxPinnedForWorkspace(workspaceId: string): number {
   return PER_WORKSPACE_PIN_CAP[workspaceId] ?? MAX_PINNED_WORKSPACE_SURFACES;
 }
 
-export type WorkspaceCanvasZoneId = (typeof WORKSPACE_CANVAS_ZONES)[number];
+/**
+ * The areas a room uses, in the order its furniture list first names them.
+ * Areas belong to the room; core keeps no fixed list.
+ */
+export function areasOfSurfaces(
+  surfaces: readonly Pick<WorkspaceSurfaceDefinition, 'defaultZone' | 'defaultOrder'>[],
+): AreaId[] {
+  const seen: AreaId[] = [];
+  for (const s of [...surfaces].sort((a, b) => a.defaultOrder - b.defaultOrder)) {
+    if (!seen.includes(s.defaultZone)) seen.push(s.defaultZone);
+  }
+  return seen;
+}
+
+/** The next area after `area` in a room's own area list, wrapping round. */
+export function nextAreaOf(area: AreaId, areas: readonly AreaId[]): AreaId {
+  if (areas.length === 0) return area;
+  const i = areas.indexOf(area);
+  return areas[(i + 1) % areas.length] as AreaId;
+}
 
 export interface WorkspaceZoneLayoutGroup<
   TSurfaceId extends string = string,
   TCapabilityKey extends string = string,
 > {
-  zone: WorkspaceZoneId;
+  zone: AreaId;
   surfaces: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>[];
 }
 
@@ -116,7 +128,7 @@ export function createDefaultWorkspaceLayout<
   const hidden = surfaces
     .filter((surface) => surface.hiddenByDefault)
     .map((surface) => surface.surfaceId);
-  const zoneBySurface = orderedSurfaceIds.reduce<Partial<Record<TSurfaceId, WorkspaceZoneId>>>(
+  const zoneBySurface = orderedSurfaceIds.reduce<Partial<Record<TSurfaceId, AreaId>>>(
     (zones, surfaceId) => {
       const surface = surfaces.find((candidate) => candidate.surfaceId === surfaceId);
       if (surface) {
@@ -192,7 +204,7 @@ export function normalizeWorkspaceLayout<TSurfaceId extends string, TCapabilityK
     .filter((surfaceId) => surfaceMap.has(surfaceId))
     .slice(0, getMaxPinnedForWorkspace(layout.workspaceId));
 
-  const zoneBySurface = defaultOrder.reduce<Partial<Record<TSurfaceId, WorkspaceZoneId>>>(
+  const zoneBySurface = defaultOrder.reduce<Partial<Record<TSurfaceId, AreaId>>>(
     (zones, surfaceId) => {
       const surface = surfaceMap.get(surfaceId);
       if (!surface) return zones;
@@ -214,8 +226,18 @@ export function normalizeWorkspaceLayout<TSurfaceId extends string, TCapabilityK
     isDefault: migratedIsDefault,
     surfaceMetadata: migratedMetadata,
     appearance,
+    ...(layout.floor ? { floor: layout.floor } : {}),
     updatedAt,
   };
+}
+
+/** Saves the person's floor settings on a layout (see logic/floor/settings.ts). */
+export function setWorkspaceFloorSettings<TSurfaceId extends string>(
+  layout: WorkspaceLayout<TSurfaceId>,
+  floor: WorkspaceFloorSettings,
+  updatedAt: string,
+): WorkspaceLayout<TSurfaceId> {
+  return { ...layout, floor, isDefault: false, updatedAt };
 }
 
 export function resolveWorkspaceSurfaceLayout<
@@ -263,17 +285,20 @@ export function groupResolvedWorkspaceSurfacesByZone<
   surfaces: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>[],
   options: {
     includeHidden?: boolean;
-    zoneOrder?: readonly WorkspaceZoneId[];
+    zoneOrder?: readonly AreaId[];
   } = {},
 ): WorkspaceZoneLayoutGroup<TSurfaceId, TCapabilityKey>[] {
-  const { includeHidden = false, zoneOrder = WORKSPACE_CANVAS_ZONES } = options;
-  const grouped = new Map<
-    WorkspaceZoneId,
-    ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>[]
-  >();
+  const { includeHidden = false, zoneOrder = [] } = options;
+  const grouped = new Map<AreaId, ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>[]>();
 
   for (const zone of zoneOrder) {
     grouped.set(zone, []);
+  }
+
+  // Every area a surface sits in gets a group, even when all its surfaces are
+  // hidden, so a room's areas stay put; the room's own order comes first.
+  for (const surface of surfaces) {
+    if (!grouped.has(surface.zone)) grouped.set(surface.zone, []);
   }
 
   for (const surface of surfaces) {
@@ -362,7 +387,7 @@ export function setWorkspaceSurfacePinned<TSurfaceId extends string>(
 export function setWorkspaceSurfaceZone<TSurfaceId extends string>(
   layout: WorkspaceLayout<TSurfaceId>,
   surfaceId: TSurfaceId,
-  zone: WorkspaceZoneId,
+  zone: AreaId,
   updatedAt = new Date().toISOString(),
 ): WorkspaceLayout<TSurfaceId> {
   return {

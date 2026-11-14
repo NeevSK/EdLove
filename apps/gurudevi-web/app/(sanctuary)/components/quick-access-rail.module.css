@@ -16,10 +16,8 @@
   max-width: 100%;
   overflow-x: auto;
   padding: 0.25rem 0.5rem;
-  scrollbar-width: none;
 }
 
-.rail[data-orientation="horizontal"]::-webkit-scrollbar { display: none; }
 
 .editorButton,
 .shortcut {
@@ -383,19 +381,15 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .sheet[open] { animation-duration: 0.01ms; }
-}
-
 @media (orientation: landscape) and (max-height: 34rem) {
   .sheet { inset-block-end: env(safe-area-inset-bottom); }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99rem) {
   .rail[data-orientation="vertical"] { display: none; }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
   .sheet {
     inset: auto 1.25rem 1.25rem auto;
     width: min(28rem, calc(100vw - 2.5rem));

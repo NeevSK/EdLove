@@ -1,0 +1,22 @@
+workspace: large landscape, dense, cost 106/400
+  Today 80h w3
+    Today [lamp] 80h w3
+      Daily Attendance 56h w3
+  Work 476h w1
+    Teaching and learning [grouped-list] 312h w1
+      Timetable 140h w1
+      Curriculum & Lesson Plans 140h w1
+    Daily running [tile-grid] 164h w1
+      QR Scanner 140h w1
+      Climate Sensing 140h w1
+  School 600h w2
+    Notices and messages [tile-grid] 240h w1
+      Guardian Portal 140h w1
+      Circulars & Notices 280h w1
+    School [mixed-tiles] 360h w2
+      Principal Command Center 140h w1.2
+      Tuition & Fees 140h w2
+      Doorway Kiosk 140h w1
+      ID Badges 140h w1
+      School Profile 140h w1 (folded)
+      Events 140h w1 (folded)

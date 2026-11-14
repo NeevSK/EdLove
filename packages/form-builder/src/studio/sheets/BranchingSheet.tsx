@@ -89,7 +89,7 @@ export function BranchingSheet({
         </Pressable>
       </HStack>
 
-      <ScrollView className="mt-4 max-h-[460px] pb-6" showsVerticalScrollIndicator={false}>
+      <ScrollView className="mt-4 max-h-[460px] pb-6">
         <VStack className="gap-5">
           {/* Active Jump Rules */}
           <VStack className="gap-2">

@@ -22,9 +22,13 @@ describe('entry shell service recovery', () => {
     );
   });
 
-  it('provides and renders the shared FAB contract for registered workspace actions', () => {
+  it('provides the shared FAB contract, drawn by the rooms shell for every room', () => {
     expect(entryShell).toContain('<FABProvider>');
-    expect(entryShell).toContain('<LotusPetalFAB currentTab={getCurrentFabTab(pathname)} />');
+    const tabsLayout = readFileSync(
+      resolve(import.meta.dirname, '../../../app/(tabs)/_layout.tsx'),
+      'utf8',
+    );
+    expect(tabsLayout).toContain('<RoomFab');
   });
 
   it('registers development diagnostics routes and persists the first shell frame marker', () => {

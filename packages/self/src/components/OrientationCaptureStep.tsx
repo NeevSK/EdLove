@@ -230,7 +230,6 @@ export const OrientationCaptureStep = ({
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ padding: 24 }}
-        showsVerticalScrollIndicator={false}
       >
         {/* Header */}
         <Animated.View layout={LinearTransition} entering={FadeIn.duration(600)}>

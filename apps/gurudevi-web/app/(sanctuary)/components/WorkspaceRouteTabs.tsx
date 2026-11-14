@@ -1,12 +1,16 @@
 'use client';
 
 import type { WorkbenchTaskDescriptor } from '@repo/core/types';
-import { resolveTemporalCoordinates, resolveTemporalIntent, toIsoDate } from '@repo/core/logic/workbench';
+import {
+  resolveTemporalCoordinates,
+  resolveTemporalIntent,
+  toIsoDate,
+} from '@repo/core/logic/workbench';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
-import { WORKSPACE_FEATURES } from '../workspace/workspaceFeatureRegistry';
+import { WORKSPACE_FEATURES } from '../workspace/workspaceFeatures';
 import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
 import type { QuickAccessItem } from './QuickAccessRail';
 import { TaskStrip } from './TaskStrip';
@@ -34,9 +38,10 @@ export function WorkspaceRouteTabs({
   );
   const workbench = useDomainWorkbench('workspace', { usageScope });
   const today = toIsoDate(new Date());
-  const selectedDate = workbench.state.temporalHorizon?.anchor.kind === 'date'
-    ? workbench.state.temporalHorizon.anchor.date
-    : today;
+  const selectedDate =
+    workbench.state.temporalHorizon?.anchor.kind === 'date'
+      ? workbench.state.temporalHorizon.anchor.date
+      : today;
   const coordinates = resolveTemporalCoordinates(selectedDate, { domain: 'workspace' });
 
   function selectDate(date: string) {

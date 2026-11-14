@@ -54,6 +54,7 @@ export { Dialog, type DialogProps } from './Dialog/Dialog';
 export { Group, type GroupProps } from './Group/Group';
 export { Icon, type IconProps } from './Icon/Icon';
 export { IconButton, type IconButtonProps } from './IconButton/IconButton';
+export { MoveControl, type MoveControlProps } from './Move/MoveControl';
 export { Launcher, type LauncherProps } from './Launcher/Launcher';
 export { Grid, type GridProps } from './Layout/Grid';
 export { Inline, type InlineProps, Stack, type StackProps } from './Layout/Layout';
@@ -75,6 +76,11 @@ export { Markdown, type MarkdownProps } from './Media/Markdown';
 export { Media, type MediaProps } from './Media/Media';
 export { RichTextEditor, type RichTextEditorProps } from './Media/RichTextEditor';
 export { Menu, type MenuProps } from './Menu/Menu';
+export { ContextMenu, type ContextMenuProps } from './ContextMenu/ContextMenu';
+export { SplitButton, type SplitButtonProps } from './SplitButton/SplitButton';
+export { TaskToolbar, type TaskToolbarProps } from './TaskToolbar/TaskToolbar';
+export { Autocomplete, type AutocompleteProps } from './Autocomplete/Autocomplete';
+export { MiniChart, type MiniChartProps } from './MiniChart/MiniChart';
 export { Perch, type PerchProps } from './Perch/Perch';
 export { Pebble, type PebbleProps } from './Pebble/Pebble';
 export { PebbleCornerSlot, type PebbleCornerSlotProps } from './Pebble/PebbleCornerSlot';
@@ -172,3 +178,5 @@ export {
   type ScrollAreaProps,
 } from './ScrollArea/ScrollArea';
 
+export { FloorView, type FloorViewProps } from './Floor/FloorView';
+export { PatternBody, type PatternProps, type PatternWords } from './Floor/patterns';

@@ -173,7 +173,7 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
             }}
           />
 
-          <ScrollView className="max-h-[500px]" showsVerticalScrollIndicator={false}>
+          <ScrollView className="max-h-[500px]">
             <View className="gap-4 pb-20">
               {joyMoments.map((moment, index) => {
                 const catInfo = categories.find((c) => c.id === moment.category) || categories[3];

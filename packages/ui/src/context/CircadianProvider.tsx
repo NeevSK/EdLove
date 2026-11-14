@@ -2,11 +2,12 @@ import { View } from '@repo/ui/primitives';
 import { resolveWorld } from '@repo/ui/theme';
 import { useSystemAccess, WorldContext } from '@repo/ui/theme/native';
 import { colors } from '@repo/ui/theme/Theme';
-import { worldPhaseTokens } from '@repo/ui/theme/worldBridge';
+import { worldPhaseTokens, worldToPhaseTokens } from '@repo/ui/theme/worldBridge';
 import { getTextOnBackground } from '@repo/ui/utils/colorUtils';
 import { VariableContextProvider } from 'nativewind';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
+import { useComfort } from './ComfortPreferences';
 import { useEnvironment } from './EnvironmentContext';
 
 type CircadianContextType = {
@@ -16,24 +17,40 @@ type CircadianContextType = {
 const CircadianContext = createContext<CircadianContextType | null>(null);
 
 export const CircadianProvider = ({ children }: { children: React.ReactNode }) => {
-  const { temporalPhase, isDark, worldId, enableLivingTheme, language } = useEnvironment();
-  const phase = enableLivingTheme ? temporalPhase : isDark ? 'night' : 'morning';
+  const { temporalPhase, isDark: darkByClock, worldId, enableLivingTheme, language } =
+    useEnvironment();
+  const phase = enableLivingTheme ? temporalPhase : darkByClock ? 'night' : 'morning';
 
   // The phone's contrast and transparency settings reach every world component.
-  const access = useSystemAccess();
+  // The person's own comfort joins them: control size, a simpler look, contrast always raised.
+  const system = useSystemAccess();
+  const comfort = useComfort();
+  const access = useMemo(
+    () => ({
+      ...system,
+      contrast: comfort.contrast === 'more' ? ('more' as const) : system.contrast,
+      size: comfort.size,
+      simple: comfort.simple,
+      sunlight: comfort.sunlight,
+    }),
+    [system, comfort.contrast, comfort.size, comfort.simple, comfort.sunlight],
+  );
   const world = useMemo(
-    () => resolveWorld(worldId, phase, isDark ? 'dark' : 'light', access),
-    [worldId, phase, isDark, access],
+    // Sunlight wears the light palette at a neutral hour (resolveWorld does the same).
+    () => resolveWorld(worldId, phase, darkByClock ? 'dark' : 'light', access),
+    [worldId, phase, darkByClock, access],
   );
 
   const circadianVars = useMemo(() => {
     // Sanctuary keeps its hand-tuned matrix on the clock, as before. Other worlds
     // follow the same phase as the world components, so both agree on screen.
-    const tokens = worldPhaseTokens(
-      worldId,
-      worldId === 'sanctuary' ? temporalPhase : phase,
-      isDark,
-    );
+    // In sunlight the older screens take the world's sunlit tokens too, light, so every screen
+    // reads outdoors, not only the ones already on the world kit.
+    const sun = comfort.sunlight;
+    const isDark = darkByClock && !sun;
+    const tokens = sun
+      ? worldToPhaseTokens(world.tokens)
+      : worldPhaseTokens(worldId, worldId === 'sanctuary' ? temporalPhase : phase, isDark);
     const w = world.tokens;
 
     // Semantic mappings
@@ -82,7 +99,7 @@ export const CircadianProvider = ({ children }: { children: React.ReactNode }) =
       '--w-success': w.success,
       '--w-focus': w.focus,
     };
-  }, [worldId, temporalPhase, phase, isDark, world]);
+  }, [worldId, temporalPhase, phase, darkByClock, world, comfort.sunlight]);
 
   const contextValue = useMemo(() => ({ phase: temporalPhase }), [temporalPhase]);
   const worldValue = useMemo(() => ({ world, language }), [world, language]);

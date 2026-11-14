@@ -161,6 +161,8 @@
     "preflight:build": "node scripts/preflight-build.mjs",
     "preinstall": "node -e \"if(process.env.npm_config_user_agent && !/pnpm/.test(process.env.npm_config_user_agent)) { console.error('\\u001b[31mFATAL: This project requires pnpm. Use \\'pnpm install\\' to continue.\\u001b[0m'); process.exit(1); }\"",
     "scene:shots": "tsx --tsconfig scripts/scene-shots/tsconfig.json scripts/scene-shots/index.tsx",
+    "scene:art": "tsx --tsconfig scripts/scene-shots/tsconfig.json scripts/scene-shots/art.tsx",
+    "scene:bake": "tsx --tsconfig scripts/scene-shots/tsconfig.json scripts/scene-shots/bake.tsx",
     "check:world": "node scripts/check-world.mjs",
     "check:ui-boundaries": "node scripts/check-ui-boundaries.mjs",
     "skills:audit": "node scripts/sync-upstream-skills.mjs --audit",

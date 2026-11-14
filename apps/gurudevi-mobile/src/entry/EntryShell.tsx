@@ -8,8 +8,21 @@ import { useUIStore } from '@repo/core/store';
 import { inMemoryHealthAdapter } from '@repo/self';
 import { LayoutLoopSentinel, MascotProvider } from '@repo/ui';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
-import { LotusPetalFAB } from '@repo/ui/components/LotusPetalFAB';
-import { CircadianProvider, EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
+import {
+  KeypadHost,
+  registerFloorPictures,
+  TypingBar,
+  toast,
+  ToastHost,
+  WorldMomentHost,
+  WorldStage,
+} from '@repo/ui/components/native';
+import {
+  CircadianProvider,
+  EnvironmentProvider,
+  ExternalLinkProvider,
+  FidelityProvider,
+} from '@repo/ui/context';
 import { FABProvider } from '@repo/ui/context/FABContext';
 import { Box, PortalProvider, Pressable, Text } from '@repo/ui/primitives';
 import { FeatureProvider, ToastProvider } from '@repo/ui/providers';
@@ -20,14 +33,19 @@ import { Stack, useGlobalSearchParams, usePathname } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { handoffNativeSplashAfterCommit, NATIVE_SPLASH_MAX_HOLD_MS } from '@/boot/nativeSplashService';
+import {
+  handoffNativeSplashAfterCommit,
+  NATIVE_SPLASH_MAX_HOLD_MS,
+} from '@/boot/nativeSplashService';
 import { OptionalStartupServices } from '@/boot/OptionalStartupServices';
 import {
   observeDevelopmentInteractions,
   observeDevelopmentTimings,
   recordDevelopmentTrace,
 } from '@/boot/startupTelemetry';
+import { PersonalPreferences } from '@/boot/PersonalPreferences';
 import { WorldFonts } from '@/boot/WorldFonts';
 import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 import { AppVersionGateOverlay } from '@/components/AppVersionGateOverlay';
@@ -36,7 +54,7 @@ import { GuestConversionBoundary } from '@/entry/GuestConversionBoundary';
 import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
 import { PasswordRecoveryBoundary } from '@/entry/PasswordRecoveryBoundary';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
-import { getCurrentFabTab } from '@/lib/navigation/fabTab';
+import { FLOOR_PICTURES, FLOOR_PICTURES_WIDE } from '@/generated/floorPictures';
 import { queryClient } from '@/lib/queryClient';
 import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
 import { GurudeviVerger } from '@/runtime/GurudeviVerger';
@@ -51,7 +69,27 @@ import { useSomaticShake } from '@/somatic/useSomaticShake';
  * Optional native services stay outside this route host so their failure cannot
  * turn a public launch into a blank surface.
  */
+// Small phones show each world's floor as a baked picture instead of drawing it.
+registerFloorPictures(FLOOR_PICTURES, FLOOR_PICTURES_WIDE);
+
 const readLocalGuestId = async () => (await readLocalGuestSession())?.id ?? null;
+
+/** Every app toast is drawn by the world's own toast host, in the world's surface and words. */
+function toWorldToast({
+  message,
+  type,
+  duration,
+}: {
+  message: string;
+  type: string;
+  duration: number;
+}) {
+  toast.show({
+    message,
+    tone: type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info',
+    durationMs: duration,
+  });
+}
 
 export function EntryShell() {
   const pathname = usePathname();
@@ -119,66 +157,86 @@ export function EntryShell() {
     >
       <ErrorBoundary name="EntryShell">
         <SafeAreaProvider>
-          <QueryClientProvider client={queryClient}>
-            <GlobalProvider readLocalGuestId={readLocalGuestId}>
-              <EnvironmentProvider>
-                <GurudeviVerger>
-                  <OptionalStartupServices phase="public-ready" />
-                  <WorldFonts />
-                  <CircadianProvider>
-                    <PortalProvider>
-                      <ToastProvider>
-                        <ExternalLinkProvider>
-                          <DeepLinkProvider>
-                            <AuthQueryCacheBoundary />
-                            <FABProvider>
-                              <MascotProvider config={fireflyMascotConfig}>
-                                <LayoutLoopSentinel name="RootShell" style={styles.root}>
-                                  <Box className="flex-1 bg-phase-canvas">
-                                    <AppVersionGateOverlay />
-                                    <GuestPersistenceNotice />
-                                      <GuestConversionBoundary />
-                                      <PasswordRecoveryBoundary />
-                                      <SessionRouteGate appServices={<AuthenticatedAppServices />}>
-                                        <Stack screenOptions={{ headerShown: false }}>
-                                          <Stack.Screen name="index" />
-                                          <Stack.Screen name="welcome" />
-                                          <Stack.Screen name="auth" />
-                                          <Stack.Screen name="account-recovery" />
-                                          <Stack.Screen name="onboarding" />
-                                          <Stack.Screen name="public-form/[slug]" />
-                                          <Stack.Screen name="verger-lab" />
-                                          <Stack.Screen name="verger-diagnostics" />
-                                          <Stack.Screen name="(tabs)" />
-                                          <Stack.Screen
-                                            name="(modal)"
-                                            options={{ presentation: 'modal' }}
-                                          />
-                                        </Stack>
-                                      </SessionRouteGate>
-                                    <LotusPetalFAB currentTab={getCurrentFabTab(pathname)} />
-                                    <SanctuaryPulseOverlay
-                                      visible={isBreathingOpen}
-                                      onDismiss={() => setBreathingOpen(false)}
-                                      isPlayfulMode={true}
-                                      onSessionComplete={(seconds) => {
-                                        void inMemoryHealthAdapter.recordMindfulSession(seconds);
-                                        sensoryFeedback.emit('success');
-                                      }}
-                                    />
-                                  </Box>
-                                </LayoutLoopSentinel>
-                              </MascotProvider>
-                            </FABProvider>
-                          </DeepLinkProvider>
-                        </ExternalLinkProvider>
-                      </ToastProvider>
-                    </PortalProvider>
-                  </CircadianProvider>
-                </GurudeviVerger>
-              </EnvironmentProvider>
-            </GlobalProvider>
-          </QueryClientProvider>
+          {/* One keyboard model for the app: fields stay in view, the typing bar rides on top. */}
+          <KeyboardProvider>
+            <QueryClientProvider client={queryClient}>
+              <GlobalProvider readLocalGuestId={readLocalGuestId}>
+                <EnvironmentProvider>
+                  <FidelityProvider>
+                    <GurudeviVerger>
+                      <OptionalStartupServices phase="public-ready" />
+                      <WorldFonts />
+                      <PersonalPreferences />
+                      <CircadianProvider>
+                        <PortalProvider>
+                          <ToastProvider delegate={toWorldToast}>
+                            <ExternalLinkProvider>
+                              <DeepLinkProvider>
+                                <AuthQueryCacheBoundary />
+                                <FABProvider>
+                                  <MascotProvider config={fireflyMascotConfig}>
+                                    <LayoutLoopSentinel name="RootShell" style={styles.root}>
+                                      {/* One floor under every screen: the world draws it, verger sets how richly. */}
+                                      <WorldStage>
+                                        <AppVersionGateOverlay />
+                                        <GuestPersistenceNotice />
+                                        <GuestConversionBoundary />
+                                        <PasswordRecoveryBoundary />
+                                        <SessionRouteGate
+                                          appServices={<AuthenticatedAppServices />}
+                                        >
+                                          <Stack
+                                            screenOptions={{
+                                              headerShown: false,
+                                              contentStyle: { backgroundColor: 'transparent' },
+                                            }}
+                                          >
+                                            <Stack.Screen name="index" />
+                                            <Stack.Screen name="welcome" />
+                                            <Stack.Screen name="auth" />
+                                            <Stack.Screen name="account-recovery" />
+                                            <Stack.Screen name="onboarding" />
+                                            <Stack.Screen name="public-form/[slug]" />
+                                            <Stack.Screen name="verger-lab" />
+                                            <Stack.Screen name="verger-diagnostics" />
+                                            <Stack.Screen name="(tabs)" />
+                                            <Stack.Screen
+                                              name="(modal)"
+                                              options={{ presentation: 'modal' }}
+                                            />
+                                          </Stack>
+                                        </SessionRouteGate>
+                                        <SanctuaryPulseOverlay
+                                          visible={isBreathingOpen}
+                                          onDismiss={() => setBreathingOpen(false)}
+                                          isPlayfulMode={true}
+                                          onSessionComplete={(seconds) => {
+                                            void inMemoryHealthAdapter.recordMindfulSession(
+                                              seconds,
+                                            );
+                                            sensoryFeedback.emit('success');
+                                          }}
+                                        />
+                                        <WorldMomentHost />
+                                        <ToastHost bottomOffset={120} />
+                                        {/* Typing: our keypad for numbers, and the bar above the phone's keyboard. */}
+                                        <KeypadHost />
+                                        <TypingBar />
+                                      </WorldStage>
+                                    </LayoutLoopSentinel>
+                                  </MascotProvider>
+                                </FABProvider>
+                              </DeepLinkProvider>
+                            </ExternalLinkProvider>
+                          </ToastProvider>
+                        </PortalProvider>
+                      </CircadianProvider>
+                    </GurudeviVerger>
+                  </FidelityProvider>
+                </EnvironmentProvider>
+              </GlobalProvider>
+            </QueryClientProvider>
+          </KeyboardProvider>
         </SafeAreaProvider>
       </ErrorBoundary>
     </GestureHandlerRootView>

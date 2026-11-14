@@ -856,7 +856,7 @@
 /* --------------------------------------------------------------------------
    RESPONSIVE LAYOUT ENGINE (Mobile, Tablet, Desktop)
    -------------------------------------------------------------------------- */
-@media (max-width: 640px) {
+@media (max-width: 47.99rem) {
   .fullBarContainer {
     padding: 0.45rem 0.55rem;
     gap: 0.35rem;
@@ -913,7 +913,7 @@
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 47.99rem) {
   .fullBarContainer {
     padding: 0.35rem 0.45rem;
   }

@@ -69,7 +69,7 @@ export function NegentropyHubModal({ isOpen, onClose }: NegentropyHubModalProps)
           </Pressable>
         </HStack>
 
-        <ScrollView className="max-h-[60vh]" showsVerticalScrollIndicator={false}>
+        <ScrollView className="max-h-[60vh]">
           {/* Balance & Daily Quota Card */}
           <Box
             className="rounded-2xl p-5 mb-4 border"

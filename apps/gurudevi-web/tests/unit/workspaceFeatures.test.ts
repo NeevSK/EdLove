@@ -5,9 +5,9 @@ import {
   getWorkspaceOverviewPosture,
   isPracticeAvailableForRole,
   WORKSPACE_FEATURES,
-} from '../../app/(sanctuary)/workspace/workspaceFeatureRegistry';
+} from '../../app/(sanctuary)/workspace/workspaceFeatures';
 
-describe('workspaceFeatureRegistry (G1)', () => {
+describe('workspace features from the catalog (G1)', () => {
   it('returns all features when roleFilter is "all"', () => {
     const filtered = filterWorkspaceFeatures(WORKSPACE_FEATURES, 'all');
     expect(filtered.length).toBe(WORKSPACE_FEATURES.length);
@@ -23,7 +23,8 @@ describe('workspaceFeatureRegistry (G1)', () => {
   });
 
   it('contains workspace features including submissions, climate, and tuition', () => {
-    expect(WORKSPACE_FEATURES.length).toBe(18);
+    // Workforce is in development in the catalog, so the web does not list it yet.
+    expect(WORKSPACE_FEATURES.length).toBe(17);
     expect(WORKSPACE_FEATURES.find((f) => f.id === 'submissions')).toBeDefined();
     expect(WORKSPACE_FEATURES.find((f) => f.id === 'climate')).toBeDefined();
     expect(WORKSPACE_FEATURES.find((f) => f.id === 'tuition')).toBeDefined();

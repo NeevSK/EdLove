@@ -222,7 +222,11 @@
     "grade": "Grade",
     "platform": "Platform",
     "class": "Class",
-    "school": "School"
+    "school": "School",
+    "learning": "Learning",
+    "family": "Family",
+    "institute": "Institute",
+    "workspace": "Workspace"
   },
   "self": {
     "goodMorning": "Good Morning!",

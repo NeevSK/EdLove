@@ -1,4 +1,5 @@
 import { defineFeatureLifecycle } from '@repo/core/logic/registry/domainEntry';
+import { TIMELESS } from '@repo/core/logic/registry/timeProfile';
 import type { DomainFeature } from '@repo/core/types';
 
 const REGISTRY_LIFECYCLE = defineFeatureLifecycle({
@@ -15,6 +16,8 @@ export const LIBRARY_REGISTRY: Record<string, DomainFeature> = {
     ownerPackage: 'library',
     defaultZone: 'work',
     defaultOrder: 10,
+    floor: { group: 'shelves', shape: 'card' },
+    time: TIMELESS,
     label: 'The Archive',
     description: 'Personal and shared knowledge repositories',
     citizenshipRequired: 3, // Wanderers can have local archives
@@ -60,6 +63,8 @@ export const LIBRARY_REGISTRY: Record<string, DomainFeature> = {
     ownerPackage: 'library',
     defaultZone: 'work',
     defaultOrder: 20,
+    floor: { group: 'shelves', shape: 'card' },
+    time: TIMELESS,
     label: 'Resource Hub',
     description: 'Educational materials, curriculum, and shared tools',
     citizenshipRequired: 3,
@@ -75,8 +80,10 @@ export const LIBRARY_REGISTRY: Record<string, DomainFeature> = {
     id: 'curator',
     surfaceId: 'curator-studio',
     ownerPackage: 'library',
-    defaultZone: 'institution',
+    defaultZone: 'work',
     defaultOrder: 30,
+    floor: { group: 'shelves', shape: 'card' },
+    time: TIMELESS,
     label: 'Curator Studio',
     description: 'Manage school-wide resources and library collections',
     citizenshipRequired: 2, // 2nd Class

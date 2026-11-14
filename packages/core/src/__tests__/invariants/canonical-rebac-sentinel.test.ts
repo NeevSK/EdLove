@@ -77,8 +77,6 @@ describe('Canonical ReBAC & Omnichannel Invariant Sentinel', () => {
   describe('Invariants: Omnichannel Affordances', () => {
     it('validates a complete omnichannel door descriptor', () => {
       const descriptor = {
-        web: true,
-        mobile: true,
         whatsapp: {
           intent: 'attendance_voice_draft',
           requiresApproval: true,
@@ -97,10 +95,10 @@ describe('Canonical ReBAC & Omnichannel Invariant Sentinel', () => {
       }
     });
 
-    it('defaults web and mobile to true when omitted', () => {
-      const parsed = ChannelAffordanceSchema.parse({});
-      expect(parsed.web).toBe(true);
-      expect(parsed.mobile).toBe(true);
+    it('leaves web and phone support to the entry (webSupport/mobileSupport), said once', () => {
+      const parsed = ChannelAffordanceSchema.parse({ web: false, mobile: false });
+      expect(parsed).not.toHaveProperty('web');
+      expect(parsed).not.toHaveProperty('mobile');
       expect(parsed.whatsapp).toBeUndefined();
       expect(parsed.agent_mcp).toBeUndefined();
     });

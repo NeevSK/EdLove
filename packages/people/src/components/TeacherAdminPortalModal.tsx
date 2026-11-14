@@ -25,7 +25,6 @@ export default function TeacherAdminPortalModal({
     <Dialog open={visible} onClose={onClose} title={title} description="SOVEREIGN MANAGEMENT">
       <View className="flex-1">
         <ScrollView
-          showsVerticalScrollIndicator={false}
           contentContainerStyle={{ padding: 0, paddingBottom: 60 }}
         >
           <TeacherAdminWidget onAction={onAction} />

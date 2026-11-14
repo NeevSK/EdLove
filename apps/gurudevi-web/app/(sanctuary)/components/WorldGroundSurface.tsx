@@ -1,8 +1,8 @@
 'use client';
 
 import type { SceneGroundMode, WorkspaceWallpaper } from '@repo/core/types';
-import { experienceOf } from '@repo/core/verger';
-import { DEFAULT_WORLD, isWorldId, phaseTokens, resolveWorld, WORLDS } from '@repo/ui/theme';
+import { experienceOf, wallpaperAllowed } from '@repo/core/verger';
+import { DEFAULT_WORLD, groundLimitsOf, isWorldId, phaseTokens, WORLDS } from '@repo/ui/theme';
 import {
   daylightAt,
   landscapeColours,
@@ -13,6 +13,7 @@ import {
 import React, { useEffect, useMemo, useState } from 'react';
 import { useGurudeviView } from '../../../lib/runtime/useGurudeviView';
 import { useWebFidelity } from '../../../lib/runtime/webFidelity';
+import { useWorldTheme } from '../../../lib/theme/useWorldTheme';
 import { SceneImageLayer } from './SceneImageLayer';
 import { WorldSceneSvg } from './WorldSceneSvg';
 
@@ -28,6 +29,8 @@ export interface WorldGroundSurfaceProps {
   isCrossFading?: boolean;
   fixed?: boolean;
   pure?: boolean;
+  /** A calmer ground (reading and work screens): the photo shows half as strongly. */
+  dim?: boolean;
   customScene?: React.ReactNode;
   customSvg?: React.ReactNode;
   children?: React.ReactNode;
@@ -36,7 +39,7 @@ export interface WorldGroundSurfaceProps {
 }
 
 export function WorldGroundSurface({
-  groundMode = 'live',
+  groundMode: requestedMode = 'live',
   worldId = 'sanctuary',
   room = 'self',
   wallpaper,
@@ -44,12 +47,22 @@ export function WorldGroundSurface({
   isCrossFading = false,
   fixed = true,
   pure = false,
+  dim = false,
   customScene,
   customSvg,
   children,
   className,
   style,
 }: Readonly<WorldGroundSurfaceProps>) {
+  // Verger decides what the scene may spend, as `useScene` does on the phone.
+  const view = useGurudeviView();
+  // A photo verger will not load (low tier, power saver, metered data) would leave the floor
+  // bare: the world's quiet paper stands in for it instead.
+  const photoShown = view !== null && wallpaperAllowed(view.experience, view.reading);
+  const groundMode: SceneGroundMode =
+    requestedMode === 'image' && !photoShown ? 'quiet' : requestedMode;
+  const { resolvedMode } = useWorldTheme();
+
   // Clock state for live diurnal updates
   const [minute, setMinute] = useState<number>(12 * 60);
 
@@ -76,9 +89,12 @@ export function WorldGroundSurface({
 
   const worldDef = WORLDS[isWorldId(worldId) ? worldId : DEFAULT_WORLD];
   const effectiveGlow = worldDef.palette.light.glow;
+  // The world, not the photo, says how far a photo may show through and keep words readable.
+  const photoLimit = useMemo(
+    () => groundLimitsOf(worldDef.palette[resolvedMode]).photoOpacity,
+    [worldDef, resolvedMode],
+  );
 
-  // Verger decides what the scene may spend, as `useScene` does on the phone.
-  const view = useGurudeviView();
   const fidelity = useWebFidelity();
   const budget = useMemo(
     () => view?.experience ?? experienceOf(UNGOVERNED, { fidelity }),
@@ -120,6 +136,7 @@ export function WorldGroundSurface({
         aria-hidden="true"
         className={className}
         data-ground-surface="image"
+        data-requested-ground={requestedMode}
         data-world={worldId}
         style={{
           position: fixed ? 'fixed' : 'absolute',
@@ -135,6 +152,7 @@ export function WorldGroundSurface({
         <SceneImageLayer
           fixed={fixed}
           isCrossFading={isCrossFading}
+          maxOpacity={dim ? photoLimit / 2 : photoLimit}
           nextWallpaper={nextWallpaper}
           pure={pure}
           wallpaper={wallpaper}
@@ -146,12 +164,13 @@ export function WorldGroundSurface({
 
   // A quiet ground is the world's own paper, without a scene.
   if (groundMode === 'quiet') {
-    const solidColor = phaseTokens(worldDef.palette.light, 'light', 'morning').ground;
+    const solidColor = phaseTokens(worldDef.palette[resolvedMode], resolvedMode, 'morning').ground;
     return (
       <div
         aria-hidden="true"
         className={className}
         data-ground-surface={groundMode}
+        data-requested-ground={requestedMode}
         data-world={worldId}
         style={{
           position: fixed ? 'fixed' : 'absolute',

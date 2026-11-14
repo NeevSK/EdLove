@@ -3,10 +3,11 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '../../../lib/host-routing';
-import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { resolveSanctuaryDevSession } from '../../../lib/sanctuary/devSession';
+import { resolveRoomPresentation } from '../../../lib/sanctuary/roomAccess';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
+import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { SanctuaryShell } from '../components/SanctuaryShell';
 import { WorkspaceFloor } from './WorkspaceFloor';
 
@@ -119,9 +120,12 @@ export default async function WorkspacePage({
       />
     );
 
+  const presentation = await resolveRoomPresentation(supabase, entry, 'workspace');
+
   return (
     <SanctuaryShell displayName={entry.displayName} navigationPrefix="">
       <WorkspaceFloor
+        presentation={presentation}
         key={entry.accountId}
         mode="account"
         displayName={entry.displayName}

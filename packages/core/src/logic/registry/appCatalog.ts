@@ -3,6 +3,7 @@ import {
   DomainEntrySchema,
   type TabDomain,
 } from '@repo/core/logic/registry/domainEntry';
+import { declaredCapability, platformSupportOf } from '@repo/core/logic/registry/capabilityManifest';
 import {
   FEATURE_FLAG_MANIFEST,
   validateFeatureFlagManifest,
@@ -28,6 +29,19 @@ function validateCatalogEntry(key: string, entry: DomainEntry): void {
 
   if (key !== entry.id) {
     throw new Error(`AppCatalog: registry key "${key}" must match entry id "${entry.id}".`);
+  }
+
+  // Web/phone support is said once: by the capability when the entry names one.
+  if (entry.capabilityId && declaredCapability(entry.capabilityId)) {
+    const declared = platformSupportOf(entry.capabilityId);
+    if (
+      declared.webSupport !== entry.webSupport ||
+      declared.mobileSupport !== entry.mobileSupport
+    ) {
+      throw new Error(
+        `AppCatalog: "${entry.id}" restates where it runs; use ...platformSupportOf('${entry.capabilityId}').`,
+      );
+    }
   }
 
   if (entry.state === 'beta' && !entry.flagKey) {

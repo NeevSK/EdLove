@@ -1,0 +1,21 @@
+workspace: compact portrait, dense, cost 118/400
+  Today 104h w3
+    Today [lamp] 104h w3
+      Daily Attendance 73h w3
+  Work 616h w4
+    Teaching and learning [shelf] 213h w4
+      Timetable 182h w1
+      Assignment Submissions 182h w4
+      Gradebook & Marks 182h w1
+      Curriculum & Lesson Plans 182h w1
+    Daily running [stream] 403h w1 (below)
+      QR Scanner 182h w1 (below)
+      Climate Sensing 182h w1 (below)
+  School 1178h w1.2 (below)
+    Notices and messages [stream] 775h w1 (below)
+      Guardian Portal 182h w1 (below)
+      Circulars & Notices 364h w1 (below)
+      Editorial Commons 182h w1 (below)
+    School [stream] 403h w1.2 (below)
+      Principal Command Center 182h w1.2 (below)
+      Events 182h w1 (below)

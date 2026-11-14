@@ -4,6 +4,7 @@
  * Standardized to October 29+ UI Kit architecture.
  */
 
+import { useDraft } from '@repo/ui/context/Drafts';
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import { useGratitude } from '@repo/self/hooks/useGratitude';
@@ -37,7 +38,8 @@ export default function GratitudeGlimmers({
   );
 
   const [showForm, setShowForm] = useState(false);
-  const [content, setContent] = useState('');
+  // Half-written gratitude is kept through interruptions, for this person only.
+  const { value: content, setValue: setContent } = useDraft('self:gratitude');
   const [category, setCategory] = useState<'student-said' | 'colleague-kindness' | 'personal-win'>(
     'student-said',
   );
@@ -163,7 +165,7 @@ export default function GratitudeGlimmers({
             }}
           />
 
-          <ScrollView className="max-h-[500px]" showsVerticalScrollIndicator={false}>
+          <ScrollView className="max-h-[500px]">
             <View className="gap-4 pb-20">
               {entries.map((entry, index) => {
                 const cat = categories.find((c) => c.id === entry.category);
