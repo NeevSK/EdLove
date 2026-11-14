@@ -1,12 +1,14 @@
 import { usePermissions, usePerspectiveSwitch } from '@repo/core/logic';
-import { workRoomPlanOf } from '@repo/core/logic/floor';
+import { roomCatalogOf } from '@repo/core/logic/floor';
 import { isLocalGuestSessionId } from '@repo/core/native/localGuestSession';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { EmptyState, ErrorState, WaitingSign } from '@repo/ui/components/native';
-import { Redirect } from 'expo-router';
+import { Card, EmptyState, ErrorState, WaitingSign } from '@repo/ui/components/native';
+import { type Href, Redirect, useRouter } from 'expo-router';
+import { useMemo } from 'react';
 import { View } from 'react-native';
-import { WorkFloor } from '@/components/workspace/WorkFloor';
+import { APP_CATALOG } from '@/boot/registerAppCatalog';
+import { RoomFloor } from '@/components/floor/RoomFloor';
 import { resolveWorkspaceRoute } from '@/lib/workspace/routeResolution';
 
 export { RouteErrorBoundary as ErrorBoundary };
@@ -22,6 +24,17 @@ const STATE = {
 export default function WorkspaceDispatcher() {
   const { context } = usePermissions();
   const { activePerspective } = usePerspectiveSwitch();
+  const router = useRouter();
+  const capacity = context.activeBond?.capacity ?? context.primaryCapacity;
+  // Opt-in: the floor engine draws the work room from its catalog. Off by
+  // default, so the room below stays as it was until it is switched on.
+  const catalog = useMemo(
+    () =>
+      process.env.EXPO_PUBLIC_WORK_FLOOR === '1'
+        ? roomCatalogOf(APP_CATALOG, 'workspace', capacity, 'mobile')
+        : null,
+    [capacity],
+  );
   const loading = useCedarDecisionStore((state) => state.isLoading);
   const permissionError = useCedarDecisionStore((state) => state.error);
   const permissionSnapshotLoaded = useCedarDecisionStore((state) => state.snapshotLoaded);
@@ -92,15 +105,17 @@ export default function WorkspaceDispatcher() {
     );
   }
 
-  // Opt-in: the floor engine draws the role's work room. Off by default, so
-  // the room below stays exactly as it was until it is switched on.
-  const workPlan =
-    process.env.EXPO_PUBLIC_WORK_FLOOR === '1'
-      ? workRoomPlanOf(context.activeBond?.capacity ?? context.primaryCapacity)
-      : undefined;
-  if (workPlan) {
+  if (catalog) {
     return (
-      <WorkFloor plan={workPlan} userId={context.userId} perspectiveId={activePerspective.id} />
+      <RoomFloor
+        catalog={catalog}
+        userId={context.userId}
+        perspectiveId={activePerspective.id}
+        renderPiece={(p) => {
+          const to = catalog.features.find((f) => f.id === p.id)?.routes?.mobile;
+          return <Card title={p.label} onPress={to ? () => router.push(to as Href) : undefined} />;
+        }}
+      />
     );
   }
 

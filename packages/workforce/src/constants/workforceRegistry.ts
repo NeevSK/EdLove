@@ -1,4 +1,5 @@
 import { defineFeatureLifecycle } from '@repo/core/logic/registry/domainEntry';
+import { timeProfileFromCapabilities } from '@repo/core/logic/registry/timeProfile';
 import type { DomainFeature } from '@repo/core/types';
 
 const WORKFORCE_BETA_LIFECYCLE = defineFeatureLifecycle({
@@ -16,7 +17,12 @@ export const WORKFORCE_REGISTRY: Record<string, DomainFeature> = {
     ownerPackage: 'workforce',
     defaultZone: 'institution',
     defaultOrder: 150,
-    label: 'Workforce Management',
+    icon: '💼',
+    routes: { web: '/workspace/workforce' },
+    roles: ['teacher', 'principal'],
+    floor: { group: 'institutional', shape: 'card' },
+    time: timeProfileFromCapabilities({ hasReview: true, hasPlan: true }, 'current', 'sealed'),
+    label: 'Workforce & Leave',
     description: 'Institutional workforce planning and operations',
     citizenshipRequired: 1,
     mobileSupport: true,

@@ -25,6 +25,11 @@
       "import": "./src/api.ts",
       "default": "./src/api.ts"
     },
+    "./constants/*": {
+      "types": "./src/constants/*.ts",
+      "import": "./src/constants/*.ts",
+      "default": "./src/constants/*.ts"
+    },
     "./*": {
       "types": "./src/*.ts",
       "import": "./src/*.js",

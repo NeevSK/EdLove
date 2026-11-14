@@ -30,6 +30,22 @@ const EXPECTED_DOMAIN_IDS = [
   'workspace-shell',
   'workforce',
   'accounting',
+  // Workspace features (moved from the web's own list, 14 Nov 2026)
+  'attendance',
+  'qr_scanner',
+  'timetable',
+  'submissions',
+  'climate',
+  'gradebook',
+  'plan',
+  'claim',
+  'editorial',
+  'notices',
+  'tuition',
+  'kiosk',
+  'badges',
+  'school',
+  'events',
 ] as const;
 
 describe('production AppCatalog boot contract', () => {

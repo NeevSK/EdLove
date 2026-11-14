@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { layoutRoomFloor } from './roomFloor';
-import { ROOM_PLANS } from './rooms';
+import type { DomainEntry } from '../registry/domainEntry';
+import { roomCatalogOf } from './rooms';
 import type { FloorFit } from './types';
 
 const fit: FloorFit = {
@@ -10,9 +11,41 @@ const fit: FloorFit = {
   interactive: true,
   cost: { views: 8, pictures: 0, moves: false },
 };
-const plan = ROOM_PLANS['community:everyone']!;
+const entry = (id: string, group: string, extra: Partial<DomainEntry> = {}): DomainEntry => ({
+  id,
+  label: id,
+  ownerPackage: 'community',
+  mobileSupport: true,
+  webSupport: true,
+  state: 'live',
+  lifecycle: {
+    owner: 'community',
+    createdAt: '2026-07-26',
+    reviewAt: '2026-09-30',
+    permanentJustification: 'test',
+  },
+  citizenshipRequired: 3,
+  capabilityRequirement: { action: 'read', subject: 'CommunityFeed' },
+  tabDomain: 'community',
+  surfaceId: id,
+  defaultOrder: 10,
+  analyticsKey: `community.${id}`,
+  floor: { group, shape: 'card' },
+  ...extra,
+});
+const catalog = roomCatalogOf(
+  [
+    entry('hearth', 'news', { floor: { group: 'news', shape: 'list', lit: true } }),
+    entry('circles', 'groups'),
+    entry('messages', 'talk'),
+    entry('trust', 'news'),
+  ],
+  'community',
+  'student',
+  'mobile',
+);
 const base = {
-  plan,
+  catalog,
   fitOf: () => fit,
   space: { width: 390, height: 800, fontScale: 1, chrome: [] },
   controls: { detail: 'rich' as const, motion: 'full' as const },

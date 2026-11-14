@@ -15,10 +15,10 @@
       "import": "./src/machines/*.ts",
       "default": "./src/machines/*.ts"
     },
-    "./deskPort": {
-      "types": "./src/deskPort.ts",
-      "import": "./src/deskPort.ts",
-      "default": "./src/deskPort.ts"
+    "./constants/*": {
+      "types": "./src/constants/*.ts",
+      "import": "./src/constants/*.ts",
+      "default": "./src/constants/*.ts"
     },
     "./package.json": "./package.json"
   },

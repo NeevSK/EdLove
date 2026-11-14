@@ -1,4 +1,5 @@
-import { layoutRoomFloor, ROOM_PLANS } from '@repo/core/logic/floor';
+import { layoutRoomFloor } from '@repo/core/logic/floor';
+import { sampleRoom } from '@repo/core/logic/floor/__fixtures__/sampleRooms';
 import type { ReactElement } from 'react';
 import { describe, expect, it } from 'vitest';
 import { worldFloorBias } from '../../../../theme/floorBias';
@@ -13,7 +14,7 @@ const { renderToStaticMarkup } = (await import('react-dom/server' as string)) as
 
 const room = (world: Parameters<typeof worldFloorBias>[0]) =>
   layoutRoomFloor({
-    plan: ROOM_PLANS['community:everyone']!,
+    catalog: sampleRoom('community'),
     fitOf: (kit) => floorFitOf(kit as KitPiece, 'web'),
     space: { width: 1280, height: 900, fontScale: 1, chrome: [] },
     controls: { detail: 'rich', motion: 'full' },

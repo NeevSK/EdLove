@@ -1,5 +1,7 @@
 import type { FeaturePresentationMode } from '@repo/core/logic/permissions/featurePresentation';
-import type { WorkspaceLayout, AreaId } from '@repo/core/types';
+import type { DomainEntry, TabDomain } from '@repo/core/logic/registry/domainEntry';
+import { catalogRoleOf } from '@repo/core/logic/workspace/roomName';
+import type { WorkspaceLayout } from '@repo/core/types';
 import { groupsWithSavedOrder, piecesFromLayout } from './bridge';
 import type { FloorConfig } from './config';
 import type { FloorInput } from './layout';
@@ -9,242 +11,137 @@ import type {
   FloorFit,
   FloorSpace,
   GroupInput,
-  TimeBand,
   WorldFloorBias,
 } from './types';
 
 /**
- * One feature's default place on a room's floor. `kit` names the component
- * that draws it (a key of the kit's floor-fit table), so the size numbers live
- * once, in the kit. These are opinionated defaults: the person's saved layout
- * moves, hides and pins on top of them, and SanctuaryFeature decides presence.
+ * Each room's floor reads its features from the room's catalog (the
+ * AppCatalog entries for that tab). The catalog says what exists, for which
+ * roles, and where each feature starts; SanctuaryFeature says whether the
+ * person may have it; the person's saved arrangement moves, hides and pins.
+ * The only thing kept per room here is the floor's zones and groups.
  */
-export interface RoomSurfacePlan {
-  id: string;
-  label: string;
-  group: string;
-  area: AreaId;
-  kit: string;
-  time?: TimeBand;
-  task?: boolean;
-  lit?: boolean;
-  needsAttention?: boolean;
-  roleImportance?: number;
-}
-
-export interface RoomPlan {
-  /** Room key plus the capacity that sees it, e.g. "workspace:teacher". */
-  id: string;
-  room: string;
-  capacity: string;
-  areas: readonly AreaInput[];
+export interface RoomFloorParts {
+  zones: readonly AreaInput[];
   groups: readonly GroupInput[];
-  surfaces: readonly RoomSurfacePlan[];
 }
 
 const TODAY: AreaInput = { id: 'today', label: 'Today', smart: true };
-const WORK: AreaInput = { id: 'work', label: 'Work' };
-const INSTITUTION: AreaInput = { id: 'institution', label: 'School' };
-const OUTLOOK: AreaInput = { id: 'outlook', label: 'Ahead' };
 
-const s = (
-  id: string,
-  label: string,
-  group: string,
-  area: AreaId,
-  kit: string,
-  extra: Partial<RoomSurfacePlan> = {},
-): RoomSurfacePlan => ({ id, label, group, area, kit, ...extra });
-
-/** Default floors for the work room, one per capacity (Classroom, Learning, Family, School). */
-export const ROOM_PLANS: Record<string, RoomPlan> = {
-  'workspace:teacher': {
-    id: 'workspace:teacher',
-    room: 'workspace',
-    capacity: 'teacher',
-    areas: [TODAY, WORK, INSTITUTION],
-    groups: [
-      { id: 'daily', label: 'Today', area: 'today', job: 'act' },
-      { id: 'teach', label: 'Teaching', area: 'work', job: 'browse' },
-      { id: 'tools', label: 'Tools', area: 'work', job: 'glance' },
-      { id: 'school', label: 'School', area: 'institution', job: 'glance' },
-    ],
-    surfaces: [
-      s('attendance', 'Attendance', 'daily', 'today', 'row', {
-        time: 'now',
-        task: true,
-        lit: true,
-      }),
-      s('marking', 'Marking', 'daily', 'today', 'row', { time: 'later', needsAttention: true }),
-      s('next-lesson', 'Next lesson', 'daily', 'today', 'card', { time: 'now' }),
-      s('classes', 'My classes', 'teach', 'work', 'rail'),
-      s('lessons', 'Lessons', 'teach', 'work', 'card'),
-      s('assignments', 'Assignments', 'teach', 'work', 'card', { time: 'later' }),
-      s('question-bank', 'Question bank', 'tools', 'work', 'card'),
-      s('notes', 'Notes', 'tools', 'work', 'card'),
-      s('timetable', 'Timetable', 'tools', 'work', 'card'),
-      s('messages', 'Messages', 'tools', 'work', 'card', { needsAttention: true }),
-      s('announcements', 'Announcements', 'school', 'institution', 'list'),
-      s('events', 'Events', 'school', 'institution', 'card'),
-    ],
-  },
-  'workspace:student': {
-    id: 'workspace:student',
-    room: 'workspace',
-    capacity: 'student',
-    areas: [TODAY, WORK, OUTLOOK],
-    groups: [
-      { id: 'daily', label: 'Today', area: 'today', job: 'act' },
-      { id: 'learn', label: 'Learning', area: 'work', job: 'browse' },
-      { id: 'practice', label: 'Practice', area: 'work', job: 'glance' },
-      { id: 'ahead', label: 'Ahead', area: 'outlook', job: 'track' },
-    ],
-    surfaces: [
-      s('homework', 'Homework due', 'daily', 'today', 'row', {
-        time: 'now',
-        task: true,
-        lit: true,
-      }),
-      s('next-class', 'Next class', 'daily', 'today', 'card', { time: 'now' }),
-      s('subjects', 'Subjects', 'learn', 'work', 'rail'),
-      s('library', 'Library', 'learn', 'work', 'card'),
-      s('quizzes', 'Quizzes', 'practice', 'work', 'card'),
-      s('flashcards', 'Flashcards', 'practice', 'work', 'card'),
-      s('results', 'Results', 'ahead', 'outlook', 'card', { time: 'later' }),
-      s('exams', 'Exams', 'ahead', 'outlook', 'card', { time: 'anytime' }),
-    ],
-  },
-  'workspace:guardian': {
-    id: 'workspace:guardian',
-    room: 'workspace',
-    capacity: 'guardian',
-    areas: [TODAY, WORK, INSTITUTION],
-    groups: [
-      { id: 'daily', label: 'Today', area: 'today', job: 'act' },
-      { id: 'family', label: 'Family', area: 'work', job: 'browse' },
-      { id: 'school', label: 'School', area: 'institution', job: 'glance' },
-    ],
-    surfaces: [
-      s('child-day', "Your child's day", 'daily', 'today', 'card', { time: 'now', lit: true }),
-      s('absences', 'Absences', 'daily', 'today', 'row', { needsAttention: true, task: true }),
-      s('fees', 'Fees', 'daily', 'today', 'row', { time: 'later' }),
-      s('children', 'Children', 'family', 'work', 'rail'),
-      s('progress', 'Progress', 'family', 'work', 'card'),
-      s('messages', 'Messages', 'family', 'work', 'card', { needsAttention: true }),
-      s('school-feed', 'School news', 'school', 'institution', 'list'),
-      s('events', 'Events', 'school', 'institution', 'card'),
-    ],
-  },
-  'workspace:principal': {
-    id: 'workspace:principal',
-    room: 'workspace',
-    capacity: 'principal',
-    areas: [TODAY, INSTITUTION, OUTLOOK],
-    groups: [
-      { id: 'daily', label: 'Today', area: 'today', job: 'act' },
-      { id: 'school', label: 'School', area: 'institution', job: 'glance' },
-      { id: 'sections', label: 'Sections', area: 'institution', job: 'browse' },
-      { id: 'ahead', label: 'Ahead', area: 'outlook', job: 'track' },
-    ],
-    surfaces: [
-      s('staff-absence', 'Staff away', 'daily', 'today', 'row', {
-        time: 'now',
-        task: true,
-        lit: true,
-      }),
-      s('approvals', 'Approvals', 'daily', 'today', 'list', { needsAttention: true, task: true }),
-      s('today-events', 'Today at school', 'daily', 'today', 'card', { time: 'now' }),
-      s('numbers', 'School numbers', 'school', 'institution', 'grid'),
-      s('reports', 'Reports', 'school', 'institution', 'card'),
-      s('sections', 'Sections', 'sections', 'institution', 'rail'),
-      s('term-plan', 'Term plan', 'ahead', 'outlook', 'card', { time: 'anytime' }),
-    ],
-  },
-};
-
-const PRIVATE: AreaInput = { id: 'private', label: 'Just you' };
-
-/** Self is everyone's own room; teachers and principals gain one more group. */
-function selfPlan(capacity: string): RoomPlan {
-  const work =
-    capacity === 'teacher'
-      ? [s('working', 'Working rhythm', 'work-life', 'private', 'card')]
-      : capacity === 'principal'
-        ? [s('leadership', 'Leadership focus', 'work-life', 'private', 'card')]
-        : [];
-  return {
-    id: `self:${capacity}`,
-    room: 'self',
-    capacity,
-    areas: [TODAY, PRIVATE],
+export const ROOM_FLOORS: Readonly<Record<TabDomain, RoomFloorParts>> = {
+  self: {
+    zones: [TODAY, { id: 'private', label: 'Just you' }],
     groups: [
       { id: 'today', label: 'Today', area: 'today', job: 'act' },
       { id: 'grow', label: 'Growing', area: 'private', job: 'glance' },
       { id: 'care', label: 'Care', area: 'private', job: 'glance' },
-      ...(work.length
-        ? [{ id: 'work-life', label: 'Work and you', area: 'private', job: 'glance' as const }]
-        : []),
+      { id: 'work-life', label: 'Work and you', area: 'private', job: 'glance' },
     ],
-    surfaces: [
-      s('pulse', 'Check in', 'today', 'today', 'card', { time: 'now', lit: true, task: true }),
-      s('journey', 'Your journey', 'grow', 'private', 'card'),
-      s('growth', 'Study goals', 'grow', 'private', 'card', { time: 'later' }),
-      s('care', 'Sleep and joy', 'care', 'private', 'card'),
-      s('reflection', 'Reflect', 'care', 'private', 'card'),
-      ...work,
+  },
+  workspace: {
+    zones: [TODAY, { id: 'work', label: 'Work' }, { id: 'institution', label: 'School' }],
+    groups: [
+      { id: 'today', label: 'Today', area: 'today', job: 'act' },
+      { id: 'academics', label: 'Teaching and learning', area: 'work', job: 'browse' },
+      { id: 'operations', label: 'Daily running', area: 'work', job: 'glance' },
+      { id: 'communications', label: 'Notices and messages', area: 'institution', job: 'glance' },
+      { id: 'institutional', label: 'School', area: 'institution', job: 'glance' },
     ],
+  },
+  community: {
+    zones: [TODAY, { id: 'work', label: 'Together' }],
+    groups: [
+      { id: 'news', label: 'New for you', area: 'today', job: 'glance' },
+      { id: 'talk', label: 'Talk', area: 'work', job: 'act' },
+      { id: 'groups', label: 'Groups', area: 'work', job: 'browse' },
+    ],
+  },
+  library: {
+    zones: [{ id: 'work', label: 'Shelves' }],
+    groups: [{ id: 'shelves', label: 'Shelves', area: 'work', job: 'browse' }],
+  },
+  profile: { zones: [], groups: [] },
+};
+
+/** One room's catalog as one role sees it on one platform. */
+export interface RoomCatalog {
+  room: TabDomain;
+  role: string;
+  zones: readonly AreaInput[];
+  groups: readonly GroupInput[];
+  /** Furniture: the entries with a floor place, in default order. */
+  features: readonly DomainEntry[];
+}
+
+export type CatalogPlatform = 'web' | 'mobile';
+
+/**
+ * Whether an entry is offered to this role (roles missing = every role).
+ * With no capacity at all, every entry is offered (the full room list).
+ */
+export function entryForRole(entry: DomainEntry, capacity: string | null | undefined): boolean {
+  if (!entry.roles || entry.common || !capacity) return true;
+  const role = catalogRoleOf(capacity);
+  return entry.roles.includes(role) || entry.roles.includes(capacity);
+}
+
+function onPlatform(entry: DomainEntry, platform: CatalogPlatform): boolean {
+  return platform === 'web' ? entry.webSupport : entry.mobileSupport;
+}
+
+/** A room's features for one role and platform, from the catalog. */
+export function roomFeatures(
+  catalog: Readonly<Record<string, DomainEntry>> | readonly DomainEntry[],
+  room: TabDomain,
+  capacity: string | null | undefined,
+  platform: CatalogPlatform,
+): DomainEntry[] {
+  const entries = Array.isArray(catalog) ? catalog : Object.values(catalog);
+  return entries
+    .filter(
+      (e) =>
+        e.tabDomain === room &&
+        e.floor &&
+        e.state !== 'development' &&
+        e.state !== 'deprecated' &&
+        onPlatform(e, platform) &&
+        entryForRole(e, capacity),
+    )
+    .sort((a, b) => a.defaultOrder - b.defaultOrder);
+}
+
+/** The room's catalog for one role: its zones, the groups in use, and its features. */
+export function roomCatalogOf(
+  catalog: Readonly<Record<string, DomainEntry>> | readonly DomainEntry[],
+  room: TabDomain,
+  capacity: string | null | undefined,
+  platform: CatalogPlatform,
+): RoomCatalog {
+  const features = roomFeatures(catalog, room, capacity, platform);
+  const parts = ROOM_FLOORS[room];
+  const used = new Set(features.map((f) => f.floor!.group));
+  const groups = parts.groups.filter((g) => used.has(g.id));
+  const zonesUsed = new Set(groups.map((g) => g.area));
+  return {
+    room,
+    role: catalogRoleOf(capacity),
+    zones: parts.zones.filter((z) => zonesUsed.has(z.id)),
+    groups,
+    features,
   };
 }
 
-for (const capacity of ['student', 'teacher', 'guardian', 'principal']) {
-  ROOM_PLANS[`self:${capacity}`] = selfPlan(capacity);
-}
-
-/** Community is the same room for every capacity: the school's square. */
-ROOM_PLANS['community:everyone'] = {
-  id: 'community:everyone',
-  room: 'community',
-  capacity: 'everyone',
-  areas: [TODAY, WORK, INSTITUTION],
-  groups: [
-    { id: 'news', label: 'New for you', area: 'today', job: 'glance' },
-    { id: 'talk', label: 'Talk', area: 'work', job: 'act' },
-    { id: 'groups', label: 'Groups', area: 'work', job: 'browse' },
-    { id: 'school', label: 'School', area: 'institution', job: 'glance' },
-  ],
-  surfaces: [
-    s('feed', 'Feed', 'news', 'today', 'list', { time: 'now', lit: true }),
-    s('chats', 'Chats', 'talk', 'work', 'row', { needsAttention: true }),
-    s('direct', 'Direct messages', 'talk', 'work', 'row'),
-    s('my-groups', 'Your groups', 'groups', 'work', 'rail'),
-    s('explore', 'Find groups', 'groups', 'work', 'card'),
-    s('announcements', 'Announcements', 'school', 'institution', 'list'),
-    s('forest', 'Forest', 'school', 'institution', 'card'),
-  ],
-};
-
-/** The plan for a room as one capacity sees it, when there is one. */
-export function roomPlanOf(
-  room: string,
-  capacity: string | null | undefined,
-): RoomPlan | undefined {
-  if (room === 'workspace') return workRoomPlanOf(capacity);
-  if (room === 'community') return ROOM_PLANS['community:everyone'];
-  if (room === 'self') {
-    const key =
-      ({ tutor: 'teacher', marker: 'teacher' } as Record<string, string>)[capacity ?? ''] ??
-      capacity;
-    return ROOM_PLANS[`self:${key}`] ?? ROOM_PLANS['self:student'];
-  }
-  return undefined;
+function zoneOf(entry: DomainEntry, parts: RoomFloorParts): string {
+  const group = parts.groups.find((g) => g.id === entry.floor?.group);
+  return entry.defaultZone ?? group?.area ?? parts.zones[0]?.id ?? 'today';
 }
 
 export interface RoomFloorOptions {
-  plan: RoomPlan;
-  /** SanctuaryFeature's decision per surface id; missing means available. */
-  presentationOf?: (surfaceId: string) => FeaturePresentationMode;
+  catalog: RoomCatalog;
+  /** SanctuaryFeature's decision per feature id; missing means available. */
+  presentationOf?: (featureId: string) => FeaturePresentationMode;
   /** The kit's fit for a component name (floorFitOf in the kit). */
-  fitOf: (kit: string) => FloorFit;
+  fitOf: (shape: string) => FloorFit;
   layout?: Pick<
     WorkspaceLayout,
     'order' | 'hidden' | 'pinned' | 'zoneBySurface' | 'groupOrder'
@@ -257,7 +154,7 @@ export interface RoomFloorOptions {
 
 /** The engine's input for one room, as one person in one bond sees it now. */
 export function roomFloorInput({
-  plan,
+  catalog,
   presentationOf = () => 'available',
   fitOf,
   layout = null,
@@ -266,26 +163,27 @@ export function roomFloorInput({
   world,
   config,
 }: RoomFloorOptions): FloorInput {
+  const parts = ROOM_FLOORS[catalog.room];
   const { pieces } = piecesFromLayout(
-    plan.surfaces.map((x) => ({
-      id: x.id,
-      label: x.label,
-      group: x.group,
-      defaultArea: x.area,
-      presentation: presentationOf(x.id),
-      fit: fitOf(x.kit),
-      time: x.time,
-      task: x.task,
-      lit: x.lit,
-      needsAttention: x.needsAttention,
-      roleImportance: x.roleImportance,
+    catalog.features.map((f) => ({
+      id: f.id,
+      label: f.label,
+      group: f.floor!.group,
+      defaultArea: zoneOf(f, parts),
+      presentation: presentationOf(f.id),
+      fit: fitOf(f.floor!.shape),
+      time: f.floor!.urgency,
+      task: f.floor!.task,
+      lit: f.floor!.lit,
+      needsAttention: f.floor!.needsAttention,
+      roleImportance: f.floor!.weight,
     })),
     layout,
   );
   return {
-    room: plan.room,
-    areas: plan.areas,
-    groups: groupsWithSavedOrder(plan.groups, layout?.groupOrder),
+    room: catalog.room,
+    areas: catalog.zones,
+    groups: groupsWithSavedOrder(catalog.groups, layout?.groupOrder),
     pieces,
     space,
     controls,
@@ -294,36 +192,22 @@ export function roomFloorInput({
   };
 }
 
-/** Plan id for a capacity's work room, when there is one. */
-export function workRoomPlanOf(capacity: string | null | undefined): RoomPlan | undefined {
-  const key = (
-    {
-      teacher: 'teacher',
-      tutor: 'teacher',
-      marker: 'teacher',
-      student: 'student',
-      guardian: 'guardian',
-      principal: 'principal',
-    } as Record<string, string>
-  )[capacity ?? ''];
-  return key ? ROOM_PLANS[`workspace:${key}`] : undefined;
-}
-
 /**
- * The plan's features as layout-sync surfaces, so the person's saved order,
- * pins and hidden pieces apply to them like any workspace surface.
+ * The room's features as layout-sync surfaces, so the person's saved order,
+ * pins and hidden features apply to them.
  */
-export function roomSurfaceDefinitions(plan: RoomPlan, workspaceId: string) {
-  return plan.surfaces.map((x, i) => ({
-    surfaceId: x.id,
+export function roomSurfaceDefinitions(catalog: RoomCatalog, workspaceId: string) {
+  const parts = ROOM_FLOORS[catalog.room];
+  return catalog.features.map((f) => ({
+    surfaceId: f.id,
     workspaceId,
-    capabilityKey: x.id,
+    capabilityKey: f.id,
     ownerPackage: 'core' as const,
-    defaultZone: x.area,
-    defaultOrder: i,
-    title: x.label,
-    groupId: x.group,
-    mobileSupport: true,
-    webSupport: true,
+    defaultZone: zoneOf(f, parts),
+    defaultOrder: f.defaultOrder,
+    title: f.label,
+    groupId: f.floor!.group,
+    mobileSupport: f.mobileSupport,
+    webSupport: f.webSupport,
   }));
 }

@@ -90,6 +90,11 @@
       "import": "./src/screens/GradeHeadDashboard.tsx",
       "default": "./src/screens/GradeHeadDashboard.tsx"
     },
+    "./constants/*": {
+      "types": "./src/constants/*.ts",
+      "import": "./src/constants/*.ts",
+      "default": "./src/constants/*.ts"
+    },
     "./*": {
       "types": "./src/*.ts",
       "import": "./src/*.js",

@@ -1,6 +1,6 @@
 import { TimeProfileSchema } from '@repo/core/logic/registry/timeProfile';
 import { describe, expect, it } from 'vitest';
-import { WORKSPACE_FEATURES } from '../workspaceFeatureRegistry';
+import { WORKSPACE_FEATURES } from '../workspaceFeatures';
 
 describe('Work room features and the time lens', () => {
   it('gives every feature a valid profile that agrees with its review/plan flags', () => {

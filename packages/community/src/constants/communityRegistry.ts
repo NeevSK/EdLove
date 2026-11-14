@@ -1,4 +1,5 @@
 import { defineFeatureLifecycle } from '@repo/core/logic/registry/domainEntry';
+import { TIMELESS, timeProfile } from '@repo/core/logic/registry/timeProfile';
 import type { DomainFeature } from '@repo/core/types';
 
 const REGISTRY_LIFECYCLE = defineFeatureLifecycle({
@@ -13,8 +14,10 @@ export const COMMUNITY_REGISTRY: Record<string, DomainFeature> = {
     id: 'hearth',
     surfaceId: 'hearth',
     ownerPackage: 'community',
-    defaultZone: 'work',
+    defaultZone: 'today',
     defaultOrder: 50,
+    floor: { group: 'news', shape: 'list', urgency: 'now', lit: true },
+    time: timeProfile('current', ['review', 'current'], 'append'),
     label: 'The Hearth',
     description: 'The central gathering place for community updates',
     citizenshipRequired: 3, // Wanderers/Third Class can see public hearths
@@ -58,8 +61,10 @@ export const COMMUNITY_REGISTRY: Record<string, DomainFeature> = {
     id: 'circles',
     surfaceId: 'joined-circles',
     ownerPackage: 'community',
-    defaultZone: 'today',
+    defaultZone: 'work',
     defaultOrder: 20,
+    floor: { group: 'groups', shape: 'rail' },
+    time: TIMELESS,
     label: 'Circles of Trust',
     description: 'Private groups and interest-based circles',
     citizenshipRequired: 1, // requires identity binding
@@ -75,8 +80,10 @@ export const COMMUNITY_REGISTRY: Record<string, DomainFeature> = {
     id: 'messages',
     surfaceId: 'context-messages',
     ownerPackage: 'community',
-    defaultZone: 'outlook',
+    defaultZone: 'work',
     defaultOrder: 120,
+    floor: { group: 'talk', shape: 'row', needsAttention: true },
+    time: timeProfile('current', ['review', 'current'], 'append'),
     label: 'Direct Messages',
     description: 'Secure one-to-one and small group communication',
     citizenshipRequired: 1, // Requires identity binding
@@ -94,6 +101,8 @@ export const COMMUNITY_REGISTRY: Record<string, DomainFeature> = {
     ownerPackage: 'community',
     defaultZone: 'today',
     defaultOrder: 30,
+    floor: { group: 'news', shape: 'card' },
+    time: TIMELESS,
     label: 'Trust Network',
     description: 'Reputation and vouching system',
     citizenshipRequired: 2, // 2nd Class
