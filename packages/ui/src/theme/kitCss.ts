@@ -159,9 +159,16 @@ const BASE_CSS = `
 .gd-sheet{margin:auto auto 0;width:100%;max-width:640px;max-height:90vh}
 .gd-sheet .gd-overlay-panel{border-bottom-left-radius:0;border-bottom-right-radius:0;padding-bottom:calc(24px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto}
 .gd-sheet-grabber{align-self:center;width:40px;height:4px;margin-bottom:4px;border-radius:2px;background:var(--w-line)}
-@media (prefers-reduced-motion:no-preference){.gd-dialog[open]:not(.gd-sheet){animation:gd-overlay-in var(--w-settle) ease-out}.gd-sheet[open]{animation:gd-sheet-in 280ms cubic-bezier(.2,.8,.2,1)}}
+.gd-side-panel{margin:0 0 0 auto;width:min(86vw,420px);max-width:none;height:100dvh;max-height:none}
+.gd-side-panel[data-side="start"]{margin:0 auto 0 0}
+.gd-side-panel .gd-overlay-panel{height:100%;display:flex;flex-direction:column;border-start-end-radius:0;border-end-end-radius:0;padding-top:calc(24px + env(safe-area-inset-top));padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+.gd-side-panel[data-side="start"] .gd-overlay-panel{border-start-start-radius:0;border-end-start-radius:0;border-start-end-radius:inherit;border-end-end-radius:inherit}
+[dir="rtl"] .gd-side-panel{margin:0 auto 0 0}[dir="rtl"] .gd-side-panel[data-side="start"]{margin:0 0 0 auto}
+@media (prefers-reduced-motion:no-preference){.gd-dialog[open]:not(.gd-sheet,.gd-side-panel){animation:gd-overlay-in var(--w-settle) ease-out}.gd-sheet[open]{animation:gd-sheet-in 280ms cubic-bezier(.2,.8,.2,1)}.gd-side-panel[open]{animation:gd-side-in 280ms cubic-bezier(.2,.8,.2,1)}.gd-side-panel[open][data-side="start"]{animation-name:gd-side-in-start}[dir="rtl"] .gd-side-panel[open]{animation-name:gd-side-in-start}[dir="rtl"] .gd-side-panel[open][data-side="start"]{animation-name:gd-side-in}}
 @keyframes gd-overlay-in{from{opacity:0;transform:translateY(8px) scale(.98)}}
 @keyframes gd-sheet-in{from{transform:translateY(100%)}}
+@keyframes gd-side-in{from{transform:translateX(100%)}}
+@keyframes gd-side-in-start{from{transform:translateX(-100%)}}
 .gd-toasts{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:1100;display:flex;flex-direction:column;gap:8px;pointer-events:none}
 .gd-toast-region{display:flex;flex-direction:column;align-items:center;gap:8px}
 .gd-toast{pointer-events:auto;display:flex;align-items:center;gap:12px;width:100%;max-width:520px;padding:12px 16px;background:var(--w-surface-raised-bg);border-radius:var(--w-surface-raised-radius);box-shadow:var(--w-surface-raised-shadow);border-left:3px solid var(--w-line);color:var(--w-ink)}

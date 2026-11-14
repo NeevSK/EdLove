@@ -1,4 +1,12 @@
-import { Dialog, Popover, Sheet, ToastHost, Tooltip, toast } from '@repo/ui/components/web';
+import {
+  Dialog,
+  Popover,
+  Sheet,
+  SidePanel,
+  ToastHost,
+  Tooltip,
+  toast,
+} from '@repo/ui/components/web';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRef } from 'react';
@@ -66,6 +74,31 @@ describe('web kit: Sheet', () => {
     const sheet = screen.getByRole('dialog', { name: 'Choose a class' });
     expect(sheet.className).toContain('gd-sheet');
     expect(container.querySelector('.gd-sheet-grabber')).not.toBeNull();
+  });
+});
+
+describe('web kit: SidePanel', () => {
+  it('is a named modal dialog laid out as a side panel, on the end edge by default', () => {
+    render(<SidePanel open onClose={() => {}} title="Lesson notes" />);
+    const panel = screen.getByRole('dialog', { name: 'Lesson notes' });
+    expect(panel.className).toContain('gd-side-panel');
+    expect(panel.getAttribute('data-side')).toBe('end');
+    expect(screen.getByRole('heading', { name: 'Lesson notes' })).toBeTruthy();
+  });
+
+  it('comes from the start edge when asked', () => {
+    render(<SidePanel open onClose={() => {}} title="Filters" side="start" />);
+    expect(screen.getByRole('dialog', { name: 'Filters' }).getAttribute('data-side')).toBe('start');
+  });
+
+  it('Escape closes it, unless only `open` may', () => {
+    const onClose = vi.fn();
+    const { rerender } = render(<SidePanel open onClose={onClose} title="Filters" />);
+    fireEvent(screen.getByRole('dialog'), new Event('cancel', { cancelable: true }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+    rerender(<SidePanel open onClose={onClose} title="Filters" dismissable={false} />);
+    fireEvent(screen.getByRole('dialog'), new Event('cancel', { cancelable: true }));
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });
 
