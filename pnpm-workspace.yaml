@@ -5,6 +5,9 @@ packages:
 
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
+  # Owner-approved 2026-11-14: Software Mansion's native bottom sheet 1.0.0 (published
+  # 2026-11-13T14:30Z), taken ~12h inside the window for the kit Sheet. Remove once matured.
+  - '@swmansion/react-native-bottom-sheet'
   # Owner-approved 2026-11-11: XState 6 beta.2 and its Effect bridge, taken ~13h inside the window
   # (published 2026-11-11T04:07Z). Remove once matured.
   - 'xstate'
