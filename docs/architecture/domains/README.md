@@ -57,7 +57,7 @@ namespace that isn't admitted, or if a domain lacks its Cedar namespace in
 | | | Conversations | `community.conversations` | skeleton |
 | | | Notices | `community.notices` | skeleton |
 | | | Moderation and safety | `community.moderation` | skeleton |
-| Library and commons | `library` | Resources | `library.resources` | skeleton |
+| Library and commons | `library` | Resources | `library.resources` | card ([draft](library/resources.md)) |
 | | | Collections | `library.collections` | skeleton |
 | | | Authoring and review | `library.editorial` | skeleton |
 | | | Media | `library.media` | skeleton |
