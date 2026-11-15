@@ -1,0 +1,518 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Gurudevi World Model</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: washi page, a scene lab (phone + controls) above a radial mind map with a reading panel. Colours are the Sanctuary world's own tokens. */
+:root {
+  --ground: #F5EDD6;
+  --raised: #FBF6EA;
+  --sunken: #ECE2C8;
+  --ink: #2A2318;
+  --ink-soft: #5A4E3E;
+  --ink-faint: #857966;
+  --line: #D6CBB2;
+  --lamp: #E3A24E;
+  --lamp-deep: #8A4F17;
+  --s-built: #4F7A3A;
+  --s-partial: #B07A1E;
+  --s-docs: #6B6A8E;
+  --s-lost: #9C3424;
+  --serif: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #17140F; --raised: #221D16; --sunken: #100E0A; --ink: #F3EAD8; --ink-soft: #C4B8A3; --ink-faint: #8E8372; --line: #3A3226; --lamp: #F0B562; --lamp-deep: #F0B562;
+    --s-built: #A6CC8A; --s-partial: #E7B862; --s-docs: #A9A8D6; --s-lost: #F09A86; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #17140F; --raised: #221D16; --sunken: #100E0A; --ink: #F3EAD8; --ink-soft: #C4B8A3; --ink-faint: #8E8372; --line: #3A3226; --lamp: #F0B562; --lamp-deep: #F0B562;
+  --s-built: #A6CC8A; --s-partial: #E7B862; --s-docs: #A9A8D6; --s-lost: #F09A86; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 64px; display: grid; gap: 48px; }
+h1, h2 { font-family: var(--serif); font-weight: 400; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.05; letter-spacing: -0.01em; }
+h2 { font-size: 1.6rem; line-height: 1.2; }
+.eyebrow { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--lamp-deep); font-weight: 600; }
+.lede { font-family: var(--serif); font-size: 1.2rem; color: var(--ink-soft); max-width: 62ch; margin: 12px 0 0; }
+p { margin: 0; }
+.muted { color: var(--ink-soft); }
+header { display: grid; gap: 6px; }
+.section-head { display: grid; gap: 6px; margin-bottom: 20px; }
+.section-head p { max-width: 64ch; color: var(--ink-soft); }
+
+/* Scene lab */
+.lab { display: grid; grid-template-columns: minmax(240px, 300px) minmax(0, 1fr); gap: 40px; align-items: start; }
+@media (max-width: 760px) { .lab { grid-template-columns: minmax(0, 1fr); justify-items: center; } .controls { width: 100%; } }
+.phone { width: 100%; max-width: 300px; aspect-ratio: 9 / 18.5; border-radius: 34px; padding: 8px; background: #1b1712; box-shadow: 0 24px 50px -24px rgba(60, 40, 10, 0.5); }
+.screen { position: relative; width: 100%; height: 100%; border-radius: 27px; overflow: hidden; background: var(--sc-ground); color: var(--sc-ink); font-family: var(--sans); transition: background-color 600ms; }
+.sky { position: absolute; inset: 0 0 auto 0; height: 46%; }
+.sky .ridge { position: absolute; left: 0; right: 0; bottom: 0; height: 40%; }
+.celestial { position: absolute; width: 26px; height: 26px; border-radius: 50%; transform: translate(-50%, -50%); }
+.grain { position: absolute; inset: 0; opacity: 0.18; mix-blend-mode: multiply; pointer-events: none; }
+.sc-content { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 26px 14px 0; gap: 10px; }
+.sc-greet { font-family: var(--serif); font-size: 1.45rem; line-height: 1.1; color: var(--sc-sky-ink); text-shadow: 0 1px 8px var(--sc-sky-shadow); }
+.sc-sub { font-size: 0.72rem; color: var(--sc-sky-ink); opacity: 0.85; letter-spacing: 0.04em; }
+.sc-spacer { flex: 0 0 22%; }
+.sc-card { background: var(--sc-raised); border-radius: 18px; padding: 12px 14px; display: grid; gap: 4px; border: 0.75px solid var(--sc-line); }
+.sc-card .k { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sc-ink-soft); }
+.sc-card .v { font-family: var(--serif); font-size: 1.05rem; }
+.sc-btn { margin-top: 6px; justify-self: start; background: var(--sc-lamp); color: var(--sc-on-lamp); border-radius: 999px; padding: 6px 14px; font-size: 0.72rem; font-weight: 600; }
+.sc-row { display: flex; justify-content: space-between; font-size: 0.74rem; padding: 6px 0; border-top: 0.75px solid var(--sc-line); }
+.sc-tabs { margin-top: auto; display: flex; justify-content: space-around; padding: 10px 6px 14px; background: var(--sc-raised); border-top: 0.75px solid var(--sc-line); font-size: 0.6rem; color: var(--sc-ink-soft); }
+.sc-tabs span.on { color: var(--sc-ink); font-weight: 600; }
+.sc-tabs span.on::before { content: ""; display: block; width: 5px; height: 5px; margin: 0 auto 3px; border-radius: 50%; background: var(--sc-lamp); }
+.sc-tabs span:not(.on)::before { content: ""; display: block; height: 8px; }
+.firefly { position: absolute; right: 18px; bottom: 64px; width: 10px; height: 10px; border-radius: 50%; background: #F6C27E; box-shadow: 0 0 10px 4px rgba(246, 194, 126, 0.55); }
+@media (prefers-reduced-motion: no-preference) { .firefly { animation: breathe 3.6s ease-in-out infinite; } }
+@keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.25); opacity: 1; } }
+
+.controls { display: grid; gap: 22px; min-width: 0; }
+.ctl { display: grid; gap: 8px; }
+.ctl-label { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; }
+.ctl-label output { font-family: var(--serif); text-transform: none; letter-spacing: 0; font-size: 1rem; color: var(--ink); font-weight: 400; }
+.chips[hidden] { display: none; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font: inherit; font-size: 0.86rem; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--raised); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.chip[aria-pressed="true"] { border-color: var(--lamp-deep); box-shadow: inset 0 0 0 1px var(--lamp-deep); }
+.chip:focus-visible, .node:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--lamp-deep); outline-offset: 2px; }
+.swatch { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.15); }
+input[type="range"] { width: 100%; accent-color: var(--lamp-deep); }
+.ticks { display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+.play { font: inherit; font-size: 0.86rem; font-weight: 600; border: 0; border-radius: 999px; padding: 9px 16px; background: var(--ink); color: var(--ground); cursor: pointer; justify-self: start; }
+.cost { border-top: 1px solid var(--line); padding-top: 14px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.cost div { display: grid; gap: 2px; min-width: 0; }
+.cost .k { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); }
+.cost .v { font-family: var(--serif); font-size: 1.05rem; }
+@media (max-width: 460px) { .cost { grid-template-columns: minmax(0, 1fr); } }
+.note { font-size: 0.82rem; color: var(--ink-faint); }
+
+/* Mind map */
+.map-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: 28px; align-items: start; }
+@media (max-width: 900px) { .map-grid { grid-template-columns: minmax(0, 1fr); } }
+.map-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 20px; background: var(--raised); }
+.map-scroll svg { display: block; min-width: 680px; width: 100%; height: auto; }
+.edge { stroke: var(--line); stroke-width: 1.2; fill: none; }
+.edge.cross { stroke: var(--lamp); stroke-dasharray: 3 4; stroke-width: 1; opacity: 0.8; }
+.node { cursor: pointer; }
+.node text { font-family: var(--sans); fill: var(--ink); font-size: 12px; }
+.node.branch text { font-family: var(--serif); font-size: 16px; }
+.node.core text { font-family: var(--serif); font-size: 19px; }
+.node circle.ring { fill: var(--raised); stroke-width: 1.6; }
+.node.sel circle.ring { fill: var(--sunken); stroke-width: 3; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.8rem; color: var(--ink-soft); margin-top: 12px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.panel { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); background: var(--raised); border: 1px solid var(--line); border-radius: 20px; padding: 22px; display: grid; gap: 14px; min-width: 0; }
+.panel h3 { font-family: var(--serif); font-weight: 400; font-size: 1.45rem; margin: 0; line-height: 1.15; }
+.status-pill { justify-self: start; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; border: 1px solid currentColor; }
+.panel dl { margin: 0; display: grid; gap: 10px; }
+.panel dt { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); font-weight: 600; }
+.panel dd { margin: 2px 0 0; overflow-wrap: anywhere; }
+.panel code { font-size: 0.8rem; background: var(--sunken); padding: 1px 5px; border-radius: 5px; }
+
+/* Seams */
+.seams { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.seam { border-top: 2px solid var(--ink); padding-top: 12px; display: grid; gap: 6px; }
+.seam b { font-family: var(--serif); font-weight: 600; font-size: 1.05rem; }
+.seam .when { font-size: 0.76rem; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+footer { font-size: 0.82rem; color: var(--ink-faint); border-top: 1px solid var(--line); padding-top: 16px; }
+footer code { font-size: 0.78rem; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Gurudevi · design, Nov 2025 to Nov 2026</span>
+    <h1>One world, six questions</h1>
+    <p class="lede">Every screen on web, mobile and explore.gurudevi.app is one answer to: which world, what hour, which place, what backdrop, how rich the phone can afford, and what the person is doing. One resolver turns the answers into a scene, and each platform only paints it.</p>
+  </header>
+
+  <section aria-labelledby="lab-h">
+    <div class="section-head">
+      <span class="eyebrow">Scene lab</span>
+      <h2 id="lab-h">Try the default, then take it apart</h2>
+      <p>The phone starts in the opinionated default: Sanctuary, following the hour, with a living sky. Every choice below is one a teacher could make, down to a plain solid colour. The cost line shows what each tier asks of the phone.</p>
+    </div>
+    <div class="lab">
+      <div class="phone" aria-label="Preview of the Gurudevi home screen in the chosen scene" role="img">
+        <div class="screen" id="screen">
+          <div class="sky" id="sky">
+            <div class="celestial" id="celestial"></div>
+            <div class="ridge" id="ridge"></div>
+          </div>
+          <canvas class="grain" id="grain" width="120" height="240" aria-hidden="true"></canvas>
+          <div class="sc-content">
+            <div>
+              <div class="sc-greet" id="greet">Good morning, Nirmala</div>
+              <div class="sc-sub" id="sub">Monday · Grade 7B first period</div>
+            </div>
+            <div class="sc-spacer"></div>
+            <div class="sc-card">
+              <span class="k">Attendance</span>
+              <span class="v">Grade 7B, 38 of 41 marked</span>
+              <span class="sc-btn">Finish register</span>
+            </div>
+            <div class="sc-card">
+              <span class="k">Today</span>
+              <div class="sc-row"><span>Science, 7B</span><span>08:00</span></div>
+              <div class="sc-row"><span>Sinhala, 8A</span><span>10:40</span></div>
+            </div>
+          </div>
+          <div class="firefly" aria-hidden="true"></div>
+          <div class="sc-tabs" style="position:absolute;left:0;right:0;bottom:0">
+            <span class="on">Self</span><span>Classroom</span><span>Community</span><span>Library</span><span>Profile</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="ctl">
+          <div class="ctl-label"><span id="world-l">World</span><output id="world-out">Sanctuary</output></div>
+          <div class="chips" id="worlds" role="group" aria-labelledby="world-l"></div>
+          <p class="note" id="world-desc"></p>
+        </div>
+        <div class="ctl">
+          <div class="ctl-label"><label for="hour">Hour</label><output id="hour-out">07:30 · dawn</output></div>
+          <input type="range" id="hour" min="0" max="1439" step="5" value="450">
+          <div class="ticks"><span>00</span><span>04 predawn</span><span>06 dawn</span><span>09</span><span>12</span><span>17 dusk</span><span>20 night</span><span>24</span></div>
+          <div class="chips" style="margin-top:4px">
+            <button class="play" id="play" type="button">Play the day</button>
+            <button class="chip" id="now" type="button">Follow the hour</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <div class="ctl-label"><span id="ground-l">Backdrop</span><output id="ground-out">Living sky</output></div>
+          <div class="chips" id="grounds" role="group" aria-labelledby="ground-l"></div>
+          <div class="chips" id="solid-row" hidden>
+            <label class="chip" for="solid">Colour <input type="color" id="solid" value="#C9D6C1" style="width:28px;height:20px;border:0;background:none;padding:0"></label>
+          </div>
+        </div>
+        <div class="ctl">
+          <div class="ctl-label"><span id="tier-l">What the phone can afford</span><output id="tier-out">Balanced</output></div>
+          <div class="chips" id="tiers" role="group" aria-labelledby="tier-l"></div>
+        </div>
+        <div class="cost" aria-live="polite">
+          <div><span class="k">Sky redraws</span><span class="v" id="c-redraw">6 a day</span></div>
+          <div><span class="k">Sun or moon</span><span class="v" id="c-sun">Placed by phase</span></div>
+          <div><span class="k">Ambient layer</span><span class="v" id="c-amb">None</span></div>
+        </div>
+        <p class="note">Nothing here runs a frame loop. The sun moves about a quarter of a degree a minute, so one redraw a minute already reads as continuous. Only the firefly moves by itself.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="map-h">
+    <div class="section-head">
+      <span class="eyebrow">Mind map</span>
+      <h2 id="map-h">How every idea connects</h2>
+      <p>Each branch is one question of the scene. Colour shows where each idea stands in the code today. Dashed lines are the links between branches that the resolver has to honour. Select any node to read it.</p>
+    </div>
+    <div class="map-grid">
+      <div>
+        <div class="map-scroll"><svg id="map" viewBox="0 0 1000 760" role="group" aria-label="Mind map of the Gurudevi world model"></svg></div>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--s-built)"></i>Built</span>
+          <span><i class="dot" style="background:var(--s-partial)"></i>Partly built</span>
+          <span><i class="dot" style="background:var(--s-docs)"></i>In docs only</span>
+          <span><i class="dot" style="background:var(--s-lost)"></i>Built, then lost</span>
+        </div>
+      </div>
+      <aside class="panel" id="panel" aria-live="polite"></aside>
+    </div>
+  </section>
+
+  <section aria-labelledby="seam-h">
+    <div class="section-head">
+      <span class="eyebrow">Seams</span>
+      <h2 id="seam-h">Where the docs and the code split</h2>
+    </div>
+    <div class="seams">
+      <div class="seam"><span class="when">24 Feb to 9 Jun 2026</span><b>The living backdrop</b><p class="muted">Mobile had a phase-crossfading sky behind every tab. It was dropped when navigation moved to Expo Router.</p></div>
+      <div class="seam"><span class="when">Oct 2026</span><b>Web ahead of mobile</b><p class="muted">Wallpapers, slideshow, washi grain, aurora and embers landed on the web floors. Mobile has a wallpaper component that is not mounted.</p></div>
+      <div class="seam"><span class="when">22 Oct 2026</span><b>Worlds without a sky</b><p class="muted">Six worlds dress the controls, but the hour only tints the ground by 0 to 12%.</p></div>
+      <div class="seam"><span class="when">21 to 26 Oct 2026</span><b>Budget not joined</b><p class="muted">Verger can tell how much a phone can afford. It sits on its own branch and is not yet wired to the scene.</p></div>
+      <div class="seam"><span class="when">Feb vs Sep 2026</span><b>What moves</b><p class="muted">North Star said everything has micro-motion; the later canon says surfaces stay still and only the companion moves.</p></div>
+    </div>
+  </section>
+
+  <footer>Sources: <code>docs/Core/design/2026-10-26-world-model.md</code>, <code>2026-10-26-living-world-vision.md</code> and <code>2026-10-26-ui-vision-timeline.md</code> on branch <code>claude/project-thread-x3d8lb</code> of NeevSK/EdLove. World palettes come from <code>packages/ui/src/world/worlds.ts</code>. The sky colours in the lab are a sketch, not yet in the code.</footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var WORLDS = [
+    { id: 'sanctuary', name: 'Sanctuary', desc: 'Washi paper and lamp light. The quiet default.',
+      light: { ground: '#F5EDD6', raised: '#FBF6EA', ink: '#2A2318', soft: '#5A4E3E', lamp: '#E3A24E', onLamp: '#2A1A08', glow: '#F6C27E' },
+      dark: { ground: '#17140F', raised: '#221D16', ink: '#F3EAD8', soft: '#C4B8A3', lamp: '#F0B562', onLamp: '#2A1A08', glow: '#F0B562' } },
+    { id: 'kandyan', name: 'Temple walls', desc: 'Lime plaster and mural earth, with a vine band at the edge.',
+      light: { ground: '#F1E5CC', raised: '#F7EEDA', ink: '#1F1912', soft: '#56493A', lamp: '#B5361E', onLamp: '#FBF6EA', glow: '#CC8B2C' },
+      dark: { ground: '#1E1610', raised: '#2A1F16', ink: '#F2E6CE', soft: '#C9B596', lamp: '#B8432A', onLamp: '#FBF6EA', glow: '#D98C3C' } },
+    { id: 'wewa', name: 'Wewa', desc: 'Still tank water and moonlight. Calm, cool, deep.',
+      light: { ground: '#EAF1EE', raised: '#F5F9F7', ink: '#10262E', soft: '#3D575D', lamp: '#2F7F78', onLamp: '#F5F9F7', glow: '#78BEB4' },
+      dark: { ground: '#0F2230', raised: '#163140', ink: '#EAF2F0', soft: '#A9C0C2', lamp: '#9ED8D2', onLamp: '#0F2230', glow: '#9ED8D2' } },
+    { id: 'kele', name: 'Forest canopy', desc: 'Backlit leaves and dark branches, looking up.',
+      light: { ground: '#EEF3E2', raised: '#F8FBF1', ink: '#1C2A16', soft: '#46593A', lamp: '#9CC23A', onLamp: '#1C2A16', glow: '#C9E07A' },
+      dark: { ground: '#111A0F', raised: '#1A2617', ink: '#E8F0DC', soft: '#B4C4A2', lamp: '#B9DB5A', onLamp: '#111A0F', glow: '#B9DB5A' } },
+    { id: 'angampora', name: 'Angampora', desc: 'Packed earth and brass. Square, grounded, exact.',
+      light: { ground: '#F0E6D6', raised: '#F8F1E5', ink: '#2A1E17', soft: '#5A4838', lamp: '#7A561C', onLamp: '#FFF8EC', glow: '#C9A05A' },
+      dark: { ground: '#2A1E17', raised: '#352720', ink: '#F1E3CF', soft: '#C9B39A', lamp: '#D9B262', onLamp: '#2A1E17', glow: '#E2BE73' } },
+    { id: 'ratna', name: 'Gems and lace', desc: 'Ivory, beeralu lace and one sapphire.',
+      light: { ground: '#F7F3EE', raised: '#FFFDFA', ink: '#23202A', soft: '#57525F', lamp: '#2F5FA8', onLamp: '#FFFDFA', glow: '#6F98DC' },
+      dark: { ground: '#14131A', raised: '#1E1C26', ink: '#F1EEF4', soft: '#B9B4C2', lamp: '#8FB2EA', onLamp: '#14131A', glow: '#8FB2EA' } }
+  ];
+  /* Sky keys: minute of day, top colour, horizon colour. Same light for every world; the world tints it. */
+  var SKY = [
+    { m: 0, top: '#0B1222', hor: '#1E2A44' },
+    { m: 300, top: '#18203A', hor: '#4A4F73' },
+    { m: 375, top: '#7D8FB8', hor: '#F3C6B0' },
+    { m: 480, top: '#A9C8E6', hor: '#F9E3C8' },
+    { m: 660, top: '#B7D6EE', hor: '#EEF2F0' },
+    { m: 870, top: '#C2D6E4', hor: '#F2E2B4' },
+    { m: 1050, top: '#6E6A9A', hor: '#E9A46A' },
+    { m: 1140, top: '#2B2747', hor: '#9A5E5A' },
+    { m: 1260, top: '#0F1528', hor: '#24304A' },
+    { m: 1440, top: '#0B1222', hor: '#1E2A44' }
+  ];
+  var PHASE_TINT = { predawn: ['#24304A', 0.12], dawn: ['#F3C6B0', 0.06], morning: ['#FFFFFF', 0], afternoon: ['#F2D79A', 0.04], dusk: ['#3A2A3A', 0.1], night: ['#000000', 0] };
+  var PHASE_CENTRE = { predawn: 300, dawn: 450, morning: 630, afternoon: 870, dusk: 1110, night: 1380 };
+  var SUNRISE = 365, SUNSET = 1090; /* about 06:05 and 18:10, Colombo */
+
+  function hex(h) { h = h.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; }
+  function toHex(c) { return '#' + c.map(function (v) { v = Math.max(0, Math.min(255, Math.round(v))); return (v < 16 ? '0' : '') + v.toString(16); }).join(''); }
+  function mix(a, b, t) { var x = hex(a), y = hex(b); return toHex([x[0] + (y[0] - x[0]) * t, x[1] + (y[1] - x[1]) * t, x[2] + (y[2] - x[2]) * t]); }
+  function rgba(h, a) { var c = hex(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+  function phaseOf(min) { var h = Math.floor(min / 60); if (h >= 4 && h < 6) return 'predawn'; if (h >= 6 && h < 9) return 'dawn'; if (h >= 9 && h < 12) return 'morning'; if (h >= 12 && h < 17) return 'afternoon'; if (h >= 17 && h < 20) return 'dusk'; return 'night'; }
+  function isDark(p) { return p === 'predawn' || p === 'dusk' || p === 'night'; }
+  function skyAt(min) {
+    for (var i = 0; i < SKY.length - 1; i++) {
+      var a = SKY[i], b = SKY[i + 1];
+      if (min >= a.m && min <= b.m) { var t = (min - a.m) / (b.m - a.m); return { top: mix(a.top, b.top, t), hor: mix(a.hor, b.hor, t) }; }
+    }
+    return SKY[0];
+  }
+  function lum(h) { var c = hex(h).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+
+  var state = { world: 0, minute: 450, ground: 'sky', tier: 'balanced', solid: '#C9D6C1' };
+  var $ = function (id) { return document.getElementById(id); };
+  var screen = $('screen'), sky = $('sky'), cel = $('celestial'), ridge = $('ridge'), grain = $('grain');
+
+  /* Washi grain, drawn once */
+  (function () {
+    var g = grain.getContext('2d'); if (!g) return;
+    var img = g.createImageData(120, 240);
+    for (var i = 0; i < img.data.length; i += 4) { var v = 150 + Math.random() * 105; img.data[i] = v; img.data[i + 1] = v * 0.97; img.data[i + 2] = v * 0.9; img.data[i + 3] = 255; }
+    g.putImageData(img, 0, 0);
+  })();
+
+  function fmt(min) { var h = Math.floor(min / 60), m = min % 60; return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m; }
+  function greeting(min) { var h = min / 60; if (h < 4) return 'Good night, Nirmala'; if (h < 12) return 'Good morning, Nirmala'; if (h < 17) return 'Good afternoon, Nirmala'; if (h < 20) return 'Good evening, Nirmala'; return 'Good night, Nirmala'; }
+  function subline(min) { var h = min / 60; if (h < 6) return 'Tuesday · the day has not begun'; if (h < 12) return 'Tuesday · Grade 7B first period'; if (h < 17) return 'Tuesday · two lessons left'; if (h < 20) return 'Tuesday · planning for tomorrow'; return 'Tuesday · rest well'; }
+
+  function render() {
+    var w = WORLDS[state.world];
+    var phase = phaseOf(state.minute);
+    var mode = isDark(phase) ? 'dark' : 'light';
+    var pal = w[mode];
+    var tint = PHASE_TINT[phase];
+    var ground = tint[1] ? mix(pal.ground, tint[0], tint[1]) : pal.ground;
+    var effMin = state.tier === 'balanced' ? PHASE_CENTRE[phase] : state.minute;
+    var s = skyAt(effMin);
+    var top = mix(s.top, pal.glow, 0.12), hor = mix(s.hor, pal.glow, 0.22);
+    var vars = {
+      '--sc-ground': ground, '--sc-raised': rgba(pal.raised, 0.94), '--sc-ink': pal.ink, '--sc-ink-soft': pal.soft,
+      '--sc-line': mix(pal.raised, pal.ink, 0.16), '--sc-lamp': pal.lamp, '--sc-on-lamp': pal.onLamp
+    };
+    var skyInk = pal.ink, skyShadow = 'transparent';
+    sky.hidden = false; ridge.hidden = true; cel.hidden = true; grain.hidden = true;
+
+    if (state.tier === 'essential' || state.ground === 'plain') {
+      sky.style.background = 'transparent';
+    } else if (state.ground === 'solid') {
+      sky.style.background = state.solid;
+      vars['--sc-ground'] = mix(state.solid, pal.ground, 0.35);
+      skyInk = lum(state.solid) > 0.4 ? '#1E1A14' : '#F6F1E6';
+    } else {
+      sky.style.background = 'linear-gradient(180deg,' + top + ' 0%,' + hor + ' 78%,' + ground + ' 100%)';
+      skyInk = lum(mix(top, hor, 0.4)) > 0.38 ? mix(pal.ink, '#000000', 0.1) : '#F7F1E4';
+      skyShadow = lum(mix(top, hor, 0.4)) > 0.38 ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)';
+      if (state.ground === 'wallpaper') {
+        ridge.hidden = false;
+        var far = mix(hor, '#3E5A3A', mode === 'dark' ? 0.55 : 0.35), near = mix(ground, '#2F4A2C', mode === 'dark' ? 0.7 : 0.45);
+        ridge.style.background = 'radial-gradient(120% 90% at 20% 110%,' + near + ' 55%, transparent 56%), radial-gradient(90% 80% at 85% 115%,' + near + ' 50%, transparent 51%), radial-gradient(140% 70% at 55% 120%,' + far + ' 60%, transparent 61%)';
+      }
+      /* Sun or moon on its arc */
+      var day = state.minute >= SUNRISE && state.minute <= SUNSET;
+      var t, x, y;
+      if (state.tier === 'rich') {
+        t = day ? (state.minute - SUNRISE) / (SUNSET - SUNRISE) : ((state.minute - SUNSET + 1440) % 1440) / (1440 - (SUNSET - SUNRISE));
+      } else {
+        var c = PHASE_CENTRE[phase];
+        t = day ? (c - SUNRISE) / (SUNSET - SUNRISE) : ((c - SUNSET + 1440) % 1440) / (1440 - (SUNSET - SUNRISE));
+      }
+      t = Math.max(0.04, Math.min(0.96, t));
+      x = 8 + t * 84; y = 80 - Math.sin(Math.PI * t) * 62;
+      cel.hidden = false;
+      cel.style.left = x + '%'; cel.style.top = y + '%';
+      if (day) {
+        cel.style.background = 'radial-gradient(circle,' + mix('#FFF4D6', pal.glow, 0.2) + ' 40%,' + rgba(pal.glow, 0.9) + ' 70%)';
+        cel.style.boxShadow = '0 0 28px 10px ' + rgba(mix('#FFE7B0', pal.glow, 0.3), 0.55);
+      } else {
+        cel.style.background = 'radial-gradient(circle at 38% 40%, #F4F0E2 55%, #CFC9B8 100%)';
+        cel.style.boxShadow = state.tier === 'rich' ? 'inset -7px -2px 0 0 ' + rgba(top, 0.92) + ', 0 0 18px 4px rgba(230,226,210,0.25)' : '0 0 14px 3px rgba(230,226,210,0.2)';
+      }
+      grain.hidden = state.tier !== 'rich';
+    }
+    vars['--sc-sky-ink'] = skyInk; vars['--sc-sky-shadow'] = skyShadow;
+    if (state.tier === 'essential' || state.ground === 'plain') { vars['--sc-sky-ink'] = pal.ink; vars['--sc-sky-shadow'] = 'transparent'; }
+    Object.keys(vars).forEach(function (k) { screen.style.setProperty(k, vars[k]); });
+
+    $('greet').textContent = greeting(state.minute);
+    $('sub').textContent = subline(state.minute);
+    $('world-out').textContent = w.name;
+    $('world-desc').textContent = w.desc;
+    $('hour-out').textContent = fmt(state.minute) + ' · ' + phase + ' · ' + mode;
+    var gl = { sky: 'Living sky', wallpaper: 'Wallpaper', solid: 'Solid colour', plain: 'Plain world ground' };
+    $('ground-out').textContent = gl[state.ground];
+    $('solid-row').hidden = state.ground !== 'solid';
+    $('tier-out').textContent = state.tier.charAt(0).toUpperCase() + state.tier.slice(1);
+    var living = state.ground === 'sky' || state.ground === 'wallpaper';
+    $('c-redraw').textContent = state.tier === 'essential' || !living ? 'None' : state.tier === 'rich' ? 'Once a minute' : '6 a day';
+    $('c-sun').textContent = state.tier === 'essential' || !living ? 'Hidden' : state.tier === 'rich' ? 'On its arc, moon phase' : 'Placed by phase';
+    $('c-amb').textContent = state.tier === 'rich' && living ? 'Washi grain' : 'None';
+    syncPressed();
+  }
+
+  function chip(label, pressed, onClick, swatch) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.setAttribute('aria-pressed', String(pressed));
+    if (swatch) { var s = document.createElement('span'); s.className = 'swatch'; s.style.background = swatch; b.appendChild(s); }
+    b.appendChild(document.createTextNode(label)); b.addEventListener('click', onClick); return b;
+  }
+  var worldBtns = [], groundBtns = {}, tierBtns = {};
+  WORLDS.forEach(function (w, i) { var b = chip(w.name, i === 0, function () { state.world = i; render(); }, w.light.lamp); worldBtns.push(b); $('worlds').appendChild(b); });
+  [['sky', 'Living sky'], ['wallpaper', 'Wallpaper'], ['solid', 'Solid colour'], ['plain', 'Plain']].forEach(function (g) { var b = chip(g[1], g[0] === 'sky', function () { state.ground = g[0]; render(); }); groundBtns[g[0]] = b; $('grounds').appendChild(b); });
+  [['rich', 'Rich'], ['balanced', 'Balanced'], ['essential', 'Essential']].forEach(function (t) { var b = chip(t[1], t[0] === 'balanced', function () { state.tier = t[0]; render(); }); tierBtns[t[0]] = b; $('tiers').appendChild(b); });
+  function syncPressed() {
+    worldBtns.forEach(function (b, i) { b.setAttribute('aria-pressed', String(i === state.world)); });
+    Object.keys(groundBtns).forEach(function (k) { groundBtns[k].setAttribute('aria-pressed', String(k === state.ground)); });
+    Object.keys(tierBtns).forEach(function (k) { tierBtns[k].setAttribute('aria-pressed', String(k === state.tier)); });
+  }
+  $('hour').addEventListener('input', function (e) { stopPlay(); state.minute = +e.target.value; render(); });
+  $('solid').addEventListener('input', function (e) { state.solid = e.target.value; render(); });
+  $('now').addEventListener('click', function () { stopPlay(); var d = new Date(); state.minute = d.getHours() * 60 + d.getMinutes(); $('hour').value = state.minute; render(); });
+
+  var playing = null;
+  function stopPlay() { if (playing) { cancelAnimationFrame(playing); playing = null; $('play').textContent = 'Play the day'; } }
+  $('play').addEventListener('click', function () {
+    if (playing) { stopPlay(); return; }
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var start = null, from = 240, dur = reduce ? 0 : 9000;
+    if (!dur) { state.minute = 1200; $('hour').value = 1200; render(); return; }
+    $('play').textContent = 'Stop';
+    function step(ts) {
+      if (start === null) start = ts;
+      var p = Math.min(1, (ts - start) / dur);
+      state.minute = Math.round((from + p * 1199) % 1440 / 5) * 5; $('hour').value = state.minute; render();
+      if (p < 1) playing = requestAnimationFrame(step); else stopPlay();
+    }
+    playing = requestAnimationFrame(step);
+  });
+
+  /* Mind map */
+  var NODES = [
+    { id: 'core', label: 'Gurudevi world', type: 'core', status: 'partial', what: 'One scene, resolved from six answers, painted by mobile, web and explore alike.', today: 'The pieces exist separately: worlds on both platforms, floors and wallpaper on the web, a visual budget in core, verger on its own branch.', where: 'docs/Core/design/2026-10-26-world-model.md', next: 'Write resolveScene in core with contrast tests over every backdrop and tier.' },
+    { id: 'world', parent: 'core', label: 'World', type: 'branch', status: 'built', what: 'Identity. Palette, corners, line weight and recipes. Six worlds borrowing Sri Lankan materials, never sacred figures.', today: 'Built on 22 Oct for mobile and web. Settings, tab bar and headers are dressed.', where: 'packages/ui/src/world/worlds.ts', next: 'Migrate workspace home and attendance; add a world gallery.' },
+    { id: 'w-six', parent: 'world', label: 'Six worlds', status: 'built', what: 'Sanctuary, Temple walls, Wewa, Forest canopy, Angampora, Gems and lace, each light and dark.', today: 'Contrast tested for every world, phase and mode.', where: 'packages/ui/src/world/__tests__/world.contrast.test.ts', next: 'Look at each one on a 2GB phone.' },
+    { id: 'w-gallery', parent: 'world', label: 'World gallery', status: 'docs', what: 'Live preview cards of each world at the current hour, with a play-the-day slider, in Settings and on explore.', today: 'WorldScope can already render a subtree in another world. No gallery yet.', where: 'packages/ui/src/world/native/WorldPicker.tsx', next: 'Build it on WorldScope once the sky exists.' },
+    { id: 'w-legacy', parent: 'world', label: 'Legacy tokens', status: 'partial', what: 'phaseMatrix and the --phase-* classes that about 70 screens still read.', today: 'worldBridge maps any world into them so old screens follow along.', where: 'packages/ui/src/theme/worldBridge.ts', next: 'Shrink with each migrated screen; the raw hex ratchet starts at 4,139.' },
+    { id: 'time', parent: 'core', label: 'Time', type: 'branch', status: 'partial', what: 'The hour moves the light in the back layers only. Text and controls never change with the hour.', today: 'Six phases since 24 Feb. Worlds tint the ground by 0 to 12%, which is hard to see.', where: 'packages/ui/src/context/utils.ts, packages/ui/src/world/resolve.ts', next: 'Add a sky token family per world and phase.' },
+    { id: 't-phases', parent: 'time', label: 'Six phases', status: 'built', what: 'Predawn 4 to 6, dawn 6 to 9, morning 9 to 12, afternoon 12 to 17, dusk 17 to 20, night 20 to 4.', today: 'Unchanged since 24 Feb. Dusk, night and predawn switch to dark.', where: 'packages/ui/src/context/utils.ts', next: 'Blend by minute instead of snapping at the boundary.' },
+    { id: 't-sun', parent: 'time', label: 'Sun and moon', status: 'docs', what: 'A disc on its arc by day, the moon by night. Tried locally on an HTML canvas.', today: 'Not in the repo. The canvas loop costs battery, so the model redraws once a minute instead.', where: 'docs/Core/design/2026-10-26-world-model.md', next: 'Rich tier only, after the balanced sky ships.' },
+    { id: 't-plug', parent: 'time', label: 'Two clocks', status: 'partial', what: 'Now drives the sky; Focus (the date and time being looked at) drives the data. One cursor with a date strip, a time strip of school periods and an optional clock face.', today: 'Explore has the date strip with review and plan (TemporalHorizon). No time strip or clock face yet; dates are English only.', where: 'apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalHorizon.tsx', next: 'Add the time strip and a sky chip that previews the focused hour.' },
+    { id: 't-true', parent: 'time', label: 'True sky', status: 'docs', what: 'Optional: follow sunrise and sunset in Sri Lanka, roughly 06:00 to 06:30 and 17:50 to 18:30 across the year.', today: 'Not built. Fixed phase hours are used.', where: 'world model, open question', next: 'Decide whether it is the default.' },
+    { id: 'space', parent: 'core', label: 'Space', type: 'branch', status: 'partial', what: 'One forest, five clearings: Self the quiet glade, Classroom the grove, Community the gathering, Library the ancient forest, Profile the threshold.', today: 'Written in Feb. The web has floors per domain; mobile has no clearing identity yet.', where: 'apps/gurudevi-mobile/docs/Core/design/gurudevi-space-specifications.md', next: 'A small accent shift per space through WorldScope.' },
+    { id: 's-floors', parent: 'space', label: 'Web floors', status: 'built', what: 'SanctuaryFloorCanvas and furniture for Self, Library, Workspace, Community and Settings.', today: 'Built in October on the web.', where: 'apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx', next: 'Treat floors as the web name for clearings.' },
+    { id: 's-clear', parent: 'space', label: 'Mobile clearings', status: 'docs', what: 'Each tab keeps its own light and pace, and its landmarks stay where they are.', today: 'Docs only.', where: 'gurudevi-space-specifications.md', next: 'Start with workspace home and attendance.' },
+    { id: 'ground', parent: 'core', label: 'Backdrop', type: 'branch', status: 'partial', what: 'What sits behind everything: living sky by default, or a wallpaper, a slideshow, a solid colour, or plain.', today: 'Rich on the web, absent on mobile.', where: 'packages/core/src/types/Workspace.ts (WorkspaceAppearance)', next: 'One ground layer read from WorkspaceAppearance on both platforms.' },
+    { id: 'g-sky', parent: 'ground', label: 'Living sky', status: 'lost', what: 'A gradient sky that follows the hour behind every tab.', today: 'SanctuaryBackground did this from 24 Feb; it was dropped with the old TabNavigator on 9 Jun.', where: 'packages/ui/src/components/SanctuaryBackground.tsx', next: 'Rebuild it as the living sky painter, balanced tier first.' },
+    { id: 'g-wall', parent: 'ground', label: 'Wallpapers', status: 'partial', what: 'Preset or own photo, single or slideshow at 3, 5 or 15 minutes.', today: 'Web built. Mobile WorkspaceWallpaper is budgeted but not mounted. Three web presets load from Unsplash at 1920px.', where: 'apps/gurudevi-web/app/(sanctuary)/components/FloorStudioDrawer.tsx', next: 'Mount on mobile; host presets with the app.' },
+    { id: 'g-wash', parent: 'ground', label: 'Colour wash', status: 'built', what: 'A tint between backdrop and text, the world ground or the person’s own colour.', today: 'Web custom colour wash exists. Web presets Sandstone, Dawn Coral, Verdant and Night Twilight duplicate world plus phase.', where: 'FloorStudioDrawer.tsx', next: 'Retire the presets into world plus phase; keep the custom colour.' },
+    { id: 'g-atm', parent: 'ground', label: 'Atmosphere', status: 'partial', what: 'Washi grain, aurora mesh or celestial embers over the backdrop.', today: 'Web FloorAtmosphere, embers on a canvas capped at 35 fps with a reduced-motion guard.', where: 'apps/gurudevi-web/app/(sanctuary)/components/FloorAtmosphere.tsx', next: 'Rich tier only; never on mobile by default.' },
+    { id: 'budget', parent: 'core', label: 'Budget', type: 'branch', status: 'partial', what: 'The phone decides how rich: rich, balanced or essential. Readability never drops.', today: 'core/efficiency has a visual budget used by the wallpaper. Verger is built but unmounted on another branch.', where: 'packages/core/src/efficiency/wallpaper.ts', next: 'Map the tier to the sky painter; switch to verger later.' },
+    { id: 'b-tier', parent: 'budget', label: 'Three tiers', status: 'docs', what: 'Rich: painted sky, sun on its arc, ambient layer. Balanced: two-stop sky, 6 redraws a day. Essential: flat tint.', today: 'Defined in the world model.', where: 'world model, living sky table', next: 'Encode in resolveScene.' },
+    { id: 'b-verger', parent: 'budget', label: 'Verger', status: 'partial', what: 'One adaptive regulator per app: senses the phone, budgets quality, publishes a snapshot.', today: 'feat/adaptive-runtime, 117 commits, not mounted, not on the worlds branch.', where: 'docs/engineering/runtime-performance/verger/', next: 'Join once it runs on a real phone.' },
+    { id: 'expr', parent: 'core', label: 'Expression', type: 'branch', status: 'docs', what: 'What the person is doing sets how much the scene shows: quiet utility, living primary, sacred hero.', today: 'Doctrine since 20 Mar. Not enforced in components.', where: 'apps/gurudevi-mobile/docs/Core/design/gurudevi-aesthetic-doctrine.md', next: 'Forms and rows quiet; home headers living; arrival and completion full scene.' },
+    { id: 'e-hero', parent: 'expr', label: 'Hero moments', status: 'docs', what: 'Arrival, completion and empty states get the full scene and ornament bands.', today: 'Ornament bands exist as recipe data only.', where: 'packages/ui/src/world/build.ts', next: 'Baked-art pipeline, screenshot-tested per world and phase.' },
+    { id: 'comp', parent: 'core', label: 'Companion', type: 'branch', status: 'partial', what: 'The surface is quiet; the companion is alive. The only thing that moves by itself.', today: 'Lotus FAB from Feb, firefly spec Sep 9, Tutii bible Oct 18.', where: 'docs/Core/design/2026-10-18-tutii-mascot-character-bible.md', next: 'Keep motion here and nowhere else.' },
+    { id: 'surf', parent: 'core', label: 'Surfaces', type: 'branch', status: 'partial', what: 'Where the scene is painted: the phone app, the web app, and explore.gurudevi.app as the showroom.', today: 'Each paints its own way; no shared resolver.', where: 'docs/architecture/2026-10-13-gurudevi-web-dual-surface-integration-contract.md', next: 'One resolver, three painters.' },
+    { id: 'su-mob', parent: 'surf', label: 'Mobile', status: 'partial', what: 'React Native painter: gradients or SVG, a one-minute timer that pauses in the background.', today: 'Worlds dress controls; no sky, no wallpaper mounted.', where: 'apps/gurudevi-mobile', next: 'Living sky on the home header and behind the tabs.' },
+    { id: 'su-web', parent: 'surf', label: 'Web', status: 'built', what: 'CSS and DOM painter, canvas only for rich atmosphere.', today: 'Floors, wallpaper, wash, atmosphere and six worlds in the theme toggle.', where: 'apps/gurudevi-web', next: 'Route presets and atmosphere through the resolver.' },
+    { id: 'su-exp', parent: 'surf', label: 'Explore', status: 'partial', what: 'The showroom: the same resolver in showcase mode, browser-local fixtures, a make-it-yours panel.', today: 'Host routing and read-only explore routes exist.', where: 'apps/gurudevi-web/lib/host-routing.ts', next: 'Show one world per visit at the visitor’s hour.' }
+  ];
+  var CROSS = [['t-sun', 'b-tier'], ['g-atm', 'b-tier'], ['g-sky', 't-phases'], ['su-exp', 'w-gallery'], ['g-wall', 'su-mob'], ['e-hero', 'g-sky'], ['t-plug', 'su-exp']];
+  var STATUS = { built: ['Built', 'var(--s-built)'], partial: ['Partly built', 'var(--s-partial)'], docs: ['In docs only', 'var(--s-docs)'], lost: ['Built, then lost', 'var(--s-lost)'] };
+  var CX = 500, CY = 380;
+  var ANG = { world: -100, time: -42, ground: 14, space: 66, budget: 112, expr: 150, comp: 184, surf: 218 };
+  var byId = {}; NODES.forEach(function (n) { byId[n.id] = n; });
+  byId.core.x = CX; byId.core.y = CY;
+  NODES.filter(function (n) { return n.parent === 'core'; }).forEach(function (b) {
+    var a = ANG[b.id] * Math.PI / 180;
+    b.x = CX + Math.cos(a) * 200; b.y = CY + Math.sin(a) * 160;
+    var kids = NODES.filter(function (n) { return n.parent === b.id; });
+    kids.forEach(function (k, j) {
+      var ka = a + (j - (kids.length - 1) / 2) * 15 * Math.PI / 180;
+      k.x = CX + Math.cos(ka) * 380; k.y = CY + Math.sin(ka) * 318; k.ka = ka;
+    });
+  });
+  var svg = $('map'), NS = 'http://www.w3.org/2000/svg';
+  function el(t, attrs) { var e = document.createElementNS(NS, t); Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); }); return e; }
+  var gE = el('g', {}), gN = el('g', {}); svg.appendChild(gE); svg.appendChild(gN);
+  NODES.forEach(function (n) {
+    if (!n.parent) return; var p = byId[n.parent];
+    var mx = (n.x + p.x) / 2, my = (n.y + p.y) / 2;
+    gE.appendChild(el('path', { class: 'edge', d: 'M' + p.x + ',' + p.y + ' Q' + (mx + (CY - my) * 0.08) + ',' + (my + (mx - CX) * 0.08) + ' ' + n.x + ',' + n.y }));
+  });
+  CROSS.forEach(function (c) { var a = byId[c[0]], b = byId[c[1]]; gE.appendChild(el('path', { class: 'edge cross', d: 'M' + a.x + ',' + a.y + ' Q' + CX + ',' + CY + ' ' + b.x + ',' + b.y })); });
+  var nodeEls = {};
+  NODES.forEach(function (n) {
+    var r = n.type === 'core' ? 46 : n.type === 'branch' ? 30 : 9;
+    var g = el('g', { class: 'node ' + (n.type || 'leaf'), tabindex: '0', role: 'button', 'aria-label': n.label + ', ' + STATUS[n.status][0] });
+    g.appendChild(el('circle', { class: 'ring', cx: n.x, cy: n.y, r: r, stroke: STATUS[n.status][1] }));
+    if (!n.type) g.appendChild(el('circle', { cx: n.x, cy: n.y, r: 4, fill: STATUS[n.status][1] }));
+    var right = n.x >= CX, vert = !n.type && Math.abs(Math.sin(n.ka)) > 0.86;
+    var tx = n.type || vert ? n.x : n.x + (right ? 14 : -14);
+    var ty = n.type ? n.y + 5 : vert ? (n.y < CY ? n.y - 16 : n.y + 26) : n.y + 4;
+    var anchor = n.type || vert ? 'middle' : right ? 'start' : 'end';
+    var label = el('text', { x: tx, y: ty, 'text-anchor': anchor });
+    if (n.type === 'core') { label.setAttribute('y', n.y - 2); label.textContent = 'Gurudevi'; var t2 = el('tspan', { x: tx, dy: 20 }); t2.textContent = 'world'; label.appendChild(t2); }
+    else label.textContent = n.label;
+    if (n.type === 'branch') { label.setAttribute('y', n.y + 5); }
+    g.appendChild(label);
+    g.addEventListener('click', function () { select(n.id); });
+    g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(n.id); } });
+    gN.appendChild(g); nodeEls[n.id] = g;
+  });
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  function codeify(s) { return esc(s).replace(/([\w./()\-]+\.(?:tsx|ts|md))/g, '<code>$1</code>'); }
+  function select(id) {
+    var n = byId[id];
+    Object.keys(nodeEls).forEach(function (k) { nodeEls[k].classList.toggle('sel', k === id); });
+    var st = STATUS[n.status];
+    $('panel').innerHTML = '<span class="eyebrow">' + (n.parent && n.parent !== 'core' ? esc(byId[n.parent].label) : n.parent ? 'Branch' : 'Centre') + '</span>' +
+      '<h3>' + esc(n.label) + '</h3><span class="status-pill" style="color:' + st[1] + '">' + st[0] + '</span>' +
+      '<dl><div><dt>The idea</dt><dd>' + esc(n.what) + '</dd></div><div><dt>Today</dt><dd>' + esc(n.today) + '</dd></div>' +
+      '<div><dt>Where it lives</dt><dd>' + codeify(n.where) + '</dd></div><div><dt>Next</dt><dd>' + esc(n.next) + '</dd></div></dl>';
+    try { localStorage.setItem('gwm-node', id); } catch (e) {}
+  }
+  var saved = null; try { saved = localStorage.getItem('gwm-node'); } catch (e) {}
+  select(saved && byId[saved] ? saved : 'g-sky');
+  render();
+})();
+</script>
+
+</body></html>

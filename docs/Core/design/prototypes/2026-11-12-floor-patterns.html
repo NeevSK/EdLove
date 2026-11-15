@@ -1,0 +1,562 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Floor Patterns</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: an architect's sheet. Four questions on top, a working chooser, a live sample floor at four sizes, then the pattern catalogue. */
+:root{
+  --bg:#f3f5f2; --paper:#ffffff; --ink:#1d2a26; --soft:#55635e; --faint:#8a9792;
+  --line:#d5ddd9; --well:#e8eeeb; --accent:#2f7d5b; --accent-soft:#d9ece2; --lamp:#c9862b; --lamp-soft:#f6e7cf;
+  --piece:#cfe1d8; --piece-2:#e3ece8; --hero:#2f7d5b; --hero-ink:#ffffff;
+  --display:'Sora',ui-sans-serif,system-ui,sans-serif;
+  --body:'Inter',ui-sans-serif,system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121816; --paper:#19211e; --ink:#e6eeea; --soft:#a8b6b0; --faint:#71817a;
+  --line:#2c3833; --well:#202a26; --accent:#5fbf90; --accent-soft:#1f3a2e; --lamp:#e2a752; --lamp-soft:#3a2d18;
+  --piece:#2b4a3c; --piece-2:#24302b; --hero:#5fbf90; --hero-ink:#0e1a14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121816; --paper:#19211e; --ink:#e6eeea; --soft:#a8b6b0; --faint:#71817a;
+  --line:#2c3833; --well:#202a26; --accent:#5fbf90; --accent-soft:#1f3a2e; --lamp:#e2a752; --lamp-soft:#3a2d18;
+  --piece:#2b4a3c; --piece-2:#24302b; --hero:#5fbf90; --hero-ink:#0e1a14; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:48px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-0.01em}
+h1{font-size:clamp(28px,4.4vw,42px);line-height:1.1}
+h2{font-size:24px;line-height:1.2}
+h3{font-size:16px}
+p{margin:0;max-width:68ch}
+.lede{color:var(--soft);font-size:17px;margin-top:12px}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.mono{font-family:var(--mono);font-size:12.5px}
+section{display:flex;flex-direction:column;gap:18px}
+.sub{color:var(--soft)}
+
+/* the four questions */
+.questions{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.q{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.q b{font-family:var(--display);font-size:15px}
+.q .ans{font-family:var(--mono);font-size:12px;color:var(--soft)}
+
+/* chooser */
+.chooser{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px}
+@media (max-width:760px){.chooser{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:6px}
+.field>span{font-size:12.5px;font-weight:600;color:var(--soft)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:500 13px var(--body);color:var(--ink);background:var(--well);border:1px solid transparent;border-radius:999px;padding:7px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--hero-ink);font-weight:600}
+.seg button:focus-visible,.devices button:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.controls{display:flex;flex-direction:column;gap:14px}
+.verdict{background:var(--well);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.verdict .name{font-family:var(--display);font-size:22px;font-weight:700}
+.verdict .why{color:var(--soft);font-size:14px}
+.verdict .mini{height:150px}
+
+/* mini wireframes */
+.mini{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:5px;overflow:hidden;position:relative}
+.blk{background:var(--piece);border-radius:5px;min-height:10px}
+.blk.alt{background:var(--piece-2)}
+.blk.hero{background:var(--hero)}
+.row{display:flex;gap:5px;min-width:0}
+.pill{background:var(--piece);border-radius:999px;height:14px;flex:0 0 auto}
+.hd{height:6px;width:40%;background:var(--faint);opacity:.5;border-radius:3px;margin-top:3px}
+.fade{position:absolute;inset:0 0 0 auto;width:22%;background:linear-gradient(90deg,transparent,var(--paper))}
+
+/* sample floor */
+.devices{display:flex;flex-wrap:wrap;gap:6px}
+.devices button{font:500 13px var(--body);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer;display:flex;gap:8px;align-items:baseline}
+.devices button small{font-family:var(--mono);color:var(--faint);font-size:11px}
+.devices button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.stage{background:var(--well);border-radius:16px;padding:22px 12px;display:flex;justify-content:center;overflow-x:auto}
+.device{background:var(--paper);border:2px solid var(--ink);border-radius:22px;padding:10px;display:flex;flex-direction:column;gap:8px;flex:0 0 auto}
+.device .bar{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--soft)}
+.device .bar b{font-family:var(--display);color:var(--ink);font-size:13px}
+.floor{display:flex;gap:10px;min-height:0;overflow:hidden;flex:1}
+.area{display:flex;flex-direction:column;gap:6px;min-width:0}
+.area>.label{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.grp{display:flex;flex-direction:column;gap:4px;min-width:0}
+.grp>.gl{display:flex;justify-content:space-between;gap:6px;font-size:10.5px;color:var(--soft)}
+.grp>.gl i{font-style:normal;font-family:var(--mono);font-size:9.5px;color:var(--lamp);white-space:nowrap}
+.card{background:var(--piece);border-radius:7px;padding:5px 7px;font-size:10px;line-height:1.3;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card.hero{background:var(--hero);color:var(--hero-ink);padding:10px;font-size:12px;white-space:normal;font-weight:600}
+.card.tile{text-align:center;padding:7px 4px;white-space:normal}
+.card.tile b{display:block;font-family:var(--display);font-size:14px}
+.card.chip{border-radius:999px;flex:0 0 auto}
+.card.rowi{background:transparent;border-bottom:1px solid var(--line);border-radius:0;padding:4px 2px}
+.shelf{display:flex;gap:5px;overflow:hidden;position:relative}
+.shelf .card{flex:0 0 38%;white-space:normal;height:44px}
+.tiles{display:grid;gap:5px}
+.split{display:grid;grid-template-columns:38% 1fr;gap:6px}
+.split .detail{background:var(--piece-2);border-radius:7px;padding:8px;font-size:10px;color:var(--soft)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--soft)}
+.legend i{font-style:normal;font-family:var(--mono);font-size:11.5px;color:var(--lamp)}
+
+/* catalogue */
+.cat{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.pat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.pat .mini{height:118px;background:var(--bg)}
+.pat dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13px}
+.pat dt{font-family:var(--mono);font-size:11px;color:var(--faint);padding-top:2px}
+.pat dd{margin:0;min-width:0}
+.pat .from{font-size:12px;color:var(--faint)}
+.tag{display:inline-block;font-family:var(--mono);font-size:10.5px;background:var(--lamp-soft);color:var(--ink);border-radius:5px;padding:1px 6px}
+
+/* rules table */
+.tablewrap{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:13.5px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+tr:last-child td{border-bottom:0}
+.budget{display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:start;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px}
+@media (max-width:640px){.budget{grid-template-columns:1fr}}
+.phonebar{width:170px;border:2px solid var(--ink);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;margin:0 auto}
+.phonebar.side{width:300px;flex-direction:row}
+.seg-b{display:flex;align-items:center;justify-content:center;font-size:10.5px;color:var(--ink);border-bottom:1px solid var(--paper);text-align:center;padding:0 4px;overflow:hidden;transition:flex-basis .25s}
+.seg-b.floor{background:var(--accent-soft);font-weight:600;color:var(--accent)}
+.seg-b.chrome{background:var(--well)}
+.seg-b.keys{background:var(--piece-2);color:var(--soft)}
+.seg-b.typing{background:var(--lamp-soft)}
+.phonebar.side .seg-b{border-bottom:0;border-right:1px solid var(--paper);writing-mode:horizontal-tb}
+.bnum{font-family:var(--display);font-size:30px;font-weight:700}
+.order{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.shapes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.shape{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.shape b{font-family:var(--display);font-size:15px}
+.own .mini{height:118px;background:var(--bg)}
+.blk.lit{background:var(--lamp);box-shadow:0 0 0 4px var(--lamp-soft),0 0 22px var(--lamp-soft)}
+.blk.dim{opacity:.45}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--piece);flex:0 0 auto}
+.dot.done{background:var(--accent)}
+.dot.next{background:var(--lamp);box-shadow:0 0 0 3px var(--lamp-soft)}
+.depthbox{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.ground{height:200px;border-radius:12px;background:linear-gradient(180deg,var(--bg) 0%,var(--well) 100%);display:flex;align-items:center;justify-content:center;overflow:hidden;perspective:700px}
+.drow{display:flex;align-items:center;gap:10px;transform-style:preserve-3d}
+.dcard{width:86px;height:118px;border-radius:12px;background:var(--piece);flex:0 0 auto;display:flex;align-items:flex-end;padding:8px;font-size:11px;color:var(--ink);transition:transform .35s,box-shadow .35s,opacity .35s,filter .35s,margin .35s;position:relative}
+.dcard.c0{background:var(--accent);color:var(--hero-ink)}
+.ov .dcard{margin-left:-34px}.ov .dcard:first-child{margin-left:0}
+.ov .dcard{z-index:calc(10 - var(--d))}
+.sc .dcard{transform:scale(calc(1 - var(--d) * .12))}
+.lt .dcard{box-shadow:calc(6px - var(--d) * 1px) calc(14px - var(--d) * 3px) calc(22px - var(--d) * 4px) rgba(20,40,30,calc(.32 - var(--d) * .07))}
+.hz .dcard{opacity:calc(1 - var(--d) * .2);filter:saturate(calc(1 - var(--d) * .3))}
+.tl .dcard{transform:rotateY(calc(var(--s) * -38deg)) scale(calc(1 - var(--d) * .1))}
+.cues{display:flex;flex-wrap:wrap;gap:6px}
+.cues label{display:flex;gap:6px;align-items:center;font-size:13px;background:var(--well);border-radius:999px;padding:6px 12px;cursor:pointer}
+.cues input{accent-color:var(--accent)}
+.shapes2 .mini{height:110px;background:var(--bg)}
+.circ{border-radius:50%;background:var(--piece);flex:0 0 auto}
+.lang{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.lvl{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.lvl .eyebrow{color:var(--lamp)}
+.asks{display:flex;flex-direction:column;gap:10px;background:var(--accent-soft);border-radius:14px;padding:18px}
+.asks ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:72ch}
+@media (prefers-reduced-motion:no-preference){.card,.blk{transition:background .2s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Gurudevi · floors</div>
+    <h1 style="margin-top:8px">How pieces arrange on a floor</h1>
+    <p class="lede">A floor never picks a layout by room. Each group of pieces answers five questions, and a small set of proven patterns follows from the answers. The same rules lay out the Classroom, Self or Library, on a phone, sideways or on a tablet.</p>
+  </header>
+
+  <section aria-labelledby="q-h">
+    <h2 id="q-h">The five questions every group answers</h2>
+    <div class="questions">
+      <div class="q"><b>1. How much room is there?</b><p class="sub">Width class, and which way the screen is held. Tells us how many columns and whether panes can sit side by side.</p><span class="ans">phone · sideways · tablet · wide</span></div>
+      <div class="q"><b>2. How many pieces?</b><p class="sub">One piece is a hero. A handful can all show. Dozens need grouping, search or a shelf.</p><span class="ans">1 · 2–4 · 5–12 · 13+</span></div>
+      <div class="q"><b>3. What do people do with them?</b><p class="sub">Glance at a number, act on a task, browse similar things, or find one known thing.</p><span class="ans">glance · act · browse · find</span></div>
+      <div class="q"><b>4. How do they travel?</b><p class="sub">Stay on the floor, drill into one piece and come back, or step through one after another.</p><span class="ans">stay · drill in · step through</span></div>
+      <div class="q"><b>5. When does it matter?</b><p class="sub">Time ranks the groups. What matters right now is lit and leads; what is for later today follows; what is for anytime rests at the end. Only one thing is lit at a time.</p><span class="ans">now · later today · anytime</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="c-h">
+    <div>
+      <h2 id="c-h">Try it: answer the five questions</h2>
+      <p class="sub" style="margin-top:6px">This is the rule as code would run it. Pieces and their access come first (SanctuaryFeature decides what is present); the rule only places what is there.</p>
+    </div>
+    <div class="chooser">
+      <div class="controls">
+        <div class="field"><span>Room on screen</span><div class="seg" data-k="space">
+          <button data-v="phone" aria-pressed="true">Phone upright</button><button data-v="sideways">Phone sideways</button><button data-v="tablet">Tablet</button><button data-v="wide">Wide</button></div></div>
+        <div class="field"><span id="n-label">Pieces in the group: 4</span><input id="n" type="range" min="1" max="40" value="4" aria-labelledby="n-label"></div>
+        <div class="field"><span>What people do</span><div class="seg" data-k="kind">
+          <button data-v="glance">Glance</button><button data-v="act" aria-pressed="true">Act</button><button data-v="browse">Browse</button><button data-v="find">Find</button></div></div>
+        <div class="field"><span>How they travel</span><div class="seg" data-k="travel">
+          <button data-v="stay" aria-pressed="true">Stay</button><button data-v="drill">Drill in</button><button data-v="steps">Step through</button></div></div>
+        <div class="field"><span>When it matters</span><div class="seg" data-k="moment">
+          <button data-v="now">Now</button><button data-v="today">Later today</button><button data-v="anytime" aria-pressed="true">Anytime</button></div></div>
+      </div>
+      <div class="verdict" aria-live="polite">
+        <div class="eyebrow">Pattern</div>
+        <div class="name" id="v-name">Stream</div>
+        <div class="mini" id="v-mini"></div>
+        <p class="why" id="v-why"></p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="b-h">
+    <div>
+      <h2 id="b-h">Who gets the screen</h2>
+      <p class="sub" style="margin-top:6px">The floor competes with the status bar, header, perspective stripe, rooms bar and keyboard. The shell already gives way in a fixed order; this shows how much floor is left on a 360×760 phone, using what is built today.</p>
+    </div>
+    <div class="seg" data-k="moment2" id="bseg">
+      <button data-v="rest" aria-pressed="true">Resting</button><button data-v="read" aria-pressed="false">Reading</button><button data-v="type" aria-pressed="false">Typing</button><button data-v="side" aria-pressed="false">Sideways</button><button data-v="sidetype" aria-pressed="false">Sideways, typing</button>
+    </div>
+    <div class="budget">
+      <div class="phonebar" id="pbar" aria-hidden="true"></div>
+      <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div><div class="bnum" id="bnum"></div><div class="sub" id="bsub"></div></div>
+        <p id="bwhy"></p>
+        <div><h3 style="margin-bottom:6px">What gives way first</h3>
+        <ol class="order">
+          <li>The keyboard and the field being typed in always win.</li>
+          <li>The rooms bar slides away while reading or typing.</li>
+          <li>The perspective stripe folds into the header.</li>
+          <li>The header shrinks to one compact line, or leaves entirely sideways (its parts move to the rail).</li>
+          <li>The action button tucks away while typing.</li>
+          <li>The floor shows fewer groups: the lit one first, then by time, then by area.</li>
+        </ol></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="o-h">
+    <h2 id="o-h">What else shapes a floor</h2>
+    <div class="shapes">
+      <div class="shape"><b>The person's comfort</b><p class="sub">Large text needs fewer columns: tiles turn into a stream. Simple mode keeps only hero and stream. Actions sit on the main hand's side.</p></div>
+      <div class="shape"><b>Language</b><p class="sub">Sinhala and Tamil labels run longer than English. A tile that fits "Homework" may wrap in Sinhala, so the rule measures the label, not just the count.</p></div>
+      <div class="shape"><b>Attention</b><p class="sub">Something that needs the person (marks due tomorrow, an unread notice) rises above its saved order, and settles back once seen.</p></div>
+      <div class="shape"><b>Each piece's state</b><p class="sub">SanctuaryFeature decides presence. Locked and coming-soon pieces sink to the end of their group; empty groups fold to one line; offline pieces say what they still hold.</p></div>
+      <div class="shape"><b>The phone's budget</b><p class="sub">On a low-end phone the verger lowers detail: artwork shelves become plain rows and nothing moves to show a peek.</p></div>
+      <div class="shape"><b>Screen readers</b><p class="sub">Reading order follows the hierarchy (lit, then time, then area), not the visual columns, so a tablet board still reads in a sensible order.</p></div>
+      <div class="shape"><b>Interruptions</b><p class="sub">A call or a bell mid-task: coming back restores the open piece, its scroll and any draft.</p></div>
+      <div class="shape"><b>Shared phones</b><p class="sub">The arrangement belongs to the account, so a parent and child on one phone each find their own floor.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="w-h">
+    <div>
+      <h2 id="w-h">Arrangements of our own</h2>
+      <p class="sub" style="margin-top:6px">Yes, we can have our own. Each one below is built on a proven pattern, so it keeps that pattern's strengths, but it is shaped by the world: light, paths, the day, a desk. They answer the same five questions, so the rule can pick them like any other.</p>
+    </div>
+    <div class="cat own" id="own"></div>
+  </section>
+
+  <section aria-labelledby="s-h">
+    <div>
+      <h2 id="s-h">One Classroom floor, four screens</h2>
+      <p class="sub" style="margin-top:6px">A teacher's floor with six groups. Nothing below is drawn per room or per device: each group runs the rule above, and the areas arrange by room on screen.</p>
+    </div>
+    <div class="devices" role="group" aria-label="Screen">
+      <button data-d="phone" aria-pressed="true">Phone upright <small>360×760</small></button>
+      <button data-d="sideways" aria-pressed="false">Phone sideways <small>760×360</small></button>
+      <button data-d="tablet" aria-pressed="false">Tablet <small>1000×700</small></button>
+      <button data-d="wide" aria-pressed="false">Wide <small>1280×800</small></button>
+    </div>
+    <div class="stage"><div class="device" id="device"></div></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <section aria-labelledby="p-h">
+    <div>
+      <h2 id="p-h">The patterns</h2>
+      <p class="sub" style="margin-top:6px">Ten patterns cover almost every group. They come from published systems that were tested on real people: Material 3's window sizes and canonical layouts, Apple's split views, and long-running research on carousels and lists.</p>
+    </div>
+    <div class="cat" id="cat"></div>
+  </section>
+
+  <section aria-labelledby="r-h">
+    <h2 id="r-h">How areas arrange by room on screen</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Room</th><th>Width (dp)</th><th>Areas</th><th>Drilling in</th><th>Comes from</th></tr></thead>
+      <tbody>
+        <tr><td>Phone upright</td><td class="mono">&lt; 600</td><td>Stacked top to bottom, Today first</td><td>Opens full, back returns</td><td>Material 3 compact</td></tr>
+        <tr><td>Phone sideways</td><td class="mono">height &lt; 520</td><td>Side by side as bands that scroll across; rail at the side</td><td>Opens full, back returns</td><td>Our HUD stance</td></tr>
+        <tr><td>Tablet, small tablet sideways</td><td class="mono">600–1199</td><td>A main column and a side shelf</td><td>List beside the open piece from 720</td><td>Material 3 medium/expanded, supporting pane</td></tr>
+        <tr><td>Wide</td><td class="mono">≥ 1200</td><td>One column per area, like a board</td><td>List beside the open piece</td><td>Material 3 large, list-detail</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section aria-labelledby="d-h">
+    <div>
+      <h2 id="d-h">Depth without moving</h2>
+      <p class="sub" style="margin-top:6px">Most of the 3D feeling comes from placement, not animation. The eye reads depth from a handful of still cues; motion only confirms it. Turn the cues on one by one. Every cue here is placement and colour, so it costs almost nothing even on a 2 GB phone.</p>
+    </div>
+    <div class="depthbox">
+      <div class="cues" id="cues">
+        <label><input type="checkbox" value="ov" checked> Overlap</label>
+        <label><input type="checkbox" value="sc" checked> Size falls off</label>
+        <label><input type="checkbox" value="lt" checked> Shadow from the world's light</label>
+        <label><input type="checkbox" value="hz" checked> Far things paler</label>
+        <label><input type="checkbox" value="tl"> Turned on an axis</label>
+      </div>
+      <div class="ground"><div class="drow ov sc lt hz" id="drow"></div></div>
+      <p class="sub">How it maps to us: the world's scene is the far plane, pieces are the middle plane, and the header, rooms bar and action button are the near plane. Shadows fall from where the world's sun or lamp actually is at that hour, so depth agrees with the scene. Motion adds two things on top: a piece grows into its open view, so people see where they went, and layers drift at different speeds when scrolling or tilting.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="sh-h">
+    <div>
+      <h2 id="sh-h">Shapes a shelf can take</h2>
+      <p class="sub" style="margin-top:6px">A shelf does not have to be a row of rectangles. The shape should say what the thing is: people are round, books are tall, a lesson deck is a stack.</p>
+    </div>
+    <div class="cat shapes2" id="shapes"></div>
+  </section>
+
+  <section aria-labelledby="hig-h">
+    <h2 id="hig-h">What Apple, Google and Microsoft already name</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Need</th><th>Apple HIG</th><th>Material 3</th><th>Fluent</th><th>Ours</th></tr></thead>
+      <tbody>
+        <tr><td>Move between rooms</td><td>Tab bar; sidebar on iPad</td><td>Navigation bar; navigation rail</td><td>NavigationView</td><td>Rooms bar; rail sideways and on tablets</td></tr>
+        <tr><td>List and open item</td><td>Split view</td><td>List-detail layout</td><td>List/details</td><td>List beside open piece</td></tr>
+        <tr><td>Main task plus help</td><td>Inspector</td><td>Supporting pane</td><td>Pane</td><td>Desk, main and side shelf</td></tr>
+        <tr><td>Look through similar things</td><td>Collections, horizontal scroll</td><td>Carousel: multi-browse, uncontained, hero, full-screen</td><td>FlipView</td><td>Shelf, in shapes</td></tr>
+        <tr><td>Short task over the floor</td><td>Sheet (detents)</td><td>Bottom sheet</td><td>Dialog, flyout</td><td>Sheet</td></tr>
+        <tr><td>Main action</td><td>Toolbar button</td><td>FAB, FAB menu, floating toolbar</td><td>Command bar</td><td>Action button, hand side</td></tr>
+        <tr><td>Glanceable state</td><td>Widgets, Live Activities</td><td>Cards</td><td>Cards</td><td>Tiles, Lamp</td></tr>
+        <tr><td>Shape and material</td><td>Glass materials, continuous corners</td><td>Shape library and shape morphing (Expressive)</td><td>Mica, Acrylic layers</td><td>Each world's shape and surface recipes</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section aria-labelledby="l-h">
+    <div>
+      <h2 id="l-h">As a pattern language</h2>
+      <p class="sub" style="margin-top:6px">Christopher Alexander described buildings with patterns that nest: town, building, room, window seat. Each pattern solves one tension and makes room for the smaller ones inside it. The floor nests the same way, and several of his patterns translate almost directly.</p>
+    </div>
+    <div class="lang">
+      <div class="lvl"><div class="eyebrow">Sanctuary</div><b>Intimacy gradient</b><p class="sub">Public rooms at one end, private at the other: Community, Library, the work room, Self. Inside a floor, Private is the last area.</p></div>
+      <div class="lvl"><div class="eyebrow">Room</div><b>Entrance transition</b><p class="sub">Entering a room is a short change of light and scene, so the person feels they arrived somewhere, not that a page loaded.</p></div>
+      <div class="lvl"><div class="eyebrow">Area</div><b>Light on two sides</b><p class="sub">The lit piece (Lamp) and the world's light give every floor a clear place to look first.</p></div>
+      <div class="lvl"><div class="eyebrow">Group</div><b>Alcoves</b><p class="sub">Side shelves and the desk's tray: small places beside the main space for the things kept close.</p></div>
+      <div class="lvl"><div class="eyebrow">Piece</div><b>Window place</b><p class="sub">The hero: one spot with the best light where the important thing sits.</p></div>
+      <div class="lvl"><div class="eyebrow">Whole</div><b>Strong centres, levels of scale</b><p class="sub">From his later work: every level has one clear centre, and sizes step down evenly (hero, card, tile, chip) instead of everything being the same size.</p></div>
+    </div>
+  </section>
+
+  <section class="asks" aria-labelledby="a-h">
+    <h2 id="a-h">What I need from you</h2>
+    <ol>
+      <li>Which of our own arrangements feel right (Lamp, Desk, Path, Day river, Pinboard), and is there one you already picture that is missing?</li>
+      <li>Is the order of what gives way on screen right? For example, should the perspective stripe outlast the header?</li>
+      <li>Which depth cues should every world use, and is turning pieces on an axis (the last cue) too much?</li>
+      <li>Which shelf shapes do you want: circles for people, tall for books, stacks for decks, mixed tiles?</li>
+      <li>Letting people change a group's pattern is noted for later; the layout model keeps a place for it, nothing is built.</li>
+    </ol>
+  </section>
+</div>
+
+<script>
+// ---------- patterns: name, wireframe, notes ----------
+const P = {
+  hero:{name:'Hero',when:'One piece that matters most right now: the next class, today\'s roll call.',not:'More than one at a time; then nothing stands out.',count:'1',from:'Material 3 hero carousel item; editorial lead story'},
+  stream:{name:'Stream',when:'A few mixed pieces people act on, read top to bottom with a thumb.',not:'Dozens of pieces; the floor becomes a long scroll with no landmarks.',count:'2–6',from:'Material 3 feed layout'},
+  tiles:{name:'Tile grid',when:'Several equal numbers or actions to compare at a glance.',not:'Long labels or unequal importance.',count:'2–9',from:'Dashboards; Material 3 cards in grid'},
+  shelf:{name:'Shelf',when:'Browsing many things of the same kind: lessons, books, worlds. The next one peeks so people know it scrolls.',not:'Anything critical; most people never swipe past the third item.',count:'3–12',from:'Material 3 multi-browse carousel; NN/g carousel research'},
+  chips:{name:'Chip rail',when:'Small quick actions or filters in one line.',not:'More than about 8, or actions that need explaining.',count:'3–8',from:'Material 3 chips; filter bars'},
+  list:{name:'Grouped list',when:'Finding one known thing among many, with headings (by class, by letter) and search.',not:'Two or three pieces; a list looks empty.',count:'8+',from:'iOS and Material lists with section headers'},
+  pager:{name:'One at a time',when:'Stepping through a set in order: roll call student by student, a quiz, onboarding.',not:'Browsing or comparing.',count:'any, in order',from:'Material 3 full-screen carousel; card stacks'},
+  split:{name:'List beside open piece',when:'Drilling in on a wide screen: the list stays, the chosen piece opens next to it.',not:'Phone upright; there is no room for both.',count:'any, ≥ 720 wide',from:'Material 3 list-detail; Apple split view'},
+  side:{name:'Main and side shelf',when:'One main task with helpers beside it: marks entry with the class list.',not:'Two equally important things.',count:'main + 1–3, ≥ 840 wide',from:'Material 3 supporting pane'},
+  lamp:{own:true,name:'Lamp',when:'The moment something matters now: the world\'s lamp lights that one piece and the rest of its group rests dimmer around it. When the moment passes, the light moves on.',not:'More than one lit thing at a time.',count:'1 lit + rest',from:'Built on Hero; the world\'s lamp already marks the current room'},
+  desk:{own:true,name:'Desk',when:'Working on one thing: it lies open on the desk, and its tools lie along the edge nearest the thumb (marks sheet with the class list and calculator).',not:'Browsing.',count:'1 open + 2–5 tools',from:'Built on Main and side shelf; on a phone the side becomes a tray at the bottom'},
+  path:{own:true,name:'Path',when:'Progress that takes days or weeks: a learning journey, a term plan, onboarding. Done steps are behind, the next one glows ahead, the rest wait along the path.',not:'Quick sequences like roll call (use One at a time).',count:'4–20 steps',from:'Built on One at a time and steppers; drawn on the world\'s ground'},
+  river:{own:true,name:'Day river',when:'Things placed in time: today\'s periods, homework due, meetings. They sit along the day with a "now" mark that moves.',not:'Things with no time.',count:'3–10 in a day',from:'Built on timelines and agenda views'},
+  pinboard:{own:true,name:'Pinboard',when:'The few pieces a person pinned stay in one small board at the top of the floor, whatever the room.',not:'More than the pin limit (2–4 by room).',count:'2–4 pins',from:'Built on Tile grid; uses the pins the layout already saves'},
+  board:{name:'Board',when:'Wide screens: each area becomes a column, like a staff room wall.',not:'Phones; columns turn into slivers.',count:'3–5 areas, ≥ 1200 wide',from:'Kanban boards; Material 3 large layouts'},
+};
+
+function mini(key,n){
+  const b=(c='',s='')=>`<div class="blk ${c}" style="${s}"></div>`;
+  switch(key){
+    case 'hero': return b('hero','flex:1')+b('alt','height:14px')+b('alt','height:14px');
+    case 'stream': return Array.from({length:Math.min(n||4,5)},(_, i)=>b(i%2?'alt':'','height:20px')).join('');
+    case 'tiles': {const c=Math.min(4,Math.max(2,Math.ceil(Math.sqrt(n||4))));return `<div style="display:grid;grid-template-columns:repeat(${c},1fr);gap:5px">${Array.from({length:Math.min(n||4,12)},()=>b('','height:26px')).join('')}</div>`;}
+    case 'shelf': return `<div class="hd"></div><div class="row" style="overflow:hidden">${Array.from({length:4},()=>b('','flex:0 0 36%;height:56px')).join('')}</div><div class="fade"></div>`;
+    case 'chips': return `<div class="row" style="overflow:hidden">${[44,60,38,52,46,40].map(w=>`<div class="pill" style="width:${w}px"></div>`).join('')}</div>`+b('alt','flex:1');
+    case 'list': return `<div class="hd"></div>`+Array.from({length:3},()=>b('alt','height:9px')).join('')+`<div class="hd"></div>`+Array.from({length:3},()=>b('alt','height:9px')).join('');
+    case 'pager': return `<div class="row" style="flex:1"><div class="blk alt" style="flex:0 0 8%"></div><div class="blk" style="flex:1"></div><div class="blk alt" style="flex:0 0 8%"></div></div><div class="row" style="justify-content:center">${'<div class="pill" style="width:6px;height:6px"></div>'.repeat(5)}</div>`;
+    case 'split': return `<div class="row" style="flex:1"><div style="flex:0 0 36%;display:flex;flex-direction:column;gap:4px">${Array.from({length:6},(_, i)=>b(i===1?'':'alt','height:9px')).join('')}</div><div class="blk" style="flex:1"></div></div>`;
+    case 'side': return `<div class="row" style="flex:1"><div class="blk" style="flex:1"></div><div style="flex:0 0 30%;display:flex;flex-direction:column;gap:4px">${b('alt','flex:1')+b('alt','flex:1')}</div></div>`;
+    case 'lamp': return `<div class="row" style="flex:1;align-items:center"><div class="blk dim" style="flex:1;height:40%"></div><div class="blk lit" style="flex:2;height:86%"></div><div class="blk dim" style="flex:1;height:40%"></div></div>`+b('dim alt','height:12px');
+    case 'desk': return `<div class="blk" style="flex:1"></div><div class="row">${b('alt','flex:1;height:20px')+b('alt','flex:1;height:20px')+b('alt','flex:1;height:20px')}</div>`;
+    case 'path': return `<div style="flex:1;display:flex;flex-direction:column;justify-content:space-around;padding:4px 10px">${[['done',0],['done',30],['next',60],['',35],['',8]].map(([c,x])=>`<div style="display:flex;align-items:center;gap:6px;margin-left:${x}%"><div class="dot ${c}"></div>${c==='next'?'<div class="blk lit" style="width:46%;height:14px"></div>':'<div class="blk alt" style="width:30%;height:8px"></div>'}</div>`).join('')}</div>`;
+    case 'river': return `<div style="flex:1;position:relative"><div style="position:absolute;left:0;right:0;top:58%;height:2px;background:var(--faint);opacity:.5"></div><div style="position:absolute;top:20%;bottom:10%;left:46%;width:2px;background:var(--lamp)"></div>${[[4,18],[24,22],[52,28],[78,18]].map(([l,w],i)=>`<div class="blk ${i===2?'lit':''}" style="position:absolute;left:${l}%;width:${w}%;top:${i%2?62:26}%;height:22%"></div>`).join('')}</div>`;
+    case 'pinboard': return `<div style="border:1px dashed var(--faint);border-radius:7px;padding:5px;display:grid;grid-template-columns:repeat(3,1fr);gap:5px">${b('','height:28px')+b('','height:28px')+b('','height:28px')}</div>`+b('alt','flex:1');
+    case 'board': return `<div class="row" style="flex:1">${Array.from({length:4},()=>`<div style="flex:1;display:flex;flex-direction:column;gap:4px">${b('','height:16px')+b('alt','height:12px')+b('alt','height:12px')}</div>`).join('')}</div>`;
+  }
+}
+
+// ---------- the rule ----------
+const WIDE = s => s==='tablet' || s==='wide';
+function patternOf({space,n,kind,travel,moment='anytime'}){
+  if(travel==='steps' && n>12 && moment!=='now') return ['path','A long sequence lived over days: lay it out as a path, with done steps behind and the next one lit ahead.'];
+  if(travel==='steps') return ['pager','People go through these in order, so show one at a time with the next one a swipe away. Works the same at every size.'];
+  if(travel==='drill' && WIDE(space)) return ['split','People open one piece and come back. With room for both, the list stays on the left and the open piece fills the right.'];
+  if(moment==='now' && travel!=='drill') return n===1 ? ['hero','The one thing that matters right now leads the floor at full width.'] : ['lamp','One of these matters right now: it takes the lamp and the others rest dimmer beside it until the moment passes.'];
+  if(moment==='today' && kind!=='find' && n>=3 && n<=10) return ['river','These happen at times today, so they sit along the day with a moving "now" mark.'];
+  if(n===1) return ['hero','A single piece earns the full width and the strongest treatment on the floor.'];
+  if(kind==='glance'){
+    if(n<=9) return ['tiles',`Numbers people compare at a glance sit side by side: ${space==='phone'?'two':space==='sideways'?'four':'three or four'} across.`];
+    return ['list','Too many numbers to compare; group them as rows under headings.'];
+  }
+  if(kind==='act'){
+    if(n<=(WIDE(space)?6:4)) return ['stream','A few tasks, each with room for its label and state. Easy to reach with a thumb.'];
+    if(n<=8) return ['tiles','More tasks than a stream holds comfortably; equal tiles keep all of them in view.'];
+    return ['list','Many tasks: group them under headings and add search. Pin the daily ones so they rise to the top.'];
+  }
+  if(kind==='browse'){
+    if(n<3) return ['stream','Two similar things show in full; a shelf would look empty.'];
+    if(WIDE(space) && n<=8) return ['tiles','On a wide screen everything fits, so show it all instead of hiding items in a shelf.'];
+    if(n<=12) return ['shelf','Similar things to look through: a row that scrolls across, with the next one peeking out.'];
+    return ['shelf','A shelf of the most recent dozen, with "See all" opening a grid. Never hide all of them in one long row.'];
+  }
+  // find
+  if(n<=6) return ['stream','A short set; people can see the one they want without searching.'];
+  return ['list','Finding one known thing among many: headings and search. ' + (travel==='drill'?'On a phone the chosen one opens full, and back returns to the list.':'')];
+}
+
+// ---------- chooser wiring ----------
+const state={space:'phone',kind:'act',travel:'stay',n:4,moment:'anytime'};
+function renderChoice(){
+  const [k,why]=patternOf(state);
+  document.getElementById('v-name').textContent=P[k].name;
+  document.getElementById('v-mini').innerHTML=mini(k,state.n);
+  document.getElementById('v-why').textContent=why;
+  document.getElementById('n-label').textContent=`Pieces in the group: ${state.n}`;
+}
+document.querySelectorAll('.seg').forEach(seg=>{
+  seg.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+    seg.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    state[seg.dataset.k]=b.dataset.v;renderChoice();});
+  seg.querySelectorAll('button:not([aria-pressed])').forEach(x=>x.setAttribute('aria-pressed','false'));
+});
+document.getElementById('n').addEventListener('input',e=>{state.n=+e.target.value;renderChoice();});
+renderChoice();
+
+// ---------- sample floor ----------
+const FLOOR=[
+  {area:'Today',group:'Next class',kind:'glance',travel:'stay',items:['10-B Science · 9:40 · Room 14 · 38 students']},
+  {area:'Work',group:'Daily tasks',kind:'act',travel:'stay',items:['Take roll call','Enter term marks','Set homework','Plan a lesson']},
+  {area:'Work',group:'Roll call',kind:'act',travel:'steps',items:['Amaya','Dinuk','Kavin','Nethmi','Sahan']},
+  {area:'Work',group:'My students',kind:'find',travel:'drill',items:Array.from({length:38},(_,i)=>['Amaya P.','Ashen R.','Dinuk S.','Hiruni K.','Kavin M.','Malsha D.','Nethmi W.','Rashmi F.','Sahan J.','Tharushi A.'][i%10])},
+  {area:'Institution',group:'School notices',kind:'browse',travel:'stay',items:['Sports meet, Friday','Term test timetable','Staff meeting 2 pm','Uniform check','Library week']},
+  {area:'Outlook',group:'This term',kind:'glance',travel:'stay',items:[['34/38','present today'],['21','homework in'],['6','term week'],['2','marks due']]},
+  {area:'Private',group:'My notes',kind:'browse',travel:'stay',items:['Ideas for photosynthesis lab','Parent call list']},
+];
+const DEV={
+  phone:{w:300,h:620,label:'Phone upright'},
+  sideways:{w:620,h:300,label:'Phone sideways'},
+  tablet:{w:760,h:532,label:'Tablet'},
+  wide:{w:980,h:612,label:'Wide'},
+};
+function piece(k,g,space){
+  const it=g.items;
+  const text=x=>Array.isArray(x)?x.join(' '):x;
+  switch(k){
+    case 'hero': return `<div class="card hero">${text(it[0])}</div>`;
+    case 'stream': return it.slice(0,6).map(x=>`<div class="card">${text(x)}</div>`).join('');
+    case 'tiles': {const n=it.length;const c=space==='phone'?2:space==='sideways'?Math.min(4,n):(n<=4?n:Math.min(4,Math.ceil(n/2)));
+      return `<div class="tiles" style="grid-template-columns:repeat(${c},1fr)">${it.map(x=>Array.isArray(x)?`<div class="card tile"><b>${x[0]}</b>${x[1]}</div>`:`<div class="card tile">${x}</div>`).join('')}</div>`;}
+    case 'shelf': return `<div class="shelf">${it.map(x=>`<div class="card">${text(x)}</div>`).join('')}<div class="fade"></div></div>`;
+    case 'list': return `<div class="card rowi" style="color:var(--faint)">Search ${it.length} students…</div>`+it.slice(0,space==='phone'?5:4).map(x=>`<div class="card rowi">${text(x)}</div>`).join('');
+    case 'pager': return `<div class="card hero" style="background:var(--piece);color:var(--ink);display:flex;justify-content:space-between;align-items:center">‹ <span>${it[0]} · Present?</span> ›</div>`;
+    case 'split': return `<div class="split"><div style="display:flex;flex-direction:column;gap:2px">${it.slice(0,7).map((x,i)=>`<div class="card rowi" style="${i===1?'background:var(--accent-soft)':''}">${text(x)}</div>`).join('')}</div><div class="detail"><b style="color:var(--ink)">${it[1]}</b><br>Attendance 96%<br>Last marks 71<br>Guardian: Mr. R.</div></div>`;
+  }
+}
+function renderFloor(space){
+  const d=DEV[space];
+  const el=document.getElementById('device');
+  el.style.width=d.w+'px';el.style.height=d.h+'px';
+  const areas=[...new Set(FLOOR.map(g=>g.area))];
+  const groupHtml=g=>{const [k]=patternOf({space,n:g.items.length,kind:g.kind,travel:g.travel});
+    return `<div class="grp"><div class="gl"><span>${g.group}</span><i>${P[k].name}</i></div>${piece(k,g,space)}</div>`;};
+  const areaHtml=(a,style='')=>`<div class="area" style="${style}"><div class="label">${a}</div>${FLOOR.filter(g=>g.area===a).map(groupHtml).join('')}</div>`;
+  let floor='';
+  if(space==='phone') floor=`<div class="floor" style="flex-direction:column">${areas.map(a=>areaHtml(a)).join('')}</div>`;
+  else if(space==='sideways') floor=`<div class="floor" style="flex-direction:row">${areas.map(a=>areaHtml(a,'flex:0 0 46%')).join('')}</div>`;
+  else if(space==='tablet') floor=`<div class="floor"><div class="area" style="flex:1.7">${['Today','Work'].map(a=>areaHtml(a)).join('')}</div><div class="area" style="flex:1">${['Institution','Outlook','Private'].map(a=>areaHtml(a)).join('')}</div></div>`;
+  else floor=`<div class="floor">${areas.map(a=>areaHtml(a,`flex:${a==='Work'?1.8:1}`)).join('')}</div>`;
+  el.innerHTML=`<div class="bar"><b>Classroom</b><span>${d.label}</span></div>${floor}`;
+  document.getElementById('legend').innerHTML = space==='phone'
+    ? 'Areas stack, Today first. <i>My students</i> is a grouped list here; tap a name and it opens full.'
+    : space==='sideways' ? 'Areas become bands that scroll across, so nothing needs a tall column. The rail (not drawn) sits at the side.'
+    : space==='tablet' ? 'A main column and a side shelf. <i>My students</i> becomes a list beside the open student.'
+    : 'Each area is a column. The work column is wider because it holds the most.';
+}
+document.querySelector('.devices').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  document.querySelectorAll('.devices button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));renderFloor(b.dataset.d);});
+renderFloor('phone');
+
+// ---------- catalogue ----------
+const card=([k,p])=>`
+  <article class="pat"><h3>${p.name}</h3><div class="mini">${mini(k,6)}</div>
+  <dl><dt>use for</dt><dd>${p.when}</dd><dt>avoid</dt><dd>${p.not}</dd><dt>pieces</dt><dd><span class="tag">${p.count}</span></dd></dl>
+  <div class="from">${p.own?'':'From: '}${p.from}</div></article>`;
+document.getElementById('cat').innerHTML=Object.entries(P).filter(([,p])=>!p.own).map(card).join('');
+document.getElementById('own').innerHTML=Object.entries(P).filter(([,p])=>p.own).map(card).join('');
+
+// ---------- space budget ----------
+const BUDGET={
+  rest:{side:false,parts:[['chrome','Status',24],['chrome','Header',56],['chrome','Perspective stripe',32],['floor','Floor',584],['chrome','Rooms bar',64]],
+    why:"At rest everything shows. The action button floats over the floor's corner without taking height."},
+  read:{side:false,parts:[['chrome','Status',24],['chrome','Header, compact',44],['floor','Floor',692]],
+    why:"Scrolling to read tucks the rooms bar and folds the stripe into a compact header. A small pull down brings them back."},
+  type:{side:false,parts:[['chrome','Status',24],['chrome','Header, compact',44],['floor','Floor: the field and its group',344],['typing','Typing bar',48],['keys','Keyboard',300]],
+    why:"The keyboard takes 40%. The rooms bar and action button step aside, and the floor shows only the group being typed into, scrolled so the field sits just above the typing bar."},
+  side:{side:true,parts:[['chrome','Rail',72],['floor','Floor, bands across',688]],
+    why:"Sideways the header row leaves; photo, help and bell move onto the rail and the status bar hides. Areas become bands that scroll across."},
+  sidetype:{side:true,parts:[['chrome','Rail',72],['typing','Field echoed in the typing bar',688]],
+    why:"Sideways, the keyboard covers almost all 360 points of height, so the floor cannot show. The typing bar repeats the field's label and text so the person still sees what they type, and numbers use our own keypad at the side instead."},
+};
+function renderBudget(k){
+  const b=BUDGET[k], bar=document.getElementById('pbar');
+  bar.className='phonebar'+(b.side?' side':'');
+  const total=b.parts.reduce((a,[, ,v])=>a+v,0);
+  bar.style.height=b.side?'170px':'360px';
+  bar.innerHTML=b.parts.map(([c,l,v])=>`<div class="seg-b ${c}" style="flex:0 0 ${v/total*100}%">${v/total>0.05?l:''}</div>`).join('');
+  const fl=b.parts.find(([c])=>c==='floor');
+  document.getElementById('bnum').textContent=fl?`${fl[2]} pt of floor`:'No floor';
+  document.getElementById('bsub').textContent=fl?`${Math.round(fl[2]/total*100)}% of the screen`:'the typing bar carries the field';
+  document.getElementById('bwhy').textContent=b.why;
+}
+document.getElementById('bseg').addEventListener('click',e=>{const x=e.target.closest('button');if(!x)return;
+  document.querySelectorAll('#bseg button').forEach(y=>y.setAttribute('aria-pressed',String(y===x)));renderBudget(x.dataset.v);});
+renderBudget('rest');
+// ---------- depth ----------
+(function(){
+  const row=document.getElementById('drow');
+  const names=['Today','Science','Maths','Sinhala','Art'];
+  row.innerHTML=names.map((t,i)=>`<div class="dcard c${i}" style="--d:${i};--s:${i===0?0:1}">${t}</div>`).join('');
+  document.getElementById('cues').addEventListener('change',e=>{if(e.target.type==='checkbox')row.classList.toggle(e.target.value,e.target.checked);});
+})();
+
+// ---------- shapes ----------
+(function(){
+  const scallop=(r=22,k=9,a=.12)=>{let d='';for(let i=0;i<=72;i++){const t=i/72*Math.PI*2,rr=r*(1+a*Math.cos(k*t));d+=(i?'L':'M')+(30+rr*Math.cos(t)).toFixed(1)+' '+(30+rr*Math.sin(t)).toFixed(1);}return d+'Z';};
+  const svg=(path)=>`<svg viewBox="0 0 60 60" width="44" height="44" aria-hidden="true"><path d="${path}" fill="var(--piece)"/></svg>`;
+  const S=[
+    ['Circles','People and companions: students, staff, a family. Faces read as round.','Story rows; Material avatar carousels',`<div class="row" style="align-items:center;flex:1;overflow:hidden">${[54,54,54,54,54].map((w,i)=>`<div class="circ" style="width:${w}px;height:${w}px;${i===1?'box-shadow:0 0 0 3px var(--lamp)':''}"></div>`).join('')}</div><div class="fade"></div>`],
+    ['Tall spines','Books, lessons and papers stand like a shelf; the spine carries the title.','Book apps; the old iBooks shelf',`<div class="row" style="align-items:flex-end;flex:1">${[70,82,64,88,74,80,60].map(h=>`<div class="blk" style="flex:0 0 18px;height:${h}%"></div>`).join('')}<div class="blk alt" style="flex:1;height:4px"></div></div>`],
+    ['Shrinking row','The first item is large and the rest step down, so the row shows depth and how much more there is.','Material 3 multi-browse carousel',`<div class="row" style="flex:1;align-items:stretch">${[46,26,16,8].map(w=>`<div class="blk" style="flex:0 0 ${w}%"></div>`).join('')}</div>`],
+    ['Turned row','The centre item faces you and the rest turn away on both sides. Strong depth; use sparingly.','Apple Cover Flow',`<div style="flex:1;display:flex;align-items:center;justify-content:center;perspective:300px;gap:2px">${[-1,-1,0,1,1].map((s,i)=>`<div class="blk ${s?'alt':''}" style="width:${s?28:44}px;height:${s?56:74}px;transform:rotateY(${s*-45}deg)"></div>`).join('')}</div>`],
+    ['Stack','A deck you work through: the top card is live, the edges of the next ones show behind it.','Card stacks; Wallet passes',`<div style="flex:1;position:relative">${[2,1,0].map(i=>`<div class="blk ${i?'alt':''}" style="position:absolute;left:${18+i*6}%;right:${18-i*6}%;top:${10+i*8}%;bottom:${10-i*2}%"></div>`).join('')}</div>`],
+    ['Mixed tiles','Tiles of two or three sizes in one block: the important one is big, small facts fill around it.','Apple bento layouts; widgets',`<div style="flex:1;display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:5px"><div class="blk" style="grid-row:span 2"></div><div class="blk alt"></div><div class="blk alt"></div><div class="blk alt" style="grid-column:span 2"></div></div>`],
+    ['Shaped pieces','Circle, rounded square, arch, leaf, scalloped badge: each world can own a few shapes, and a piece can change shape when it changes state.','Material 3 Expressive shape library and morphing',`<div class="row" style="flex:1;align-items:center;justify-content:space-around">${svg('M30 8a22 22 0 1 0 .1 0Z')}${svg('M14 8h32a6 6 0 0 1 6 6v32a6 6 0 0 1-6 6H14a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6Z')}${svg('M10 52V30a20 20 0 0 1 40 0v22Z')}${svg('M10 50C10 24 24 10 50 10C50 36 36 50 10 50Z')}${svg(scallop())}</div>`],
+  ];
+  document.getElementById('shapes').innerHTML=S.map(([n,w,f,m])=>`<article class="pat"><h3>${n}</h3><div class="mini">${m}</div><p style="font-size:13px">${w}</p><div class="from">From: ${f}</div></article>`).join('');
+})();
+
+</script>
+
+</body></html>

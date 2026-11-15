@@ -1,4 +1,16 @@
+---
+title: "Worlds: generic components, dressed by a world"
+status: "superseded"
+created: 2026-10-22
+updated: 2026-11-15
+author: "Neev"
+superseded_by: "Core/design/worlds-reference.md"
+tags: [worlds, components, tokens]
+---
+
 # Worlds: generic components, dressed by a world
+
+> **Superseded on 2026-11-15** by [`worlds-reference.md`](worlds-reference.md), which describes the worlds as built. Kept for its history and reasoning.
 
 Status: foundation landed on `feat/worlds-foundation` (2026-10-22). Settings, the tab bar and the headers are the first dressed surfaces.
 
