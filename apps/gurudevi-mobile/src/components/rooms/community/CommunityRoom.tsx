@@ -1,38 +1,62 @@
 /**
- * The Community room's front floor: what is new, talk, groups, and the
- * school's notices, placed by the floor engine and filled from the community
- * port. Group chat waits for realtime on the new server, and says so.
+ * The Community room's one main screen. Feed, Groups and Messages are its
+ * three main tabs; the chosen one is on the floor (Feed first), the same as on
+ * the web. Each tab shows its catalog features, placed by the floor engine and
+ * filled from the community port. Group chat waits for realtime on the new
+ * server, and says so.
  */
 import { communityPort, useSquare } from '@repo/community/port';
 import type { FloorNode } from '@repo/core/logic/floor';
 import { roomCatalogOf } from '@repo/core/logic/floor';
 import {
-  Button,
+  Badge,
   Card,
   EmptyState,
   ErrorState,
-  Rail,
+  Group,
   Row,
+  SegmentedControl,
   Stack,
   WaitingSign,
 } from '@repo/ui/components/native';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { APP_CATALOG } from '@/boot/registerAppCatalog';
 import { RoomFront } from '../RoomFront';
 import { SampleNote } from '../SampleNote';
 import { useRoomBond } from '../useRoomBond';
-import { NoticeCard, openCommunity, openGroup, PostCard } from './parts';
+import { NoticeCard, openGroup, PostCard, when } from './parts';
 
-const FRONT_POSTS = 3;
-const FRONT_NOTICES = 2;
+type CommunityTab = 'feed' | 'groups' | 'messages';
+
+/** Which main tab each Community feature sits under (anything else: Feed). */
+const TAB_OF: Readonly<Record<string, CommunityTab>> = {
+  hearth: 'feed',
+  'community-notices': 'feed',
+  circles: 'groups',
+  'community-explore': 'groups',
+  messages: 'messages',
+};
+
+const TABS = [
+  { value: 'feed', label: 'Feed' },
+  { value: 'groups', label: 'Groups' },
+  { value: 'messages', label: 'Messages' },
+] as const;
 
 export function CommunityRoom() {
   const bond = useRoomBond();
-  const catalog = useMemo(
+  const [tab, setTab] = useState<CommunityTab>('feed');
+  const roomCatalog = useMemo(
     () => roomCatalogOf(APP_CATALOG, 'community', bond.capacity, 'mobile'),
     [bond.capacity],
   );
+  // The chosen tab's features, on the same floor.
+  const catalog = useMemo(() => {
+    const features = roomCatalog.features.filter((f) => (TAB_OF[f.id] ?? 'feed') === tab);
+    const used = new Set(features.map((f) => f.floor?.group));
+    return { ...roomCatalog, features, groups: roomCatalog.groups.filter((g) => used.has(g.id)) };
+  }, [roomCatalog, tab]);
   const square = useSquare();
 
   if (square.isPending) {
@@ -58,78 +82,72 @@ export function CommunityRoom() {
   const joined = groups.filter((g) => g.joined);
   const unread = conversations.reduce((n, c) => n + c.unread, 0);
 
+  const groupRow = (g: (typeof groups)[number]) => (
+    <Row
+      key={g.id}
+      label={g.name}
+      detail={`${g.members} members${g.open ? '' : ' · By invite'}`}
+      note={g.summary}
+      chevron
+      onPress={() => openGroup(g.id)}
+    />
+  );
+
   const piece = (p: FloorNode) => {
     switch (p.id) {
       case 'hearth':
         return posts.length ? (
           <Stack gap="between">
-            {posts.slice(0, FRONT_POSTS).map((post) => (
+            {posts.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
-            {posts.length > FRONT_POSTS ? (
-              <Button
-                variant="quiet"
-                size="sm"
-                label={`See all ${posts.length} posts`}
-                onPress={() => openCommunity('/community/feed')}
-              />
-            ) : null}
           </Stack>
         ) : (
           <EmptyState title="Quiet for now" message="New posts from your groups land here." />
         );
       case 'messages':
-        return (
-          <Row
+        return conversations.length ? (
+          <Group
             label={p.label}
-            detail={unread ? `${unread} unread` : `${conversations.length} conversations`}
-            signal={unread > 0}
-            signalLabel={unread ? `${unread} unread` : undefined}
-            chevron
-            onPress={() => openCommunity('/community/messages')}
-          />
+            footer="Reading only for now. Replying opens when chat comes to the new server."
+          >
+            {conversations.map((c) => (
+              <Row
+                key={c.id}
+                label={c.with}
+                detail={[c.role, when(c.at)].filter(Boolean).join(' · ')}
+                note={c.last}
+                signal={c.unread > 0}
+                signalLabel={c.unread ? `${c.unread} unread` : undefined}
+                accessory={c.unread ? <Badge label={String(c.unread)} tone="lamp" /> : undefined}
+              />
+            ))}
+          </Group>
+        ) : (
+          <EmptyState title="No messages" message="Conversations will show here." />
         );
       case 'circles':
         return joined.length ? (
-          <Rail
-            label={p.label}
-            items={joined}
-            keyOf={(g) => g.id}
-            renderItem={(g) => (
-              <Card
-                title={g.name}
-                meta={`${g.members} members`}
-                size="sm"
-                onPress={() => openGroup(g.id)}
-              />
-            )}
-            seeAll={{ label: 'See all', onPress: () => openCommunity('/community/groups') }}
-          />
+          <Group label={p.label}>{joined.map(groupRow)}</Group>
         ) : (
           <Row label="You have not joined a group yet" />
         );
-      case 'community-explore':
-        return (
-          <Card
-            title={p.label}
-            meta={`${groups.filter((g) => !g.joined).length} groups you could join`}
-            onPress={() => openCommunity('/community/groups')}
-          />
+      case 'community-explore': {
+        const others = groups.filter((g) => !g.joined);
+        return others.length ? (
+          <Group label={p.label} footer="Joining opens when groups come to the new server.">
+            {others.map(groupRow)}
+          </Group>
+        ) : (
+          <Row label="No other groups to join yet" />
         );
+      }
       case 'community-notices':
         return notices.length ? (
           <Stack gap="between">
-            {notices.slice(0, FRONT_NOTICES).map((n) => (
+            {notices.map((n) => (
               <NoticeCard key={n.id} notice={n} />
             ))}
-            {notices.length > FRONT_NOTICES ? (
-              <Button
-                variant="quiet"
-                size="sm"
-                label={`See all ${notices.length} notices`}
-                onPress={() => openCommunity('/community/notices')}
-              />
-            ) : null}
           </Stack>
         ) : (
           <Row label="No notices from your school" />
@@ -145,7 +163,17 @@ export function CommunityRoom() {
       userId={bond.userId}
       perspectiveId={bond.perspectiveId}
       renderPiece={piece}
-      lead={communityPort.get().source === 'sample' ? <SampleNote what="posts and groups" /> : null}
+      lead={
+        <Stack gap="inside">
+          <SegmentedControl
+            label={`Community: ${unread ? `${unread} unread messages` : 'choose what to see'}`}
+            value={tab}
+            onChange={setTab}
+            options={TABS}
+          />
+          {communityPort.get().source === 'sample' ? <SampleNote what="posts and groups" /> : null}
+        </Stack>
+      }
     />
   );
 }
