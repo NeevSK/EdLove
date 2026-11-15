@@ -68,7 +68,6 @@ export default function TeacherEchoHistoryModal({
         <ScrollView
           className="flex-1"
           contentContainerStyle={{ padding: 0, paddingBottom: 60 }}
-          showsVerticalScrollIndicator={false}
         >
           {loading ? (
             <VStack space="md">

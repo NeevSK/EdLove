@@ -23,6 +23,8 @@ export type AuthorizedEntryResult =
         entityId: string;
         entityType: string;
         roles: readonly string[];
+        /** The bond's citizenship, as the server read it. */
+        citizenship?: 'FIRST_CLASS' | 'SECOND_CLASS' | 'THIRD_CLASS';
       }>;
     }>
   | Readonly<{
@@ -54,6 +56,8 @@ export type AuthoritativeAuthorizedEntryFacts =
         entityId: string;
         entityType: string;
         roles: readonly string[];
+        /** The bond's citizenship, as the server read it. */
+        citizenship?: 'FIRST_CLASS' | 'SECOND_CLASS' | 'THIRD_CLASS';
       }> | null;
     }>
   | Readonly<{ kind: 'inactive'; message: string }>

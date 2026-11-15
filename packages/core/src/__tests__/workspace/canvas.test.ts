@@ -1,6 +1,8 @@
 import {
+  areasOfSurfaces,
   createDefaultWorkspaceLayout,
   groupResolvedWorkspaceSurfacesByZone,
+  nextAreaOf,
   normalizeWorkspaceLayout,
   resolveWorkspaceSurfaceLayout,
   setWorkspaceSurfaceHidden,
@@ -167,5 +169,47 @@ describe('workspace canvas helpers', () => {
     expect(rezoned.pinned).toEqual(['principal']);
     expect(rezoned.zoneBySurface.teacher).toBe('private');
     expect(rezoned.updatedAt).toBe('2026-03-28T06:00:00.000Z');
+  });
+
+  it('takes areas from the room, in the order its furniture first names them', () => {
+    const room = [
+      { defaultZone: 'shelves', defaultOrder: 2 },
+      { defaultZone: 'reading-now', defaultOrder: 1 },
+      { defaultZone: 'shelves', defaultOrder: 3 },
+    ];
+    expect(areasOfSurfaces(room)).toEqual(['reading-now', 'shelves']);
+    expect(nextAreaOf('reading-now', ['reading-now', 'shelves'])).toBe('shelves');
+    expect(nextAreaOf('shelves', ['reading-now', 'shelves'])).toBe('reading-now');
+    expect(nextAreaOf('anything', [])).toBe('anything');
+  });
+
+  it('groups by whatever areas a room uses, with no fixed list', () => {
+    const room: WorkspaceSurfaceDefinition<'a' | 'b', string>[] = [
+      {
+        surfaceId: 'a',
+        workspaceId: 'library',
+        capabilityKey: 'x',
+        ownerPackage: 'core',
+        defaultZone: 'shelves',
+        defaultOrder: 1,
+      },
+      {
+        surfaceId: 'b',
+        workspaceId: 'library',
+        capabilityKey: 'x',
+        ownerPackage: 'core',
+        defaultZone: 'reading-now',
+        defaultOrder: 2,
+      },
+    ];
+    const layout = createDefaultWorkspaceLayout({
+      workspaceId: 'library',
+      userId: 'u',
+      surfaces: room,
+    });
+    const grouped = groupResolvedWorkspaceSurfacesByZone(
+      resolveWorkspaceSurfaceLayout(room, layout),
+    );
+    expect(grouped.map((g) => g.zone)).toEqual(['shelves', 'reading-now']);
   });
 });

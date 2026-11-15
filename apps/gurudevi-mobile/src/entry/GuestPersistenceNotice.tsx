@@ -1,4 +1,3 @@
-import { View, Text, Pressable } from 'react-native';
 import { isLocalOnlyIdentity } from '@repo/core/logic';
 import {
   dismissGuestLeaseReminder,
@@ -6,8 +5,12 @@ import {
   getOrCreateGuestLease,
 } from '@repo/core/native';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { Button, IconButton, Surface, Text } from '@repo/ui/components/native';
+import { X } from '@repo/ui/icons';
+import type { KitIconProps } from '@repo/ui/theme';
 import { usePathname, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { type ComponentType, useEffect, useState } from 'react';
+import { View } from 'react-native';
 
 /**
  * Nudges a guest to sign in on the lease's reminder days, and on every launch after the
@@ -52,30 +55,41 @@ export function GuestPersistenceNotice() {
   };
 
   return (
-    <View className="absolute bottom-24 left-4 right-4 z-40 flex-row items-center gap-3 rounded-2xl border border-phase-border bg-phase-surface px-4 py-3 shadow-lg">
-      <View className="flex-1">
-        <Text className="text-sm font-semibold text-phase-text-primary">
-          Guest mode · saved on this device
-        </Text>
-        <Text className="mt-0.5 text-xs leading-4 text-phase-text-secondary">
+    <Surface
+      tone="raised"
+      style={{
+        position: 'absolute',
+        bottom: 96,
+        left: 16,
+        right: 16,
+        zIndex: 40,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+      }}
+    >
+      <View style={{ flex: 1, gap: 2 }}>
+        <Text kind="label">Guest mode · saved on this device</Text>
+        <Text kind="caption" tone="soft">
           Create an account to keep your work safe and use it on your other devices.
         </Text>
       </View>
-      <Pressable
-        accessibilityRole="button"
+      <Button
+        label="Create account"
+        variant="primary"
+        size="sm"
         accessibilityLabel="Create an account to save across devices"
-        className="rounded-full bg-phase-interactive px-3 py-2"
         onPress={() => router.push('/auth')}
-      >
-        <Text className="text-xs font-bold text-white">Create account</Text>
-      </Pressable>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Dismiss guest storage reminder"
+      />
+      <IconButton
+        icon={X as ComponentType<KitIconProps>}
+        label="Dismiss guest storage reminder"
+        variant="quiet"
+        size="sm"
         onPress={dismiss}
-      >
-        <Text className="text-base text-phase-text-secondary">×</Text>
-      </Pressable>
-    </View>
+      />
+    </Surface>
   );
 }

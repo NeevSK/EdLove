@@ -4,6 +4,9 @@ import {
 } from '@repo/self/features/featureManifest';
 import { describe, expect, it } from 'vitest';
 
+/** The web's renderers, as declared by a platform (fixture). */
+const WEB_DELIVERS_FIRE_JOURNAL = { deliveredFeatureIds: ['fire_journal'] };
+
 const preferences = {
   selectedIds: [],
   customOrder: [],
@@ -22,6 +25,7 @@ describe('resolveSelfFeatureManifest', () => {
       },
       preferences,
       'browser',
+      WEB_DELIVERS_FIRE_JOURNAL,
     );
 
     expect(manifest.all).toHaveLength(25);
@@ -54,6 +58,7 @@ describe('resolveSelfFeatureManifest', () => {
       },
       preferences,
       'browser',
+      WEB_DELIVERS_FIRE_JOURNAL,
     );
 
     expect(manifest.all.find((feature) => feature.id === 'daily_pulse')).toMatchObject({
@@ -63,7 +68,12 @@ describe('resolveSelfFeatureManifest', () => {
   });
 
   it('does not fabricate browser authorization when only delivery is known', () => {
-    const manifest = resolveSelfFeatureManifest(null, preferences, 'browser');
+    const manifest = resolveSelfFeatureManifest(
+      null,
+      preferences,
+      'browser',
+      WEB_DELIVERS_FIRE_JOURNAL,
+    );
 
     expect(manifest.all.find((feature) => feature.id === 'fire_journal')).toMatchObject({
       delivery: 'runnable',
@@ -100,8 +110,11 @@ describe('resolveSelfFeatureManifest', () => {
     });
   });
 
-  it('lets a native adapter narrow delivery without changing its default behavior', () => {
-    expect(getSelfFeatureDelivery('voice_journal', 'native')).toBe('runnable');
+  it('runs only what the platform declares; nothing is assumed', () => {
+    expect(getSelfFeatureDelivery('voice_journal', 'native')).toBe('catalog-only');
+    expect(
+      getSelfFeatureDelivery('voice_journal', 'native', { deliveredFeatureIds: ['voice_journal'] }),
+    ).toBe('runnable');
     expect(
       getSelfFeatureDelivery('voice_journal', 'native', {
         deliveredFeatureIds: ['fire_journal'],

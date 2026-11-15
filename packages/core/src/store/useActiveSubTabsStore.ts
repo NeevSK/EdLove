@@ -54,6 +54,12 @@ export interface NavigationPreferences {
   showActiveSubTabs: boolean;
   autoHideChromeOnScroll: boolean;
   maxTabsPerDomain: number;
+  /** The shell's header: a greeting with the person, a compact line, or the classic title row. */
+  headerLayout: 'greeting' | 'compact' | 'classic';
+  /** The tab bar: chosen by size (auto), docked to the edge, or floating above the floor. */
+  tabBarLayout: 'auto' | 'docked' | 'floating';
+  /** Who answers the header's help button: Tutii, or a plain AI button (being compared). */
+  assistantButton: 'tutii' | 'ai';
 }
 
 export interface ActiveSubTabsState {
@@ -81,6 +87,9 @@ const DEFAULT_PREFERENCES: NavigationPreferences = {
   showActiveSubTabs: true,
   autoHideChromeOnScroll: true,
   maxTabsPerDomain: 5,
+  headerLayout: 'greeting',
+  tabBarLayout: 'auto',
+  assistantButton: 'tutii',
 };
 
 const DEFAULT_PINNED_FEATURES: Record<string, string[]> = {
@@ -129,6 +138,22 @@ function migratedPreferences(value: unknown): NavigationPreferences {
       maxTabsPerDomain > 0
         ? maxTabsPerDomain
         : DEFAULT_PREFERENCES.maxTabsPerDomain,
+    headerLayout:
+      value.headerLayout === 'greeting' ||
+      value.headerLayout === 'compact' ||
+      value.headerLayout === 'classic'
+        ? value.headerLayout
+        : DEFAULT_PREFERENCES.headerLayout,
+    tabBarLayout:
+      value.tabBarLayout === 'auto' ||
+      value.tabBarLayout === 'docked' ||
+      value.tabBarLayout === 'floating'
+        ? value.tabBarLayout
+        : DEFAULT_PREFERENCES.tabBarLayout,
+    assistantButton:
+      value.assistantButton === 'tutii' || value.assistantButton === 'ai'
+        ? value.assistantButton
+        : DEFAULT_PREFERENCES.assistantButton,
   };
 }
 
@@ -429,6 +454,15 @@ export const useActiveSubTabsStore = create<ActiveSubTabsState>()(
       storage: createJSONStorage(() => createScopedStateStorage()),
       version: 2,
       migrate: migrateActiveSubTabsStateForV2,
+      // Preferences saved before a field existed get its default, not undefined.
+      merge: (persisted, current) => {
+        const saved = isRecord(persisted) ? persisted : {};
+        return {
+          ...current,
+          ...saved,
+          preferences: migratedPreferences(saved.preferences),
+        } as ActiveSubTabsState;
+      },
       partialize: (state) => ({
         tabsByDomain: state.tabsByDomain,
         activeTabByDomain: state.activeTabByDomain,

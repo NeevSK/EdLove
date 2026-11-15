@@ -28,7 +28,7 @@
   padding-inline: clamp(1rem, 2vw, 2rem);
 }
 
-@media (max-width: 48rem) {
+@media (max-width: 47.99rem) {
   .routeTaskStrip { grid-template-columns: minmax(0, 1fr); }
   .routeTaskStrip > :last-child { justify-self: end; }
   .taskStripShell[data-mobile-idle="true"] {
@@ -279,7 +279,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 46rem) {
+@media (max-width: 47.99rem) {
   .contextDate {
     margin-left: auto;
   }
@@ -291,11 +291,11 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.99rem) {
   .quickAccessTab { display: inline-flex; }
 }
 
-@media (max-width: 34rem) {
+@media (max-width: 47.99rem) {
   .contextMeaning p {
     display: none;
   }
@@ -523,7 +523,7 @@
 .stepperArrow:hover:not(:disabled) { background: color-mix(in srgb, var(--ink) 7%, transparent); }
 .stepperArrow:disabled { opacity: 0.3; }
 .activityCount { color: var(--ink-soft); font-size: 0.72rem; white-space: nowrap; }
-@media (max-width: 34rem) {
+@media (max-width: 47.99rem) {
   .temporalBox { gap: 0.2rem 0.4rem; }
   .boxRelativeLabel { display: none; }
   .activeDayPill { min-height: 2.5rem; }
@@ -573,7 +573,7 @@
   animation: modalScaleUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@media (max-width: 34rem) {
+@media (max-width: 47.99rem) {
   .temporalBoxSection[data-compact="true"] .temporalBox { flex-wrap: wrap; }
   .temporalModes { min-width: 11.5rem; }
   .temporalModeButton { min-height: 2.4rem; }

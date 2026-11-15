@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { getCurrentFabTab } from '@/lib/navigation/fabTab';
 
 describe('the tab whose action may show', () => {
-  it('only admits the self domain action at its home route', () => {
-    expect(getCurrentFabTab('/community')).toBeNull();
-    expect(getCurrentFabTab('/(tabs)/community')).toBeNull();
-    expect(getCurrentFabTab('/workspace')).toBeNull();
+  it("admits each room's action at its home route", () => {
+    expect(getCurrentFabTab('/community')).toBe('community');
+    expect(getCurrentFabTab('/(tabs)/community')).toBe('community');
+    expect(getCurrentFabTab('/workspace')).toBe('classroom');
+    expect(getCurrentFabTab('/library')).toBe('library');
+    expect(getCurrentFabTab('/profile')).toBe('profile');
     expect(getCurrentFabTab('/self')).toBe('self');
   });
 

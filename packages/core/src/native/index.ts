@@ -20,7 +20,6 @@ export {
   discardGuestConversion,
   readGuestConversionRecord,
 } from '@repo/core/native/guestConversionLedger';
-export { GuestStorage, guestStorage } from '@repo/core/native/guestStorage';
 export { GuestDataSync } from '@repo/core/native/guestDataSync';
 export {
   clearLocalGuestIdentity,
@@ -46,6 +45,7 @@ export {
   setGuestScope,
 } from '@repo/core/native/guestScope';
 export { discardLocalGuestSession } from '@repo/core/native/guestSessionCleanup';
+export { GuestStorage, guestStorage } from '@repo/core/native/guestStorage';
 export { activateLocalGuestSession } from '@repo/core/native/localGuestActivation';
 export {
   completeLocalGuestOnboarding,
@@ -74,3 +74,11 @@ export {
 } from '@repo/core/native/runtimeAdapter';
 export { StorageKeys, storage } from '@repo/core/native/storage';
 export { supabaseAuthStorage } from '@repo/core/native/supabaseAuthStorage';
+export type { UseFloorLayoutOptions } from '@repo/core/native/useFloorLayout';
+export { useFloorLayout } from '@repo/core/native/useFloorLayout';
+export type {
+  UseWorkspaceLayoutSyncOptions,
+  UseWorkspaceLayoutSyncResult,
+  WorkspaceLayoutRemote,
+} from '@repo/core/native/useWorkspaceLayoutSync';
+export { useWorkspaceLayoutSync } from '@repo/core/native/useWorkspaceLayoutSync';

@@ -1,17 +1,20 @@
-import {
-  Badge,
-  BadgeText,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-  VStack,
-} from '@repo/ui/primitives';
+import { Badge, Button, Grid, Group, Notice, Surface, Text } from '@repo/ui/components/native';
 import { useState } from 'react';
+import { View } from 'react-native';
+import { MarkedLine, RoomPage } from '@/components/shell/RoomPage';
+
+const BEARER_LABEL = {
+  lan_mdns: 'LAN Hotspot',
+  ble_gossip: 'BLE',
+  nostr_relay: 'Nostr Relay',
+} as const;
+
+const TRANSPORTS = [
+  { name: 'Wi-Fi LAN', value: '54 Mbps', note: 'High-Speed' },
+  { name: 'BLE Gossip', value: 'BitChat', note: 'Presence' },
+  { name: 'Nostr DTN', value: 'Store-Fwd', note: 'Asynchronous' },
+  { name: 'Optical QR', value: 'Air-Gap', note: 'Radio-Silent' },
+] as const;
 
 interface NearbySanctuaryPeer {
   id: string;
@@ -75,192 +78,102 @@ export default function MobilePeersRoute() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-phase-canvas">
-      <VStack className="p-4 gap-4">
-        {/* Header */}
-        <VStack className="gap-1">
-          <HStack className="items-center justify-between">
-            <Heading size="xl" className="text-phase-world font-bold">
-              Nearby Sanctuary Peers
-            </Heading>
-            <Badge className="bg-emerald-500/10 border border-emerald-500/20 rounded-full px-2.5 py-1">
-              <BadgeText className="text-emerald-600 text-xs font-semibold">
-                Multi-Bearer Mesh
-              </BadgeText>
-            </Badge>
-          </HStack>
-          <Text className="text-phase-muted text-sm">
-            High-speed local Wi-Fi, BitChat BLE multi-hop gossip, Nostr DTN, & optical sneakernet.
-          </Text>
-        </VStack>
-
-        {/* 4-Tier Transport Matrix */}
-        <View className="bg-phase-surface border border-phase-border/40 rounded-2xl p-4">
-          <VStack className="gap-3">
-            <Text className="text-xs font-bold uppercase tracking-wider text-phase-muted">
-              Active Mesh Transports
-            </Text>
-            <HStack className="justify-between gap-2">
-              <View className="flex-1 bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20">
-                <Text className="text-[10px] text-blue-600 font-bold uppercase">Wi-Fi LAN</Text>
-                <Text className="text-xs font-bold text-phase-world mt-0.5">54 Mbps</Text>
-                <Text className="text-[10px] text-phase-muted mt-0.5">High-Speed</Text>
-              </View>
-              <View className="flex-1 bg-purple-500/10 p-2.5 rounded-xl border border-purple-500/20">
-                <Text className="text-[10px] text-purple-600 font-bold uppercase">BLE Gossip</Text>
-                <Text className="text-xs font-bold text-phase-world mt-0.5">BitChat</Text>
-                <Text className="text-[10px] text-phase-muted mt-0.5">Presence</Text>
-              </View>
-              <View className="flex-1 bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20">
-                <Text className="text-[10px] text-amber-600 font-bold uppercase">Nostr DTN</Text>
-                <Text className="text-xs font-bold text-phase-world mt-0.5">Store-Fwd</Text>
-                <Text className="text-[10px] text-phase-muted mt-0.5">Asynchronous</Text>
-              </View>
-              <View className="flex-1 bg-emerald-500/10 p-2.5 rounded-xl border border-emerald-500/20">
-                <Text className="text-[10px] text-emerald-600 font-bold uppercase">Optical QR</Text>
-                <Text className="text-xs font-bold text-phase-world mt-0.5">Air-Gap</Text>
-                <Text className="text-[10px] text-phase-muted mt-0.5">Radio-Silent</Text>
-              </View>
-            </HStack>
-
-            <Button
-              className="bg-phase-primary rounded-xl h-11 mt-1"
-              onPress={handleTriggerSync}
-              isDisabled={isScanning}
-            >
-              <ButtonText className="text-white font-semibold">
-                {isScanning ? 'Syncing Across All Bearers...' : 'Sync Workspace Now'}
-              </ButtonText>
-            </Button>
-
-            {syncedState && (
-              <View className="bg-emerald-500/10 p-2.5 rounded-lg border border-emerald-500/20">
-                <Text className="text-xs text-emerald-700 font-medium">{syncedState}</Text>
-              </View>
-            )}
-          </VStack>
-        </View>
-
-        {/* Discovered Peers List */}
-        <VStack className="gap-3">
-          <HStack className="items-center justify-between">
-            <Heading size="sm" className="text-phase-world font-semibold">
-              Discovered School Nodes ({discoveredPeers.length})
-            </Heading>
-            <Text className="text-xs text-phase-muted">Auto-discovered nearby</Text>
-          </HStack>
-
-          {discoveredPeers.map((peer) => (
-            <View
-              key={peer.id}
-              className="bg-phase-surface border border-phase-border/30 rounded-xl p-3.5"
-            >
-              <HStack className="items-center justify-between">
-                <VStack className="flex-1 mr-2">
-                  <HStack className="items-center gap-1.5">
-                    <Text className="text-sm font-bold text-phase-world">{peer.name}</Text>
-                    {peer.bearer === 'ble_gossip' && (
-                      <Badge className="bg-purple-500/10 rounded px-1.5 py-0.5">
-                        <BadgeText className="text-purple-600 text-[10px]">BLE</BadgeText>
-                      </Badge>
-                    )}
-                    {peer.bearer === 'lan_mdns' && (
-                      <Badge className="bg-blue-500/10 rounded px-1.5 py-0.5">
-                        <BadgeText className="text-blue-600 text-[10px]">LAN Hotspot</BadgeText>
-                      </Badge>
-                    )}
-                    {peer.bearer === 'nostr_relay' && (
-                      <Badge className="bg-amber-500/10 rounded px-1.5 py-0.5">
-                        <BadgeText className="text-amber-600 text-[10px]">Nostr Relay</BadgeText>
-                      </Badge>
-                    )}
-                  </HStack>
-                  <Text className="text-xs text-phase-muted mt-0.5">{peer.role}</Text>
-                  <Text className="text-[11px] text-phase-muted mt-1 font-mono">
-                    {peer.lastSeen} {peer.rssi ? `| ${peer.rssi}` : ''}
-                  </Text>
-                </VStack>
-
-                <VStack className="items-end gap-1">
-                  {peer.pendingChanges > 0 ? (
-                    <Badge className="bg-amber-500/10 rounded px-2 py-0.5">
-                      <BadgeText className="text-amber-600 text-xs">
-                        {peer.pendingChanges} Pending
-                      </BadgeText>
-                    </Badge>
-                  ) : (
-                    <Badge className="bg-emerald-500/10 rounded px-2 py-0.5">
-                      <BadgeText className="text-emerald-600 text-xs">Synced</BadgeText>
-                    </Badge>
-                  )}
-                </VStack>
-              </HStack>
-            </View>
+    <RoomPage
+      title="Nearby Sanctuary Peers"
+      intro="High-speed local Wi-Fi, BitChat BLE multi-hop gossip, Nostr DTN, & optical sneakernet."
+      mark={{ label: 'Multi-Bearer Mesh', tone: 'success' }}
+    >
+      <Surface tone="raised" style={{ padding: 18, gap: 14 }}>
+        <Text kind="label" tone="soft">
+          Active Mesh Transports
+        </Text>
+        <Grid min="sm" max={4} gap="inside">
+          {TRANSPORTS.map((tr) => (
+            <Surface key={tr.name} tone="inset" style={{ padding: 10, gap: 2 }}>
+              <Text kind="caption" tone="lamp">
+                {tr.name}
+              </Text>
+              <Text kind="label">{tr.value}</Text>
+              <Text kind="caption" tone="soft">
+                {tr.note}
+              </Text>
+            </Surface>
           ))}
-        </VStack>
+        </Grid>
+        <Button
+          label={isScanning ? 'Syncing Across All Bearers...' : 'Sync Workspace Now'}
+          variant="primary"
+          fullWidth
+          loading={isScanning}
+          disabled={isScanning}
+          onPress={handleTriggerSync}
+        />
+        {syncedState ? <Notice tone="success" message={syncedState} /> : null}
+      </Surface>
 
-        {/* Staff Room Hotspot Instructions */}
-        <View className="bg-phase-surface/80 border border-blue-500/20 rounded-xl p-3.5">
-          <VStack className="gap-2">
-            <HStack className="items-center justify-between">
-              <Heading size="xs" className="text-blue-600 font-bold uppercase tracking-wider">
-                Staff Room High-Speed Hotspot
-              </Heading>
-              <Badge className="bg-blue-500/10 rounded px-2 py-0.5">
-                <BadgeText className="text-blue-600 text-[10px]">Recommended</BadgeText>
-              </Badge>
-            </HStack>
-            <Text className="text-xs text-phase-muted">
-              Any teacher can toggle phone Personal Hotspot named "EdLove-Sanctuary". All nearby
-              teachers connect with zero mobile data used. Syncs 1,000+ attendance records in &lt;1
-              second.
+      <Group
+        label={`Discovered School Nodes (${discoveredPeers.length})`}
+        footer="Auto-discovered nearby"
+      >
+        {discoveredPeers.map((peer) => (
+          <View key={peer.id} style={{ gap: 4, paddingVertical: 12 }}>
+            <MarkedLine
+              title={peer.name}
+              detail={peer.role}
+              mark={
+                peer.pendingChanges > 0
+                  ? { label: `${peer.pendingChanges} Pending`, tone: 'lamp' }
+                  : { label: 'Synced', tone: 'success' }
+              }
+            />
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <Badge label={BEARER_LABEL[peer.bearer]} />
+              <Text kind="caption" tone="faint" style={{ flexShrink: 1 }}>
+                {peer.lastSeen} {peer.rssi ? `| ${peer.rssi}` : ''}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </Group>
+
+      <Notice
+        tone="lamp"
+        title="Staff Room High-Speed Hotspot"
+        message={
+          'Any teacher can toggle phone Personal Hotspot named "EdLove-Sanctuary". All nearby teachers connect with zero mobile data used. Syncs 1,000+ attendance records in <1 second.'
+        }
+      />
+
+      <Surface tone="raised" style={{ padding: 18, gap: 12 }}>
+        <MarkedLine
+          title="Air-Gapped Optical Sneakernet"
+          detail="100% radio-silent transfer. The screen cycles animated high-density QR frames at 20 fps. The receiver scans with their camera to transfer signed mutation batches without Wi-Fi or Bluetooth."
+        />
+        <Button
+          label={showQrSneakernet ? 'Hide QR Stream' : 'Transmit via QR'}
+          variant="secondary"
+          onPress={() => setShowQrSneakernet(!showQrSneakernet)}
+        />
+        {showQrSneakernet ? (
+          <Surface tone="inset" style={{ padding: 16, gap: 8, alignItems: 'center' }}>
+            <Text kind="label">Transmitting Signed Mutation Batch (Frame 1/4)</Text>
+            <Text kind="caption" tone="soft">
+              Payload: MEAL_VOUCHERS + ATTENDANCE_5B
             </Text>
-          </VStack>
-        </View>
-
-        {/* Air-Gapped Optical Sneakernet Trigger */}
-        <View className="bg-phase-surface/60 border border-phase-border/30 rounded-xl p-3.5">
-          <VStack className="gap-2.5">
-            <HStack className="items-center justify-between">
-              <Heading size="xs" className="text-phase-world font-bold uppercase tracking-wider">
-                Air-Gapped Optical Sneakernet
-              </Heading>
-              <Pressable
-                onPress={() => setShowQrSneakernet(!showQrSneakernet)}
-                className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-2.5 py-1"
-              >
-                <Text className="text-emerald-600 text-xs font-semibold">
-                  {showQrSneakernet ? 'Hide QR Stream' : 'Transmit via QR'}
-                </Text>
-              </Pressable>
-            </HStack>
-            <Text className="text-xs text-phase-muted">
-              100% radio-silent transfer. The screen cycles animated high-density QR frames at 20
-              fps. The receiver scans with their camera to transfer signed mutation batches without
-              Wi-Fi or Bluetooth.
+            <Surface
+              tone="plain"
+              style={{ width: 192, height: 192, padding: 8, justifyContent: 'center' }}
+            >
+              <Text kind="caption" align="center">
+                MESH:batch_91a:1/4:eyJzY29wZSI6ImNsYXNzcm9vbSIsImlkZW1wb3RlbmN5S2V5IjoiaWRlbV81YiJ9...
+              </Text>
+            </Surface>
+            <Text kind="caption" tone="lamp">
+              Streaming at 20 frames/sec | Optical Handshake Active
             </Text>
-
-            {showQrSneakernet && (
-              <View className="bg-phase-surface border border-emerald-500/30 p-4 rounded-xl items-center mt-1">
-                <Text className="text-xs font-bold text-phase-world mb-1">
-                  Transmitting Signed Mutation Batch (Frame 1/4)
-                </Text>
-                <Text className="text-[11px] font-mono text-phase-muted mb-2">
-                  Payload: MEAL_VOUCHERS + ATTENDANCE_5B
-                </Text>
-                <View className="w-48 h-48 bg-white border border-black/10 rounded-lg items-center justify-center p-2">
-                  <Text className="text-[10px] text-center font-mono text-black break-all">
-                    MESH:batch_91a:1/4:eyJzY29wZSI6ImNsYXNzcm9vbSIsImlkZW1wb3RlbmN5S2V5IjoiaWRlbV81YiJ9...
-                  </Text>
-                </View>
-                <Text className="text-[11px] text-emerald-600 font-semibold mt-2">
-                  Streaming at 20 frames/sec | Optical Handshake Active
-                </Text>
-              </View>
-            )}
-          </VStack>
-        </View>
-      </VStack>
-    </ScrollView>
+          </Surface>
+        ) : null}
+      </Surface>
+    </RoomPage>
   );
 }

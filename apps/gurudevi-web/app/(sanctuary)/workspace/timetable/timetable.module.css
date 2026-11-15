@@ -14,18 +14,18 @@
   justify-content: space-between;
   gap: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  border-bottom: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
 }
 
 .titleArea h1 {
   font-family: var(--font-display, "Fraunces", serif);
   font-size: 1.75rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .titleArea p {
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   font-size: 0.85rem;
   margin: 0.25rem 0 0;
 }
@@ -46,9 +46,9 @@
   min-height: 44px;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
-  background: var(--color-paper-light, #fffdf8);
-  color: var(--color-ink-soft, #453c35);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
+  background: var(--color-paper-light);
+  color: var(--color-ink-soft, var(--w-ink));
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -57,14 +57,14 @@
 }
 
 .dayTab:hover {
-  border-color: var(--color-lotus, #a85022);
-  color: var(--color-ink, #131e27);
+  border-color: var(--color-lotus, var(--w-lamp));
+  color: var(--color-ink);
 }
 
 .dayTab[aria-selected="true"] {
-  background: var(--color-action, #a85022);
-  border-color: var(--color-action, #a85022);
-  color: #ffffff;
+  background: var(--color-action);
+  border-color: var(--color-action);
+  color: var(--w-raised);
 }
 
 .scheduleGrid {
@@ -76,9 +76,9 @@
 .periodCard {
   padding: 1rem;
   border-radius: 0.75rem;
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.05));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 5%, transparent));
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -88,7 +88,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.1));
+  border-bottom: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 10%, transparent));
   padding-bottom: 0.5rem;
 }
 
@@ -96,25 +96,25 @@
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--color-action, #a85022);
+  color: var(--color-action);
   font-family: monospace;
 }
 
 .periodTime {
   font-size: 0.75rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
 }
 
 .subjectTitle {
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .teacherName {
   font-size: 0.8rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   margin: 0;
 }
 
@@ -124,33 +124,33 @@
   font-weight: 600;
   padding: 0.15rem 0.5rem;
   border-radius: 0.25rem;
-  background: var(--color-paper, #f7f2e8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.15));
-  color: var(--color-ink-soft, #453c35);
+  background: var(--color-paper);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 15%, transparent));
+  color: var(--color-ink-soft, var(--w-ink));
 }
 
 .intervalCard {
   grid-column: 1 / -1;
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
-  background: rgba(168, 80, 34, 0.05);
-  border: 1px dashed var(--color-line, rgba(104, 94, 85, 0.2));
+  background: color-mix(in srgb, var(--w-lamp) 5%, transparent);
+  border: 1px dashed var(--color-line, color-mix(in srgb, var(--w-ink-soft) 20%, transparent));
   text-align: center;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
 }
 
 /* Daily Prep Section */
 .prepSection {
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
   border-radius: 0.75rem;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 4%, transparent));
 }
 
 .prepHeader {
@@ -174,27 +174,27 @@
 .prepHeading {
   font-family: var(--font-display, "Fraunces", serif);
   font-size: 1.15rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .prepSubtext {
   font-size: 0.8rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   margin: 0.15rem 0 0;
 }
 
 .progressBarWrapper {
   width: 140px;
   height: 8px;
-  background: rgba(104, 94, 85, 0.12);
+  background: color-mix(in srgb, var(--w-ink-soft) 12%, transparent);
   border-radius: 4px;
   overflow: hidden;
 }
 
 .progressBarFill {
   height: 100%;
-  background: var(--color-action, #a85022);
+  background: var(--color-action);
   border-radius: 4px;
   transition: width 0.25s ease;
 }
@@ -211,19 +211,19 @@
   gap: 0.6rem;
   padding: 0.6rem 0.8rem;
   border-radius: 0.5rem;
-  background: rgba(247, 242, 232, 0.6);
-  border: 1px solid rgba(104, 94, 85, 0.1);
+  background: color-mix(in srgb, var(--w-raised) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-ink-soft) 10%, transparent);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .prepItem:hover {
-  background: rgba(247, 242, 232, 1);
-  border-color: rgba(168, 80, 34, 0.3);
+  background: var(--w-raised);
+  border-color: color-mix(in srgb, var(--w-lamp) 30%, transparent);
 }
 
 .prepCheckbox {
-  accent-color: var(--color-action, #a85022);
+  accent-color: var(--color-action);
   width: 1rem;
   height: 1rem;
   cursor: pointer;
@@ -231,13 +231,13 @@
 
 .prepTask {
   font-size: 0.8rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   flex: 1;
 }
 
 .prepTaskDone {
   font-size: 0.8rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   text-decoration: line-through;
   opacity: 0.65;
   flex: 1;
@@ -250,8 +250,8 @@
   letter-spacing: 0.05em;
   padding: 0.15rem 0.4rem;
   border-radius: 0.25rem;
-  background: rgba(168, 80, 34, 0.1);
-  color: var(--color-action, #a85022);
+  background: color-mix(in srgb, var(--w-lamp) 10%, transparent);
+  color: var(--color-action);
 }
 
 .cardFooter {
@@ -264,7 +264,7 @@
 .attendanceActionLink {
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--color-action, #a85022);
+  color: var(--color-action);
   text-decoration: none;
   transition: color 0.15s ease;
 }

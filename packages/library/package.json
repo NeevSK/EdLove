@@ -72,6 +72,11 @@
       "import": "./src/screens/DocumentViewerScreen.tsx",
       "default": "./src/screens/DocumentViewerScreen.tsx"
     },
+    "./constants/*": {
+      "types": "./src/constants/*.ts",
+      "import": "./src/constants/*.ts",
+      "default": "./src/constants/*.ts"
+    },
     "./*": {
       "types": "./src/*.ts",
       "import": "./src/*.js",

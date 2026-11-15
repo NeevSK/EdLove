@@ -132,7 +132,7 @@ export function TeacherWorkspaceFloor({
           </h3>
         </div>
 
-        <div className={styles.pebbleRow}>
+        <div className={`gd-strip ${styles.pebbleRow}`}>
           <div className={styles.pebbleSlot}>
             <Pebble
               title="Roll Call"

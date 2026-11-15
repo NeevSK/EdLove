@@ -176,6 +176,13 @@ export const SCENE_LIGHT = {
   cloudNight: '#3A4458',
   white: '#FFFFFF',
   firefly: '#EEF696',
+  /** Fire: a flame's white-gold heart and its orange body (torches, oil lamps). */
+  flameCore: '#FFF3C4',
+  flame: '#FF9A3C',
+  /** A lit window or a lantern's paper, seen from far away. */
+  window: '#FFD98A',
+  /** Deep water's own blue-black, under any world's tint. */
+  deepWater: '#0E2230',
 } as const;
 
 /* ---------- colour arithmetic (6-digit hex only) ---------- */

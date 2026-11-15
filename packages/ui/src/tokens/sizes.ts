@@ -23,5 +23,14 @@ export function columnsFor(width: number, min: number, gap: number, max = 6): nu
   return Math.max(1, Math.min(max, Math.floor((width + gap) / (min + gap))));
 }
 
-/** The smallest a pressable thing may be, in each direction (WCAG 2.5.8, platform guides). */
-export const touchTarget = { min: 44 } as const;
+/**
+ * The smallest a pressable thing may be to a finger, in each direction: 44 on
+ * iOS and the web (Apple HIG), 48 on Android (Material). A control may be drawn
+ * smaller; it then reaches this with extra touch area (`slopFor` on native).
+ */
+export const touchTarget = { min: 44, android: 48 } as const;
+
+/** Extra touch area on each side so something drawn `drawn` tall still reaches `target`. */
+export function slopToReach(drawn: number, target: number): number {
+  return Math.max(0, Math.ceil((target - drawn) / 2));
+}

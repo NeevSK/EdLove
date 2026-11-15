@@ -1,6 +1,6 @@
 /**
- * The worlds Gurudevi ships (eleven today, not a limit), in five families (quiet, nature,
- * cultural, bloom, modern). The World Atelier is where they were chosen:
+ * The worlds Gurudevi ships (twelve today, not a limit), in five families (quiet, nature,
+ * cultural, bloom, modern). Classic is the plain one, for people who want a normal app. The World Atelier is where they were chosen:
  * https://claude.ai/artifact/NsvcH2ixJxNGyVQ6JQwa33
  *
  * Each is a palette (light and dark) and a dozen style decisions. Colour lives
@@ -12,6 +12,7 @@
 
 import type { WorldDefinition } from '../types';
 import { angampora } from './angampora';
+import { classic } from './classic';
 import { colombo } from './colombo';
 import { kandyan } from './kandyan';
 import { kele } from './kele';
@@ -28,6 +29,7 @@ import { wewa } from './wewa';
  * cultural, bloom, modern. Add a world = its folder + one line here.
  */
 export const WORLDS = {
+  classic,
   sanctuary,
   wewa,
   ratna,

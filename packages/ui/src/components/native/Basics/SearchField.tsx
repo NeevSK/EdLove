@@ -8,6 +8,7 @@ import { useWorldContext } from '../../../theme/native/WorldContext';
 import { iconSize } from '../../../tokens/sizes';
 import { BASICS_ENGLISH } from '../../shared/basics';
 import { IconButton } from '../IconButton/IconButton';
+import { TOUCH_MIN } from '../touch';
 
 export type SearchFieldProps = SearchFieldContract;
 
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    minHeight: 44,
+    minHeight: TOUCH_MIN,
     borderRadius: 22,
     borderWidth: 1,
     paddingLeft: 14,

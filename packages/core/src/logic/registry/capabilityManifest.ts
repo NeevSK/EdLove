@@ -202,6 +202,23 @@ export function declaredCapability(featureId: string): CapabilityDeclaration | u
   return CAPABILITY_MANIFEST.find((feature) => feature.id === featureId);
 }
 
+/**
+ * Where a capability runs, as the catalog's platform fields. A catalog entry
+ * that names a capabilityId spreads this in instead of restating it, so the
+ * web/phone answer lives once, here.
+ */
+export function platformSupportOf(capabilityId: string): {
+  webSupport: boolean;
+  mobileSupport: boolean;
+} {
+  const declaration = declaredCapability(capabilityId);
+  if (!declaration) throw new Error(`No capability declared for "${capabilityId}".`);
+  return {
+    webSupport: declaration.platforms.includes('browser'),
+    mobileSupport: declaration.platforms.includes('native'),
+  };
+}
+
 export function declaredCapabilities(domain: CapabilityDomain, platform: CapabilityPlatform) {
   return CAPABILITY_MANIFEST.filter(
     (declaration) => declaration.domain === domain && declaration.platforms.includes(platform),

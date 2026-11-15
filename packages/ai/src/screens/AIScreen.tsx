@@ -1,3 +1,4 @@
+import { useDraft } from '@repo/ui/context/Drafts';
 import { type Message, type MessageArtifact, useAIAgent } from '@repo/ai/hooks/useAIAgent';
 import {
   ApprovalCard,
@@ -106,7 +107,8 @@ export default function AIScreen({
   const [activeArtifact, setActiveArtifact] = useState<MessageArtifact | null>(null);
 
   // Input composer text & attachments
-  const [inputText, setInputText] = useState('');
+  // An unsent question is kept through a call or the app closing.
+  const { value: inputText, setValue: setInputText } = useDraft('ai:compose');
   const [attachments, setAttachments] = useState<Array<{ uri: string; name: string; mimeType: string }>>([]);
 
   // Proposal state (Human-in-the-loop)

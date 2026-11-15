@@ -53,3 +53,28 @@ export {
   WEATHER,
 } from './sky';
 export { BAND_WASH_EDGE, BAND_WASH_TEXT } from './wash';
+export {
+  type ArtBuilder,
+  type ArtFill,
+  type ArtInput,
+  type ArtLayer,
+  type ArtMotion,
+  type ArtOverlay,
+  type ArtParticles,
+  type ArtShader,
+  type ArtShape,
+  hasWorldArt,
+  type ParticleKind,
+  type SceneArt,
+  sceneArtOf,
+  WORLD_ART,
+} from './art';
+export {
+  DEFAULT_GROUND_LIVELINESS,
+  type GroundLiveliness,
+  type GroundPolicy,
+  type GroundStage,
+  quietVeilOf,
+  screenPresence,
+  veilGradientOf,
+} from './screenGround';

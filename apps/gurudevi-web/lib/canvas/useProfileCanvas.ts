@@ -55,6 +55,7 @@ export function useProfileCanvas({
     viewport,
     sections: appearanceHook.groupOrder as ProfileSection[],
     appearance: appearanceHook.appearance,
+    storedAppearance: appearanceHook.stored,
     setAppearance: appearanceHook.setAppearance,
     resetAppearance: appearanceHook.resetAppearance,
     status: appearanceHook.status,

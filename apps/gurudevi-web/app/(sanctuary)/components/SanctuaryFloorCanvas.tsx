@@ -1,29 +1,35 @@
 'use client';
 
-import type {
-  FloorWallpaperConfig,
-  SceneGroundMode,
-  WorkspaceAppearance,
-  WorkspaceAppearanceMotion,
-  WorkspaceAppearancePreset,
-  WorkspaceWallpaper,
-} from '@repo/core/types';
-import { isWorldId } from '@repo/ui/theme';
-import React, { useEffect, useState } from 'react';
 import {
-  EXPLORE_DEFAULT_APPEARANCE,
-  getBackdropsForWorld,
-} from '../../../lib/canvas/appearanceConstants';
-import { useFloorSlideshow } from '../../../lib/canvas/useFloorSlideshow';
+  followWorldGround,
+  groundModePatch,
+  resolveRoomGround,
+  wallpaperConfigPatch,
+  wallpaperPatch,
+  writeGround,
+} from '@repo/core/logic/workspace/ground';
+import {
+  groundAllowanceOf,
+  NOTHING_ALLOWED,
+  planGround,
+} from '@repo/core/logic/workspace/groundPlan';
+import type { GroundScope, SceneGroundMode, WorkspaceAppearance } from '@repo/core/types';
+import { isWorldId } from '@repo/ui/theme';
+import React, { useEffect, useMemo, useState } from 'react';
+import { getBackdropsForWorld, groundDefaultsFor } from '../../../lib/canvas/appearanceConstants';
+import { useBrowserWorkspaceAppearance } from '../../../lib/canvas/useBrowserWorkspaceAppearance';
+import { THIS_BROWSER, useWorldLook, worldLookStore } from '../../../lib/canvas/worldLookStore';
+import { useGroundPolicy } from '../../../lib/runtime/useGroundPolicy';
+import { useGurudeviView } from '../../../lib/runtime/useGurudeviView';
 import { useWorldTheme } from '../../../lib/theme/useWorldTheme';
 import floorStyles from '../self/self-floor.module.css';
-import { FloorAtmosphere, type FloorAtmosphereKind } from './FloorAtmosphere';
+import type { FloorAtmosphereKind } from './FloorAtmosphere';
 import { FloorErrorBoundary } from './FloorErrorBoundary';
 import { FloorReception } from './FloorReception';
 import { FloorStudioDrawer, type FurnitureDefinition } from './FloorStudioDrawer';
+import { GroundLayers, sceneRoomOf } from './GroundLayers';
+import { RoomFloor, type RoomFloorProps } from './RoomFloor';
 import { WorkspaceLayoutRecoveryControl } from './WorkspaceLayoutRecoveryControl';
-import { WorkspaceWallpaperLayer } from './WorkspaceWallpaperLayer';
-import { WorldGroundSurface } from './WorldGroundSurface';
 
 export type SanctuaryFloorCanvasRenderProps = {
   isModuleVisible: (id: string) => boolean;
@@ -47,8 +53,13 @@ export interface SanctuaryFloorCanvasProps {
   dataMode?: string;
   worldId?: string;
   onSelectWorld?: (world: string) => void;
+  /** The room's look as its page knows it (with defaults filled in). */
   appearance?: WorkspaceAppearance;
+  /** What the room has actually saved (null: nothing, so it follows the world's look). */
+  storedAppearance?: WorkspaceAppearance | null;
   setAppearance?: (next: WorkspaceAppearance) => void;
+  /** Whose looks these are; without it the looks stay on this browser only. */
+  accountId?: string;
   furnitureItems?: readonly FurnitureDefinition[];
   groupOrder?: string[];
   pinnedIds?: string[];
@@ -65,7 +76,12 @@ export interface SanctuaryFloorCanvasProps {
   renderExtra?: () => React.ReactNode;
   customScene?: React.ReactNode;
   customSvg?: React.ReactNode;
-  children: React.ReactNode | ((props: SanctuaryFloorCanvasRenderProps) => React.ReactNode);
+  /**
+   * The room drawn by the floor engine (one engine for web and phone, following the world).
+   * When given, it is drawn in place of `children`; rooms move over one at a time.
+   */
+  floor?: RoomFloorProps;
+  children?: React.ReactNode | ((props: SanctuaryFloorCanvasRenderProps) => React.ReactNode);
 }
 
 export function SanctuaryFloorCanvas({
@@ -76,7 +92,9 @@ export function SanctuaryFloorCanvas({
   worldId,
   onSelectWorld,
   appearance,
+  storedAppearance,
   setAppearance,
+  accountId,
   furnitureItems = [],
   groupOrder = [],
   pinnedIds = [],
@@ -93,6 +111,7 @@ export function SanctuaryFloorCanvas({
   showPageActions = true,
   customScene,
   customSvg,
+  floor,
   children,
 }: Readonly<SanctuaryFloorCanvasProps>) {
   const [isStudioOpen, setIsStudioOpen] = useState(false);
@@ -103,23 +122,63 @@ export function SanctuaryFloorCanvas({
     if (!showPageActions) setIsStudioOpen(false);
   }, [showPageActions]);
 
+  const { world: reactiveWorld, setWorld: setReactiveWorld } = useWorldTheme();
+
+  // One look is shared by every room (the world's); a room may keep its own. Both are saved
+  // looks: the world's beside the rooms', and the room's in its page's saved layout (or, for
+  // floors whose page keeps none, in this browser).
+  const isExplore = dataMode === 'explore';
+  // Until someone picks a photo, Photo shows the active world's own photos (the stock defaults
+  // name Sanctuary's, which looked wrong in every other world).
+  const activeWorld = worldId ?? reactiveWorld;
+  const groundDefaults = useMemo(
+    () => groundDefaultsFor(activeWorld, isExplore),
+    [isExplore, activeWorld],
+  );
+  const lookOwner = accountId ?? (isExplore ? 'explore' : THIS_BROWSER);
+  // The world's look is one store for the whole app: every screen reads and changes the same one.
+  const worldLook = useWorldLook();
+  useEffect(() => {
+    worldLookStore.useOwner(lookOwner);
+  }, [lookOwner]);
+  const browserRoomLook = useBrowserWorkspaceAppearance({
+    accountId: lookOwner,
+    workspaceId: `floor-${domain}`,
+    enableRemoteSync: false,
+    defaultAppearance: groundDefaults,
+  });
+  const pageKeepsLook = Boolean(setAppearance);
+  const roomSaved = pageKeepsLook ? (storedAppearance ?? null) : browserRoomLook.stored;
+  const saveRoomLook = setAppearance ?? browserRoomLook.setAppearance;
+  const resolvedGround = resolveRoomGround(groundDefaults, worldLook.look, roomSaved);
+  // Motion and wash still come from the page where it keeps them (Profile's own controls).
+  const activeAppearance: WorkspaceAppearance = {
+    ...resolvedGround.appearance,
+    motion: appearance?.motion ?? resolvedGround.appearance.motion,
+  };
+  const roomHasOwnLook = resolvedGround.source === 'room';
+
+  // "Just this room or every room?" Asked in the studio; it starts on whichever this room uses.
+  const [scope, setScope] = useState<GroundScope>(roomHasOwnLook ? 'room' : 'world');
+
   const openStudio = (tab: FloorStudioTab) => {
     setStudioTab(tab);
+    setScope(roomHasOwnLook ? 'room' : 'world');
     setIsStudioOpen(true);
   };
 
-  const { world: reactiveWorld, setWorld: setReactiveWorld } = useWorldTheme();
+  const changeLook = (patch: Partial<WorkspaceAppearance>) => {
+    const write = writeGround(activeAppearance, patch, scope);
+    if (write.world) worldLookStore.set(write.world);
+    if (write.room) void saveRoomLook(write.room);
+  };
 
-  const [internalAppearance, setInternalAppearance] = useState<WorkspaceAppearance>(() =>
-    dataMode === 'explore'
-      ? EXPLORE_DEFAULT_APPEARANCE
-      : { preset: 'default', motion: 'off', groundMode: 'live', wallpaper: null },
-  );
-  const activeAppearance = appearance ?? internalAppearance;
-  const updateAppearance = setAppearance ?? setInternalAppearance;
+  const followWorld = () => {
+    void saveRoomLook(followWorldGround(roomSaved, groundDefaults));
+    setScope('world');
+  };
 
   // Sanctuary world is universal: every floor inherits the active world from the environment.
-  const activeWorld = worldId ?? reactiveWorld;
 
   const handleSelectWorld = (newWorld: string) => {
     if (isWorldId(newWorld)) {
@@ -131,12 +190,10 @@ export function SanctuaryFloorCanvas({
   const groundMode: SceneGroundMode =
     activeAppearance.groundMode ?? (activeAppearance.wallpaper ? 'image' : 'live');
 
+  // One change, one save: before, the studio sent two saves from one tap (mode, then photo),
+  // the second built from the stale look, so leaving Photo for Live Sky never stuck.
   const handleSelectGroundMode = (mode: SceneGroundMode) => {
-    updateAppearance({
-      ...activeAppearance,
-      groundMode: mode,
-      wallpaper: mode === 'image' ? (activeAppearance.wallpaper ?? effectiveWallpaper) : null,
-    });
+    changeLook(groundModePatch(activeAppearance, mode, getBackdropsForWorld(activeWorld)));
   };
 
   const defaultFurnitureIds = furnitureItems.map((item) => item.id);
@@ -184,55 +241,44 @@ export function SanctuaryFloorCanvas({
     onReorderFurniture(order);
   };
 
-  const [atmosphere, setAtmosphereState] = useState<FloorAtmosphereKind>('washi-grain');
+  // Older floors kept the texture per browser; it is now part of the look, read here until saved.
+  const [legacyAtmosphere, setLegacyAtmosphere] = useState<FloorAtmosphereKind>('washi-grain');
 
   useEffect(() => {
     try {
       const stored =
         window.localStorage.getItem(`sanctuary-atmosphere:${domain}`) ||
         window.localStorage.getItem('sanctuary-atmosphere:universal');
-      if (
-        stored === 'none' ||
-        stored === 'washi-grain' ||
-        stored === 'aurora-mesh' ||
-        stored === 'celestial-embers'
-      ) {
-        setAtmosphereState(stored);
-        return;
-      }
+      if (isAtmosphere(stored)) setLegacyAtmosphere(stored);
     } catch {
       return;
     }
   }, [domain]);
 
-  const setAtmosphere = (kind: FloorAtmosphereKind) => {
-    setAtmosphereState(kind);
-    try {
-      window.localStorage.setItem(`sanctuary-atmosphere:${domain}`, kind);
-      window.localStorage.setItem('sanctuary-atmosphere:universal', kind);
-    } catch {}
-  };
-
-  const { activeWallpaper, nextWallpaper, isCrossFading } = useFloorSlideshow(
-    activeAppearance.wallpaperConfig,
-    activeAppearance.wallpaper,
+  // The floor engine's one plan for this look on this device (shared with the phone).
+  const view = useGurudeviView();
+  const allowance = useMemo(
+    () => (view ? groundAllowanceOf(view.experience, view.reading) : NOTHING_ALLOWED),
+    [view],
   );
+  const worldPhotos = getBackdropsForWorld(activeWorld);
+  const groundPolicy = useGroundPolicy();
+  const plan = planGround(
+    activeAppearance,
+    worldPhotos,
+    allowance,
+    legacyAtmosphere,
+    'room',
+    groundPolicy,
+  );
+  const atmosphere: FloorAtmosphereKind = isAtmosphere(activeAppearance.atmosphere)
+    ? activeAppearance.atmosphere
+    : legacyAtmosphere;
 
-  const isImageGround = groundMode === 'image';
-  const effectiveWallpaper = isImageGround
-    ? (activeWallpaper ??
-      (dataMode === 'explore'
-        ? EXPLORE_DEFAULT_APPEARANCE.wallpaper
-        : (getBackdropsForWorld(activeWorld)[0] ?? null)))
-    : null;
-
-  const customWash = activeAppearance.wallpaperConfig?.customWashColor;
-  const customWashStyle =
-    customWash && activeAppearance.preset !== 'none'
-      ? {
-          backgroundImage: `radial-gradient(circle at 88% 6%, ${customWash}26, transparent 30rem), radial-gradient(circle at 10% 90%, ${customWash}18, transparent 32rem)`,
-        }
-      : undefined;
+  // The app shell already draws the world's look behind every screen; a room draws its own
+  // ground only when it keeps its own look (or when no shell is around, as in tests and labs).
+  const drawsOwnGround =
+    !worldLook.shellGround || roomHasOwnLook || Boolean(customScene || customSvg);
 
   return (
     <article
@@ -242,35 +288,23 @@ export function SanctuaryFloorCanvas({
       data-atmosphere={atmosphere}
       data-domain={domain}
       data-ground-mode={groundMode}
-      data-has-wallpaper={Boolean(effectiveWallpaper?.url)}
+      data-ground-source={resolvedGround.source}
+      data-ground-drawn={plan.surface}
+      data-ground-host={drawsOwnGround ? 'floor' : 'shell'}
+      data-has-wallpaper={plan.surface === 'photo'}
       data-mode={dataMode}
-      data-motion={activeAppearance.motion}
+      data-motion={plan.breathe ? 'subtle' : 'off'}
       data-world={activeWorld}
-      style={customWashStyle}
     >
-      <WorldGroundSurface
-        customScene={customScene}
-        customSvg={customSvg}
-        fixed
-        groundMode={groundMode}
-        isCrossFading={isCrossFading}
-        nextWallpaper={nextWallpaper}
-        pure={activeAppearance.preset === 'none'}
-        room={
-          domain === 'workspace'
-            ? 'classroom'
-            : domain === 'self' || domain === 'community' || domain === 'library'
-              ? domain
-              : 'self'
-        }
-        wallpaper={effectiveWallpaper}
-        worldId={activeWorld}
-      />
-
-      <FloorAtmosphere
-        kind={atmosphere}
-        preset={activeAppearance.preset === 'none' ? 'default' : activeAppearance.preset}
-      />
+      {drawsOwnGround ? (
+        <GroundLayers
+          customScene={customScene}
+          customSvg={customSvg}
+          plan={plan}
+          room={sceneRoomOf(domain)}
+          worldId={activeWorld}
+        />
+      ) : null}
 
       {/* Unified Floor Reception Bar (Idea 2 Dual-Anchor Horizon Split) */}
       <FloorReception
@@ -305,49 +339,55 @@ export function SanctuaryFloorCanvas({
       <FloorErrorBoundary
         fallbackTitle={`${domain.charAt(0).toUpperCase() + domain.slice(1)} Floor Experience Temporarily Paused`}
       >
-        {typeof children === 'function'
-          ? (children as (props: SanctuaryFloorCanvasRenderProps) => React.ReactNode)({
-              isModuleVisible: (id: string) => {
-                if (furnitureItems.length === 0) return true;
-                return activeGroupOrder.length === 0 || activeGroupOrder.includes(id);
-              },
-              stagedItems: furnitureItems,
-              isArrangeMode,
-              toggleArrangeMode: () => setIsArrangeMode((prev) => !prev),
-            })
-          : children}
+        {floor ? (
+          <RoomFloor worldId={activeWorld} {...floor} />
+        ) : typeof children === 'function' ? (
+          (children as (props: SanctuaryFloorCanvasRenderProps) => React.ReactNode)({
+            isModuleVisible: (id: string) => {
+              if (furnitureItems.length === 0) return true;
+              return activeGroupOrder.length === 0 || activeGroupOrder.includes(id);
+            },
+            stagedItems: furnitureItems,
+            isArrangeMode,
+            toggleArrangeMode: () => setIsArrangeMode((prev) => !prev),
+          })
+        ) : (
+          children
+        )}
       </FloorErrorBoundary>
 
       <FloorStudioDrawer
-        activeWallpaper={activeWallpaper}
+        activeWallpaper={plan.photo}
         currentAtmosphere={atmosphere}
+        groundNotes={plan.notes}
         currentGroundMode={groundMode}
         currentMotion={activeAppearance.motion}
         currentPreset={activeAppearance.preset}
         currentWorld={activeWorld}
         floorDomain={domain}
+        scope={scope}
+        onChangeScope={setScope}
+        roomHasOwnLook={roomHasOwnLook}
+        onFollowWorld={followWorld}
         furnitureItems={furnitureItems}
         groupOrder={activeGroupOrder}
         initialTab={studioTab}
         isOpen={isStudioOpen}
         onClose={() => setIsStudioOpen(false)}
         onReorderFurniture={handleReorder}
-        onResetFloorDefaults={onResetFloorDefaults}
-        onSelectAtmosphere={setAtmosphere}
+        onResetFloorDefaults={() => {
+          if (!pageKeepsLook) void browserRoomLook.resetAppearance();
+          onResetFloorDefaults();
+        }}
+        onSelectAtmosphere={(kind) => changeLook({ atmosphere: kind })}
         onSelectGroundMode={handleSelectGroundMode}
-        onSelectMotion={(motion) => updateAppearance({ ...activeAppearance, motion })}
-        onSelectPreset={(preset) => updateAppearance({ ...activeAppearance, preset })}
-        onSelectWallpaper={(wallpaper) =>
-          updateAppearance({
-            ...activeAppearance,
-            wallpaper,
-            groundMode: wallpaper ? 'image' : groundMode,
-          })
-        }
+        onSelectMotion={(motion) => changeLook({ motion })}
+        onSelectPreset={(preset) => changeLook({ preset })}
+        onSelectWallpaper={(wallpaper) => changeLook(wallpaperPatch(activeAppearance, wallpaper))}
         onSelectWorld={handleSelectWorld}
         onTogglePinFurniture={onTogglePinFurniture}
         onUpdateWallpaperConfig={(wallpaperConfig) =>
-          updateAppearance({ ...activeAppearance, wallpaperConfig })
+          changeLook(wallpaperConfigPatch(activeAppearance, wallpaperConfig))
         }
         pinnedIds={pinnedIds}
         isArrangeMode={isArrangeMode}
@@ -355,5 +395,14 @@ export function SanctuaryFloorCanvas({
         wallpaperConfig={activeAppearance.wallpaperConfig}
       />
     </article>
+  );
+}
+
+function isAtmosphere(value: unknown): value is FloorAtmosphereKind {
+  return (
+    value === 'none' ||
+    value === 'washi-grain' ||
+    value === 'aurora-mesh' ||
+    value === 'celestial-embers'
   );
 }

@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native';
 import { FeatureErrorBoundary } from '@repo/self/components/FeatureErrorBoundary';
-import { getFeatureDefinition } from '@repo/self/features/featureCatalog';
+import { FEATURE_CATALOG, getFeatureDefinition } from '@repo/self/features/featureCatalog';
+import type { SelfFeatureDeliveryDeclaration } from '@repo/self/features/featureManifest';
 import { WaitingSign } from '@repo/ui/components/native';
 import React, { Suspense } from 'react';
 
@@ -121,6 +122,13 @@ const componentMap: Record<
       default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps>,
     })),
   ),
+};
+
+/** The Self features the phone can run: those whose component it has. */
+export const NATIVE_SELF_DELIVERY: SelfFeatureDeliveryDeclaration = {
+  deliveredFeatureIds: Object.values(FEATURE_CATALOG)
+    .filter((feature) => feature.componentId in componentMap)
+    .map((feature) => feature.id),
 };
 
 function Fallback({ label }: { label: string }) {

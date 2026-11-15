@@ -104,7 +104,7 @@ export function QuizRubricSheet({ isOpen, field, onClose, onSaveRubric }: QuizRu
         </Pressable>
       </HStack>
 
-      <ScrollView className="mt-4 max-h-[460px] pb-6" showsVerticalScrollIndicator={false}>
+      <ScrollView className="mt-4 max-h-[460px] pb-6">
         <VStack className="gap-5">
           {/* Graded Toggle */}
           <HStack className="items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200">

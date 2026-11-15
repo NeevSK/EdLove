@@ -147,6 +147,7 @@ function AccountChat(props: BaseChatScreenProps & { principalId: string }) {
               access={composerAccess(props)}
               onTyping={realtime.sendTyping}
               typingUsers={realtime.typingUsers}
+              draftKey={`chat:${props.channel.kind}:${props.channel.id}`}
             />
           </View>
         </View>

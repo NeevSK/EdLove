@@ -60,7 +60,6 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails?: () => void
     <ScrollView
       className="flex-1 bg-obsidian"
       contentContainerStyle={{ paddingBottom: 120 }}
-      showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}

@@ -1,5 +1,6 @@
 'use client';
 
+import { roomFeatures } from '@repo/core/logic/floor';
 import { declaredPracticeCapability } from '@repo/core/logic/registry/capabilityManifest';
 import {
   resolveTemporalCoordinates,
@@ -13,12 +14,15 @@ import {
   resolveSelfFeatureManifest,
   type SelfFeatureManifestItem,
 } from '@repo/self/features/catalog';
+import { DateTimeCombo, Dialog } from '@repo/ui/components/web';
 import { useQuery } from '@tanstack/react-query';
 import { Volume2, VolumeX } from 'lucide-react';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { APP_CATALOG } from '../../../lib/appCatalog';
 import type { SelfCategory } from '../../../lib/canvas/useSelfCanvas';
 import { useSelfCanvas } from '../../../lib/canvas/useSelfCanvas';
 import { useExploreCapacity } from '../../../lib/explore/exploreCapacity';
+import { presentationShows, type RoomPresentationMap } from '../../../lib/roomFeatures';
 import {
   isSanctuaryAudioMuted,
   subscribeSanctuaryAudio,
@@ -26,13 +30,12 @@ import {
 } from '../../../lib/sanctuary/audioSanctuary';
 import { createAccountSafeTrySelfPracticeAdapter } from '../../../lib/sanctuary/selfExplore';
 import { burnJournal, loadBurnedJournalHistory } from '../../../lib/sanctuary/selfJournal';
+import { timeGreeting } from '../../../lib/timeGreeting';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
 import type { FloorAtmosphereKind } from '../components/FloorAtmosphere';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
-import { DateTimeCombo } from '@repo/ui/components/web';
-import { timeGreeting } from '../../../lib/timeGreeting';
 import { TaskStrip } from '../components/TaskStrip';
 import { BROWSER_SELF_FEATURES } from './browserFeatureRegistry';
 import { DailyContentCard } from './components/DailyContentCard';
@@ -45,7 +48,6 @@ import { FireJournal, initialScreen, type ScreenState } from './components/FireJ
 import { GratitudeGlimmers } from './components/GratitudeGlimmers';
 import { JoyJar } from './components/JoyJar';
 import { MoodLotusModal } from './components/MoodLotusModal';
-import { Dialog } from '@repo/ui/components/web';
 import { MyGradesView } from './components/MyGradesView';
 import { ProgressTree } from './components/ProgressTree';
 import { PulseDashboard } from './components/PulseDashboard';
@@ -140,12 +142,15 @@ export function SelfFloor({
   initialPracticing = false,
   initialCapacity,
   capacities = [],
+  presentation,
 }: Readonly<{
   accountId?: string;
   displayName: string;
   initialPracticing?: boolean;
   initialCapacity?: string;
   capacities?: readonly string[];
+  /** SanctuaryFeature's decisions from the server; missing lists every feature. */
+  presentation?: RoomPresentationMap;
 }>) {
   const [screen, setScreen] = useState<ScreenState>(initialScreen);
   const [isPracticing, setIsPracticing] = useState(initialPracticing || accountId === 'explore');
@@ -160,7 +165,9 @@ export function SelfFloor({
   const workbench = useDomainWorkbench('self', { usageScope: quickAccessScope });
   const [showOverview, setShowOverview] = useState(true);
   const [showSadhanaModal, setShowSadhanaModal] = useState(false);
-  const [activeModalFeature, setActiveModalFeature] = useState<SelfFeatureManifestItem | null>(null);
+  const [activeModalFeature, setActiveModalFeature] = useState<SelfFeatureManifestItem | null>(
+    null,
+  );
   const [audioMuted, setAudioMuted] = useState(false);
 
   useEffect(() => {
@@ -205,8 +212,23 @@ export function SelfFloor({
   const exploreCapacity = useExploreCapacity();
   const primaryRole =
     initialCapacity ?? (accountId === 'explore-guest' ? exploreCapacity : undefined);
-  const isExplore =
-    accountId === 'explore-guest' || accountId === 'explore' || initialPracticing;
+  const isExplore = accountId === 'explore-guest' || accountId === 'explore' || initialPracticing;
+  // Which Self features this person has: the Self catalog entries offered to
+  // their role on the web that SanctuaryFeature lets them have. Each single
+  // practice belongs to one entry (its domain).
+  const offeredEntries = useMemo(
+    () =>
+      new Set(
+        roomFeatures(APP_CATALOG, 'self', primaryRole ?? null, 'web')
+          .filter((entry) => presentationShows(presentation, entry.id))
+          .map((entry) => entry.id),
+      ),
+    [primaryRole, presentation],
+  );
+  const offeredFeatures = useMemo(
+    () => SELF_FEATURE_MANIFEST.all.filter((feature) => offeredEntries.has(feature.domain)),
+    [offeredEntries],
+  );
   const practiceAdapter = useMemo(
     () =>
       accountId
@@ -555,6 +577,8 @@ export function SelfFloor({
   return (
     <SanctuaryFloorCanvas
       appearance={canvas.appearance}
+      storedAppearance={canvas.storedAppearance}
+      accountId={accountId}
       className={
         canvas.phase === 'morning'
           ? styles.diurnalDawn
@@ -608,7 +632,9 @@ export function SelfFloor({
             focusedTaskKey={workbench.state.focusedTaskKey}
             onCloseTask={closeTask}
             onFocusTask={focusTask}
-            onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
+            onReorderTask={(taskKey, destinationIndex) =>
+              workbench.reorder(taskKey, destinationIndex)
+            }
             onOpenOverview={() => {
               setShowOverview(true);
               requestAnimationFrame(() =>
@@ -618,7 +644,7 @@ export function SelfFloor({
                 }),
               );
             }}
-            quickAccessItems={SELF_FEATURE_MANIFEST.all.map((feature) => ({
+            quickAccessItems={offeredFeatures.map((feature) => ({
               id: feature.id,
               label: feature.label,
               emoji: feature.emoji,
@@ -627,7 +653,9 @@ export function SelfFloor({
             quickAccessUsage={quickAccess.usage}
             quickAccessPinLimit={quickAccess.pinLimit}
             onOpenQuickAccessItem={(item) => {
-              const feature = SELF_FEATURE_MANIFEST.all.find((candidate) => candidate.id === item.id);
+              const feature = SELF_FEATURE_MANIFEST.all.find(
+                (candidate) => candidate.id === item.id,
+              );
               if (feature) openQuickAccessFeature(feature);
             }}
             onToggleQuickAccessPin={quickAccess.togglePin}
@@ -643,7 +671,9 @@ export function SelfFloor({
                 phase={canvas.phase}
                 groupOrder={canvas.groupOrder}
                 floorSectionOrder={selfFurnitureOrder}
-                manifestAll={canvas.sortedManifestAll}
+                manifestAll={canvas.sortedManifestAll.filter((feature) =>
+                  offeredEntries.has(feature.domain),
+                )}
                 onOpenFeature={openFeature}
                 onOpenFireJournal={openFireJournal}
                 pinnedFeatures={canvas.pinnedFeatures}
@@ -695,7 +725,8 @@ export function SelfFloor({
               }
             >
               <div style={{ marginTop: '0.5rem', width: '100%' }}>
-                {activeModalFeature.id === 'mood_lotus' || activeModalFeature.id === 'breath_guide' ? (
+                {activeModalFeature.id === 'mood_lotus' ||
+                activeModalFeature.id === 'breath_guide' ? (
                   <MoodLotusModal
                     embedded
                     initialTab={activeModalFeature.id === 'breath_guide' ? 'breath' : 'mood'}
@@ -706,7 +737,10 @@ export function SelfFloor({
                     practiceAdapter={practiceAdapter}
                   />
                 ) : activeModalFeature.id === 'daily_pulse' ? (
-                  <PulseDashboard userId={accountId ?? 'guest-explorer'} onClose={() => setActiveModalFeature(null)} />
+                  <PulseDashboard
+                    userId={accountId ?? 'guest-explorer'}
+                    onClose={() => setActiveModalFeature(null)}
+                  />
                 ) : activeModalFeature.id === 'gratitude_glimmers' ? (
                   <GratitudeGlimmers userId={accountId ?? 'guest-explorer'} />
                 ) : activeModalFeature.id === 'joy_jar' ? (

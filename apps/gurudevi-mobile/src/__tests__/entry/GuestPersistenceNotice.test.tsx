@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import { act, create } from 'react-test-renderer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -46,11 +47,16 @@ vi.mock('expo-router', () => ({
   useRouter: () => ({ push: mocks.push }),
 }));
 
-vi.mock('@repo/ui/primitives', () => ({
-  Box: 'Box',
-  Pressable: 'Pressable',
+vi.mock('@repo/ui/components/native', () => ({
+  Button: ({ label, ...rest }: { label: string }) =>
+    createElement('Pressable', { accessibilityLabel: label, ...rest }),
+  IconButton: ({ label, ...rest }: { label: string }) =>
+    createElement('Pressable', { accessibilityLabel: label, ...rest }),
+  Surface: 'Surface',
   Text: 'Text',
 }));
+
+vi.mock('@repo/ui/icons', () => ({ X: 'X' }));
 
 import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
 

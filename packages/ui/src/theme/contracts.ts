@@ -137,13 +137,7 @@ export interface CardContract {
  * - `status`: Live pulse dot (ready / busy / syncing)
  * - `custom`: Arbitrary child slot
  */
-export type PebbleCornerSlotMode =
-  | 'pin'
-  | 'menu'
-  | 'counter'
-  | 'tooltip'
-  | 'status'
-  | 'custom';
+export type PebbleCornerSlotMode = 'pin' | 'menu' | 'counter' | 'tooltip' | 'status' | 'custom';
 
 export interface PebbleCornerBadgeSpec {
   mode: PebbleCornerSlotMode;
@@ -191,6 +185,11 @@ export interface RailContract<T> {
   renderItem: (item: T, index: number) => ReactNode;
   /** Width of each item. Default `md`. */
   size?: KitSize;
+  /**
+   * Opens everything in the rail as a list, so no one has to swipe sideways to
+   * reach the end ("See all"). Give it whenever the rail may hold more than fits.
+   */
+  seeAll?: { label: string; onPress: () => void };
 }
 
 /** One item per page, with buttons as well as swipes. Never moves by itself. */
@@ -619,6 +618,113 @@ export interface IconButtonContract {
   label: string;
   variant?: ButtonVariant;
   size?: ButtonSize;
+}
+
+/** Where a move sends a piece among the pieces drawn beside it. */
+export type MoveBy = -1 | 1 | 'first' | 'last';
+
+/**
+ * Up and down beside a piece the person is arranging. Drag stays an extra:
+ * every move can be made with these two buttons, a keyboard or a screen
+ * reader's adjust gesture, and the new place is spoken after it lands.
+ */
+export interface MoveControlContract {
+  /** The piece's name, already translated ("Notes"). */
+  label: string;
+  /** Its place among the pieces shown beside it, from 1. */
+  place: number;
+  total: number;
+  onMove: (by: MoveBy) => void;
+  /** Translated words. Defaults are English. */
+  words?: {
+    up?: (label: string) => string;
+    down?: (label: string) => string;
+    place?: (label: string, place: number, total: number) => string;
+  };
+}
+
+/**
+ * One main action with its close relatives behind a small arrow ("Send" and
+ * "Send later"). The main action is one tap; the others are a menu away.
+ */
+export interface SplitButtonContract {
+  label: string;
+  /** The other ways to do it. */
+  more: readonly MenuItem[];
+  /** Names the arrow ("More ways to send"). */
+  moreLabel: string;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  disabled?: boolean;
+}
+
+/**
+ * Actions for one thing, opened by a long press (touch), right click or the
+ * menu key (keyboard). The same actions are offered to screen readers as the
+ * item's own actions, so the long press is never the only way in (WCAG 2.5.7).
+ */
+export interface ContextMenuContract {
+  /** Names the menu ("Actions for Grade 7 Maths"). */
+  label: string;
+  items: readonly MenuItem[];
+  disabled?: boolean;
+}
+
+/** One action on a task toolbar. */
+export interface ToolbarAction {
+  key: string;
+  label: string;
+  icon?: ComponentType<KitIconProps>;
+  onPress: () => void;
+  disabled?: boolean;
+  destructive?: boolean;
+}
+
+/**
+ * The actions for what the person is doing right now (three ticked students:
+ * mark present, message, move). The first actions are shown; the rest fold
+ * into "More" when the row has no room, so nothing is ever cut off.
+ */
+export interface TaskToolbarContract {
+  /** Names the toolbar ("Actions for 3 students"). */
+  label: string;
+  actions: readonly ToolbarAction[];
+  /** Translated word for the overflow button. Default "More". */
+  moreLabel?: string;
+}
+
+/**
+ * A text field that suggests as you type (a student's name, a school). The
+ * suggestions are the caller's; the field filters nothing itself.
+ */
+export interface AutocompleteContract<V extends string = string> {
+  label: string;
+  query: string;
+  onQueryChange: (query: string) => void;
+  suggestions: readonly ChoiceOption<V>[];
+  onPick: (value: V) => void;
+  placeholder?: string;
+  hint?: string;
+  /** Spoken and shown when the list is empty for a typed query. Default "No matches". */
+  emptyText?: string;
+  /** Spoken count ("4 suggestions"). Default English. */
+  countText?: (n: number) => string;
+}
+
+/**
+ * A chart small enough to sit in a sentence or a tile: a line of recent
+ * values, or a few bars. Never alone: `summary` says what it shows in words
+ * (and is what a screen reader hears).
+ */
+export interface MiniChartContract {
+  values: readonly number[];
+  kind?: 'line' | 'bars';
+  /** The chart in words: "Attendance rose from 82% to 91% this month". */
+  summary: string;
+  /** Mark one value (today, the latest): its index. Default the last. */
+  mark?: number;
+  /** Lower and upper ends of the scale; default the values' own range. */
+  range?: [number, number];
 }
 
 export interface LinkContract {
@@ -1741,6 +1847,3 @@ export interface ThemeSwitcherContract {
   /** Container width threshold in px for 'auto' degradation. Default: 420. */
   threshold?: number;
 }
-
-
-

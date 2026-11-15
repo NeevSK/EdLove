@@ -19,7 +19,7 @@
 
 .phaseHoldIn {
   transform: scale(1.22);
-  filter: drop-shadow(0 0 16px rgba(13, 148, 136, 0.45));
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--w-lamp) 45%, transparent));
 }
 
 .phaseExhale {

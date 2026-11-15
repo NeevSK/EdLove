@@ -1372,9 +1372,30 @@ importers:
       '@orpc/client':
         specifier: 2.0.0-beta.46
         version: 2.0.0-beta.46
+      '@repo/admin':
+        specifier: workspace:*
+        version: link:../../packages/admin
+      '@repo/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
+      '@repo/classroom':
+        specifier: workspace:*
+        version: link:../../packages/classroom
+      '@repo/community':
+        specifier: workspace:*
+        version: link:../../packages/community
       '@repo/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@repo/form-builder':
+        specifier: workspace:*
+        version: link:../../packages/form-builder
+      '@repo/library':
+        specifier: workspace:*
+        version: link:../../packages/library
+      '@repo/profile':
+        specifier: workspace:*
+        version: link:../../packages/profile
       '@repo/self':
         specifier: workspace:*
         version: link:../../packages/self
@@ -2341,6 +2362,9 @@ importers:
       '@intuitui-labs/form-builder-engine':
         specifier: ^0.3.0
         version: 0.3.0(effect@4.1.2)
+      '@repo/core':
+        specifier: workspace:*
+        version: link:../core
       '@repo/ui':
         specifier: workspace:*
         version: link:../ui

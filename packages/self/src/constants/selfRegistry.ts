@@ -1,4 +1,5 @@
 import { type DomainEntry, defineFeatureLifecycle } from '@repo/core/logic/registry/domainEntry';
+import { TIMELESS, timeProfile } from '@repo/core/logic/registry/timeProfile';
 
 /**
  * SelfSection Registry
@@ -103,6 +104,9 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     tabDomain: 'self',
     surfaceId: 'journey',
     defaultOrder: 10,
+    defaultZone: 'private',
+    floor: { group: 'grow', shape: 'card' },
+    time: timeProfile('review', ['review', 'current'], 'append'),
     analyticsKey: 'self.journey',
   },
   pulse: {
@@ -125,6 +129,9 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     tabDomain: 'self',
     surfaceId: 'pulse',
     defaultOrder: 20,
+    defaultZone: 'today',
+    floor: { group: 'today', shape: 'card', urgency: 'now', task: true, lit: true },
+    time: timeProfile('current', ['review', 'current'], 'sealed'),
     analyticsKey: 'self.pulse',
     journey: {
       featureId: 'pulse',
@@ -175,6 +182,9 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     tabDomain: 'self',
     surfaceId: 'growth',
     defaultOrder: 30,
+    defaultZone: 'private',
+    floor: { group: 'grow', shape: 'card', urgency: 'later' },
+    time: timeProfile('plan', ['review', 'current', 'plan'], 'sealed'),
     analyticsKey: 'self.growth',
   },
   care: {
@@ -197,6 +207,9 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     tabDomain: 'self',
     surfaceId: 'care',
     defaultOrder: 40,
+    defaultZone: 'private',
+    floor: { group: 'care', shape: 'card' },
+    time: timeProfile('current', ['review', 'current'], 'sealed'),
     analyticsKey: 'self.care',
   },
   reflection: {
@@ -219,6 +232,9 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     tabDomain: 'self',
     surfaceId: 'reflection',
     defaultOrder: 50,
+    defaultZone: 'private',
+    floor: { group: 'care', shape: 'card' },
+    time: timeProfile('review', ['review', 'current'], 'append'),
     analyticsKey: 'self.reflection',
   },
   working: {
@@ -247,6 +263,10 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     tabDomain: 'self',
     surfaceId: 'working',
     defaultOrder: 60,
+    defaultZone: 'private',
+    roles: ['teacher'],
+    floor: { group: 'work-life', shape: 'card' },
+    time: timeProfile('current', ['review', 'current', 'plan'], 'sealed'),
     analyticsKey: 'self.working',
   },
   leadership: {
@@ -275,6 +295,10 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     tabDomain: 'self',
     surfaceId: 'leadership',
     defaultOrder: 70,
+    defaultZone: 'private',
+    roles: ['principal'],
+    floor: { group: 'work-life', shape: 'card' },
+    time: timeProfile('plan', ['review', 'current', 'plan'], 'sealed'),
     analyticsKey: 'self.leadership',
   },
 };

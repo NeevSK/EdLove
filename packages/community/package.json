@@ -46,6 +46,11 @@
       "import": "./src/screens/InviteCodeEntry.tsx",
       "default": "./src/screens/InviteCodeEntry.tsx"
     },
+    "./constants/*": {
+      "types": "./src/constants/*.ts",
+      "import": "./src/constants/*.ts",
+      "default": "./src/constants/*.ts"
+    },
     "./*": {
       "types": "./src/*",
       "import": "./src/*",

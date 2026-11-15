@@ -3,6 +3,7 @@ import type { RadioGroupContract } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
 import { useWorld } from '../../../theme/native/WorldContext';
 import { Text } from '../Text/Text';
+import { TOUCH_MIN } from '../touch';
 
 export interface RadioGroupProps<V extends string = string> extends RadioGroupContract<V> {
   style?: StyleProp<ViewStyle>;
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 12,
-    minHeight: 44,
+    minHeight: TOUCH_MIN,
     paddingVertical: 10,
   },
   ring: { alignItems: 'center', justifyContent: 'center' },

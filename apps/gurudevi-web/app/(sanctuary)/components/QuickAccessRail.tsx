@@ -227,7 +227,7 @@ export function QuickAccessRail({
   return (
     <aside
       aria-label="Quick access"
-      className={styles.rail}
+      className={`${styles.rail}${orientation === 'horizontal' ? ' gd-strip' : ''}`}
       data-domain={domain}
       data-editor-placement={editorPlacement}
       data-orientation={orientation}

@@ -5,6 +5,7 @@ import { useFeedback } from '../../../theme/native/feedback';
 import { typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import { Popover } from '../Popover/Popover';
+import { TOUCH_MIN } from '../touch';
 
 export interface MenuProps extends MenuContract {
   anchorRef: RefObject<ComponentRef<typeof View> | null>;
@@ -57,5 +58,5 @@ export function Menu({ open, onClose, label, items, anchorRef, width = 240 }: Me
 }
 
 const styles = StyleSheet.create({
-  item: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 4 },
+  item: { minHeight: TOUCH_MIN, justifyContent: 'center', paddingHorizontal: 4 },
 });

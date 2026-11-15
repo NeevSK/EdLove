@@ -42,6 +42,9 @@ const activeSubTabsScopedDefaults = {
     showActiveSubTabs: true,
     autoHideChromeOnScroll: true,
     maxTabsPerDomain: 5,
+    headerLayout: 'greeting' as const,
+    tabBarLayout: 'auto' as const,
+    assistantButton: 'tutii' as const,
   },
   isChromeVisible: true,
 };

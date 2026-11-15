@@ -3,24 +3,25 @@
 import {
   GURUDEVI_WEB_HOST,
   hostWith,
-  resolveVergerConfig,
-  resolveVergerPolicy,
-  resolveVergerLaunch,
   type RuntimeMode,
+  resolveVergerConfig,
+  resolveVergerLaunch,
+  resolveVergerPolicy,
+  screenNameOf,
   VERGER_LAB_CONFIG_KEY,
-  VERGER_LAB_POLICY_KEY,
   VERGER_LAB_PATCH_KEY,
+  VERGER_LAB_POLICY_KEY,
   VERGER_LAB_RECORD_EVENTS,
   type VergerActivation,
   type VergerHost,
-  screenNameOf,
 } from '@repo/core/verger';
 import { useScreenAnnouncement } from '@repo/verger-react';
-import { usePathname } from 'next/navigation';
 import { VergerBrowser } from '@repo/verger-web/react';
-import { type ReactNode, useState } from 'react';
-import { useWebFidelity } from './webFidelity';
+import { usePathname } from 'next/navigation';
+import { type ReactNode, useEffect, useState } from 'react';
 import { browserNetworkSignals } from './browserNetwork';
+import { useGurudeviView } from './useGurudeviView';
+import { useWebFidelity } from './webFidelity';
 
 declare global {
   // Remote config may set these, as on mobile: `off` is the kill switch; the patch is untrusted.
@@ -53,12 +54,27 @@ function readLab(key: string): unknown {
 const dev = process.env.NODE_ENV !== 'production';
 
 /** Remote config's kill switch, read live: set after load, verger stops when the page is next shown. */
-const killSwitchOn = () => typeof window !== 'undefined' && globalThis.__GURUDEVI_RUNTIME_MODE__ === 'off';
+const killSwitchOn = () =>
+  typeof window !== 'undefined' && globalThis.__GURUDEVI_RUNTIME_MODE__ === 'off';
 
 /**
  * Each route, announced to verger as a screen (R3; in verger-p5 also its screen memory, R4).
  * Record ids fold into one screen (`screenNameOf`).
  */
+/**
+ * Tells the page stylesheet how much the device can afford, so shared rules (blur, for one)
+ * follow verger instead of each page deciding: html[data-visual-quality="full|reduced|essential"].
+ */
+function VisualQualityMark() {
+  const quality = useGurudeviView()?.experience.quality ?? null;
+  useEffect(() => {
+    const root = document.documentElement;
+    if (quality) root.setAttribute('data-visual-quality', quality);
+    else root.removeAttribute('data-visual-quality');
+  }, [quality]);
+  return null;
+}
+
 function ScreenAnnouncer() {
   // Typed `string`, but null outside the App Router (tests, a Pages Router fallback): no screen yet.
   const pathname: string | null = usePathname();
@@ -77,7 +93,8 @@ export function GurudeviWebVerger({ children }: Readonly<{ children: ReactNode }
       localConfig: dev ? readLab(VERGER_LAB_CONFIG_KEY) : undefined,
       dev,
     });
-    if (read.rejectedConfig) console.warn('[verger] remote thresholds ignored:', read.rejectedConfig);
+    if (read.rejectedConfig)
+      console.warn('[verger] remote thresholds ignored:', read.rejectedConfig);
     if (read.rejectedLocalConfig)
       console.warn('[verger] lab thresholds ignored:', read.rejectedLocalConfig);
     const policy = resolveVergerPolicy({
@@ -119,6 +136,7 @@ export function GurudeviWebVerger({ children }: Readonly<{ children: ReactNode }
       killed={killSwitchOn}
     >
       <ScreenAnnouncer />
+      <VisualQualityMark />
       {children}
     </VergerBrowser>
   );

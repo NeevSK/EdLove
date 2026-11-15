@@ -6,6 +6,7 @@ import {
   createDefaultWorkspaceLayout,
   setWorkspaceAppearance,
 } from '@repo/core/logic/workspace/canvas';
+import { appearanceForSync, mergeSavedGround } from '@repo/core/logic/workspace/ground';
 import {
   toWorkspaceLayoutRecord,
   toWorkspaceLayoutUpsert,
@@ -97,6 +98,13 @@ function readLocal(key: string): WorkspaceAppearance | null {
     if (candidate.groundMode !== undefined) {
       result.groundMode = candidate.groundMode;
     }
+    // These were dropped on read before, so a chosen world or texture never came back.
+    if (typeof candidate.worldId === 'string') result.worldId = candidate.worldId;
+    if (typeof candidate.atmosphere === 'string') result.atmosphere = candidate.atmosphere;
+    if (candidate.groundScope === 'world' || candidate.groundScope === 'room') {
+      result.groundScope = candidate.groundScope;
+    }
+    if (typeof candidate.changedAt === 'string') result.changedAt = candidate.changedAt;
     return result;
   } catch {
     return null;
@@ -139,6 +147,8 @@ export function useBrowserWorkspaceAppearance({
   const defaultPinnedIdsKey = defaultPinnedIds.join('|');
   const [layoutTarget, setLayoutTarget] = useState<WorkspaceLayoutTarget>('web');
   const [appearance, setAppearanceState] = useState<WorkspaceAppearance>(initialFallback);
+  /** What is actually saved for this room (null: nothing yet, so it follows the world). */
+  const [stored, setStored] = useState<WorkspaceAppearance | null>(null);
   const [groupOrder, setGroupOrderState] = useState<string[]>([...defaultGroupOrder]);
   const [pinnedIds, setPinnedIdsState] = useState<string[]>([...defaultPinnedIds]);
   const [status, setStatus] = useState<AppearanceStatus>('loading');
@@ -153,7 +163,6 @@ export function useBrowserWorkspaceAppearance({
     return () => window.removeEventListener('resize', updateLayoutTarget);
   }, []);
 
-
   useEffect(() => {
     let cancelled = false;
     const key = storageKey(accountId, workspaceId, layoutTarget);
@@ -163,20 +172,10 @@ export function useBrowserWorkspaceAppearance({
     const local = readLocal(key);
     setGroupOrderState(readGroups(groupsKey, defaultGroupOrder));
     setPinnedIdsState(readPinned(pinnedKey, defaultPinnedIds));
-    if (local) {
-      if (isExplore && (!local.wallpaperConfig || local.wallpaperConfig.mode === 'off')) {
-        setAppearanceState({
-          ...local,
-          preset: local.preset === 'default' ? 'dawn' : local.preset,
-          wallpaper: local.wallpaper ?? EXPLORE_DEFAULT_APPEARANCE.wallpaper,
-          wallpaperConfig: EXPLORE_DEFAULT_APPEARANCE.wallpaperConfig,
-        });
-      } else {
-        setAppearanceState(local);
-      }
-    } else {
-      setAppearanceState(initialFallback);
-    }
+    setStored(local);
+    // A saved look is shown as saved. (Explore used to force its slideshow back over any saved
+    // look whose playback was off, so leaving Photo there never stuck.)
+    setAppearanceState(local ?? initialFallback);
 
     if (!shouldSyncRemotely) {
       setStatus('ready');
@@ -203,11 +202,14 @@ export function useBrowserWorkspaceAppearance({
       .then((record) => {
         if (cancelled) return;
         const remoteLayout = record ? toWorkspaceLayoutRecord(record) : null;
-        const remote = remoteLayout?.appearance;
+        // The newer of this device's copy and the account's wins: a change made while the account
+        // copy was loading is not overwritten by the older copy arriving late.
+        const remote = mergeSavedGround(readLocal(key), remoteLayout?.appearance);
         const remoteGroups = remoteLayout?.groupOrder;
         const remotePinned = remoteLayout?.pinned;
         if (remote) {
           setAppearanceState(remote);
+          setStored(remote);
           writeLocal(key, remote);
         }
         if (remoteGroups) {
@@ -244,6 +246,7 @@ export function useBrowserWorkspaceAppearance({
     async (next: WorkspaceAppearance) => {
       const key = storageKey(accountId, workspaceId, layoutTarget);
       setAppearanceState(next);
+      setStored(next);
       const canPersistLocally = writeLocal(key, next);
       setStatus(canPersistLocally ? 'saving' : 'error');
 
@@ -268,7 +271,7 @@ export function useBrowserWorkspaceAppearance({
         const currentLayout = current
           ? toWorkspaceLayoutRecord(current)
           : createDefaultWorkspaceLayout({ workspaceId, userId: accountId, surfaces: [] });
-        const nextLayout = setWorkspaceAppearance(currentLayout, next);
+        const nextLayout = setWorkspaceAppearance(currentLayout, appearanceForSync(next));
         await repository.upsertLayout(
           toWorkspaceLayoutUpsert(nextLayout, {
             userId: accountId,
@@ -369,10 +372,21 @@ export function useBrowserWorkspaceAppearance({
     [accountId, layoutTarget, shouldSyncRemotely, workspaceId],
   );
 
-  const resetAppearance = useCallback(() => setAppearance(DEFAULT_APPEARANCE), [setAppearance]);
+  // Reset gives up any own look: a room follows the world again; the world returns to defaults
+  // (and, being newer, so does every room that followed it).
+  const resetAppearance = useCallback(
+    () =>
+      setAppearance({
+        ...DEFAULT_APPEARANCE,
+        groundScope: 'world',
+        changedAt: new Date().toISOString(),
+      }),
+    [setAppearance],
+  );
 
   return {
     appearance,
+    stored,
     groupOrder,
     pinnedIds,
     layoutTarget,

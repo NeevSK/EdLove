@@ -16,6 +16,7 @@ import { useWorldContext } from '../../../theme/native/WorldContext';
 import { ROW_STACKS_BELOW } from '../../../tokens/sizes';
 import { gapFor } from '../../../tokens/space';
 import { useContainerWidth } from '../Layout/useContainerWidth';
+import { useFocusRing } from '../../../theme/native/focus';
 
 export interface RowProps extends RowContract {
   accessibilityHint?: string;
@@ -47,6 +48,7 @@ export function Row({
   const showChevron = chevron ?? (!!onPress && !accessory);
   const feedback = useFeedback();
   const press = usePressMotion();
+  const focusRing = useFocusRing();
   const { width, onLayout } = useContainerWidth();
   const stacked = !accessory && !!detail && width < ROW_STACKS_BELOW;
 
@@ -140,8 +142,15 @@ export function Row({
           feedback('press');
         }}
         onPressOut={press.pressOut}
+        onFocus={focusRing.onFocus}
+        onBlur={focusRing.onBlur}
         onLayout={onLayout}
-        style={({ pressed }) => [container, pressed ? { opacity: 0.7 } : null, style]}
+        style={({ pressed }) => [
+          container,
+          pressed ? { opacity: 0.7 } : null,
+          focusRing.ring,
+          style,
+        ]}
       >
         <Animated.View
           pointerEvents="none"

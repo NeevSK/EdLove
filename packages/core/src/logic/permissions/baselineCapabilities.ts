@@ -18,6 +18,7 @@ const BASELINE_READ_SUBJECTS: ReadonlySet<string> = new Set([
   'LibraryResource',
   'LibrarySearch',
   'PublicLibrary',
+  'OwnProfile',
 ]);
 
 const LOCAL_ONLY_MUTATION_SUBJECTS: ReadonlySet<string> = new Set([

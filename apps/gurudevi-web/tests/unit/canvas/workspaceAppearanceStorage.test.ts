@@ -1,5 +1,6 @@
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
+import { DEFAULT_APPEARANCE } from '../../../lib/canvas/appearanceConstants';
 import { useBrowserWorkspaceAppearance } from '../../../lib/canvas/useBrowserWorkspaceAppearance';
 
 describe('workspace appearance local storage', () => {
@@ -29,12 +30,9 @@ describe('workspace appearance local storage', () => {
       }),
     );
     await waitFor(() => expect(malformed.result.current.status).toBe('ready'));
-    expect(malformed.result.current.appearance).toEqual({
-      preset: 'default',
-      motion: 'off',
-      groundMode: 'live',
-      worldId: 'sanctuary',
-    });
+    // Malformed data falls back to the defaults (which carry the world's first photo).
+    expect(malformed.result.current.appearance).toEqual(DEFAULT_APPEARANCE);
+    expect(malformed.result.current.stored).toBeNull();
     await act(async () => {
       await malformed.result.current.setAppearance({ preset: 'dawn', motion: 'off' });
     });

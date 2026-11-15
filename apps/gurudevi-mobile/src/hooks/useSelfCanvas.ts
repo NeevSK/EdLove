@@ -9,6 +9,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { getSelfRegistry } from '@/navigation/registries/selfRegistry';
 import type { MobileFeatureItem } from '@/navigation/registries/types';
+import { breakpointOf } from '@repo/ui/components/layout';
 
 const EMPTY_AVAILABLE_BONDS: readonly Bond[] = [];
 const EMPTY_PINNED_IDS: string[] = [];
@@ -170,6 +171,6 @@ export function useSelfCanvas() {
     gutter,
     preset,
     floorColor: resolveSelfFloorColor(preset),
-    isTablet: width >= 768,
+    isTablet: breakpointOf(width) !== 'phone',
   };
 }

@@ -4,23 +4,28 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useCommunityCanvas } from '../../../lib/canvas/useCommunityCanvas';
+import { getExploreSampleAnnouncements } from '../../../lib/community/announcements-contract';
 import {
   COMMUNITY_GROUP_PAGE_SIZE,
   type CommunityGroup,
   type CommunityGroupsResult,
   parseCommunityGroupsResult,
 } from '../../../lib/community/groups-contract';
-import { getExploreSampleAnnouncements } from '../../../lib/community/announcements-contract';
 import {
   getExploreCapacityMeta,
   isExploreCapacity,
   useExploreCapacity,
 } from '../../../lib/explore/exploreCapacity';
+import {
+  presentationShows,
+  type RoomPresentationMap,
+  webRoomFeatures,
+} from '../../../lib/roomFeatures';
+import { timeGreeting } from '../../../lib/timeGreeting';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
-import { timeGreeting } from '../../../lib/timeGreeting';
 import { TaskStrip } from '../components/TaskStrip';
 import styles from './community.module.css';
 import { CirclePostStream } from './components/CirclePostStream';
@@ -34,6 +39,20 @@ const COMMUNITY_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
 export type CommunityFloorMode = 'account' | 'explore';
 export type CommunityPillar = 'feed' | 'groups' | 'messages';
 
+/** The catalog features the Community floor draws as its sections, and how each is drawn. */
+const PILLAR_OF: Readonly<Record<string, CommunityPillar>> = {
+  hearth: 'feed',
+  circles: 'groups',
+  messages: 'messages',
+};
+const PILLAR_LOOK: Readonly<Record<CommunityPillar, { label: string; glyph: string }>> = {
+  feed: { label: 'Feed', glyph: '💬' },
+  groups: { label: 'Groups', glyph: '👥' },
+  messages: { label: 'Messages', glyph: '✉️' },
+};
+/** Every Community feature the web opens, from the Community catalog. */
+const COMMUNITY_FEATURES = webRoomFeatures('community');
+
 export function CommunityFeedFloor({
   mode = 'account',
   result: initialResult,
@@ -43,6 +62,7 @@ export function CommunityFeedFloor({
   initialPillar,
   initialConversationId,
   initialIncognito,
+  presentation,
 }: Readonly<{
   mode?: CommunityFloorMode;
   result: CommunityGroupsResult;
@@ -52,8 +72,23 @@ export function CommunityFeedFloor({
   initialPillar?: CommunityPillar;
   initialConversationId?: string;
   initialIncognito?: boolean;
+  /** SanctuaryFeature's decisions from the server; missing lists every feature. */
+  presentation?: RoomPresentationMap;
 }>) {
-  const [activePillar, setActivePillar] = useState<CommunityPillar>(initialPillar ?? 'feed');
+  const features = useMemo(
+    () => COMMUNITY_FEATURES.filter((feature) => presentationShows(presentation, feature.id)),
+    [presentation],
+  );
+  // Which sections exist comes from the catalog; their order on the tab strip is how the web draws them.
+  const pillars = useMemo(() => {
+    const present = new Set(features.map((feature) => PILLAR_OF[feature.id]));
+    return (Object.keys(PILLAR_LOOK) as CommunityPillar[]).filter((pillar) => present.has(pillar));
+  }, [features]);
+  const [chosenPillar, setActivePillar] = useState<CommunityPillar>(initialPillar ?? 'feed');
+  // A section the person may not have is never shown; fall back to the first they may.
+  const activePillar: CommunityPillar | null = pillars.includes(chosenPillar)
+    ? chosenPillar
+    : (pillars[0] ?? null);
   const exploreCapacity = useExploreCapacity();
   const roleLabel =
     primaryCapacity && isExploreCapacity(primaryCapacity)
@@ -66,11 +101,13 @@ export function CommunityFeedFloor({
     enableRemoteSync: mode === 'account' && Boolean(accountId),
   });
   const router = useRouter();
-  const workbench = useDomainWorkbench('community', { usageScope: mode });
+  // The same scope the room's other screens use, so their strip and this one hold the same tasks.
+  const roomScope = mode === 'explore' ? 'explore' : 'sanctuary';
+  const workbench = useDomainWorkbench('community', { usageScope: roomScope });
   const quickAccess = useQuickAccessPreferences(
     'community',
-    mode,
-    ['circles', 'announcements', 'forest'],
+    roomScope,
+    ['circles', 'community-notices', 'community-forest'],
     ['circles'],
   );
   const [isRefreshing, startRefresh] = useTransition();
@@ -206,14 +243,14 @@ export function CommunityFeedFloor({
   return (
     <SanctuaryFloorCanvas
       appearance={canvas.appearance}
+      storedAppearance={canvas.storedAppearance}
+      accountId={accountId}
       className={styles.floor}
       dataMode={mode}
       domain="community"
       furnitureItems={COMMUNITY_FURNITURE_ITEMS}
       groupOrder={
-        canvas.groupOrder.length > 0
-          ? (canvas.groupOrder as string[])
-          : ['search', 'circles']
+        canvas.groupOrder.length > 0 ? (canvas.groupOrder as string[]) : ['search', 'circles']
       }
       onReorderFurniture={(order) => canvas.setGroupOrder(order as any)}
       onTogglePinFurniture={(id) => canvas.togglePin(id as any)}
@@ -230,6 +267,10 @@ export function CommunityFeedFloor({
         overviewActive={!selectedGroupId && !workbench.state.focusedTaskKey}
         onFocusTask={(task) => {
           workbench.focus(task.taskKey);
+          if (task.route.startsWith('/community/')) {
+            router.push(task.route);
+            return;
+          }
           if (task.featureId === 'circle-detail') {
             const groupId = new URL(task.route, 'https://local').searchParams.get('group');
             if (groupId) {
@@ -246,24 +287,24 @@ export function CommunityFeedFloor({
         }}
         onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
         onOpenOverview={handleClearSelectedGroup}
-        quickAccessItems={[
-          { id: 'circles', label: 'Circles', emoji: '👥' },
-          { id: 'announcements', label: 'Broadcaster Updates', emoji: '📢' },
-          { id: 'forest', label: 'Community Forest', emoji: '🌳' },
-        ]}
+        quickAccessItems={features.map((feature) => ({
+          id: feature.id,
+          label: feature.label,
+          emoji: feature.symbol,
+        }))}
         quickAccessPinnedIds={quickAccess.pinnedIds}
         quickAccessUsage={quickAccess.usage}
         quickAccessPinLimit={quickAccess.pinLimit}
         onOpenQuickAccessItem={(item) => {
           quickAccess.trackUse(item.id);
-          if (item.id === 'announcements') {
-            router.push('/community/announcements');
-          } else if (item.id === 'circles') {
-            setActivePillar('groups');
+          const pillar = PILLAR_OF[item.id];
+          if (pillar) {
+            setActivePillar(pillar);
             handleClearSelectedGroup();
-          } else if (item.id === 'forest') {
-            router.push('/community/forest');
+            return;
           }
+          const feature = features.find((candidate) => candidate.id === item.id);
+          if (feature) router.push(feature.href);
         }}
         onToggleQuickAccessPin={quickAccess.togglePin}
       />
@@ -271,45 +312,25 @@ export function CommunityFeedFloor({
       {/* 3-PILLAR TRIAD SEGMENTED SWITCHER (Conforms to UI Kit Rule 9 Vector Glyphs) */}
       <div className={styles.pillarNavHorizon} role="tablist" aria-label="Community Sections">
         <div className={styles.pillarSegmentedPill}>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activePillar === 'feed'}
-            onClick={() => {
-              setActivePillar('feed');
-              handleClearSelectedGroup();
-            }}
-            className={activePillar === 'feed' ? styles.pillActive : styles.pill}
-          >
-            <span aria-hidden="true">💬</span>
-            <span>Feed</span>
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activePillar === 'groups'}
-            onClick={() => setActivePillar('groups')}
-            className={activePillar === 'groups' ? styles.pillActive : styles.pill}
-          >
-            <span aria-hidden="true">👥</span>
-            <span>Groups</span>
-            {visibleGroups.length > 0 && (
-              <span className={styles.pillBadge}>{visibleGroups.length}</span>
-            )}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activePillar === 'messages'}
-            onClick={() => {
-              setActivePillar('messages');
-              handleClearSelectedGroup();
-            }}
-            className={activePillar === 'messages' ? styles.pillActive : styles.pill}
-          >
-            <span aria-hidden="true">✉️</span>
-            <span>Messages</span>
-          </button>
+          {pillars.map((pillar) => (
+            <button
+              key={pillar}
+              type="button"
+              role="tab"
+              aria-selected={activePillar === pillar}
+              onClick={() => {
+                setActivePillar(pillar);
+                if (pillar !== 'groups') handleClearSelectedGroup();
+              }}
+              className={activePillar === pillar ? styles.pillActive : styles.pill}
+            >
+              <span aria-hidden="true">{PILLAR_LOOK[pillar].glyph}</span>
+              <span>{PILLAR_LOOK[pillar].label}</span>
+              {pillar === 'groups' && visibleGroups.length > 0 && (
+                <span className={styles.pillBadge}>{visibleGroups.length}</span>
+              )}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -323,7 +344,8 @@ export function CommunityFeedFloor({
             background: 'var(--w-surface, var(--paper-light))',
             border: '1.5px solid var(--w-lamp, var(--accent))',
             borderRadius: 'var(--w-radius-md, 1rem)',
-            boxShadow: '0 4px 12px color-mix(in srgb, var(--w-lamp, var(--accent)) 10%, transparent)',
+            boxShadow:
+              '0 4px 12px color-mix(in srgb, var(--w-lamp, var(--accent)) 10%, transparent)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -343,7 +365,9 @@ export function CommunityFeedFloor({
             >
               Classroom Invitation Pass
             </span>
-            <p style={{ margin: '0.25rem 0 0', fontWeight: 600, color: 'var(--w-ink, var(--ink))' }}>
+            <p
+              style={{ margin: '0.25rem 0 0', fontWeight: 600, color: 'var(--w-ink, var(--ink))' }}
+            >
               Invitation Code:{' '}
               <code
                 style={{
@@ -366,7 +390,8 @@ export function CommunityFeedFloor({
               fontWeight: 600,
               fontSize: '0.85rem',
               textDecoration: 'none',
-              boxShadow: '0 2px 6px color-mix(in srgb, var(--w-action, var(--lotus)) 25%, transparent)',
+              boxShadow:
+                '0 2px 6px color-mix(in srgb, var(--w-action, var(--lotus)) 25%, transparent)',
             }}
           >
             Claim Desk Pass →
@@ -533,7 +558,13 @@ export function CommunityFeedFloor({
                                   <div className={styles.groupAnnouncementMeta}>
                                     <span>Issued by {a.authorName}</span>
                                     {a.isPinned && (
-                                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                                      <span
+                                        style={{
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: '0.25rem',
+                                        }}
+                                      >
                                         📌 Pinned
                                       </span>
                                     )}

@@ -4,10 +4,11 @@ import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { loadCommunityGroups } from '../../../lib/community/groups';
 import { classifyGurudeviHost } from '../../../lib/host-routing';
-import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { resolveSanctuaryDevSession } from '../../../lib/sanctuary/devSession';
+import { resolveRoomPresentation } from '../../../lib/sanctuary/roomAccess';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
+import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { SanctuaryShell } from '../components/SanctuaryShell';
 import { CommunityFeedFloor } from './CommunityFeedFloor';
 import styles from './community.module.css';
@@ -52,8 +53,7 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
   const rawDm = resolvedSearchParams?.dm;
   const initialConversationId = typeof rawDm === 'string' ? rawDm : undefined;
   const initialIncognito =
-    resolvedSearchParams?.incognito === 'true' ||
-    resolvedSearchParams?.mode === 'incognito';
+    resolvedSearchParams?.incognito === 'true' || resolvedSearchParams?.mode === 'incognito';
 
   const requestHeaders = await headers();
   const cookieStore = await cookies();
@@ -198,7 +198,10 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
     );
   }
 
-  const result = await loadCommunityGroups(session.access_token);
+  const [result, presentation] = await Promise.all([
+    loadCommunityGroups(session.access_token),
+    resolveRoomPresentation(supabase, entry, 'community'),
+  ]);
   return (
     <SanctuaryShell displayName={entry.displayName} navigationPrefix="">
       <CommunityFeedFloor
@@ -209,6 +212,7 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
         initialPillar={initialPillar}
         initialConversationId={initialConversationId}
         initialIncognito={initialIncognito}
+        presentation={presentation}
       />
     </SanctuaryShell>
   );

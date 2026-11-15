@@ -1,8 +1,11 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 import { registerTokenResolver } from '@repo/core/api/clientRuntime';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
+import { roomCatalogOf } from '@repo/core/logic/floor';
 import {
   Button,
   Card,
@@ -11,9 +14,9 @@ import {
   Grid,
   Inline,
   Notice,
+  SearchField,
   SegmentedControl,
   Stack,
-  SearchField,
 } from '@repo/ui/components/web';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -31,13 +34,17 @@ import {
   Video,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { APP_CATALOG } from '../../../lib/appCatalog';
 import { useLibraryCanvas } from '../../../lib/canvas/useLibraryCanvas';
+import { presentationShows, type RoomPresentationMap } from '../../../lib/roomFeatures';
 import { createBrowserSupabaseClient } from '../../../lib/supabase/browser';
+import { useWorldTheme } from '../../../lib/theme/useWorldTheme';
+import { timeGreeting } from '../../../lib/timeGreeting';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
+import { RoomFloor } from '../components/RoomFloor';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
-import { timeGreeting } from '../../../lib/timeGreeting';
 import { TaskStrip } from '../components/TaskStrip';
 import styles from './library.module.css';
 
@@ -116,18 +123,33 @@ export function LibraryFloor({
   accountId,
   displayName,
   mode = 'account',
+  capacity = null,
+  presentation,
 }: Readonly<{
   accountId: string;
   displayName: string;
   mode?: LibraryFloorMode;
+  /** The active bond's capacity: the catalog offers some shelves only to some roles. */
+  capacity?: string | null;
+  /** SanctuaryFeature's decisions from the server; missing means available. */
+  presentation?: RoomPresentationMap;
 }>) {
-  const isGuestMode =
-    mode === 'explore' || accountId === 'explore-guest' || accountId === 'guest';
+  const { world } = useWorldTheme();
+  // "See all" on a group shows every feature of that group in place of the floor.
+  const [seeAllGroup, setSeeAllGroup] = useState<string | null>(null);
+  const libraryCatalog = useMemo(
+    () => roomCatalogOf(APP_CATALOG, 'library', capacity, 'web'),
+    [capacity],
+  );
+  const isGuestMode = mode === 'explore' || accountId === 'explore-guest' || accountId === 'guest';
   const canvas = useLibraryCanvas({
     accountId,
     enableRemoteSync: mode === 'account' && Boolean(accountId) && !isGuestMode,
   });
-  const workbench = useDomainWorkbench('library');
+  const router = useRouter();
+  const workbench = useDomainWorkbench('library', {
+    usageScope: mode === 'explore' ? 'explore' : 'sanctuary',
+  });
   const searchSeqRef = useRef(0);
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -270,7 +292,9 @@ export function LibraryFloor({
         setResources(parseBrowserLibraryResources(next));
         setStatus('ready');
         if (!data.session?.access_token) {
-          setNotice('Viewing Public Educational Commons • Sign in to access your school\'s private archive');
+          setNotice(
+            "Viewing Public Educational Commons • Sign in to access your school's private archive",
+          );
         }
       } catch {
         if (seq !== searchSeqRef.current) return;
@@ -324,7 +348,7 @@ export function LibraryFloor({
           status: 'ready' as const,
           notice: data.session?.access_token
             ? null
-            : 'Viewing Public Educational Commons • Sign in to access your school\'s private archive',
+            : "Viewing Public Educational Commons • Sign in to access your school's private archive",
         };
       } catch {
         return {
@@ -382,6 +406,12 @@ export function LibraryFloor({
     else workbench.open(CATALOG_TASK);
   }
 
+  // The catalog's "Search the library" opens here (/library?search=1).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: once, on arrival.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('search') === '1') openCatalog();
+  }, []);
+
   function handleSearchSubmit(searchVal: string) {
     setIsSearching(true);
     void loadResources(searchVal).finally(() => setIsSearching(false));
@@ -396,9 +426,240 @@ export function LibraryFloor({
     if (catalogTask) workbench.close(catalogTask.taskKey);
   }
 
+  /**
+   * How the web draws each Library catalog feature. Which features exist, for
+   * whom, and where they sit come from the catalog and the floor engine.
+   */
+  const shelfDrawings: Readonly<Record<string, () => ReactNode>> = {
+    'library-new': () =>
+      (() => {
+        const hero =
+          resources.find((r) => r.id === 'mangroves') ??
+          resources.find((r) => r.verified) ??
+          resources[0] ??
+          EXPLORE_LIBRARY_RESOURCES[0];
+        if (!hero) return null;
+        const isVideo = hero.type?.toLowerCase() === 'video';
+        const targetHref = isVideo ? `/library/video/${hero.id}` : `/library/reader/${hero.id}`;
+        const isBookmarked = bookmarkedIds.has(hero.id);
+
+        return (
+          <div className={styles.heroSection}>
+            <Card
+              title={hero.title}
+              meta={`Featured Artifact • ${hero.subjects?.[0] || 'Curriculum'}${
+                hero.verified ? ' • Verified' : ''
+              } — ${hero.description || 'Verified pedagogical field guide and curricular specification.'}`}
+              shape="wide"
+              size="lg"
+              icon={isVideo ? Video : BookOpen}
+              href={targetHref}
+            />
+            <Inline
+              gap="inside"
+              className={styles.cardActionsInline}
+              style={{ marginTop: '0.75rem' }}
+            >
+              <Button
+                size="sm"
+                variant="secondary"
+                label={isBookmarked ? 'Saved to Desk' : 'Save to Desk'}
+                icon={Bookmark}
+                onClick={() => toggleBookmark(hero.id)}
+              />
+              <Button
+                size="sm"
+                variant="quiet"
+                label="Share"
+                icon={Share2}
+                onClick={() => {
+                  if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                    void navigator.clipboard.writeText(
+                      `${window.location.origin}/library/${isVideo ? 'video' : 'reader'}/${hero.id}`,
+                    );
+                    setNotice('Resource link copied to clipboard!');
+                    setTimeout(() => setNotice(null), 3000);
+                  }
+                }}
+              />
+            </Inline>
+          </div>
+        );
+      })(),
+    'library-continue': () => (
+      <>
+        {(() => {
+          const saved = (resources.length > 0 ? resources : EXPLORE_LIBRARY_RESOURCES).filter((r) =>
+            bookmarkedIds.has(r.id),
+          );
+          if (saved.length === 0) return null;
+          return (
+            <section className={styles.shelfSection} aria-labelledby="saved-shelf-heading">
+              <div className={styles.shelfHeader}>
+                <h3 id="saved-shelf-heading">Saved Desk & Pinned Reflections</h3>
+                <p>
+                  {isGuestMode
+                    ? 'Your locally saved study guides (saved in this browser)'
+                    : 'Your account bookmarks and synchronized study resources'}
+                </p>
+              </div>
+              <Grid min="md" gap="between">
+                {saved.slice(0, 4).map((res) => {
+                  const isVideo = res.type?.toLowerCase() === 'video';
+                  const targetHref = isVideo
+                    ? `/library/video/${res.id}`
+                    : `/library/reader/${res.id}`;
+                  return (
+                    <div key={res.id} className={styles.resourceItem}>
+                      <Card
+                        title={res.title}
+                        meta={`${res.type || 'Guide'}${res.verified ? ' • Verified' : ''}`}
+                        shape="tile"
+                        icon={isVideo ? Video : BookOpen}
+                        href={targetHref}
+                      />
+                      <Inline gap="inside" className={styles.cardActionsInline}>
+                        <Button
+                          size="sm"
+                          variant="quiet"
+                          label="Remove"
+                          onClick={() => toggleBookmark(res.id)}
+                        />
+                      </Inline>
+                    </div>
+                  );
+                })}
+              </Grid>
+            </section>
+          );
+        })()}
+        <section className={styles.shelfSection} aria-labelledby="continue-shelf-heading">
+          <div className={styles.shelfHeader}>
+            <h3 id="continue-shelf-heading">Continue Learning & Field Guides</h3>
+            <p>Hand-picked pedagogical manuscripts and multimedia lectures</p>
+          </div>
+          <Grid min="md" gap="between">
+            {(Array.isArray(resources) && resources.length > 0
+              ? resources.slice(0, 4)
+              : EXPLORE_LIBRARY_RESOURCES
+            ).map((res) => {
+              const isVideo = res.type?.toLowerCase() === 'video';
+              return (
+                <div key={res.id}>
+                  <Card
+                    title={res.title}
+                    meta={`${res.type || 'Guide'}${res.verified ? ' • Verified' : ''}`}
+                    shape="tile"
+                    icon={isVideo ? Video : BookOpen}
+                    href={isVideo ? `/library/video/${res.id}` : `/library/reader/${res.id}`}
+                  />
+                </div>
+              );
+            })}
+          </Grid>
+        </section>
+      </>
+    ),
+    archive: () => (
+      <section className={styles.shelfSection} aria-labelledby="collections-shelf-heading">
+        <div className={styles.shelfHeader}>
+          <h3 id="collections-shelf-heading">Curated Study Collections</h3>
+          <p>Themed curricular paths gathered for deep inquiry</p>
+        </div>
+        <Grid min="md" gap="between">
+          {(Array.isArray(collections) ? collections : EXPLORE_COLLECTIONS).map((col) => (
+            <div key={col.id}>
+              <Card
+                title={col.name}
+                meta={`${col.subjects?.[0] || 'Curriculum'}${col.is_official ? ' • Official' : ''} — ${col.description || 'Guided study sequence.'}`}
+                shape="tile"
+                icon={FolderHeart}
+                href={`/library/collections/${col.id}`}
+              />
+            </div>
+          ))}
+        </Grid>
+      </section>
+    ),
+    hub: () => (
+      <section className={styles.shelfSection} aria-labelledby="tools-shelf-heading">
+        <div className={styles.shelfHeader}>
+          <h3 id="tools-shelf-heading">Knowledge Tools</h3>
+          <p>Study appliances: data grid, OCR, packet compiler, offline export</p>
+        </div>
+        <Card
+          title="Knowledge Tools Hub"
+          meta="Spreadsheet data grid, OCR vision extractor, study packet compiler, and offline export archive."
+          shape="wide"
+          size="lg"
+          icon={FileSpreadsheet}
+          href="/library/tools"
+        />
+      </section>
+    ),
+    'library-map': () => (
+      <section className={styles.shelfSection} aria-labelledby="map-shelf-heading">
+        <div className={styles.shelfHeader}>
+          <h3 id="map-shelf-heading">Learning Centers & Map</h3>
+          <p>National learning topography and concept clusters</p>
+        </div>
+        <Card
+          title="Learning Centers & Knowledge Cosmos"
+          meta="Explore Sri Lankan physical resource centers and topological concept cluster relationships."
+          shape="wide"
+          size="lg"
+          icon={Compass}
+          href="/library/map"
+        />
+      </section>
+    ),
+    'library-search': () => (
+      <section className={styles.shelfSection} aria-labelledby="search-shelf-heading">
+        <div className={styles.shelfHeader}>
+          <h3 id="search-shelf-heading">Search the library</h3>
+          <p>Every verified lesson, lecture and document</p>
+        </div>
+        <Button label="Search Catalog" onClick={openCatalog} />
+      </section>
+    ),
+    'library-contribute': () => (
+      <section className={styles.shelfSection} aria-labelledby="contribute-shelf-heading">
+        <div className={styles.shelfHeader}>
+          <h3 id="contribute-shelf-heading">Add a resource</h3>
+          <p>Share a lesson, worksheet or field guide for review</p>
+        </div>
+        <Card
+          title="Contribute to the Commons"
+          meta="Submit your own material; curators review it before it reaches the shelves."
+          shape="wide"
+          icon={Sparkles}
+          href="/library/contribute"
+        />
+      </section>
+    ),
+    curator: () => (
+      <section className={styles.shelfSection} aria-labelledby="curator-shelf-heading">
+        <div className={styles.shelfHeader}>
+          <h3 id="curator-shelf-heading">Curator Studio</h3>
+          <p>Pedagogical curation & content review</p>
+        </div>
+        <Card
+          title="Pedagogical Curation & Content Review"
+          meta="Review staged community submissions, verify curricular alignment, and resolve broken link reports."
+          shape="wide"
+          size="lg"
+          icon={Sparkles}
+          href="/library/curator"
+        />
+      </section>
+    ),
+  };
+
   return (
     <SanctuaryFloorCanvas
       appearance={canvas.appearance}
+      storedAppearance={canvas.storedAppearance}
+      accountId={accountId}
       domain="library"
       furnitureItems={LIBRARY_FURNITURE_ITEMS}
       groupOrder={
@@ -419,7 +680,11 @@ export function LibraryFloor({
         tasks={workbench.state.tasks}
         focusedTaskKey={workbench.state.focusedTaskKey}
         overviewActive={!catalogIsOpen}
-        onFocusTask={(task) => workbench.focus(task.taskKey)}
+        onFocusTask={(task) => {
+          workbench.focus(task.taskKey);
+          // A screen of its own (the map, the tools) opens on this floor at its own address.
+          if (task.route.startsWith('/library/')) router.push(task.route);
+        }}
         onCloseTask={(task) => workbench.close(task.taskKey)}
         onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
         onOpenOverview={returnToOverview}
@@ -474,7 +739,11 @@ export function LibraryFloor({
                           onClick={() => canvas.togglePin(category)}
                           type="button"
                         >
-                          {isPinned ? <Pin size={16} aria-hidden /> : <PinOff size={16} aria-hidden />}
+                          {isPinned ? (
+                            <Pin size={16} aria-hidden />
+                          ) : (
+                            <PinOff size={16} aria-hidden />
+                          )}
                         </button>
                       </div>
                     </li>
@@ -495,7 +764,9 @@ export function LibraryFloor({
               <div className={styles.sectionHeading}>
                 <p className={styles.eyebrow}>Browse</p>
                 <h2 id="resource-catalog-title">Resource catalog</h2>
-                <p>Search verified educational materials made available across the Sanctuary Commons.</p>
+                <p>
+                  Search verified educational materials made available across the Sanctuary Commons.
+                </p>
               </div>
 
               {/* Canonical SearchField */}
@@ -567,9 +838,7 @@ export function LibraryFloor({
               </div>
 
               {/* Status and Notices */}
-              {notice ? (
-                <Notice tone="neutral" message={notice} />
-              ) : null}
+              {notice ? <Notice tone="neutral" message={notice} /> : null}
 
               {status === 'loading' ? (
                 <p className={styles.state} role="status">
@@ -747,200 +1016,36 @@ export function LibraryFloor({
           </section>
 
           <div className={styles.shelvesContainer}>
-            {/* Featured Manuscript Hero Banner with Canonical Card */}
-            {(() => {
-              const hero =
-                resources.find((r) => r.id === 'mangroves') ??
-                resources.find((r) => r.verified) ??
-                resources[0] ??
-                EXPLORE_LIBRARY_RESOURCES[0];
-              if (!hero) return null;
-              const isVideo = hero.type?.toLowerCase() === 'video';
-              const targetHref = isVideo
-                ? `/library/video/${hero.id}`
-                : `/library/reader/${hero.id}`;
-              const isBookmarked = bookmarkedIds.has(hero.id);
-
-              return (
-                <div className={styles.heroSection}>
-                  <Card
-                    title={hero.title}
-                    meta={`Featured Artifact • ${hero.subjects?.[0] || 'Curriculum'}${
-                      hero.verified ? ' • Verified' : ''
-                    } — ${hero.description || 'Verified pedagogical field guide and curricular specification.'}`}
-                    shape="wide"
-                    size="lg"
-                    icon={isVideo ? Video : BookOpen}
-                    href={targetHref}
+            {seeAllGroup ? (
+              <section aria-labelledby="library-group-heading">
+                <Inline gap="inside">
+                  <Button
+                    size="sm"
+                    variant="quiet"
+                    label="Back to the Library"
+                    onClick={() => setSeeAllGroup(null)}
                   />
-                  <Inline gap="inside" className={styles.cardActionsInline} style={{ marginTop: '0.75rem' }}>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      label={isBookmarked ? 'Saved to Desk' : 'Save to Desk'}
-                      icon={Bookmark}
-                      onClick={() => toggleBookmark(hero.id)}
-                    />
-                    <Button
-                      size="sm"
-                      variant="quiet"
-                      label="Share"
-                      icon={Share2}
-                      onClick={() => {
-                        if (typeof navigator !== 'undefined' && navigator.clipboard) {
-                          void navigator.clipboard.writeText(
-                            `${window.location.origin}/library/${isVideo ? 'video' : 'reader'}/${hero.id}`,
-                          );
-                          setNotice('Resource link copied to clipboard!');
-                          setTimeout(() => setNotice(null), 3000);
-                        }
-                      }}
-                    />
-                  </Inline>
-                </div>
-              );
-            })()}
-
-            {/* Saved Desk Shelf (if items exist) */}
-            {(() => {
-              const saved = (resources.length > 0 ? resources : EXPLORE_LIBRARY_RESOURCES).filter(
-                (r) => bookmarkedIds.has(r.id),
-              );
-              if (saved.length === 0) return null;
-              return (
-                <section className={styles.shelfSection} aria-labelledby="saved-shelf-heading">
-                  <div className={styles.shelfHeader}>
-                    <h3 id="saved-shelf-heading">Saved Desk & Pinned Reflections</h3>
-                    <p>
-                      {isGuestMode
-                        ? 'Your locally saved study guides (saved in this browser)'
-                        : 'Your account bookmarks and synchronized study resources'}
-                    </p>
-                  </div>
-                  <Grid min="md" gap="between">
-                    {saved.slice(0, 4).map((res) => {
-                      const isVideo = res.type?.toLowerCase() === 'video';
-                      const targetHref = isVideo
-                        ? `/library/video/${res.id}`
-                        : `/library/reader/${res.id}`;
-                      return (
-                        <div key={res.id} className={styles.resourceItem}>
-                          <Card
-                            title={res.title}
-                            meta={`${res.type || 'Guide'}${res.verified ? ' • Verified' : ''}`}
-                            shape="tile"
-                            icon={isVideo ? Video : BookOpen}
-                            href={targetHref}
-                          />
-                          <Inline gap="inside" className={styles.cardActionsInline}>
-                            <Button
-                              size="sm"
-                              variant="quiet"
-                              label="Remove"
-                              onClick={() => toggleBookmark(res.id)}
-                            />
-                          </Inline>
-                        </div>
-                      );
-                    })}
-                  </Grid>
-                </section>
-              );
-            })()}
-
-            {/* Curated Collections Shelf */}
-            <section className={styles.shelfSection} aria-labelledby="collections-shelf-heading">
-              <div className={styles.shelfHeader}>
-                <h3 id="collections-shelf-heading">Curated Study Collections</h3>
-                <p>Themed curricular paths gathered for deep inquiry</p>
-              </div>
-              <Grid min="md" gap="between">
-                {(Array.isArray(collections) ? collections : EXPLORE_COLLECTIONS).map((col) => (
-                  <div key={col.id}>
-                    <Card
-                      title={col.name}
-                      meta={`${col.subjects?.[0] || 'Curriculum'}${col.is_official ? ' • Official' : ''} — ${col.description || 'Guided study sequence.'}`}
-                      shape="tile"
-                      icon={FolderHeart}
-                      href={`/library/collections/${col.id}`}
-                    />
-                  </div>
-                ))}
-              </Grid>
-            </section>
-
-            {/* Continue Learning Shelf */}
-            <section className={styles.shelfSection} aria-labelledby="continue-shelf-heading">
-              <div className={styles.shelfHeader}>
-                <h3 id="continue-shelf-heading">Continue Learning & Field Guides</h3>
-                <p>Hand-picked pedagogical manuscripts and multimedia lectures</p>
-              </div>
-              <Grid min="md" gap="between">
-                {(Array.isArray(resources) && resources.length > 0
-                  ? resources.slice(0, 4)
-                  : EXPLORE_LIBRARY_RESOURCES
-                ).map((res) => {
-                  const isVideo = res.type?.toLowerCase() === 'video';
-                  return (
-                    <div key={res.id}>
-                      <Card
-                        title={res.title}
-                        meta={`${res.type || 'Guide'}${res.verified ? ' • Verified' : ''}`}
-                        shape="tile"
-                        icon={isVideo ? Video : BookOpen}
-                        href={
-                          isVideo
-                            ? `/library/video/${res.id}`
-                            : `/library/reader/${res.id}`
-                        }
-                      />
-                    </div>
-                  );
-                })}
-              </Grid>
-            </section>
-
-            {/* Knowledge Tools & Spatial Map Gateway */}
-            <section className={styles.shelfSection} aria-labelledby="gateways-shelf-heading">
-              <div className={styles.shelfHeader}>
-                <h3 id="gateways-shelf-heading">Tools & Spatial Cartography</h3>
-                <p>Interactive study appliances and national learning topography</p>
-              </div>
-              <Grid min="md" gap="between">
-                <Card
-                  title="Knowledge Tools Hub"
-                  meta="Spreadsheet data grid, OCR vision extractor, study packet compiler, and offline export archive."
-                  shape="wide"
-                  size="lg"
-                  icon={FileSpreadsheet}
-                  href="/library/tools"
-                />
-                <Card
-                  title="Learning Centers & Knowledge Cosmos"
-                  meta="Explore Sri Lankan physical resource centers and topological concept cluster relationships."
-                  shape="wide"
-                  size="lg"
-                  icon={Compass}
-                  href="/library/map"
-                />
-              </Grid>
-            </section>
-
-            {/* Living Sanctuary Curator Studio Invitation */}
-            <section className={styles.shelfSection} aria-labelledby="curator-shelf-heading">
-              <div className={styles.shelfHeader}>
-                <h3 id="curator-shelf-heading">Curator Studio</h3>
-                <p>Pedagogical curation & content review</p>
-              </div>
-              <Card
-                title="Pedagogical Curation & Content Review"
-                meta="Review staged community submissions, verify curricular alignment, and resolve broken link reports."
-                shape="wide"
-                size="lg"
-                icon={Sparkles}
-                href="/library/curator"
+                </Inline>
+                <h2 id="library-group-heading">
+                  {libraryCatalog.groups.find((g) => g.id === seeAllGroup)?.label ?? 'Library'}
+                </h2>
+                {libraryCatalog.features
+                  .filter(
+                    (f) => f.floor?.group === seeAllGroup && presentationShows(presentation, f.id),
+                  )
+                  .map((f) => (
+                    <div key={f.id}>{shelfDrawings[f.id]?.() ?? null}</div>
+                  ))}
+              </section>
+            ) : (
+              <RoomFloor
+                worldId={world}
+                catalog={libraryCatalog}
+                presentationOf={(id) => presentation?.[id] ?? 'available'}
+                renderPiece={(node) => shelfDrawings[node.id]?.() ?? null}
+                onSeeAll={setSeeAllGroup}
               />
-            </section>
+            )}
           </div>
         </>
       )}

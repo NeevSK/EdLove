@@ -10,7 +10,8 @@ export type WorkspaceRoleFilter =
   | 'teacher'
   | 'student'
   | 'principal'
-  | 'guardian';
+  | 'guardian'
+  | 'founder';
 
 export interface RoleDescriptor {
   id: WorkspaceRoleFilter;
@@ -28,6 +29,9 @@ export const ROLE_DESCRIPTORS: readonly RoleDescriptor[] = [
     emoji: r.emoji,
     description: r.verb,
   })),
+  // Roles beyond the civic three that the one Workspace overview is also drawn for.
+  { id: 'principal', label: 'Principal', emoji: '🏛️', description: 'Lead the school' },
+  { id: 'founder', label: 'Founder', emoji: '🌐', description: 'Look after every school' },
 ] as const;
 
 export interface RoleLensSwitcherProps {
@@ -41,7 +45,7 @@ export interface RoleLensSwitcherProps {
 export function RoleLensSwitcher({
   activeRole,
   onRoleChange,
-  availableRoles = ['all', 'common', 'teacher', 'student', 'principal', 'guardian'],
+  availableRoles = ['all', 'common', 'teacher', 'student', 'principal', 'guardian', 'founder'],
   className = '',
   presentation = 'pills',
 }: Readonly<RoleLensSwitcherProps>) {

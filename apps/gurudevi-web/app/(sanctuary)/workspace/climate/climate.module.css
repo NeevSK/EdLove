@@ -14,18 +14,18 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-line, rgba(104, 94, 85, 0.16));
+  border-bottom: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 16%, transparent));
 }
 
 .titleArea h1 {
   font-family: var(--font-display, "Fraunces", serif);
   font-size: 1.75rem;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .titleArea p {
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
   font-size: 0.85rem;
   margin: 0.25rem 0 0;
 }
@@ -33,9 +33,9 @@
 .card {
   padding: 1.5rem;
   border-radius: 0.75rem;
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
+  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, color-mix(in srgb, var(--w-shadow-tint) 4%, transparent));
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -44,7 +44,7 @@
 .cardTitle {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
   margin: 0;
   display: flex;
   align-items: center;
@@ -60,8 +60,8 @@
 .dimensionItem {
   padding: 1rem;
   border-radius: 0.5rem;
-  background: var(--color-paper, #f7f2e8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
+  background: var(--color-paper);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -76,7 +76,7 @@
 .dimTitle {
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
 }
 
 .dimScoreBadge {
@@ -84,8 +84,8 @@
   font-weight: 700;
   padding: 0.2rem 0.65rem;
   border-radius: 999px;
-  background: var(--color-action, #a85022);
-  color: #ffffff;
+  background: var(--color-action);
+  color: var(--w-raised);
 }
 
 .sliderWrapper {
@@ -97,7 +97,7 @@
 .slider {
   flex: 1;
   height: 8px;
-  accent-color: var(--color-action, #a85022);
+  accent-color: var(--color-action);
   cursor: pointer;
 }
 
@@ -105,14 +105,14 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: var(--color-ink-soft, #453c35);
+  color: var(--color-ink-soft, var(--w-ink));
 }
 
 .radarCard {
   padding: 1.5rem;
   border-radius: 0.75rem;
-  background: var(--color-paper-light, #fffdf8);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
+  background: var(--color-paper-light);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 14%, transparent));
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -128,31 +128,32 @@
   width: 9rem;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--color-ink, #131e27);
+  color: var(--color-ink);
 }
 
 .barTrack {
   flex: 1;
   height: 12px;
-  background: var(--color-paper, #f7f2e8);
+  background: var(--color-paper);
   border-radius: 999px;
   overflow: hidden;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.15));
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 15%, transparent));
 }
 
 .barFill {
   height: 100%;
-  background: linear-gradient(90deg, #2e5d32, #a85022);
+  background: linear-gradient(90deg, var(--w-lamp), var(--w-lamp));
   border-radius: 999px;
   transition: width 0.3s ease;
+  color: var(--w-on-lamp);
 }
 
 .submitBtn {
   min-height: 44px;
   padding: 0.6rem 1.5rem;
   border-radius: 0.5rem;
-  background: var(--color-action, #a85022);
-  color: #ffffff;
+  background: var(--color-action);
+  color: var(--w-raised);
   border: none;
   font-size: 0.85rem;
   font-weight: 700;

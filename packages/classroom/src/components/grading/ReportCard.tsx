@@ -45,7 +45,7 @@ export default function ReportCard({
   }, [grades]);
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} className="flex-1 bg-phase-world">
+    <ScrollView className="flex-1 bg-phase-world">
       <View className="gap-10 p-6">
         {/* Student Info Header */}
         <View className="p-10 bg-templeGold rounded-generous shadow-xl shadow-templeGold/30 relative overflow-hidden">

@@ -23,6 +23,7 @@ import {
 } from '../../shared/questions';
 import { ChipPaint, chipFrame } from '../Chip/Chip';
 import { Surface } from '../Surface/Surface';
+import { TOUCH_MIN } from '../touch';
 
 export type ScaleProps = ScaleContract;
 
@@ -296,7 +297,7 @@ export function PrivacyNote({ identity, audience, labels }: PrivacyNoteProps) {
 
 const styles = StyleSheet.create({
   points: { flexDirection: 'row' },
-  point: { flex: 1, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  point: { flex: 1, minHeight: TOUCH_MIN, alignItems: 'center', justifyContent: 'center' },
   ends: { flexDirection: 'row', justifyContent: 'space-between' },
   option: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52, padding: 12 },
   words: { flex: 1, gap: 2 },

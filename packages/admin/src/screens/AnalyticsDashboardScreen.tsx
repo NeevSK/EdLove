@@ -212,7 +212,6 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
       <ScrollView
         className="flex-1 bg-phase-canvas"
         contentContainerStyle={{ padding: 24, paddingBottom: 48 }}
-        showsVerticalScrollIndicator={false}
       >
         <View className="gap-8">
           <View className="gap-4">

@@ -6,7 +6,9 @@ export { RouteErrorBoundary as ErrorBoundary };
 export default function SelfLayout() {
   return (
     <ErrorBoundary name="SelfLayout">
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack
+        screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}
+      >
         <Stack.Screen name="index" />
         <Stack.Screen name="ai-assistant" />
         <Stack.Screen name="wisdom/[id]" />

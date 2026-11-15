@@ -8,14 +8,14 @@
 
 /* Base Vellum: Warm Sandstone paper with radiant center */
 .vellum {
-  background: radial-gradient(circle at 50% 25%, color-mix(in srgb, var(--paper-light) 95%, #fff) 0%, var(--paper) 100%);
+  background: radial-gradient(circle at 50% 25%, color-mix(in srgb, var(--paper-light) 95%, var(--w-raised)) 0%, var(--paper) 100%);
   border: 1px solid var(--line);
-  box-shadow: 0 4px 20px -2px rgba(45, 35, 20, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 20px -2px color-mix(in srgb, var(--w-shadow-tint) 5%, transparent), inset 0 1px 0 0 color-mix(in srgb, var(--w-shadow-tint) 40%, transparent);
 }
 
 .vellum:hover {
   border-color: color-mix(in srgb, var(--lotus) 35%, var(--line));
-  box-shadow: 0 8px 30px -4px rgba(45, 35, 20, 0.09), inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 30px -4px color-mix(in srgb, var(--w-shadow-tint) 9%, transparent), inset 0 1px 0 0 color-mix(in srgb, var(--w-shadow-tint) 60%, transparent);
 }
 
 /* Glass: Temporal Luminous Glass with rim lighting */
@@ -23,28 +23,28 @@
   background: color-mix(in srgb, var(--paper-light) 75%, transparent);
   backdrop-filter: blur(20px) saturate(170%);
   -webkit-backdrop-filter: blur(20px) saturate(170%);
-  border: 1px solid color-mix(in srgb, var(--line) 60%, rgba(255, 255, 255, 0.3));
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.35), 0 8px 32px 0 rgba(31, 38, 135, 0.06);
+  border: 1px solid color-mix(in srgb, var(--line) 60%, color-mix(in srgb, var(--w-raised) 30%, transparent));
+  box-shadow: inset 0 1px 0 0 color-mix(in srgb, var(--w-shadow-tint) 35%, transparent), 0 8px 32px 0 color-mix(in srgb, var(--w-lamp) 6%, transparent);
 }
 
 .glass:hover {
   background: color-mix(in srgb, var(--paper-light) 85%, transparent);
   border-color: color-mix(in srgb, var(--lotus) 40%, var(--line));
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.5), 0 12px 40px 0 rgba(31, 38, 135, 0.1);
+  box-shadow: inset 0 1px 0 0 color-mix(in srgb, var(--w-shadow-tint) 50%, transparent), 0 12px 40px 0 color-mix(in srgb, var(--w-lamp) 10%, transparent);
 }
 
 /* Ember: Catharsis Warmth for Fire Journal / Release */
 .ember {
-  background: radial-gradient(circle at 50% 30%, color-mix(in srgb, #ffefe6 70%, var(--paper-light)) 0%, var(--paper) 100%);
-  border: 1px solid color-mix(in srgb, #e06030 30%, var(--line));
-  box-shadow: 0 4px 24px -2px rgba(224, 96, 48, 0.08), inset 0 1px 0 0 rgba(255, 220, 200, 0.5);
+  background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--w-raised) 70%, var(--paper-light)) 0%, var(--paper) 100%);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 30%, var(--line));
+  box-shadow: 0 4px 24px -2px color-mix(in srgb, var(--w-lamp) 8%, transparent), inset 0 1px 0 0 color-mix(in srgb, var(--w-line) 50%, transparent);
 }
 
 /* Lotus: Calm Somatic Focus */
 .lotus {
-  background: radial-gradient(circle at 50% 30%, color-mix(in srgb, #f4e8ff 60%, var(--paper-light)) 0%, var(--paper) 100%);
-  border: 1px solid color-mix(in srgb, #9d65c9 25%, var(--line));
-  box-shadow: 0 4px 24px -2px rgba(157, 101, 201, 0.08), inset 0 1px 0 0 rgba(255, 240, 255, 0.5);
+  background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--w-raised) 60%, var(--paper-light)) 0%, var(--paper) 100%);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 25%, var(--line));
+  box-shadow: 0 4px 24px -2px color-mix(in srgb, var(--w-lamp) 8%, transparent), inset 0 1px 0 0 color-mix(in srgb, var(--w-raised) 50%, transparent);
 }
 
 /* Floating Elevation */

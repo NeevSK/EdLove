@@ -6,7 +6,7 @@
   gap: 1.25rem;
   background-color: var(--w-raised);
   border: 1px solid var(--w-line);
-  border-radius: var(--w-corner-surface, 16px);
+  border-radius: var(--w-corner-surface);
   padding: 1.5rem;
   box-shadow: var(--w-surface-raised-shadow);
   font-family: inherit;
@@ -65,6 +65,7 @@
   background: var(--w-lamp);
   border-radius: 9999px;
   transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--w-on-lamp);
 }
 
 .inputForm {
@@ -72,7 +73,7 @@
   gap: 0.5rem;
   background-color: var(--w-sunken);
   border: 1px solid var(--w-line);
-  border-radius: var(--w-corner-control, 10px);
+  border-radius: var(--w-corner-control);
   padding: 0.35rem 0.5rem;
   align-items: center;
 }
@@ -99,7 +100,7 @@
   background-color: var(--w-lamp);
   color: var(--w-on-lamp);
   border: none;
-  border-radius: var(--w-corner-control, 8px);
+  border-radius: var(--w-corner-control);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
@@ -166,7 +167,7 @@
   padding: 0.75rem 1rem;
   background-color: var(--w-sunken);
   border: 1px solid var(--w-line);
-  border-radius: var(--w-corner-control, 10px);
+  border-radius: var(--w-corner-control);
   gap: 0.75rem;
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }

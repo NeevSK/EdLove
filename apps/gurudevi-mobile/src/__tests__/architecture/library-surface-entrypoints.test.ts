@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_ROOT = path.resolve(__dirname, '../../..');
 
 describe('retired library routes', () => {
-  it('removes library routes, navigators and catalog registrations', () => {
+  it('removes library routes and navigators (the catalog keeps Library entries)', () => {
     const retiredRoutes = [
       'app/(tabs)/library/_layout.tsx',
       'app/(tabs)/library/index.tsx',
@@ -17,12 +17,10 @@ describe('retired library routes', () => {
     ];
     expect(retiredRoutes.every((route) => !fs.existsSync(path.join(APP_ROOT, route)))).toBe(true);
 
-    const catalog = fs.readFileSync(path.join(APP_ROOT, 'src/boot/registerAppCatalog.ts'), 'utf8');
     const navigation = fs.readFileSync(
       path.join(APP_ROOT, 'src/lib/navigation/appNavigation.ts'),
       'utf8',
     );
-    expect(catalog).not.toContain('@repo/library');
     expect(navigation).not.toContain("href: '/library'");
   });
 });

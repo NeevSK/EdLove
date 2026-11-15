@@ -1,8 +1,20 @@
-import { Button, ButtonText, Heading, Input, InputField, Text, VStack } from '@repo/ui/primitives';
+import { Button, Select, Surface, TextField } from '@repo/ui/components/native';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import type { WorkforceJobFamily } from '@repo/workforce';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { RoomPage } from '@/components/shell/RoomPage';
+
+const FAMILIES: readonly { value: WorkforceJobFamily; label: string }[] = [
+  { value: 'academic', label: 'Academic' },
+  { value: 'operations', label: 'Operations' },
+  { value: 'finance', label: 'Finance' },
+  { value: 'wellbeing', label: 'Wellbeing' },
+  { value: 'facilities', label: 'Facilities' },
+  { value: 'transport', label: 'Transport' },
+  { value: 'food_service', label: 'Food service' },
+  { value: 'external_service', label: 'External service' },
+];
 
 export function WorkforceRoleScreen() {
   const { t } = useTranslation();
@@ -19,56 +31,33 @@ export function WorkforceRoleScreen() {
   }, [employeeName, selectedFamily, showToast]);
 
   return (
-    <VStack className="p-lg gap-lg items-center bg-phase-surface">
-      <Heading size="lg" className="text-ink">
-        {t('workforce.assignTitle') || 'Assign Workforce Role'}
-      </Heading>
-      <Text className="text-mistGray text-center">
-        {t('workforce.assignDescription') || 'Assign a workforce role to an employee'}
-      </Text>
-
-      <VStack className="gap-md w-full max-w-md">
-        <VStack className="gap-1">
-          <Text className="text-starlightGray text-sm">
-            {t('workforce.employeeName') || 'Employee Name'}
-          </Text>
-          <Input className="bg-ink border-obsidian">
-            <InputField
-              value={employeeName}
-              accessibilityLabel="Employee name"
-              onChangeText={setEmployeeName}
-              placeholder="e.g., Jane Doe"
-              className="text-ink"
-            />
-          </Input>
-        </VStack>
-
-        <VStack className="gap-1">
-          <Text className="text-starlightGray text-sm">
-            {t('workforce.jobFamily') || 'Job Family'}
-          </Text>
-          <Input className="bg-ink border-obsidian">
-            <InputField
-              value={selectedFamily}
-              accessibilityLabel="Job family"
-              onChangeText={(text) => setSelectedFamily(text as WorkforceJobFamily)}
-              placeholder="Select job family"
-              className="text-ink"
-            />
-          </Input>
-        </VStack>
-      </VStack>
-
-      <Button
-        className="bg-sanctuarySaffron rounded-full px-xl h-[56px]"
-        onPress={handleAssign}
-        isDisabled={loading}
-      >
-        <ButtonText className="text-white font-bold">
-          {t('workforce.assign') || 'Assign Role'}
-        </ButtonText>
-      </Button>
-    </VStack>
+    <RoomPage
+      title={t('workforce.assignTitle') || 'Assign Workforce Role'}
+      intro={t('workforce.assignDescription') || 'Assign a workforce role to an employee'}
+    >
+      <Surface tone="raised" style={{ padding: 18, gap: 16 }}>
+        <TextField
+          label={t('workforce.employeeName') || 'Employee Name'}
+          value={employeeName}
+          onChangeText={setEmployeeName}
+          placeholder="e.g., Jane Doe"
+        />
+        <Select
+          label={t('workforce.jobFamily') || 'Job Family'}
+          value={selectedFamily}
+          options={FAMILIES}
+          onChange={setSelectedFamily}
+        />
+        <Button
+          label={t('workforce.assign') || 'Assign Role'}
+          variant="primary"
+          fullWidth
+          loading={loading}
+          disabled={loading || !employeeName.trim()}
+          onPress={handleAssign}
+        />
+      </Surface>
+    </RoomPage>
   );
 }
 

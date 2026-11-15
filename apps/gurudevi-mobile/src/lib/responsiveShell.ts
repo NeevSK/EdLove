@@ -1,4 +1,5 @@
 import { colors, corners, shadows, spacing, typography } from '@repo/ui/theme/Theme';
+import { breakpointOf } from '@repo/ui/components/layout';
 
 export type ResponsiveShellMode =
   | 'mobile'
@@ -308,7 +309,7 @@ export function resolveResponsiveShellMode(platform: string, width: number): Res
     return 'webDesktop';
   }
 
-  if (width >= 768) return 'nativeTablet';
+  if (breakpointOf(width) !== 'phone') return 'nativeTablet';
   return 'mobile';
 }
 

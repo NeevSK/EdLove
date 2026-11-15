@@ -26,6 +26,7 @@
       ],
       "tier": "core",
       "worlds": [
+        "classic",
         "sanctuary",
         "wewa",
         "spark"

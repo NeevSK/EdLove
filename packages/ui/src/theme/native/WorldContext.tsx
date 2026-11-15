@@ -9,7 +9,14 @@
 
 import { createContext, type ReactNode, useContext, useMemo, useSyncExternalStore } from 'react';
 import { resolveWorld } from '../resolve';
-import type { Phase, ResolvedWorld, WorldId, WorldLanguage, WorldMode } from '../types';
+import type {
+  Phase,
+  ResolvedWorld,
+  WorldAccess,
+  WorldId,
+  WorldLanguage,
+  WorldMode,
+} from '../types';
 import { getWorldFontEpoch, subscribeWorldFonts } from './style';
 
 export interface WorldContextValue {
@@ -39,11 +46,13 @@ export interface WorldScopeProps {
   world: WorldId;
   phase?: Phase;
   mode?: WorldMode;
+  /** Preview another comfort (size, simpler look, contrast) over the person's own. */
+  access?: Partial<WorldAccess>;
   children: ReactNode;
 }
 
 /** Render a subtree in another world (previews, onboarding choices). */
-export function WorldScope({ world, phase, mode, children }: WorldScopeProps) {
+export function WorldScope({ world, phase, mode, access, children }: WorldScopeProps) {
   const parent = useWorldContext();
   const value = useMemo(
     () => ({
@@ -51,11 +60,11 @@ export function WorldScope({ world, phase, mode, children }: WorldScopeProps) {
         world,
         phase ?? parent.world.phase,
         mode ?? parent.world.mode,
-        parent.world.access,
+        access ? { ...parent.world.access, ...access } : parent.world.access,
       ),
       language: parent.language,
     }),
-    [world, phase, mode, parent],
+    [world, phase, mode, parent, access],
   );
   return <WorldContext value={value}>{children}</WorldContext>;
 }

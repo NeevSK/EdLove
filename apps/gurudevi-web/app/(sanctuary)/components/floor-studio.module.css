@@ -4,7 +4,7 @@
 .drawerOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--gd-scrim);
   backdrop-filter: blur(4px);
   z-index: 99;
   animation: fadeIn 0.25s ease-out forwards;
@@ -17,10 +17,10 @@
   right: 0;
   bottom: 0;
   width: min(28rem, 100vw);
-  background: color-mix(in srgb, var(--paper, #fbf8f2) 96%, transparent);
+  background: color-mix(in srgb, var(--paper) 96%, transparent);
   backdrop-filter: blur(24px);
-  border-left: 1px solid var(--line, rgba(0, 0, 0, 0.12));
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+  border-left: 1px solid var(--line);
+  box-shadow: -8px 0 32px color-mix(in srgb, var(--w-shadow-tint) 12%, transparent);
   z-index: 100;
   display: flex;
   flex-direction: column;
@@ -43,7 +43,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--line, rgba(0, 0, 0, 0.1));
+  border-bottom: 1px solid var(--line);
 }
 
 .drawerTitleGroup {
@@ -57,13 +57,13 @@
   font-family: Georgia, serif;
   font-size: 1.15rem;
   font-weight: 600;
-  color: var(--ink, #1a1918);
+  color: var(--ink);
 }
 
 .drawerSubtitle {
   margin: 0.15rem 0 0;
   font-size: 0.76rem;
-  color: var(--ink-soft, #706b63);
+  color: var(--ink-soft);
   text-transform: capitalize;
 }
 
@@ -72,17 +72,17 @@
   place-items: center;
   width: 2rem;
   height: 2rem;
-  border: 1px solid var(--line, rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: var(--paper-light, #fff);
-  color: var(--ink-soft, #706b63);
+  background: var(--paper-light);
+  color: var(--ink-soft);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .closeButton:hover {
-  border-color: var(--ink, #1a1918);
-  color: var(--ink, #1a1918);
+  border-color: var(--ink);
+  color: var(--ink);
 }
 
 /* Tab Navigation */
@@ -90,9 +90,9 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   padding: 0.5rem 1.5rem;
-  border-bottom: 1px solid var(--line, rgba(0, 0, 0, 0.1));
+  border-bottom: 1px solid var(--line);
   gap: 0.5rem;
-  background: color-mix(in srgb, var(--paper-light, #fff) 50%, transparent);
+  background: color-mix(in srgb, var(--paper-light) 50%, transparent);
 }
 
 .tabButton {
@@ -104,7 +104,7 @@
   border: 1px solid transparent;
   border-radius: 0.5rem;
   background: transparent;
-  color: var(--ink-soft, #706b63);
+  color: var(--ink-soft);
   font: inherit;
   font-size: 0.82rem;
   font-weight: 600;
@@ -113,15 +113,15 @@
 }
 
 .tabButton:hover {
-  background: color-mix(in srgb, var(--paper-light, #fff) 80%, transparent);
-  color: var(--ink, #1a1918);
+  background: color-mix(in srgb, var(--paper-light) 80%, transparent);
+  color: var(--ink);
 }
 
 .tabButtonActive {
-  background: var(--paper-light, #fff);
-  border-color: var(--line, rgba(0, 0, 0, 0.12));
-  color: var(--color-sanctuary-saffron, #a85022);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: var(--paper-light);
+  border-color: var(--line);
+  color: var(--color-sanctuary-saffron);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-shadow-tint) 5%, transparent);
 }
 
 .drawerBody {
@@ -151,7 +151,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink-ghost, #8a8275);
+  color: var(--ink-ghost, var(--w-ink-soft));
 }
 
 .gridTwo {
@@ -171,10 +171,10 @@
   align-items: center;
   gap: 0.45rem;
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--line, rgba(0, 0, 0, 0.12));
+  border: 1px solid var(--line);
   border-radius: 0.5rem;
-  background: var(--paper-light, #fff);
-  color: var(--ink, #1a1918);
+  background: var(--paper-light);
+  color: var(--ink);
   font: inherit;
   font-size: 0.8rem;
   font-weight: 500;
@@ -195,9 +195,9 @@
   gap: 0.35rem;
   padding: 0.35rem 0.65rem;
   border-radius: 999px;
-  border: 1px solid var(--line, rgba(0, 0, 0, 0.12));
-  background: color-mix(in srgb, var(--paper-light, #fff) 60%, transparent);
-  color: var(--ink, #1a1918);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-light) 60%, transparent);
+  color: var(--ink);
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
@@ -205,16 +205,16 @@
 }
 
 .worldChip:hover {
-  border-color: var(--color-sanctuary-saffron, #a85022);
+  border-color: var(--color-sanctuary-saffron);
   transform: translateY(-1px);
 }
 
 .worldChipActive {
-  border-color: var(--color-sanctuary-saffron, #a85022);
-  background: color-mix(in srgb, var(--lotus, #d97706) 14%, var(--paper-light, #fff));
-  color: var(--color-sanctuary-saffron, #a85022);
+  border-color: var(--color-sanctuary-saffron);
+  background: color-mix(in srgb, var(--lotus) 14%, var(--paper-light));
+  color: var(--color-sanctuary-saffron);
   font-weight: 600;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--w-shadow-tint) 6%, transparent);
 }
 
 .gridFour {
@@ -224,13 +224,13 @@
 }
 
 .pillButton:hover {
-  border-color: var(--color-sanctuary-saffron, #a85022);
+  border-color: var(--color-sanctuary-saffron);
 }
 
 .pillButtonActive {
-  border-color: var(--color-sanctuary-saffron, #a85022);
-  background: color-mix(in srgb, var(--lotus, #d97706) 12%, var(--paper-light, #fff));
-  color: var(--color-sanctuary-saffron, #a85022);
+  border-color: var(--color-sanctuary-saffron);
+  background: color-mix(in srgb, var(--lotus) 12%, var(--paper-light));
+  color: var(--color-sanctuary-saffron);
   font-weight: 600;
 }
 
@@ -242,28 +242,28 @@
   justify-content: center;
   gap: 0.4rem;
   padding: 1.25rem 1rem;
-  border: 2px dashed var(--line, rgba(0, 0, 0, 0.16));
+  border: 2px dashed var(--line);
   border-radius: 0.75rem;
-  background: color-mix(in srgb, var(--paper-light, #fff) 50%, transparent);
+  background: color-mix(in srgb, var(--paper-light) 50%, transparent);
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: center;
 }
 
 .dropzone:hover {
-  border-color: var(--color-sanctuary-saffron, #a85022);
-  background: var(--paper-light, #fff);
+  border-color: var(--color-sanctuary-saffron);
+  background: var(--paper-light);
 }
 
 .dropzoneText {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--ink, #1a1918);
+  color: var(--ink);
 }
 
 .dropzoneHint {
   font-size: 0.7rem;
-  color: var(--ink-soft, #706b63);
+  color: var(--ink-soft);
 }
 
 .fileInputHidden {
@@ -286,18 +286,18 @@
   cursor: pointer;
   background-size: cover;
   background-position: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--w-shadow-tint) 8%, transparent);
   transition: all 0.2s ease;
 }
 
 .wallpaperCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-shadow-tint) 14%, transparent);
 }
 
 .wallpaperCardActive {
-  border-color: var(--color-sanctuary-saffron, #a85022);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-sanctuary-saffron, #a85022) 30%, transparent);
+  border-color: var(--color-sanctuary-saffron);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-sanctuary-saffron) 30%, transparent);
 }
 
 .wallpaperCardLabel {
@@ -305,8 +305,8 @@
   bottom: 0;
   inset-inline: 0;
   padding: 0.35rem 0.5rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
-  color: #fff;
+  background: linear-gradient(to top, color-mix(in srgb, var(--w-ink) 75%, transparent), transparent);
+  color: var(--w-raised);
   font-size: 0.72rem;
   font-weight: 600;
   white-space: nowrap;
@@ -321,8 +321,8 @@
   width: 1.4rem;
   height: 1.4rem;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
+  background: color-mix(in srgb, var(--w-ink) 60%, transparent);
+  color: var(--w-raised);
   border: none;
   font-size: 0.7rem;
   cursor: pointer;
@@ -349,10 +349,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.65rem 0.85rem;
-  border: 1px solid var(--line, rgba(0, 0, 0, 0.12));
+  border: 1px solid var(--line);
   border-radius: 0.6rem;
-  background: var(--paper-light, #fff);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  background: var(--paper-light);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-shadow-tint) 3%, transparent);
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   touch-action: pan-y;
   cursor: grab;
@@ -362,8 +362,8 @@
 .furnitureItem[data-dnd-lifted="true"] {
   cursor: grabbing;
   transform: scale(1.02);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18), 0 0 0 2px var(--color-sanctuary-saffron, #a85022);
-  border-color: var(--color-sanctuary-saffron, #a85022);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--w-shadow-tint) 18%, transparent), 0 0 0 2px var(--color-sanctuary-saffron);
+  border-color: var(--color-sanctuary-saffron);
   z-index: 10;
   opacity: 0.96;
 }
@@ -375,9 +375,9 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--color-sanctuary-saffron, #a85022);
+  background: var(--color-sanctuary-saffron);
   border-radius: 3px;
-  box-shadow: 0 0 8px rgba(168, 80, 34, 0.45);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--w-lamp) 45%, transparent);
   pointer-events: none;
 }
 
@@ -388,9 +388,9 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--color-sanctuary-saffron, #a85022);
+  background: var(--color-sanctuary-saffron);
   border-radius: 3px;
-  box-shadow: 0 0 8px rgba(168, 80, 34, 0.45);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--w-lamp) 45%, transparent);
   pointer-events: none;
 }
 
@@ -405,8 +405,8 @@
 }
 
 .furnitureItemPinned {
-  border-color: var(--color-sanctuary-saffron, #a85022);
-  background: color-mix(in srgb, var(--lotus, #d97706) 6%, var(--paper-light, #fff));
+  border-color: var(--color-sanctuary-saffron);
+  background: color-mix(in srgb, var(--lotus) 6%, var(--paper-light));
 }
 
 .furnitureInfo {
@@ -418,7 +418,7 @@
 .furnitureName {
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--ink, #1a1918);
+  color: var(--ink);
 }
 
 .furnitureActions {
@@ -430,10 +430,10 @@
 .furnitureBtn {
   width: 1.75rem;
   height: 1.75rem;
-  border: 1px solid var(--line, rgba(0, 0, 0, 0.12));
+  border: 1px solid var(--line);
   border-radius: 0.35rem;
   background: transparent;
-  color: var(--ink-soft, #706b63);
+  color: var(--ink-soft);
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -442,9 +442,9 @@
 }
 
 .furnitureBtn:hover:not(:disabled) {
-  background: var(--paper, #fbf8f2);
-  color: var(--ink, #1a1918);
-  border-color: var(--ink-soft, #706b63);
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--ink-soft);
 }
 
 .furnitureBtn:disabled {
@@ -453,9 +453,9 @@
 }
 
 .furnitureBtnActive {
-  background: var(--color-sanctuary-saffron, #a85022);
-  color: #fff;
-  border-color: var(--color-sanctuary-saffron, #a85022);
+  background: var(--color-sanctuary-saffron);
+  color: var(--w-raised);
+  border-color: var(--color-sanctuary-saffron);
 }
 
 /* Custom Color Wash Mixer */
@@ -469,7 +469,7 @@
   width: 2.2rem;
   height: 2.2rem;
   padding: 0;
-  border: 1px solid var(--line, rgba(0, 0, 0, 0.15));
+  border: 1px solid var(--line);
   border-radius: 0.5rem;
   cursor: pointer;
   background: transparent;
@@ -479,27 +479,27 @@
   font-family: monospace;
   font-size: 0.8rem;
   padding: 0.4rem 0.65rem;
-  border: 1px solid var(--line, rgba(0, 0, 0, 0.12));
+  border: 1px solid var(--line);
   border-radius: 0.4rem;
-  background: var(--paper-light, #fff);
-  color: var(--ink, #1a1918);
+  background: var(--paper-light);
+  color: var(--ink);
   width: 6.5rem;
 }
 
 /* Reset / Action Footer */
 .drawerFooter {
   padding: 1rem 1.5rem;
-  border-top: 1px solid var(--line, rgba(0, 0, 0, 0.1));
+  border-top: 1px solid var(--line);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: color-mix(in srgb, var(--paper-light, #fff) 50%, transparent);
+  background: color-mix(in srgb, var(--paper-light) 50%, transparent);
 }
 
 .resetBtn {
   font: inherit;
   font-size: 0.78rem;
-  color: var(--ink-soft, #706b63);
+  color: var(--ink-soft);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -509,6 +509,6 @@
 }
 
 .resetBtn:hover {
-  color: var(--ink, #1a1918);
+  color: var(--ink);
   text-decoration: underline;
 }

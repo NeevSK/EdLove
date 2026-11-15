@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { resolveSanctuaryDevSession } from '../../../lib/sanctuary/devSession';
+import { resolveRoomPresentation } from '../../../lib/sanctuary/roomAccess';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { SanctuaryShell } from '../components/SanctuaryShell';
 import { SelfFloor } from './SelfFloor';
@@ -90,12 +91,15 @@ export default async function SelfPage({
   if (entry.kind === 'unavailable')
     return <SelfState detail={entry.message} title="Self is unavailable" />;
 
+  const presentation = await resolveRoomPresentation(supabase, entry, 'self');
+
   return (
     <SanctuaryShell displayName={entry.displayName} navigationPrefix="">
       <SelfFloor
         accountId={entry.accountId}
         displayName={entry.displayName}
         initialCapacity={entry.primaryCapacity}
+        presentation={presentation}
         key={entry.accountId}
       />
     </SanctuaryShell>

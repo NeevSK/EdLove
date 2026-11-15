@@ -96,7 +96,7 @@
 .tabButtonActive {
   color: var(--ink);
   background: var(--paper-light);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-shadow-tint) 5%, transparent);
 }
 
 .itemList {
@@ -166,8 +166,8 @@
 .approveButton {
   padding: 0.5rem 1.1rem;
   border-radius: 9999px;
-  border: 1px solid #2e7d32;
-  background: #2e7d32;
+  border: 1px solid var(--w-lamp);
+  background: var(--w-lamp);
   color: white;
   font-size: 0.85rem;
   font-weight: 600;
@@ -179,7 +179,7 @@
   border-radius: 9999px;
   border: 1px solid var(--line);
   background: transparent;
-  color: #c62828;
+  color: var(--w-danger);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;

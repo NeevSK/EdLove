@@ -21,6 +21,7 @@ import { useWorldMotion } from '../../../theme/native/motion';
 import { radiusStyle, shadowStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
 import { dropIndex, TASK_TABS_ENGLISH } from '../../shared/agent';
+import { slopFor } from '../touch';
 
 export type TaskTabsProps = TaskTabsContract;
 
@@ -117,6 +118,7 @@ function Tab({ tab, active, labels, onSelect, onClose, onDrop, onMove, onFrame }
             feedback('select');
             onSelect();
           }}
+          hitSlop={slopFor(TAB_HEIGHT)}
           style={styles.words}
         >
           <RNText
@@ -261,6 +263,7 @@ export function TaskTabs({
                 feedback('select');
                 home.onPress();
               }}
+              hitSlop={slopFor(TAB_HEIGHT)}
               style={[styles.tab, styles.words]}
             >
               <RNText
@@ -298,13 +301,16 @@ export function TaskTabs({
   );
 }
 
+/** Drawn height of a task tab; the touch area grows to the platform minimum. */
+const TAB_HEIGHT = 38;
+
 const styles = StyleSheet.create({
   strip: { paddingHorizontal: 12, paddingVertical: 6 },
   well: { padding: PAD, overflow: 'hidden' },
   row: { alignItems: 'center' },
   mark: { position: 'absolute', left: 0, top: 0, bottom: 0, borderRadius: 999 },
-  tab: { flexDirection: 'row', alignItems: 'center', minHeight: 38, maxWidth: 220 },
-  words: { paddingHorizontal: 14, minHeight: 38, justifyContent: 'center', flexShrink: 1 },
+  tab: { flexDirection: 'row', alignItems: 'center', minHeight: TAB_HEIGHT, maxWidth: 220 },
+  words: { paddingHorizontal: 14, minHeight: TAB_HEIGHT, justifyContent: 'center', flexShrink: 1 },
   close: {
     width: 26,
     height: 26,

@@ -1,0 +1,18 @@
+workspace: compact portrait, dense, cost 82/400
+  Today 80h w3
+    Today [lamp] 80h w3
+      Daily Attendance 56h w3
+  Work 332h w1
+    Teaching and learning [grouped-list] 212h w1
+      Timetable 140h w1
+      Gradebook & Marks 140h w1 (folded)
+    Daily running [tile-grid] 120h w1
+      QR Scanner 140h w1
+      Claim Spot 140h w1
+  School 284h w2
+    Notices and messages [tile-grid] 120h w1
+      Guardian Portal 140h w1
+      Circulars & Notices 280h w1
+    School [tile-grid] 164h w2 (below)
+      Principal Command Center 140h w1.2 (below)
+      Tuition & Fees 140h w2 (below)

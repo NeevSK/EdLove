@@ -1,7 +1,6 @@
 import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
-import { BrandPulse } from '@repo/ui';
+import { ErrorState, WorldLoading } from '@repo/ui/components/native';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { Button, ButtonText, Center, Text, VStack } from '@repo/ui/primitives';
 import { router, useGlobalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
@@ -41,20 +40,14 @@ export default function AuthCallbackRoute() {
 
   if (failureMessage) {
     return (
-      <Center className="flex-1 bg-obsidian px-6">
-        <VStack space="md" className="items-center">
-          <Text className="text-center text-sacred-white">{failureMessage}</Text>
-          <Button onPress={() => router.replace('/auth')}>
-            <ButtonText>Try again</ButtonText>
-          </Button>
-        </VStack>
-      </Center>
+      <ErrorState
+        title="Sign-in did not finish"
+        message={failureMessage}
+        retry={{ label: 'Try again', onPress: () => router.replace('/auth') }}
+        style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 24 }}
+      />
     );
   }
 
-  return (
-    <Center className="flex-1 bg-obsidian">
-      <BrandPulse accessibilityLabel="Completing sign-in" />
-    </Center>
-  );
+  return <WorldLoading label="Completing sign-in" fullscreen />;
 }

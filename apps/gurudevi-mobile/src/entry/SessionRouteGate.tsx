@@ -1,4 +1,6 @@
-import { View, Text, Pressable } from 'react-native';
+import { Button, Text } from '@repo/ui/components/native';
+import { useWorld } from '@repo/ui/theme/native';
+import { View } from 'react-native';
 import { useAuth } from '@repo/core/logic';
 import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntentStore';
 import { BrandPulse } from '@repo/ui';
@@ -20,6 +22,7 @@ export function SessionRouteGate({
   appServices?: ReactNode;
 }) {
   const router = useRouter();
+  const { ground, lamp } = useWorld().tokens;
   const pathname = usePathname();
   const params = useGlobalSearchParams<{ entry?: string }>();
   const { refreshProfile } = useAuth();
@@ -163,69 +166,69 @@ export function SessionRouteGate({
   // temporary fallback to the null index route.
   if (presentation.kind === 'restoring') {
     return (
-      <View className="flex-1">
+      <View style={{ flex: 1 }}>
         <View
-          className="absolute inset-0"
+          style={FILL}
           pointerEvents="none"
           accessibilityElementsHidden
           importantForAccessibility="no-hide-descendants"
         >
           {children}
         </View>
-        <View className="absolute inset-0 flex-1 items-center justify-center bg-phase-canvas px-8">
+        <View style={[FILL, CENTRE, { backgroundColor: ground }]}>
           {presentation.message ? (
             <>
               <Mascot mode="offline" state="interrupted" size={140} podVariant="raw" />
-              <Text className="mt-6 text-center text-xl font-bold text-phase-text-primary">
+              <Text kind="title" align="center" style={{ marginTop: 24 }}>
                 Sanctuary Connection Paused
               </Text>
-              <Text className="mt-2 text-center text-sm text-phase-text-muted">
+              <Text kind="body" tone="soft" align="center" style={{ marginTop: 8 }}>
                 {presentation.message}
               </Text>
-              <Pressable
+              <Button
+                label="Reconnect Sanctuary"
+                variant="primary"
                 accessibilityRole="button"
-                accessibilityLabel="Retry restoring your sanctuary"
+                accessibilityLabel={'Retry restoring your sanctuary'}
                 onPress={() => void refreshProfile()}
-                className="mt-6 w-full max-w-xs items-center rounded-xl bg-phase-interactive py-3.5 px-6 shadow-sm active:opacity-90"
-              >
-                <Text className="font-semibold text-white">Reconnect Sanctuary</Text>
-              </Pressable>
-              <Pressable
+                style={{ marginTop: 12 }}
+              />
+              <Button
+                label="Return to Welcome"
+                variant="quiet"
                 accessibilityRole="button"
-                accessibilityLabel="Return to Welcome"
+                accessibilityLabel={'Return to Welcome'}
                 onPress={() => router.replace('/welcome')}
-                className="mt-3 py-2 px-4"
-              >
-                <Text className="text-sm font-medium text-phase-text-muted">Return to Welcome</Text>
-              </Pressable>
+                style={{ marginTop: 12 }}
+              />
             </>
           ) : (
             <>
-              <BrandPulse size={32} tintColor="#D4843A" accessibilityLabel="Opening Gurudevi" />
-              <Text className="mt-6 text-center text-base font-semibold text-phase-text-primary">
+              <BrandPulse size={32} tintColor={lamp} accessibilityLabel="Opening Gurudevi" />
+              <Text kind="label" align="center" style={{ marginTop: 24 }}>
                 Opening Gurudevi…
               </Text>
               {entryWaitExpired ? (
                 <>
-                  <Text className="mt-2 text-center text-sm text-phase-text-muted">
+                  <Text kind="body" tone="soft" align="center" style={{ marginTop: 8 }}>
                     This is taking longer than usual.
                   </Text>
-                  <Pressable
+                  <Button
+                    label="Retry"
+                    variant="primary"
                     accessibilityRole="button"
-                    accessibilityLabel="Retry restoring your sanctuary"
+                    accessibilityLabel={'Retry restoring your sanctuary'}
                     onPress={() => void refreshProfile()}
-                    className="mt-5 rounded-xl bg-phase-interactive px-6 py-3.5 active:opacity-90"
-                  >
-                    <Text className="font-semibold text-white">Retry</Text>
-                  </Pressable>
-                  <Pressable
+                    style={{ marginTop: 12 }}
+                  />
+                  <Button
+                    label="Return to Welcome"
+                    variant="quiet"
                     accessibilityRole="button"
-                    accessibilityLabel="Return to Welcome"
+                    accessibilityLabel={'Return to Welcome'}
                     onPress={() => router.replace('/welcome')}
-                    className="mt-3 py-2 px-4"
-                  >
-                    <Text className="text-sm font-medium text-phase-text-muted">Return to Welcome</Text>
-                  </Pressable>
+                    style={{ marginTop: 12 }}
+                  />
                 </>
               ) : null}
             </>
@@ -239,31 +242,34 @@ export function SessionRouteGate({
 
   const destination = presentation.target === '/welcome' ? 'Welcome' : 'your sanctuary';
   return (
-    <View className="flex-1">
+    <View style={{ flex: 1 }}>
       <View
-        className="absolute inset-0"
+        style={FILL}
         pointerEvents="none"
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
       >
         {children}
       </View>
-      <View className="absolute inset-0 flex-1 items-center justify-center bg-phase-canvas px-8">
-        <Text className="text-center text-base font-semibold text-phase-text-primary">
+      <View style={[FILL, CENTRE, { backgroundColor: ground }]}>
+        <Text kind="label" align="center">
           Continue to {destination}
         </Text>
-        <Pressable
+        <Button
+          label="Continue"
+          variant="primary"
           accessibilityRole="button"
           accessibilityLabel={`Continue to ${destination}`}
           onPress={() => router.replace(presentation.target as Href)}
-          className="mt-5 rounded-xl bg-phase-interactive px-6 py-3.5 active:opacity-90"
-        >
-          <Text className="font-semibold text-white">Continue</Text>
-        </Pressable>
+          style={{ marginTop: 20 }}
+        />
       </View>
     </View>
   );
 }
+
+const FILL = { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 } as const;
+const CENTRE = { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 } as const;
 
 function getDiagnosticRoutePattern(pathname: string): string {
   if (pathname === '/' || pathname === '/index') return 'root';

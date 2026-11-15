@@ -44,7 +44,7 @@ export default function AcademicHistoryTimeline({ userId }: AcademicHistoryTimel
   }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+    <ScrollView className="flex-1">
       <View space="lg" className="pb-10">
         {history.map((record: AcademicRecord, index: number) => (
           <Animated.View key={record.id} entering={FadeInRight.delay(index * 100)}>

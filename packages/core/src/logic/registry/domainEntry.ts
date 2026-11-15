@@ -1,4 +1,5 @@
 import { CITIZENSHIP } from '@repo/core/logic/registry/citizenship';
+import { TimeProfileSchema } from '@repo/core/logic/registry/timeProfile';
 import { z } from 'zod';
 
 /**
@@ -146,13 +147,7 @@ export const FlowFallbackEdgeSchema = z.object({
 export const FlowNodeStepSchema = z.object({
   stepId: z.string().min(1),
   title: z.string().min(1),
-  purpose: z.enum([
-    'on_ramp',
-    'input_form',
-    'preview_confirm',
-    'sub_detail',
-    'terminal_success',
-  ]),
+  purpose: z.enum(['on_ramp', 'input_form', 'preview_confirm', 'sub_detail', 'terminal_success']),
   mobileRoute: z.string().min(1),
   webRoute: z.string().min(1),
   primaryAction: z.string().min(1),
@@ -163,39 +158,59 @@ export const FlowNodeStepSchema = z.object({
 export const JourneyPilotSchema = z.object({
   status: z.enum(['proposed', 'implemented']),
   intent: z.string().min(1),
-  developmentContext: z.object({
-    mode: z.enum(['greenfield', 'brownfield', 'mixed']),
-    existingBehavior: z.array(z.string().min(1)),
-    integrationPoints: z.array(z.object({ reference: z.string().min(1), role: z.string().min(1) })),
-    invariants: z.array(z.string().min(1)).min(1),
-    openQuestions: z.array(z.string().min(1)),
-  }).optional(),
+  developmentContext: z
+    .object({
+      mode: z.enum(['greenfield', 'brownfield', 'mixed']),
+      existingBehavior: z.array(z.string().min(1)),
+      integrationPoints: z.array(
+        z.object({ reference: z.string().min(1), role: z.string().min(1) }),
+      ),
+      invariants: z.array(z.string().min(1)).min(1),
+      openQuestions: z.array(z.string().min(1)),
+    })
+    .optional(),
   entryStep: z.string().min(1),
-  steps: z.array(z.object({
-    id: z.string().min(1),
-    title: z.string().min(1),
-    interaction: z.string().min(1),
-    terminal: z.boolean(),
-  })).min(1),
-  transitions: z.array(z.object({
-    id: z.string().min(1),
-    from: z.string().min(1),
-    to: z.string().min(1),
-    action: z.string().min(1),
-    feedback: z.string().min(1),
-  })).min(1),
-  scenarios: z.array(z.object({
-    id: z.string().min(1),
-    title: z.string().min(1),
-    transitions: z.array(z.string().min(1)).min(1),
-    evidence: z.array(z.object({ reference: z.string().min(1), tier: z.string().min(1) })),
-  })).min(1),
-  bindings: z.array(z.object({
-    kind: z.enum(['web', 'mobile', 'api', 'data', 'authorization']),
-    status: z.enum(['unknown', 'planned', 'implemented', 'verified']),
-    reference: z.string().min(1).optional(),
-    note: z.string().min(1),
-  })).min(1),
+  steps: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        title: z.string().min(1),
+        interaction: z.string().min(1),
+        terminal: z.boolean(),
+      }),
+    )
+    .min(1),
+  transitions: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        from: z.string().min(1),
+        to: z.string().min(1),
+        action: z.string().min(1),
+        feedback: z.string().min(1),
+      }),
+    )
+    .min(1),
+  scenarios: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        title: z.string().min(1),
+        transitions: z.array(z.string().min(1)).min(1),
+        evidence: z.array(z.object({ reference: z.string().min(1), tier: z.string().min(1) })),
+      }),
+    )
+    .min(1),
+  bindings: z
+    .array(
+      z.object({
+        kind: z.enum(['web', 'mobile', 'api', 'data', 'authorization']),
+        status: z.enum(['unknown', 'planned', 'implemented', 'verified']),
+        reference: z.string().min(1).optional(),
+        note: z.string().min(1),
+      }),
+    )
+    .min(1),
 });
 
 export const FeatureJTBDGraphSchema = z.object({
@@ -214,9 +229,8 @@ export const FeatureJTBDGraphSchema = z.object({
   journeyPilot: JourneyPilotSchema.optional(),
 });
 
+/** Channels beyond the two apps. Web and phone support is webSupport/mobileSupport only. */
 export const ChannelAffordanceSchema = z.object({
-  web: z.boolean().default(true),
-  mobile: z.boolean().default(true),
   whatsapp: z
     .object({
       intent: z.string(),
@@ -229,6 +243,26 @@ export const ChannelAffordanceSchema = z.object({
       readOnly: z.boolean().default(false),
     })
     .optional(),
+});
+
+/**
+ * Where a feature sits on its room's floor by default. The person's saved
+ * arrangement moves, hides and pins on top of this; SanctuaryFeature decides
+ * whether it is there at all. `shape` names the kit component that draws it
+ * (a key of the kit's floor-fit table: row, card, rail, list, grid...).
+ */
+export const FeatureFloorSchema = z.object({
+  group: z.string().min(1),
+  shape: z.string().min(1),
+  /** How urgent it is within today: now, later or any time. */
+  urgency: z.enum(['now', 'later', 'anytime']).optional(),
+  /** A job to finish, not just something to look at. */
+  task: z.boolean().optional(),
+  /** Holds the lamp: what matters most right now. */
+  lit: z.boolean().optional(),
+  needsAttention: z.boolean().optional(),
+  /** How much it matters to its roles, 1 by default. */
+  weight: z.number().positive().optional(),
 });
 
 export const DomainEntrySchema = z.object({
@@ -275,6 +309,27 @@ export const DomainEntrySchema = z.object({
   tabDomain: TabDomainSchema,
   surfaceId: z.string(),
   defaultOrder: z.number(),
+  /** The floor zone it starts in (today, work, institution...). */
+  defaultZone: z.string().optional(),
+  /** Short symbol shown beside the label. */
+  icon: z.string().optional(),
+  /** The practice in the capability manifest it runs (attendance, climate_sensing...). */
+  capabilityId: z.string().optional(),
+  /** Where each platform opens it. */
+  routes: z.object({ web: z.string().optional(), mobile: z.string().optional() }).optional(),
+
+  // ── Room floor ────────────────────────────────────────────────────
+  /**
+   * Roles that see it in their room (teacher, student, principal, guardian,
+   * or an exact capacity). Missing means every role. `common` features are
+   * offered to every role even when not listed.
+   */
+  roles: z.array(z.string().min(1)).optional(),
+  common: z.boolean().optional(),
+  /** Its default place on the room's floor. Without it the entry is not furniture. */
+  floor: FeatureFloorSchema.optional(),
+  /** Time lens: how it behaves looking back, today, and ahead. */
+  time: TimeProfileSchema.optional(),
 
   // ── Journey & Interaction Sequencing ──────────────────────────────
   journey: FeatureJourneySchema.optional(),
@@ -288,6 +343,7 @@ export const DomainEntrySchema = z.object({
 });
 
 export type DomainEntry = z.infer<typeof DomainEntrySchema>;
+export type FeatureFloor = z.infer<typeof FeatureFloorSchema>;
 export type ChannelAffordance = z.infer<typeof ChannelAffordanceSchema>;
 export type FeatureState = z.infer<typeof FeatureStateSchema>;
 export type FeatureFlagClass = z.infer<typeof FeatureFlagClassSchema>;

@@ -79,7 +79,6 @@ export const MobileStudioCanvas = memo(function MobileStudioCanvas({
       <ScrollView
         className="flex-1 px-4 pt-4"
         contentContainerStyle={{ paddingBottom: 120 }}
-        showsVerticalScrollIndicator={false}
       >
         {/* Step Title Header */}
         <View className="mb-4">

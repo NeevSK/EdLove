@@ -10,6 +10,11 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
+    "./constants/*": {
+      "types": "./src/constants/*.ts",
+      "import": "./src/constants/*.ts",
+      "default": "./src/constants/*.ts"
+    },
     "./*": {
       "types": "./src/*.ts",
       "import": "./src/*.js",
@@ -32,6 +37,7 @@
   },
   "dependencies": {
     "@intuitui-labs/form-builder-engine": "^0.3.0",
+    "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
     "expo-router": "~58.0.30",
     "react-i18next": "^17.1.12"

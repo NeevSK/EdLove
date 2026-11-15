@@ -27,6 +27,13 @@ export const WorkspaceLayoutPatchAppearanceSchema = z.object({
   preset: WorkspaceAppearanceSchema.shape.preset,
   motion: WorkspaceAppearanceSchema.shape.motion,
   wallpaper: WorkspaceWallpaperSchema.nullable(),
+  // The ground fields ride along so a layout patch never drops a room's look.
+  groundMode: WorkspaceAppearanceSchema.shape.groundMode,
+  worldId: WorkspaceAppearanceSchema.shape.worldId,
+  wallpaperConfig: WorkspaceAppearanceSchema.shape.wallpaperConfig,
+  atmosphere: WorkspaceAppearanceSchema.shape.atmosphere,
+  groundScope: WorkspaceAppearanceSchema.shape.groundScope,
+  changedAt: WorkspaceAppearanceSchema.shape.changedAt,
 });
 
 export const WorkspaceLayoutPatchValuesSchema = z.object({

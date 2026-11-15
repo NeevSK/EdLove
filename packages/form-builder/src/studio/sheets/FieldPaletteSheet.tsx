@@ -149,7 +149,7 @@ export function FieldPaletteSheet({ isOpen, onClose, onSelectOption }: FieldPale
       </View>
 
       {/* Categories & Options List */}
-      <ScrollView className="mt-3 max-h-[460px] pb-6" showsVerticalScrollIndicator={false}>
+      <ScrollView className="mt-3 max-h-[460px] pb-6">
         <View className="gap-2">
           {PALETTE_OPTIONS.map((item, idx) => {
             const isQuiz = item.category === 'quiz';

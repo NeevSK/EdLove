@@ -362,6 +362,17 @@ function Charge({ p, s, t }: Part) {
   );
 }
 
+/** Three round dots in turn: the familiar sign of a plain app (Classic). */
+function Dots(part: Part) {
+  return (
+    <View style={{ flexDirection: 'row', gap: part.s * 0.1, alignItems: 'center' }}>
+      {[0, 1, 2].map((i) => (
+        <Dot key={i} {...part} color={part.t.lamp} phase={-i / 3} />
+      ))}
+    </View>
+  );
+}
+
 const DRAW: Readonly<Record<SignKind, (part: Part) => ReactNode>> = {
   flame: Flame,
   ripple: Ripple,
@@ -374,6 +385,7 @@ const DRAW: Readonly<Record<SignKind, (part: Part) => ReactNode>> = {
   petal: Bloom,
   signal: Signal,
   charge: Charge,
+  dots: Dots,
 };
 
 function circle(d: number): ViewStyle {

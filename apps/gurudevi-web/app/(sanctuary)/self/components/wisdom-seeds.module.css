@@ -27,20 +27,20 @@
 .title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-text, #2c2523);
+  color: var(--color-text);
   margin: 0;
 }
 
 .subtitle {
   font-size: 0.875rem;
-  color: var(--color-text-muted, #726860);
+  color: var(--color-text-muted);
   margin: 0.25rem 0 0;
 }
 
 .addBtn {
   padding: 0.5rem 1rem;
-  background-color: var(--color-action, #a85022);
-  color: #ffffff;
+  background-color: var(--color-action);
+  color: var(--w-raised);
   border: none;
   border-radius: 0.5rem;
   font-weight: 600;
@@ -49,8 +49,8 @@
 }
 
 .formCard {
-  background-color: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
   border-radius: 0.75rem;
   padding: 1.5rem;
   display: flex;
@@ -73,22 +73,22 @@
 .label {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--color-text, #2c2523);
+  color: var(--color-text);
 }
 
 .textarea {
   padding: 0.625rem 0.875rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
-  background-color: #ffffff;
+  border: 1px solid var(--color-line, color-mix(in srgb, var(--w-ink-soft) 25%, transparent));
+  background-color: var(--w-raised);
   font-size: 0.875rem;
   font-family: inherit;
 }
 
 .submitBtn {
   padding: 0.625rem 1.25rem;
-  background-color: var(--color-action, #a85022);
-  color: #ffffff;
+  background-color: var(--color-action);
+  color: var(--w-raised);
   border: none;
   border-radius: 0.5rem;
   font-weight: 600;
@@ -107,14 +107,15 @@
 }
 
 .seedCard {
-  background: rgba(168, 80, 34, 0.04);
-  border: 1px solid rgba(168, 80, 34, 0.18);
+  background: color-mix(in srgb, var(--w-lamp) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 18%, transparent);
   border-radius: 0.75rem;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   position: relative;
+  color: var(--w-on-lamp);
 }
 
 .seedSprout {
@@ -126,21 +127,21 @@
   font-style: italic;
   line-height: 1.5;
   margin: 0;
-  color: var(--color-text, #2c2523);
+  color: var(--color-text);
 }
 
 .seedTime {
   font-size: 0.75rem;
-  color: var(--color-text-muted, #726860);
+  color: var(--color-text-muted);
   align-self: flex-end;
 }
 
 .emptyState {
   padding: 3rem 1.5rem;
   text-align: center;
-  border: 1px dashed var(--color-line, rgba(104, 94, 85, 0.3));
+  border: 1px dashed var(--color-line, color-mix(in srgb, var(--w-ink-soft) 30%, transparent));
   border-radius: 0.75rem;
-  color: var(--color-text-muted, #726860);
+  color: var(--color-text-muted);
   display: flex;
   flex-direction: column;
   align-items: center;

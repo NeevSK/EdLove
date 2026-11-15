@@ -80,3 +80,17 @@ export function legible(fg: string, toward: string, bg: string, min: number): st
   }
   return toward;
 }
+
+/** Whichever of the candidate inks reads best on `bg` (highest contrast). */
+export function clearestOn(bg: string, candidates: readonly string[]): string {
+  let best = candidates[0] ?? '#000000';
+  let bestRatio = -1;
+  for (const c of candidates) {
+    const r = contrastRatio(c, bg);
+    if (r > bestRatio) {
+      best = c;
+      bestRatio = r;
+    }
+  }
+  return best;
+}

@@ -1,7 +1,6 @@
-import { View, Text, Pressable } from 'react-native';
-import { BrandedErrorState } from '@repo/ui';
+import { Button, ErrorState, Surface, Text } from '@repo/ui/components/native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView } from 'react-native';
 
 export interface AccountRecoveryScreenProps {
   deactivatedAt: string | null;
@@ -18,7 +17,7 @@ function formatDate(value: string | null): string | null {
   return Number.isNaN(date.getTime()) ? null : date.toLocaleDateString();
 }
 
-/** A policy-neutral screen for a server-confirmed inactive account. */
+/** A policy-neutral screen for a server-confirmed inactive account, on the world's floor. */
 export function AccountRecoveryScreen({
   deactivatedAt,
   scheduledFor,
@@ -30,55 +29,52 @@ export function AccountRecoveryScreen({
   const scheduledDate = formatDate(scheduledFor);
 
   return (
-    <SafeAreaView className="flex-1 bg-phase-canvas"><ScrollView className="flex-1">
-      <View style={{ flex: 1, justifyContent: 'center', paddingVertical: 48, gap: 24 }}>
-        <BrandedErrorState
-          title="This account is unavailable"
-          message="Your account is not available for app access right now. This screen has not deleted any data."
-        />
-
-        <View style={{ gap: 8 }}>
-          {deactivatedDate ? (
-            <Text selectable style={{ color: '#94A3B8', fontSize: 14, textAlign: 'center' }}>
-              Access was paused on {deactivatedDate}.
-            </Text>
+    <SafeAreaView style={styles.fill}>
+      <ScrollView contentContainerStyle={styles.scroll}>
+        <Surface tone="raised" style={styles.card}>
+          <ErrorState
+            title="This account is unavailable"
+            message="Your account is not available for app access right now. This screen has not deleted any data."
+          />
+          {deactivatedDate || scheduledDate ? (
+            <View style={styles.dates}>
+              {deactivatedDate ? (
+                <Text kind="caption" tone="soft" align="center" selectable>
+                  Access was paused on {deactivatedDate}.
+                </Text>
+              ) : null}
+              {scheduledDate ? (
+                <Text kind="caption" tone="soft" align="center" selectable>
+                  A server-managed lifecycle review is scheduled for {scheduledDate}.
+                </Text>
+              ) : null}
+            </View>
           ) : null}
-          {scheduledDate ? (
-            <Text selectable style={{ color: '#94A3B8', fontSize: 14, textAlign: 'center' }}>
-              A server-managed lifecycle review is scheduled for {scheduledDate}.
-            </Text>
-          ) : null}
-        </View>
-
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Retry restoring account status"
-          onPress={onRetry}
-          style={{ alignSelf: 'center', paddingVertical: 12, paddingHorizontal: 20 }}
-        >
-          <Text style={{ color: '#D4843A', fontSize: 16, fontWeight: '700' }}>Try again</Text>
-        </Pressable>
-
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Sign out on this device"
-          accessibilityState={{ disabled: isSigningOut }}
-          disabled={isSigningOut}
-          onPress={onSignOut}
-          style={{
-            alignSelf: 'center',
-            backgroundColor: '#D4843A',
-            borderRadius: 12,
-            opacity: isSigningOut ? 0.6 : 1,
-            paddingHorizontal: 20,
-            paddingVertical: 12,
-          }}
-        >
-          <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '700' }}>
-            {isSigningOut ? 'Signing out…' : 'Sign out on this device'}
-          </Text>
-        </Pressable>
-      </View>
-    </ScrollView></SafeAreaView>
+          <View style={styles.actions}>
+            <Button
+              label="Try again"
+              variant="secondary"
+              accessibilityLabel="Retry restoring account status"
+              onPress={onRetry}
+            />
+            <Button
+              label={isSigningOut ? 'Signing out…' : 'Sign out on this device'}
+              variant="primary"
+              loading={isSigningOut}
+              disabled={isSigningOut}
+              onPress={onSignOut}
+            />
+          </View>
+        </Surface>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  fill: { flex: 1 },
+  scroll: { flexGrow: 1, justifyContent: 'center', padding: 24 },
+  card: { width: '100%', maxWidth: 480, alignSelf: 'center', gap: 20, padding: 24 },
+  dates: { gap: 6 },
+  actions: { gap: 12 },
+});

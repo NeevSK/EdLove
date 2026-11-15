@@ -1,0 +1,15 @@
+library: large landscape, standard, cost 100/400
+  Today 372h w3
+    Reading now [lamp] 372h w3
+      Carry on reading 140h w3
+      New on the shelves 200h w2
+  Shelves 824h w2
+    Shelves [grouped-list] 228h w1
+      The Archive 200h w1
+      Resource Hub 280h w1 (folded)
+    Find [grouped-list] 228h w1 (below)
+      Search the library 56h w1 (below)
+      Library map 140h w1 (below)
+    Make [stream] 368h w2 (below)
+      Add a resource 56h w1 (below)
+      Curator Studio 280h w2 (below)

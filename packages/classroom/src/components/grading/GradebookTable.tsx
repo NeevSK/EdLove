@@ -154,7 +154,6 @@ export default function GradebookTable({
           renderItem={renderGradeRow}
           keyExtractor={keyExtractor}
           ListEmptyComponent={EmptyComponent}
-          showsVerticalScrollIndicator={false}
         />
       </View>
     </View>

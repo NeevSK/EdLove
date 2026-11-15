@@ -48,6 +48,7 @@ const PALETTE_FILES = new Set([
   'packages/ui/src/theme/worlds',
   'packages/ui/src/theme/scene/sky.ts',
   'packages/ui/src/theme/scene/landscape.ts',
+  'packages/ui/src/theme/scene/art',
   'packages/ui/src/theme/build.ts',
   'packages/ui/src/theme/color.ts',
   'packages/ui/src/theme/resolve.ts',

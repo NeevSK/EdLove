@@ -6,12 +6,15 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { useEffect } from 'react';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import type { ActionFabContract, FabMenuContract } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
-import { usePressMotion } from '../../../theme/native/motion';
-import { glowStyle, shadowStyle, typeStyle } from '../../../theme/native/style';
+import { useFocusRing } from '../../../theme/native/focus';
+import { usePressMotion, useWorldMotion } from '../../../theme/native/motion';
+import { glowStyle, radiusStyle, shadowStyle, typeStyle } from '../../../theme/native/style';
 import { useWorldContext } from '../../../theme/native/WorldContext';
+import { fitRadius } from '../../../theme/shellMarks';
 import { iconSize } from '../../../tokens/sizes';
 import { gapFor } from '../../../tokens/space';
 import { groupFabActions } from '../../shared/agent';
@@ -27,8 +30,9 @@ export interface ActionFabProps extends ActionFabContract {
 }
 
 /**
- * The floating action: one lit control in the world's lamp, pressed with the
- * world's motion and light. A quiet signal marks that something needs the
+ * The floating action: one lit control in the world's lamp and in the world's
+ * control shape (Classic's circle, Kele's leaf, Spark's cut corner), pressed with
+ * the world's motion and light. A quiet signal marks that something needs the
  * person; its words are part of the name.
  */
 export function ActionFab({
@@ -43,57 +47,79 @@ export function ActionFab({
   const { world, language } = useWorldContext();
   const feedback = useFeedback();
   const press = usePressMotion();
-  if (hidden) return null;
+  const focusRing = useFocusRing();
+  const m = useWorldMotion();
+  // Tucked away (reading, typing): it shrinks and slips down, and comes back the world's way.
+  const away = useSharedValue(hidden ? 1 : 0);
+  useEffect(() => {
+    away.set(m.animates ? withTiming(hidden ? 1 : 0, m.timing()) : hidden ? 1 : 0);
+  }, [hidden, m, away]);
+  const tuck = useAnimatedStyle(() => ({
+    opacity: 1 - away.get(),
+    transform: [{ translateY: away.get() * 28 }, { scale: 1 - away.get() * 0.4 }],
+  }));
   const t = world.tokens;
+  const shape = radiusStyle(fitRadius(world.definition.style.corner.control, FAB));
   const name = signal && signalLabel ? `${label}, ${signalLabel}` : label;
   return (
-    <Animated.View style={[press.style, style]}>
-      <Pressable
-        role="button"
-        accessibilityLabel={name}
-        onPressIn={() => {
-          press.pressIn();
-          feedback('press');
-        }}
-        onPressOut={press.pressOut}
-        onPress={onPress}
-        style={[
-          styles.fab,
-          { backgroundColor: t.lamp },
-          shadowStyle(world.recipes.surface.raised.shadow),
-          glowStyle(world.recipes.button.variants.primary.glow),
-        ]}
-      >
-        <Animated.View
-          pointerEvents="none"
+    <Animated.View
+      pointerEvents={hidden ? 'none' : 'auto'}
+      accessibilityElementsHidden={hidden}
+      importantForAccessibility={hidden ? 'no-hide-descendants' : 'auto'}
+      style={[style, tuck]}
+    >
+      <Animated.View style={press.style}>
+        <Pressable
+          role="button"
+          accessibilityLabel={name}
+          onFocus={focusRing.onFocus}
+          onBlur={focusRing.onBlur}
+          onPressIn={() => {
+            press.pressIn();
+            feedback('press');
+          }}
+          onPressOut={press.pressOut}
+          onPress={onPress}
           style={[
-            StyleSheet.absoluteFill,
-            styles.round,
-            { backgroundColor: press.light.color },
-            press.light.style,
+            styles.fab,
+            shape,
+            { backgroundColor: t.lamp },
+            shadowStyle(world.recipes.surface.raised.shadow),
+            glowStyle(world.recipes.button.variants.primary.glow),
+            focusRing.ring,
           ]}
-        />
-        {Glyph ? (
-          <Glyph size={iconSize.lg} color={t.onLamp} aria-hidden />
-        ) : (
-          <RNText
-            style={[typeStyle(world.recipes.text.title, language, world), { color: t.onLamp }]}
-          >
-            +
-          </RNText>
-        )}
-        {signal ? (
-          <View
-            accessibilityElementsHidden
-            importantForAccessibility="no-hide-descendants"
+        >
+          <Animated.View
+            pointerEvents="none"
             style={[
-              styles.signal,
-              { backgroundColor: world.recipes.row.signal.color, borderColor: t.lamp },
-              glowStyle(world.recipes.row.signal.glow),
+              StyleSheet.absoluteFill,
+              shape,
+              { backgroundColor: press.light.color },
+              press.light.style,
             ]}
           />
-        ) : null}
-      </Pressable>
+          {Glyph ? (
+            <Glyph size={iconSize.lg} color={t.onLamp} aria-hidden />
+          ) : (
+            <RNText
+              style={[typeStyle(world.recipes.text.title, language, world), { color: t.onLamp }]}
+            >
+              +
+            </RNText>
+          )}
+          {signal ? (
+            <View
+              accessibilityElementsHidden
+              importantForAccessibility="no-hide-descendants"
+              style={[
+                styles.signal,
+                { backgroundColor: world.recipes.row.signal.color, borderColor: t.lamp },
+                glowStyle(world.recipes.row.signal.glow),
+              ]}
+            />
+          ) : null}
+        </Pressable>
+      </Animated.View>
     </Animated.View>
   );
 }
@@ -149,11 +175,9 @@ const styles = StyleSheet.create({
   fab: {
     width: FAB,
     height: FAB,
-    borderRadius: FAB / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  round: { borderRadius: FAB / 2 },
   signal: {
     position: 'absolute',
     top: 6,

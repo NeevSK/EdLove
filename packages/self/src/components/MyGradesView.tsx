@@ -65,7 +65,7 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
   }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+    <ScrollView className="flex-1">
       <View className="gap-4 pb-10">
         {grades.map((item, i) => (
           <Animated.View key={item.id} entering={FadeInDown.delay(i * 50)}>

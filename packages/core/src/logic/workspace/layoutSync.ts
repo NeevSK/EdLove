@@ -1,3 +1,4 @@
+import { FloorSettingsSchema } from '@repo/core/logic/floor/settings';
 import type {
   WorkspaceLayoutRecord,
   WorkspaceLayoutTarget,
@@ -8,6 +9,7 @@ import type { WorkspaceLayout } from '@repo/core/types';
 
 const WORKSPACE_APPEARANCE_METADATA_KEY = '__workspaceAppearance';
 const WORKSPACE_GROUP_ORDER_METADATA_KEY = '__workspaceGroupOrder';
+const WORKSPACE_FLOOR_SETTINGS_METADATA_KEY = '__workspaceFloorSettings';
 
 export type WorkspaceLayoutPlatformKind = 'web' | 'native';
 export type WorkspaceLayoutScreenClass = 'compact' | 'expanded';
@@ -54,6 +56,9 @@ export function toWorkspaceLayoutRecord<TSurfaceId extends string = string>(
   const rawAppearance = record.surface_metadata?.[WORKSPACE_APPEARANCE_METADATA_KEY];
   const parsedAppearance = WorkspaceAppearanceSchema.safeParse(rawAppearance);
   const rawGroupOrder = record.surface_metadata?.[WORKSPACE_GROUP_ORDER_METADATA_KEY];
+  const parsedFloor = FloorSettingsSchema.safeParse(
+    record.surface_metadata?.[WORKSPACE_FLOOR_SETTINGS_METADATA_KEY],
+  );
   const groupOrder =
     Array.isArray(rawGroupOrder) &&
     rawGroupOrder.every((value): value is string => typeof value === 'string')
@@ -75,6 +80,7 @@ export function toWorkspaceLayoutRecord<TSurfaceId extends string = string>(
       (record.surface_metadata as WorkspaceLayout<TSurfaceId>['surfaceMetadata']) ?? {},
     appearance: parsedAppearance.success ? parsedAppearance.data : undefined,
     groupOrder,
+    ...(parsedFloor.success ? { floor: parsedFloor.data } : {}),
     updatedAt: record.updated_at,
   };
 }
@@ -100,16 +106,16 @@ export function toWorkspaceLayoutUpsert<TSurfaceId extends string = string>(
     order: layout.order,
     hidden: layout.hidden,
     pinned: layout.pinned,
-    zoneBySurface: layout.zoneBySurface as Record<
-      string,
-      'today' | 'work' | 'institution' | 'outlook' | 'private'
-    >,
+    zoneBySurface: layout.zoneBySurface as Record<string, string>,
     isDefault: layout.isDefault ?? true,
     surfaceMetadata: {
       ...((layout.surfaceMetadata as Record<string, unknown>) ?? {}),
       [WORKSPACE_APPEARANCE_METADATA_KEY]: normalizedAppearance,
       ...(normalizedGroupOrder
         ? { [WORKSPACE_GROUP_ORDER_METADATA_KEY]: normalizedGroupOrder }
+        : {}),
+      ...(layout.floor && FloorSettingsSchema.safeParse(layout.floor).success
+        ? { [WORKSPACE_FLOOR_SETTINGS_METADATA_KEY]: layout.floor }
         : {}),
     },
     layoutVersion: 2,

@@ -108,7 +108,11 @@ describe('SanctuaryFloorCanvas and FloorStudioDrawer (G1)', () => {
     fireEvent.click(photoBtn);
 
     expect(floorArticle?.getAttribute('data-ground-mode')).toBe('image');
-    expect(floorArticle?.getAttribute('data-has-wallpaper')).toBe('true');
+    // No verger reading in this test, so the device has not allowed photos: the floor engine
+    // draws the world's paper and the studio says why.
+    expect(floorArticle?.getAttribute('data-ground-drawn')).toBe('paper');
+    expect(floorArticle?.getAttribute('data-has-wallpaper')).toBe('false');
+    expect(screen.getByRole('status').textContent).toMatch(/photos are paused/i);
   });
 
   it('allows reordering furniture via keyboard shortcuts in FloorStudioDrawer', () => {

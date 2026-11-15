@@ -72,6 +72,7 @@ export type Subject =
   | 'LibraryResource'
   | 'LibrarySearch'
   | 'LibraryReview'
+  | 'OwnProfile'
   | 'Announcement'
   | 'Student'
   | 'Communication'
