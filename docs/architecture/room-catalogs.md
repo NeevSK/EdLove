@@ -58,7 +58,18 @@ Only entries that have a `floor` are furniture. Other entries, such as a room sh
 - **Self's single features:** each platform declares what it can run from its own renderers: the web from `BROWSER_SELF_FEATURES`, the phone from `NATIVE_SELF_DELIVERY` (the components `SelfFeatureRenderer` has). Nothing is assumed by default.
 - `channelAffordance` covers only channels beyond the two apps (WhatsApp, MCP). Its own web and phone flags were removed.
 
+## A room's screens
+
+Each tab opens one room, and each room has exactly one main screen: Overview (Self, Workspace), the whole shelf (Library), and so on. The floor and layout work drives only that main screen. There are never two main screens for one tab. Every other screen of the room is a catalog feature with a web route under the room (`/library/map`, `/community/forest`, `/workspace/plan`; the school's `/admin/...` screens are Workspace screens) and opens on the same room floor as Overview:
+
+- **Web.** `SanctuaryShell` sees that the path is a room's screen (`roomScreenOf`) and draws the page inside the room's `SanctuaryFloorCanvas`: the same world ground and the same reception bar, which reads "Room · Screen". The room's strip (`RoomRouteTabs`, the one strip for every room) shows Overview first, then every screen opened in the room, with the one on show focused. A screen opened from Overview is added to that strip, and choosing it on Overview's strip goes to its address. Overview and the screens share one task list per room.
+- **Phone.** Overview is `RoomFront` (the room floor). The other screens are stack screens under the room's tab, most of them drawn with `RoomPage` on the world's ground.
+
 ## Not done yet
+
+- **Screens on the web still carry their own "Back to …" link and, in some places, their own background.** The room's strip already offers Overview, so these links repeat it. Removing them, and letting each screen sit directly on the floor, is the next step for each screen.
+- **Detail screens that are not catalog features** (a book in the reader, a chat, a collection) draw on the room floor, but they add no task of their own to the strip.
+- **Library, Community and Self also switch screens inside Overview** (Library's catalog, Community's sections, Self's practices), through the same strip. Those stay as they are.
 
 - **The web has no entitlement source.** On the web, SanctuaryFeature runs on the server: it uses the server-checked entry (account, bond, capacity, citizenship) and the permission snapshot that the API signs (`authority.refreshSnapshot`), and it checks the signature. There is no entitlement source yet, on the web or through the v1 API. So every web account counts as FREE, and a paid feature shows as needing an upgrade. If the snapshot is missing or does not check, protected features wait ("loading") rather than open.
 - **The web rooms and the catalog (14 Nov).** Every web room now reads its features from the catalog and gets SanctuaryFeature's decision from the server (`resolveRoomPresentation`):
@@ -70,4 +81,4 @@ Only entries that have a `floor` are furniture. Other entries, such as a room sh
 - **Features with no screen on a platform say so.** Trust Network and School shelf have `webSupport: false` because the web has no drawing for them. School Forest is a web-only Community entry.
 - **The web asks for a fresh snapshot on every Workspace load.** That is one API call and one row upsert per load. It should be cached for each bond until shortly before it expires.
 - **Workforce is hidden on the web.** The catalog marks Workforce as `development`, so the web no longer lists it. Its page still exists.
-- **The phone's work floor is still opt-in.** It is switched on with `EXPO_PUBLIC_WORK_FLOOR=1`, and most Workspace features have no phone screen yet.
+- **Most Workspace features have no phone screen yet.** The phone's Workspace main screen is now always the room floor (the `EXPO_PUBLIC_WORK_FLOOR` switch is gone), so those features show without opening anything.

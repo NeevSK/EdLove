@@ -26,13 +26,9 @@ export default function WorkspaceDispatcher() {
   const { activePerspective } = usePerspectiveSwitch();
   const router = useRouter();
   const capacity = context.activeBond?.capacity ?? context.primaryCapacity;
-  // Opt-in: the floor engine draws the work room from its catalog. Off by
-  // default, so the room below stays as it was until it is switched on.
+  // The Workspace tab's one main screen: the floor engine draws the room from its catalog.
   const catalog = useMemo(
-    () =>
-      process.env.EXPO_PUBLIC_WORK_FLOOR === '1'
-        ? roomCatalogOf(APP_CATALOG, 'workspace', capacity, 'mobile')
-        : null,
+    () => roomCatalogOf(APP_CATALOG, 'workspace', capacity, 'mobile'),
     [capacity],
   );
   const loading = useCedarDecisionStore((state) => state.isLoading);

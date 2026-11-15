@@ -1,5 +1,7 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 import { registerTokenResolver } from '@repo/core/api/clientRuntime';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
@@ -144,7 +146,10 @@ export function LibraryFloor({
     accountId,
     enableRemoteSync: mode === 'account' && Boolean(accountId) && !isGuestMode,
   });
-  const workbench = useDomainWorkbench('library');
+  const router = useRouter();
+  const workbench = useDomainWorkbench('library', {
+    usageScope: mode === 'explore' ? 'explore' : 'sanctuary',
+  });
   const searchSeqRef = useRef(0);
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -675,7 +680,11 @@ export function LibraryFloor({
         tasks={workbench.state.tasks}
         focusedTaskKey={workbench.state.focusedTaskKey}
         overviewActive={!catalogIsOpen}
-        onFocusTask={(task) => workbench.focus(task.taskKey)}
+        onFocusTask={(task) => {
+          workbench.focus(task.taskKey);
+          // A screen of its own (the map, the tools) opens on this floor at its own address.
+          if (task.route.startsWith('/library/')) router.push(task.route);
+        }}
         onCloseTask={(task) => workbench.close(task.taskKey)}
         onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
         onOpenOverview={returnToOverview}

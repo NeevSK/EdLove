@@ -14,7 +14,6 @@ import {
 } from '@repo/ui/components/web';
 import { TodoView } from '../../components/TodoView';
 import type { FurnitureDefinition } from '../../components/FloorStudioDrawer';
-import { SanctuaryFloorCanvas } from '../../components/SanctuaryFloorCanvas';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
@@ -79,9 +78,12 @@ export function FounderFloor({ displayName, capacity, userId }: Readonly<Founder
     setTimeout(() => setNotice(null), 4000);
   };
 
+  const isModuleVisible = (id: string) => FOUNDER_FURNITURE_ITEMS.some((item) => item.id === id);
+
   return (
-    <SanctuaryFloorCanvas domain="workspace" furnitureItems={FOUNDER_FURNITURE_ITEMS}>
-      {({ isModuleVisible }) => (
+    // A Workspace screen: the shell draws it on the Workspace floor, under the room's strip.
+    <>
+      {(
         <div style={{ padding: '2rem 1.5rem', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           {isModuleVisible('header') && (
             <Surface tone="raised" style={{ padding: '1.5rem 2rem', borderRadius: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -309,6 +311,6 @@ export function FounderFloor({ displayName, capacity, userId }: Readonly<Founder
           )}
         </div>
       )}
-    </SanctuaryFloorCanvas>
+    </>
   );
 }

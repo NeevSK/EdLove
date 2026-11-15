@@ -101,10 +101,12 @@ export function CommunityFeedFloor({
     enableRemoteSync: mode === 'account' && Boolean(accountId),
   });
   const router = useRouter();
-  const workbench = useDomainWorkbench('community', { usageScope: mode });
+  // The same scope the room's other screens use, so their strip and this one hold the same tasks.
+  const roomScope = mode === 'explore' ? 'explore' : 'sanctuary';
+  const workbench = useDomainWorkbench('community', { usageScope: roomScope });
   const quickAccess = useQuickAccessPreferences(
     'community',
-    mode,
+    roomScope,
     ['circles', 'community-notices', 'community-forest'],
     ['circles'],
   );
@@ -265,6 +267,10 @@ export function CommunityFeedFloor({
         overviewActive={!selectedGroupId && !workbench.state.focusedTaskKey}
         onFocusTask={(task) => {
           workbench.focus(task.taskKey);
+          if (task.route.startsWith('/community/')) {
+            router.push(task.route);
+            return;
+          }
           if (task.featureId === 'circle-detail') {
             const groupId = new URL(task.route, 'https://local').searchParams.get('group');
             if (groupId) {

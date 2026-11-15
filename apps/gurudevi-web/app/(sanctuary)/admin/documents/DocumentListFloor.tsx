@@ -11,7 +11,6 @@ import {
 import Link from 'next/link';
 import React, { useState } from 'react';
 import type { FurnitureDefinition } from '../../components/FloorStudioDrawer';
-import { SanctuaryFloorCanvas } from '../../components/SanctuaryFloorCanvas';
 import styles from './documents.module.css';
 
 interface DocumentListFloorProps {
@@ -44,9 +43,12 @@ export function DocumentListFloor({ displayName, capacity }: Readonly<DocumentLi
     return d.category === filter;
   });
 
+  const isModuleVisible = (id: string) => DOCUMENTS_FURNITURE_ITEMS.some((item) => item.id === id);
+
   return (
-    <SanctuaryFloorCanvas domain="workspace" furnitureItems={DOCUMENTS_FURNITURE_ITEMS}>
-      {({ isModuleVisible }) => (
+    // A Workspace screen: the shell draws it on the Workspace floor, under the room's strip.
+    <>
+      {(
         <div className={styles.container}>
           {isModuleVisible('header') && (
             <Surface tone="raised" className={styles.headerBar}>
@@ -103,6 +105,6 @@ export function DocumentListFloor({ displayName, capacity }: Readonly<DocumentLi
           )}
         </div>
       )}
-    </SanctuaryFloorCanvas>
+    </>
   );
 }

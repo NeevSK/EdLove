@@ -10,7 +10,6 @@ import {
 import Link from 'next/link';
 import React, { useState } from 'react';
 import type { FurnitureDefinition } from '../../components/FloorStudioDrawer';
-import { SanctuaryFloorCanvas } from '../../components/SanctuaryFloorCanvas';
 import styles from './analytics.module.css';
 
 interface SubjectMastery {
@@ -44,9 +43,12 @@ export function EnhancedAnalyticsFloor({
 }: Readonly<EnhancedAnalyticsFloorProps>) {
   const [selectedScope, setSelectedScope] = useState('All Sanctuary Circles');
 
+  const isModuleVisible = (id: string) => ANALYTICS_FURNITURE_ITEMS.some((item) => item.id === id);
+
   return (
-    <SanctuaryFloorCanvas domain="workspace" furnitureItems={ANALYTICS_FURNITURE_ITEMS}>
-      {({ isModuleVisible }) => (
+    // A Workspace screen: the shell draws it on the Workspace floor, under the room's strip.
+    <>
+      {(
         <div className={styles.container}>
           {isModuleVisible('header') && (
             <Surface tone="raised" className={styles.headerBar}>
@@ -142,6 +144,6 @@ export function EnhancedAnalyticsFloor({
           )}
         </div>
       )}
-    </SanctuaryFloorCanvas>
+    </>
   );
 }

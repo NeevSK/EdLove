@@ -24,7 +24,6 @@ import {
   Text,
 } from '@repo/ui/components/web';
 import type { FurnitureDefinition } from '../../components/FloorStudioDrawer';
-import { SanctuaryFloorCanvas } from '../../components/SanctuaryFloorCanvas';
 import styles from './principal.module.css';
 
 import {
@@ -56,9 +55,12 @@ export function PrincipalFloor({
     setActionNotice(`Leave application ${id} ${decision}.`);
   };
 
+  const isModuleVisible = (id: string) => PRINCIPAL_FURNITURE_ITEMS.some((item) => item.id === id);
+
   return (
-    <SanctuaryFloorCanvas domain="workspace" furnitureItems={PRINCIPAL_FURNITURE_ITEMS}>
-      {({ isModuleVisible }) => (
+    // A Workspace screen: the shell draws it on the Workspace floor, under the room's strip.
+    <>
+      {(
         <div className={styles.container}>
           {isModuleVisible('header') && (
             <Surface tone="raised" className={styles.header}>
@@ -271,6 +273,6 @@ export function PrincipalFloor({
           )}
         </div>
       )}
-    </SanctuaryFloorCanvas>
+    </>
   );
 }

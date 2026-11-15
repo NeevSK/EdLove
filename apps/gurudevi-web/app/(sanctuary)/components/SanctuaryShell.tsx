@@ -37,6 +37,7 @@ import {
 } from '../sanctuary-nav';
 import styles from '../sanctuary-shell.module.css';
 import { WORKSPACE_FEATURES } from '../workspace/workspaceFeatures';
+import { webRoomFeatures } from '../../../lib/roomFeatures';
 import { registerWebAppCatalog } from '../../../lib/appCatalog';
 import { CapacityPerspectiveSwitcher } from './CapacityPerspectiveSwitcher';
 import { CommandPalette } from './CommandPalette';
@@ -46,12 +47,20 @@ import { LayeredDeckHeader } from './LayeredDeckHeader';
 import { SanctuaryNavIcon } from './SanctuaryNavIcon';
 import { SyncStatusPill } from './SyncStatusPill';
 import { TutiiSidePanel } from './TutiiSidePanel';
-import { WorkspaceRouteTabs } from './WorkspaceRouteTabs';
+import { RoomRouteTabs, roomScreenOf, screenFeatureOf } from './RoomRouteTabs';
+import { SanctuaryFloorCanvas } from './SanctuaryFloorCanvas';
 import { WorkspaceScopeSwitcher } from './WorkspaceScopeSwitcher';
 import { WorldBackdrop } from './WorldBackdrop';
 
 // Every room's feature catalog, so useDomainFeature and SanctuaryFeature work on the web.
 registerWebAppCatalog();
+
+const ROOM_TITLES = {
+  workspace: 'Workspace',
+  library: 'Library',
+  community: 'Community',
+  self: 'Self',
+} as const;
 
 type SanctuaryShellProps = Readonly<{
   children: ReactNode;
@@ -83,6 +92,11 @@ export function SanctuaryShell({
 }: SanctuaryShellProps) {
   useInactivitySentinel(!isExploreMode);
   const pathname = usePathname();
+  // A screen of a room other than its Overview (`/library/map`), drawn on that room's floor.
+  const screenRoom = roomScreenOf(pathname);
+  const screenBreadcrumb = screenRoom
+    ? `${ROOM_TITLES[screenRoom]} · ${screenFeatureOf(screenRoom, pathname)?.label ?? ROOM_TITLES[screenRoom]}`
+    : undefined;
   const router = useRouter();
   const workspaceUsageScope = isExploreMode ? 'explore' : 'sanctuary';
   const workspaceWorkbench = useDomainWorkbench('workspace', { usageScope: workspaceUsageScope });
@@ -609,13 +623,21 @@ export function SanctuaryShell({
         }
         taskStripSlot={
           <div className={styles.taskStripSlot} id="sanctuary-task-strip-slot">
-            {pathname.startsWith('/workspace/') ? (
-              <WorkspaceRouteTabs
+            {screenRoom ? (
+              <RoomRouteTabs
+                room={screenRoom}
                 pathname={pathname}
                 isExploreMode={isExploreMode}
                 onOpenQuickAccessItem={(item) => {
-                  const feature = WORKSPACE_FEATURES.find((candidate) => candidate.id === item.id);
-                  if (feature) openQuickAccessDestination(feature.href);
+                  if (screenRoom === 'workspace') {
+                    const feature = WORKSPACE_FEATURES.find((candidate) => candidate.id === item.id);
+                    if (feature) openQuickAccessDestination(feature.href);
+                    return;
+                  }
+                  const feature = webRoomFeatures(screenRoom).find(
+                    (candidate) => candidate.id === item.id,
+                  );
+                  if (feature && pathname !== feature.href) router.push(feature.href);
                 }}
               />
             ) : null}
@@ -770,7 +792,19 @@ export function SanctuaryShell({
                 </p>
               ) : null}
               <WorkbenchScopeProvider scope={workspaceUsageScope}>
-                {children}
+                {screenRoom ? (
+                  // A room's other screens are drawn on the room's own floor, as its Overview is.
+                  <SanctuaryFloorCanvas
+                    domain={screenRoom}
+                    titleId="room-screen-title"
+                    breadcrumb={screenBreadcrumb}
+                    showPageActions={false}
+                  >
+                    {children}
+                  </SanctuaryFloorCanvas>
+                ) : (
+                  children
+                )}
               </WorkbenchScopeProvider>
             </div>
           </ScrollArea>
