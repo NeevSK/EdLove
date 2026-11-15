@@ -2,7 +2,7 @@
 title: "Documentation Index"
 status: "active"
 created: 2026-06-26
-updated: 2026-10-23
+updated: 2026-11-15
 author: "Naveen"
 scribe: "Antigravity"
 tags: [docs, index, changelog]
@@ -63,6 +63,10 @@ These files document core logic, user journeys, developer playbooks, and executi
 | Document | Description |
 |---|---|
 | [Core/what-is-gurudevi.md](Core/what-is-gurudevi.md) | **Entry point:** short human introduction to Gurudevi, the Sanctuary, and its many doors |
+| [Core/design/worlds-reference.md](Core/design/worlds-reference.md) | **Worlds reference:** the living worlds as built (twelve worlds, `resolveScene`, the ground every screen stands on, World Behind Screens, verger stage tiers, fonts, motion, rooms, AppCatalog and floor, one main screen per tab) |
+| [Core/design/2026-11-15-design-docs-audit.md](Core/design/2026-11-15-design-docs-audit.md) | Audit of the design pages made on claude.ai and where each now lives in the repo |
+| [Core/design/2026-11-15-living-worlds-elsewhere.md](Core/design/2026-11-15-living-worlds-elsewhere.md) | Research: living worlds in other products, and what Gurudevi adopted, will adopt, or left out |
+| [Core/design/2026-10-26-app-shell-tabs-header-and-fab.md](Core/design/2026-10-26-app-shell-tabs-header-and-fab.md) | App shell: tabs, header and main action button |
 | [Core/unified-fine-grained-ai-architecture-atlas.md](Core/unified-fine-grained-ai-architecture-atlas.md) | **Master Visual AI & Agent Atlas:** Reconciles the 4 Computational Generations, 8-Sphere Cartography, Hexagonal Ports, Dual-MCP, 4-Tier Storage/Sandbox, BYOK/BYOS Quotas, and `AIScreen` into 7 canonical blueprints |
 | [Core/computational-generations-and-agent-taxonomy.md](Core/computational-generations-and-agent-taxonomy.md) | **Canonical AI & Agent Taxonomy:** The 4 computational generations (workflows ➔ chat ➔ multimodal ➔ enduring agents), Inngest vs agent execution boundaries, compounding cost curves, and the Inverted U-Curve of Convivial ROI |
 | [Core/hexagonal-agent-mcp-rag-and-safety-vectors.md](Core/hexagonal-agent-mcp-rag-and-safety-vectors.md) | **Hexagonal Agent Frameworks & Safety Vectors:** Deconstructing Mastra vs Rivet vs Alchemy into Hexagonal layers, Dual-MCP (Server-side @repo/platform-mcp + Client-side WebMCP), DB-native Hybrid RAG (pgvector + FTS), and the 4 Non-Negotiable Safety Vectors |
@@ -140,6 +144,8 @@ Records documenting the rationale behind core design and architecture choices.
 
 | Document | Description |
 |---|---|
+| [decisions/2026-11-15-living-worlds-design-decisions-log.md](decisions/2026-11-15-living-worlds-design-decisions-log.md) | Neev's dated design decisions for the living worlds, 26 Oct to 15 Nov 2026 |
+| [decisions/2026-11-14-appcatalog-is-the-one-list.md](decisions/2026-11-14-appcatalog-is-the-one-list.md) | The AppCatalog is the one feature list per room; floor details and time lens live on each entry |
 | [decisions/2026-06-20-docs-source-of-truth-and-feature-rollout-boundaries.md](decisions/2026-06-20-docs-source-of-truth-and-feature-rollout-boundaries.md) | Docs authority hierarchy, feature rollout limits vs authorization |
 | [decisions/2026-06-26-route-onboarding-through-api.md](decisions/2026-06-26-route-onboarding-through-api.md) | ADR outlining why onboarding routes through the Sanctuary API |
 | [decisions/2026-07-28-gurudevi-authz-decision-record.md](decisions/2026-07-28-gurudevi-authz-decision-record.md) | ADR for mobile client authorization rules and PDP configuration |
@@ -174,6 +180,8 @@ Checklists, active feature roadmaps, migration paths, and lint configuration pla
 
 | Document | Description |
 |---|---|
+| [current_progress/2026-11-12-mobile-rooms-catch-up-plan.md](current_progress/2026-11-12-mobile-rooms-catch-up-plan.md) | Phone rooms catch-up plan (Community, Library, Profile) |
+| [current_progress/2026-11-10-mobile-living-worlds-plan.md](current_progress/2026-11-10-mobile-living-worlds-plan.md) | Plan to bring the living worlds to the phone |
 | [current_progress/2026-09-26-dependency-intelligence-graph-implementation-plan.md](current_progress/2026-09-26-dependency-intelligence-graph-implementation-plan.md) | Active phased implementation plan for persistent dependency intelligence, continuous evidence intake, and upgrade-gate integration. |
 | [current_progress/2026-06-20-feature-rollout-implementation-plan.md](current_progress/2026-06-20-feature-rollout-implementation-plan.md) | Feature rollout implementation steps and release milestones |
 | [current_progress/2026-06-09-oxlint-eslint-hybrid-checklist.md](current_progress/2026-06-09-oxlint-eslint-hybrid-checklist.md) | Hybrid lint setup status and tool migration checklist |
@@ -256,6 +264,13 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 ---
 
 ## Changelog
+
+### 2026-11-15
+
+- **Added**: `Core/design/worlds-reference.md` — current reference for the living worlds as built.
+- **Added**: design pages that lived only on claude.ai, now in the repo: `architecture/2026-11-12-floor-system.md` (+ component catalogue), `architecture/2026-11-13-layout-systems-mobile-and-web.md`, `architecture/2026-11-13-layout-history-day-one-to-one-system.md`, `architecture/2026-11-13-shared-rules-audit.md`, `decisions/2026-11-14-appcatalog-is-the-one-list.md`, `current_progress/2026-11-10-mobile-living-worlds-plan.md`, `current_progress/2026-11-12-mobile-rooms-catch-up-plan.md`, `Core/design/2026-10-26-app-shell-tabs-header-and-fab.md`, `Core/design/2026-11-15-living-worlds-elsewhere.md`, six HTML prototypes in `Core/design/prototypes/`, and screenshots in `Core/design/screens/`.
+- **Added**: `decisions/2026-11-15-living-worlds-design-decisions-log.md` and `Core/design/2026-11-15-design-docs-audit.md`.
+- **Superseded**: `Core/design/2026-10-22-worlds-foundation.md`, `Core/design/2026-10-26-world-model.md`, `architecture/2026-10-28-living-worlds-real-integration-master-spec.md` (kept, not deleted).
 
 ### 2026-10-11
 

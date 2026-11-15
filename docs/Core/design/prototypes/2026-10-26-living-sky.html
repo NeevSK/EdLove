@@ -1,0 +1,728 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Gurudevi Living Sky</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: a full-bleed living landscape (sky, hills, wewa, paddy) with the app floating on it, and a washi control dock below. Tokens are the Sanctuary world's. */
+:root {
+  --ground: #F5EDD6; --raised: #FBF6EA; --sunken: #ECE2C8; --ink: #2A2318; --ink-soft: #5A4E3E; --ink-faint: #857966;
+  --line: #D6CBB2; --lamp: #E3A24E; --lamp-deep: #8A4F17;
+  --serif: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ground: #17140F; --raised: #221D16; --sunken: #100E0A; --ink: #F3EAD8; --ink-soft: #C4B8A3; --ink-faint: #8E8372; --line: #3A3226; --lamp: #F0B562; --lamp-deep: #F0B562; color-scheme: dark; } }
+:root[data-theme="dark"] { --ground: #17140F; --raised: #221D16; --sunken: #100E0A; --ink: #F3EAD8; --ink-soft: #C4B8A3; --ink-faint: #8E8372; --line: #3A3226; --lamp: #F0B562; --lamp-deep: #F0B562; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.5; }
+.stage { position: relative; height: min(86vh, 860px); min-height: 520px; overflow: hidden; background: #1a2030; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* The app itself, dressed entirely by the chosen world (tokens and style decisions from packages/ui/src/world) */
+.app { position: absolute; inset: 0; display: flex; flex-direction: column; color: var(--w-ink); font-family: var(--sans); }
+.app[hidden] { display: none; }
+.w-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 14px 10px; color: var(--sky-ink); text-shadow: 0 1px 10px var(--sky-shade); }
+.w-header .brand { font-family: var(--serif); font-size: 1.1rem; letter-spacing: 0.01em; display: flex; gap: 10px; align-items: baseline; }
+.w-header .space { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.85; }
+.w-header .stamp { font-size: 0.78rem; font-variant-numeric: tabular-nums; opacity: 0.9; text-align: right; }
+.w-header .stamp span { display: block; font-family: var(--serif); font-style: italic; font-size: 0.82rem; letter-spacing: 0; opacity: 0.9; }
+.w-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-bottom: 18px; }
+.w-col { max-width: 480px; margin: 0 auto; display: grid; gap: 14px; }
+.screen[hidden] { display: none; }
+.greet { margin-top: 4vh; margin-bottom: 18vh; color: var(--sky-ink); text-shadow: 0 2px 18px var(--sky-shade); }
+.greet h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.1rem, 6vw, 3.4rem); line-height: 1.03; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+.greet p { margin: 8px 0 0; font-family: var(--serif); font-style: italic; font-size: 1.12rem; opacity: 0.95; }
+.screen-title { margin: 3vh 0 6vh; color: var(--sky-ink); text-shadow: 0 2px 16px var(--sky-shade); font-family: var(--serif); font-size: 2rem; line-height: 1.1; font-weight: 400; }
+/* Surface: raised, with the world's edge (hairline, frame or none) and shadow */
+.w-surface { position: relative; background: var(--w-raised-a); border-radius: var(--r-s); border: var(--surf-edge); box-shadow: var(--surf-shadow); padding: 16px; display: grid; gap: 10px; }
+.w-surface[data-frame="true"]::after { content: ""; position: absolute; inset: 4px; border: 1px solid var(--w-orn); border-radius: max(0px, calc(var(--r-s-n) - 4px)); pointer-events: none; }
+.w-label { color: var(--w-soft); }
+.app[data-label="smallcaps"] .w-label { font-family: var(--sans); font-size: 11px; line-height: 15px; font-weight: var(--lab-w, 500); letter-spacing: var(--lab-ls, 0.9px); text-transform: uppercase; }
+.app[data-label="italic"] .w-label { font-family: var(--serif); font-size: 15px; font-style: italic; letter-spacing: 0; text-transform: none; }
+.w-title { font-family: var(--serif); font-size: 20px; line-height: 26px; }
+.w-body { font-size: 15px; }
+.w-cap { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--w-soft); }
+.w-orn { height: 12px; background-image: var(--orn-url); background-repeat: repeat-x; background-position: center; background-size: auto 12px; opacity: 0.9; }
+.w-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: var(--lw) solid var(--w-line); min-width: 0; }
+.w-row:first-of-type { border-top: 0; }
+.w-row .lead { display: grid; gap: 1px; min-width: 0; }
+.w-row .val { font-family: var(--serif); font-style: italic; color: var(--w-soft); font-size: 15px; white-space: nowrap; }
+.w-row .chev { color: var(--w-faint); }
+/* Buttons: primary (gradient or solid, double edge, glow), secondary (outlined), quiet (underlined word) */
+.w-btns { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+.w-btn { font: 600 15px/1 var(--sans); letter-spacing: var(--btn-ls, 0); border: 0; cursor: pointer; padding: 0 20px; height: 44px; border-radius: var(--r-c); position: relative; color: var(--w-ink); background: none; }
+.w-btn.primary { background: var(--pf); color: var(--w-on); box-shadow: var(--glow-sh); }
+.w-btn.primary[data-double="true"]::after { content: ""; position: absolute; inset: 2px; border: 1.25px solid var(--w-orn); border-radius: max(0px, calc(var(--r-c-n) - 2px)); pointer-events: none; }
+.w-btn.secondary { border: var(--lw) solid var(--w-quiet); }
+.w-btn.quiet { padding: 0 2px; height: 32px; border-radius: 0; text-decoration: underline; text-decoration-color: var(--w-quiet); text-decoration-thickness: var(--lw); text-underline-offset: 5px; font-weight: 500; }
+.w-btn:focus-visible { outline: 2px solid var(--w-focus); outline-offset: 2px; }
+/* Chips */
+.w-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.w-chip { font: 500 13.5px/1 var(--sans); background: none; color: var(--w-soft); border: 0; cursor: pointer; padding: 8px 12px; border-radius: var(--r-ch); }
+.app[data-chip="outlined"] .w-chip { border: var(--lw) solid var(--w-line); }
+.app[data-chip="outlined"] .w-chip[aria-pressed="true"] { border-color: var(--w-lamp); color: var(--w-ink); background: var(--w-lamp-wash); }
+.app[data-chip="underline"] .w-chip { padding: 8px 4px; }
+.app[data-chip="underline"] .w-chip[aria-pressed="true"] { color: var(--w-ink); text-decoration: underline; text-decoration-color: var(--w-lamp); text-decoration-thickness: 2px; text-underline-offset: 6px; }
+.w-chip:focus-visible { outline: 2px solid var(--w-focus); outline-offset: 2px; }
+/* Field: underline */
+.w-field { display: grid; gap: 4px; }
+.w-field input { font: 17px var(--serif); color: var(--w-ink); background: transparent; border: 0; border-bottom: var(--lw) solid var(--w-line); padding: 6px 0; border-radius: 0; }
+.w-field input::placeholder { color: var(--w-faint); font-style: italic; }
+.w-field input:focus { outline: none; border-bottom-color: var(--w-focus); border-bottom-width: 1.5px; }
+/* Switch */
+.w-switch { width: 44px; height: 26px; border-radius: 999px; background: var(--w-line); position: relative; border: 0; cursor: pointer; flex: none; }
+.w-switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--w-raised); transition: transform 180ms; }
+.w-switch[aria-checked="true"] { background: var(--w-lamp); }
+.w-switch[aria-checked="true"]::after { transform: translateX(18px); }
+.w-switch:focus-visible { outline: 2px solid var(--w-focus); outline-offset: 2px; }
+/* Mark: present, late, absent */
+.mark { display: flex; gap: 4px; flex: none; flex-wrap: nowrap; }
+.mark .w-chip { padding: 7px 9px; }
+.app[data-chip="underline"] .mark .w-chip { padding: 7px 4px; }
+/* Tab bar: words, the active one lit by a small lamp */
+.w-tabs { display: flex; justify-content: center; background: var(--w-raised-b); border-top: var(--lw) solid var(--w-line); padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: max(8px, env(safe-area-inset-right, 0px)); padding-block: 8px 12px; }
+.w-tabs-in { display: flex; justify-content: space-around; width: 100%; max-width: 520px; }
+.w-tab { font: 500 12px/1.2 var(--sans); color: var(--w-soft); background: none; border: 0; cursor: pointer; padding: 6px 8px; display: grid; justify-items: center; gap: 5px; }
+.w-tab::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: transparent; }
+.w-tab[aria-current="page"] { color: var(--w-ink); font-weight: 600; }
+.w-tab[aria-current="page"]::before { background: var(--w-lamp); box-shadow: 0 0 8px var(--w-glow); }
+.w-tab:focus-visible { outline: 2px solid var(--w-focus); outline-offset: 2px; }
+.w-names { font-family: var(--serif); color: var(--w-soft); font-size: 14px; }
+.dock { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 26px 48px; }
+.dock-inner { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px 36px; }
+.ctl { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.ctl-label { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; font-size: 0.7rem; letter-spacing: 0.13em; text-transform: uppercase; font-weight: 600; color: var(--ink-soft); }
+.ctl-label output { font-family: var(--serif); font-size: 1rem; letter-spacing: 0; text-transform: none; font-weight: 400; color: var(--ink); text-align: right; }
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip { font: inherit; font-size: 0.85rem; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--raised); color: var(--ink); cursor: pointer; display: inline-flex; gap: 7px; align-items: center; }
+.chip[aria-pressed="true"] { border-color: var(--lamp-deep); box-shadow: inset 0 0 0 1px var(--lamp-deep); }
+.chip:focus-visible, input:focus-visible, button:focus-visible { outline: 2px solid var(--lamp-deep); outline-offset: 2px; }
+.sw { width: 11px; height: 11px; border-radius: 50%; }
+input[type="range"] { width: 100%; accent-color: var(--lamp-deep); }
+.solid { font: inherit; }
+
+/* Letting the scene breathe: frost baked once per repaint, look up, sky-first home, settle when idle */
+.app[data-surf="frost"] .w-surface { background-color: transparent; background-image: var(--frost-tint), var(--frost); background-repeat: no-repeat; background-size: 100% 100%, var(--frost-size); box-shadow: var(--surf-shadow), inset 0 1px 0 var(--frost-hi); }
+.app[data-surf="frost"] .w-tabs { background: var(--frost-bar); }
+.w-look { white-space: nowrap; font: 500 12px/1 var(--sans); letter-spacing: 0.04em; color: var(--sky-ink); background: none; border: 1px solid currentColor; border-radius: 999px; padding: 6px 11px; cursor: pointer; opacity: 0.85; text-shadow: none; }
+.w-header .right { display: flex; align-items: center; gap: 14px; }
+.w-scroll, .w-tabs { transition: transform 520ms cubic-bezier(.2,.7,.2,1), opacity 420ms ease; }
+.app.looking .w-scroll { transform: translateY(40%); opacity: 0; pointer-events: none; }
+.app.looking .w-tabs { transform: translateY(100%); opacity: 0; pointer-events: none; }
+.app.looking .w-look { opacity: 0; pointer-events: none; }
+.look-hint { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; font: italic 15px var(--serif); color: var(--sky-ink); text-shadow: 0 1px 10px var(--sky-shade); opacity: 0; transition: opacity 600ms 300ms; pointer-events: none; }
+.app.looking .look-hint { opacity: 0.9; }
+.peek { display: none; }
+.app[data-home="sky"] #scr-home > .w-col { width: 100%; }
+.app[data-home="sky"] #scr-home { display: flex; flex-direction: column; }
+.app[data-home="sky"] #scr-home[hidden] { display: none; }
+.app[data-home="sky"] #scr-home .greet { margin-bottom: 0; flex: 1; }
+.app[data-home="sky"] #scr-home:not(.open) .w-col > .w-surface:not(.peek) { display: none; }
+.app[data-home="sky"] #scr-home:not(.open) .peek { display: flex; }
+.app[data-home="sky"] #scr-home.open .greet { flex: none; margin-bottom: 4vh; }
+.peek { align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left; cursor: pointer; font: inherit; color: var(--w-ink); padding: 12px 16px; }
+.peek .w-body { display: block; }
+.peek .go { font-family: var(--serif); font-style: italic; color: var(--w-soft); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .w-scroll, .w-tabs { transition: opacity 200ms; } .app.looking .w-scroll { transform: none; } .app.looking .w-tabs { transform: none; } }
+.meter { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 14px; display: flex; flex-wrap: wrap; gap: 10px 32px; font-size: 0.86rem; color: var(--ink-soft); }
+.meter b { font-family: var(--serif); font-weight: 400; font-size: 1.05rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+.about { grid-column: 1 / -1; max-width: 72ch; color: var(--ink-soft); font-size: 0.92rem; }
+.about strong { color: var(--ink); font-weight: 600; }
+</style>
+
+<section class="stage" id="stage" aria-label="A living landscape: sky, hills, a tank and paddy fields, following the hour, season and weather">
+  <canvas id="cv"></canvas>
+  <div class="app" id="app">
+    <header class="w-header">
+      <div class="brand">Gurudevi <span class="space" id="space-name">Home</span></div>
+      <div class="right"><button class="w-look" id="look" type="button">Look up</button><div class="stamp"><b id="stamp">07:30</b><span id="sky-now">Monsoon rain</span></div></div>
+    </header>
+    <p class="look-hint" id="look-hint">Tap anywhere to come back</p>
+    <div class="w-scroll">
+      <div class="w-col">
+        <section class="screen" id="scr-home" aria-label="Home">
+          <div class="greet"><h1 id="hello">Good morning, Nirmala</h1><p id="line">Rain on the wewa. The register can wait for the first bell.</p></div>
+          <div class="w-col">
+            <button class="w-surface peek" type="button" id="peek" data-frame="false"><span><span class="w-label">Next</span><span class="w-body">Science, 7B at 08:00</span></span><span class="go">3 today</span></button>
+            <div class="w-surface" data-frame="false">
+              <span class="w-label">Today</span>
+              <div>
+                <div class="w-row"><span class="lead"><span class="w-body">Science, 7B</span><span class="w-cap">Room 4, near the jak tree</span></span><span class="val">08:00</span></div>
+                <div class="w-row"><span class="lead"><span class="w-body">Sinhala, 8A</span><span class="w-cap">Poems from the textbook, page 42</span></span><span class="val">10:40</span></div>
+                <div class="w-row"><span class="lead"><span class="w-body">Staff meeting</span><span class="w-cap">Library</span></span><span class="val">13:30</span></div>
+              </div>
+              <div class="w-orn" aria-hidden="true"></div>
+              <div class="w-btns"><button class="w-btn primary" type="button" data-go="att">Take attendance</button><button class="w-btn secondary" type="button">Plan tomorrow</button><button class="w-btn quiet" type="button">See the week</button></div>
+            </div>
+            <div class="w-surface" data-frame="false">
+              <span class="w-label">How are you today?</span>
+              <div class="w-chips" data-single="true"><button class="w-chip" type="button" aria-pressed="false">Rested</button><button class="w-chip" type="button" aria-pressed="true">Steady</button><button class="w-chip" type="button" aria-pressed="false">Stretched</button><button class="w-chip" type="button" aria-pressed="false">Tired</button></div>
+              <span class="w-cap">Only you can see this.</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="scr-att" aria-label="Attendance" hidden>
+          <h2 class="screen-title">Grade 7B register</h2>
+          <div class="w-surface" data-frame="false">
+            <span class="w-label">38 of 41 marked</span>
+            <div>
+              <div class="w-row"><span class="w-body">Amaya Perera</span><span class="mark w-chips" data-single="true"><button class="w-chip" type="button" aria-pressed="true">Here</button><button class="w-chip" type="button" aria-pressed="false">Late</button><button class="w-chip" type="button" aria-pressed="false">Away</button></span></div>
+              <div class="w-row"><span class="w-body">Kavin Rajan</span><span class="mark w-chips" data-single="true"><button class="w-chip" type="button" aria-pressed="false">Here</button><button class="w-chip" type="button" aria-pressed="true">Late</button><button class="w-chip" type="button" aria-pressed="false">Away</button></span></div>
+              <div class="w-row"><span class="w-body">Sanduni Fernando</span><span class="mark w-chips" data-single="true"><button class="w-chip" type="button" aria-pressed="false">Here</button><button class="w-chip" type="button" aria-pressed="false">Late</button><button class="w-chip" type="button" aria-pressed="false">Away</button></span></div>
+            </div>
+            <div class="w-orn" aria-hidden="true"></div>
+            <label class="w-field"><span class="w-label">Note for the office</span><input id="att-note" type="text" placeholder="Heavy rain, the Kandy road bus was late"></label>
+            <div class="w-btns"><button class="w-btn primary" type="button">Save register</button><button class="w-btn quiet" type="button" data-go="home">Back home</button></div>
+          </div>
+        </section>
+
+        <section class="screen" id="scr-set" aria-label="Settings" hidden>
+          <h2 class="screen-title">Settings</h2>
+          <div class="w-surface" data-frame="false">
+            <span class="w-label">World</span>
+            <div class="w-chips" id="app-worlds"></div>
+            <span class="w-cap" id="app-world-desc"></span>
+            <span class="w-names" id="app-world-names"></span>
+          </div>
+          <div class="w-surface" data-frame="false">
+            <span class="w-label">Light</span>
+            <div>
+              <div class="w-row"><span class="lead"><span class="w-body">Follow the hour</span><span class="w-cap">Day or night, or follow the hour.</span></span><button class="w-switch" id="sw-hour" type="button" role="switch" aria-checked="true" aria-label="Follow the hour"></button></div>
+              <div class="w-row"><span class="lead"><span class="w-body">Weather in the sky</span><span class="w-cap">From your school's district, three times a day.</span></span><button class="w-switch" type="button" role="switch" aria-checked="true" aria-label="Weather in the sky"></button></div>
+              <div class="w-row"><span class="w-body">Backdrop</span><span class="val" id="app-ground">Living sky</span></div>
+              <div class="w-row"><span class="w-body">Visual detail</span><span class="val" id="app-tier">Full</span></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <nav class="w-tabs" aria-label="Sections"><div class="w-tabs-in">
+      <button class="w-tab" type="button" data-go="home" aria-current="page">Home</button>
+      <button class="w-tab" type="button" data-go="att">Attendance</button>
+      <button class="w-tab" type="button">Library</button>
+      <button class="w-tab" type="button" data-go="set">Settings</button>
+    </div></nav>
+  </div>
+</section>
+
+<section class="dock" aria-label="Scene controls">
+  <div class="dock-inner">
+    <div class="ctl">
+      <div class="ctl-label"><label for="hour">Hour</label><output id="hour-o"></output></div>
+      <input type="range" id="hour" min="0" max="1439" step="1">
+      <div class="chips"><button class="chip" id="now" type="button">Follow the hour</button><button class="chip" id="play" type="button">Play the day</button></div>
+    </div>
+    <div class="ctl">
+      <div class="ctl-label"><span id="season-l">Season</span><output id="season-o"></output></div>
+      <div class="chips" id="seasons" role="group" aria-labelledby="season-l"></div>
+    </div>
+    <div class="ctl">
+      <div class="ctl-label"><span id="weather-l">Weather</span><output id="weather-o"></output></div>
+      <div class="chips" id="weathers" role="group" aria-labelledby="weather-l"></div>
+    </div>
+    <div class="ctl">
+      <div class="ctl-label"><span id="world-l">World</span><output id="world-o"></output></div>
+      <div class="chips" id="worlds" role="group" aria-labelledby="world-l"></div>
+    </div>
+    <div class="ctl">
+      <div class="ctl-label"><span id="ground-l">Backdrop</span><output id="ground-o"></output></div>
+      <div class="chips" id="grounds" role="group" aria-labelledby="ground-l"></div>
+      <div class="chips"><label class="chip" for="solid">Solid colour <input class="solid" type="color" id="solid" value="#B9C7B0" style="width:28px;height:20px;border:0;padding:0;background:none"></label><button class="chip" id="cards-t" type="button" aria-pressed="true">Show the app</button></div>
+    </div>
+    <div class="ctl">
+      <div class="ctl-label"><span id="tier-l">What the phone can afford</span><output id="tier-o"></output></div>
+      <div class="chips" id="tiers" role="group" aria-labelledby="tier-l"></div>
+    </div>
+    <div class="ctl">
+      <div class="ctl-label"><span id="surf-l">Cards over the scene</span><output id="surf-o"></output></div>
+      <div class="chips" id="surfs" role="group" aria-labelledby="surf-l"></div>
+      <div class="chips" id="homes" role="group" aria-label="Home opens on"></div>
+      <div class="chips"><button class="chip" id="settle-t" type="button" aria-pressed="false">Settle when idle</button></div>
+    </div>
+    <div class="meter" aria-live="polite">
+      <span>Frame loop <b id="m-loop">on</b></span>
+      <span>Frames a second <b id="m-fps">30</b></span>
+      <span>Particles <b id="m-parts">0</b></span>
+      <span>Moon <b id="m-moon"></b></span>
+      <span>Frost baked <b id="m-frost">off</b></span>
+    </div>
+    <p class="about"><strong>How it stays light.</strong> Sky, hills, water and palms are painted once into a still image and repainted only when the hour, season or weather changes. Only rain, ripples, fireflies, stars and clouds move, capped at 30 frames a second, and the loop pauses when the page is hidden. At <strong>Balanced</strong> nothing moves and the scene repaints once a minute. At <strong>Essential</strong> it is a flat colour. A teacher can always choose <strong>Plain</strong> or a solid colour instead. <strong>Frost</strong> is not a live blur: each time the still scene is repainted, a tiny blurred copy is made once and the cards show their slice of it, so it costs the same on a cheap phone as on a new one. <strong>Look up</strong>, <strong>Sky first</strong> and <strong>Settle when idle</strong> only move and fade the app, which is nearly free. Sky colours, season timing and sunrise for Colombo are approximate sketches, not yet in the app.</p>
+  </div>
+</section>
+
+<script>
+(function () {
+  'use strict';
+  /* ---------- data ---------- */
+  var WORLDS = [{"id": "sanctuary", "name": "Sanctuary", "si": "අභයභූමිය", "ta": "சரணாலயம்", "desc": "Washi paper and lamp light. The quiet default.", "light": {"ground": "#F5EDD6", "raised": "#FBF6EA", "sunken": "#ECE2C8", "ink": "#2A2318", "inkSoft": "#5A4E3E", "inkFaint": "#857966", "lamp": "#E3A24E", "onLamp": "#2A1A08", "lampDeep": "#8A4F17", "glow": "#F6C27E", "ornament": "#5B4632", "danger": "#9C3424", "onDanger": "#FFF8F0", "success": "#4F7A3A", "focus": "#A8601D", "lineAmount": 0.2}, "dark": {"ground": "#17140F", "raised": "#221D16", "sunken": "#100E0A", "ink": "#F3EAD8", "inkSoft": "#C4B8A3", "inkFaint": "#8E8372", "lamp": "#F0B562", "onLamp": "#2A1A08", "lampDeep": "#F0B562", "glow": "#F0B562", "ornament": "#C9A27A", "danger": "#F09A86", "onDanger": "#2A0F08", "success": "#A6CC8A", "focus": "#F0B562", "lineAmount": 0.2}, "style": {"rc": "999px", "rs": "22px", "rch": "999px", "rf": "14px", "pf": "gradient", "de": false, "gl": true, "edge": "hairline", "sh": false, "chip": "underline", "label": "smallcaps", "lw": 0.75, "orn": "hairline"}, "glow": "#F6C27E", "ground": "#F5EDD6", "dGround": "#17140F", "lamp": "#E3A24E"}, {"id": "kandyan", "name": "Temple walls", "si": "විහාර බිතු", "ta": "கோயில் சுவர்கள்", "desc": "Lime plaster and mural earth, with a vine band at the edge.", "light": {"ground": "#F1E5CC", "raised": "#F7EEDA", "sunken": "#E6D6B5", "ink": "#1F1912", "inkSoft": "#56493A", "inkFaint": "#85765F", "lamp": "#B5361E", "onLamp": "#FBF6EA", "lampDeep": "#9C2E19", "glow": "#CC8B2C", "ornament": "#CC8B2C", "danger": "#8A2A18", "onDanger": "#FBF6EA", "success": "#56702E", "focus": "#9C2E19", "lineAmount": 0.24}, "dark": {"ground": "#1E1610", "raised": "#2A1F16", "sunken": "#150F0A", "ink": "#F2E6CE", "inkSoft": "#C9B596", "inkFaint": "#8F7D63", "lamp": "#B8432A", "onLamp": "#FFF6EA", "lampDeep": "#F08A6E", "glow": "#D98C3C", "ornament": "#D9A04A", "danger": "#F08A6E", "onDanger": "#2A0F08", "success": "#A9C27A", "focus": "#F08A6E", "lineAmount": 0.24}, "style": {"rc": "12px", "rs": "10px", "rch": "999px 999px 8px 8px", "rf": "10px", "pf": "solid", "de": true, "gl": false, "edge": "frame", "sh": false, "chip": "outlined", "label": "italic", "lw": 1, "orn": "liyawela"}, "glow": "#CC8B2C", "ground": "#F1E5CC", "dGround": "#1E1610", "lamp": "#B5361E"}, {"id": "wewa", "name": "Wewa", "si": "වැව", "ta": "குளம்", "desc": "Still tank water and moonlight. Calm, cool, deep.", "light": {"ground": "#EAF1EE", "raised": "#F5F9F7", "sunken": "#DCE7E3", "ink": "#10262E", "inkSoft": "#3D575D", "inkFaint": "#6A8286", "lamp": "#2F7F78", "onLamp": "#F2FBF9", "lampDeep": "#22665F", "glow": "#78BEB4", "ornament": "#5FA39A", "danger": "#A33A33", "onDanger": "#FFF5F3", "success": "#2F7F58", "focus": "#22665F", "lineAmount": 0.2}, "dark": {"ground": "#0F2230", "raised": "#163140", "sunken": "#0A1822", "ink": "#EAF2F0", "inkSoft": "#A9C0C2", "inkFaint": "#75908F", "lamp": "#9ED8D2", "onLamp": "#062024", "lampDeep": "#9ED8D2", "glow": "#9ED8D2", "ornament": "#5E9A8C", "danger": "#F2A7A0", "onDanger": "#2A0E0B", "success": "#9ED8B4", "focus": "#9ED8D2", "lineAmount": 0.2}, "style": {"rc": "999px", "rs": "22px", "rch": "999px", "rf": "14px", "pf": "gradient", "de": false, "gl": true, "edge": "hairline", "sh": false, "chip": "outlined", "label": "smallcaps", "lw": 0.75, "orn": "ripple"}, "glow": "#78BEB4", "ground": "#EAF1EE", "dGround": "#0F2230", "lamp": "#2F7F78"}, {"id": "kele", "name": "Forest canopy", "si": "කැලෑ වියන", "ta": "காட்டு விதானம்", "desc": "Backlit leaves and dark branches, looking up.", "light": {"ground": "#EEF3E2", "raised": "#F8FBF1", "sunken": "#E0E9CE", "ink": "#1C2A16", "inkSoft": "#46593A", "inkFaint": "#728366", "lamp": "#9CC23A", "onLamp": "#1C2A16", "lampDeep": "#4A6A1C", "glow": "#C9E07A", "ornament": "#2E3A22", "danger": "#8E2F22", "onDanger": "#FFF6F0", "success": "#4A6A1C", "focus": "#4A6A1C", "lineAmount": 0.2}, "dark": {"ground": "#111A0F", "raised": "#1A2617", "sunken": "#0B120A", "ink": "#E8F0DC", "inkSoft": "#B4C4A2", "inkFaint": "#7E8F6E", "lamp": "#B9DB5A", "onLamp": "#17210F", "lampDeep": "#C6E373", "glow": "#B9DB5A", "ornament": "#6E8A4E", "danger": "#F0A08A", "onDanger": "#2A0F08", "success": "#C6E373", "focus": "#C6E373", "lineAmount": 0.2}, "style": {"rc": "22px 6px 22px 6px", "rs": "26px 8px 26px 8px", "rch": "16px 4px 16px 4px", "rf": "12px", "pf": "gradient", "de": false, "gl": false, "edge": "none", "sh": true, "chip": "outlined", "label": "smallcaps", "lw": 1, "orn": "branch"}, "glow": "#C9E07A", "ground": "#EEF3E2", "dGround": "#111A0F", "lamp": "#9CC23A"}, {"id": "angampora", "name": "Angampora", "si": "අංගම්පොර", "ta": "அங்கம்பொற", "desc": "Packed earth and brass. Square, grounded, exact.", "light": {"ground": "#F0E6D6", "raised": "#F8F1E5", "sunken": "#E4D5BE", "ink": "#2A1E17", "inkSoft": "#5A4838", "inkFaint": "#887361", "lamp": "#7A561C", "onLamp": "#FFF8EC", "lampDeep": "#6E4D18", "glow": "#C9A05A", "ornament": "#B4893F", "danger": "#9A3322", "onDanger": "#FFF8EC", "success": "#5A6E2A", "focus": "#6E4D18", "lineAmount": 0.26}, "dark": {"ground": "#2A1E17", "raised": "#352720", "sunken": "#1F1611", "ink": "#F1E3CF", "inkSoft": "#C9B39A", "inkFaint": "#9A8670", "lamp": "#D9B262", "onLamp": "#23170F", "lampDeep": "#E2BE73", "glow": "#E2BE73", "ornament": "#C9A05A", "danger": "#E89A82", "onDanger": "#23170F", "success": "#B9C27A", "focus": "#E2BE73", "lineAmount": 0.26}, "style": {"rc": "4px", "rs": "4px", "rch": "3px", "rf": "4px", "pf": "gradient", "de": false, "gl": false, "edge": "hairline", "sh": false, "chip": "outlined", "label": "smallcaps", "lw": 1, "orn": "stance", "ls": 1.6}, "glow": "#C9A05A", "ground": "#F0E6D6", "dGround": "#2A1E17", "lamp": "#7A561C"}, {"id": "ratna", "name": "Gems and lace", "si": "මැණික් සහ බීරළු", "ta": "மாணிக்கமும் சரிகையும்", "desc": "Ivory, beeralu lace and one sapphire.", "light": {"ground": "#F7F3EE", "raised": "#FFFDFA", "sunken": "#ECE6DF", "ink": "#23202A", "inkSoft": "#57525F", "inkFaint": "#85808E", "lamp": "#2F5FA8", "onLamp": "#F7F3EE", "lampDeep": "#2F5FA8", "glow": "#6F98DC", "ornament": "#23202A", "danger": "#8E2F3A", "onDanger": "#FFF6F7", "success": "#3F6E4A", "focus": "#2F5FA8", "lineAmount": 0.2}, "dark": {"ground": "#14131A", "raised": "#1E1C26", "sunken": "#0E0D12", "ink": "#F1EEF4", "inkSoft": "#B9B4C2", "inkFaint": "#858092", "lamp": "#8FB2EA", "onLamp": "#0E1830", "lampDeep": "#A9C4F0", "glow": "#8FB2EA", "ornament": "#CFC8DA", "danger": "#F0A0AA", "onDanger": "#2A0E12", "success": "#9FD0AA", "focus": "#A9C4F0", "lineAmount": 0.2}, "style": {"rc": "999px", "rs": "20px", "rch": "999px", "rf": "14px", "pf": "gradient", "de": false, "gl": true, "edge": "hairline", "sh": true, "chip": "outlined", "label": "smallcaps", "lw": 0.75, "orn": "lace"}, "glow": "#6F98DC", "ground": "#F7F3EE", "dGround": "#14131A", "lamp": "#2F5FA8"}];
+  var SEASONS = [
+    { id: 'maha', name: 'Northeast monsoon', months: [11, 0, 1], paddy: '#6E9A3A', note: 'Maha paddy growing', wet: 0.6 },
+    { id: 'harvest', name: 'Maha harvest', months: [2], paddy: '#C7A13E', note: 'golden paddy, dry mornings', wet: 0.2 },
+    { id: 'inter1', name: 'First inter-monsoon', months: [3], paddy: '#9DA94A', note: 'afternoon thunder, Avurudu', wet: 0.5 },
+    { id: 'yala', name: 'Southwest monsoon', months: [4, 5, 6, 7], paddy: '#5E9A3C', note: 'Yala paddy, wet southwest', wet: 0.7 },
+    { id: 'inter2', name: 'Second inter-monsoon', months: [8, 9, 10], paddy: '#7BAA48', note: 'heavy evening rain, new sowing', wet: 0.85 }
+  ];
+  var WEATHER = [
+    { id: 'clear', name: 'Clear', cloud: 0.15, dim: 0, rain: 0 },
+    { id: 'cloudy', name: 'Cloudy', cloud: 0.65, dim: 0.18, rain: 0 },
+    { id: 'drizzle', name: 'Drizzle', cloud: 0.8, dim: 0.28, rain: 90 },
+    { id: 'monsoon', name: 'Monsoon rain', cloud: 1, dim: 0.42, rain: 320 },
+    { id: 'storm', name: 'Thunderstorm', cloud: 1, dim: 0.55, rain: 380, bolt: true },
+    { id: 'mist', name: 'After the rain', cloud: 0.45, dim: 0.1, rain: 0, mist: true }
+  ];
+  var SKY = [
+    { m: 0, top: '#070C1A', hor: '#18223A' }, { m: 290, top: '#0E1630', hor: '#2E3558' },
+    { m: 345, top: '#3A4A7C', hor: '#C98A7E' }, { m: 385, top: '#6F8AB8', hor: '#F6C29A' },
+    { m: 450, top: '#8FB4DC', hor: '#FBE0BE' }, { m: 600, top: '#7FB1E0', hor: '#E4EEF0' },
+    { m: 780, top: '#6FA6DA', hor: '#EEF2EA' }, { m: 930, top: '#86ABD2', hor: '#F4E2B6' },
+    { m: 1040, top: '#5D6AA6', hor: '#F1A869' }, { m: 1090, top: '#3E3E78', hor: '#E07F5E' },
+    { m: 1130, top: '#22234A', hor: '#7A4A62' }, { m: 1200, top: '#0D1430', hor: '#26304E' },
+    { m: 1440, top: '#070C1A', hor: '#18223A' }
+  ];
+  var RISE = 365, SET = 1090;
+
+  /* ---------- helpers ---------- */
+  function hx(h) { h = h.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; }
+  function th(c) { return '#' + c.map(function (v) { v = Math.max(0, Math.min(255, Math.round(v))); return (v < 16 ? '0' : '') + v.toString(16); }).join(''); }
+  function mix(a, b, t) { var x = hx(a), y = hx(b); return th([x[0] + (y[0] - x[0]) * t, x[1] + (y[1] - x[1]) * t, x[2] + (y[2] - x[2]) * t]); }
+  function rgba(h, a) { var c = hx(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+  function grey(h, t) { var c = hx(h), g = c[0] * 0.3 + c[1] * 0.59 + c[2] * 0.11; return th([c[0] + (g - c[0]) * t, c[1] + (g - c[1]) * t, c[2] + (g - c[2]) * t]); }
+  function lum(h) { var c = hx(h).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+  function rng(seed) { var s = seed >>> 0; return function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+  function skyAt(m) { for (var i = 0; i < SKY.length - 1; i++) { var a = SKY[i], b = SKY[i + 1]; if (m >= a.m && m <= b.m) { var t = (m - a.m) / (b.m - a.m); return { top: mix(a.top, b.top, t), hor: mix(a.hor, b.hor, t) }; } } return SKY[0]; }
+  function daylight(m) { if (m < RISE - 50 || m > SET + 50) return 0; if (m < RISE + 60) return Math.max(0, (m - (RISE - 50)) / 110); if (m > SET - 60) return Math.max(0, ((SET + 50) - m) / 110); return 1; }
+  function phaseOf(m) { var h = m / 60; if (h >= 4 && h < 6) return 'predawn'; if (h >= 6 && h < 9) return 'dawn'; if (h >= 9 && h < 12) return 'morning'; if (h >= 12 && h < 17) return 'afternoon'; if (h >= 17 && h < 20) return 'dusk'; return 'night'; }
+  function moonPhase(d) { var syn = 29.530588853, ref = Date.UTC(2000, 0, 6, 18, 14); var age = ((d.getTime() - ref) / 86400000) % syn; if (age < 0) age += syn; return age / syn; }
+  function moonName(p) { if (p < 0.03 || p > 0.97) return 'new moon'; if (p > 0.47 && p < 0.53) return 'full moon (poya)'; if (p < 0.25) return 'waxing crescent'; if (p < 0.47) return 'waxing gibbous'; if (p < 0.75) return 'waning gibbous'; return 'waning crescent'; }
+  function seasonFor(d) { var mo = d.getMonth(); for (var i = 0; i < SEASONS.length; i++) if (SEASONS[i].months.indexOf(mo) >= 0) return i; return 0; }
+  function colomboNow() { var d = new Date(); var u = d.getTime() + d.getTimezoneOffset() * 60000; return new Date(u + 330 * 60000); }
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var today = colomboNow();
+  var S = { minute: today.getHours() * 60 + today.getMinutes(), follow: true, season: seasonFor(today), weather: 3, world: 0, ground: 'sky', solid: '#B9C7B0', tier: reduce ? 'balanced' : 'rich', cards: true, moon: moonPhase(today) };
+
+  /* ---------- canvas ---------- */
+  var stage = document.getElementById('stage'), cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+  var W = 0, H = 0, DPR = 1, bg = document.createElement('canvas'), bgx = bg.getContext('2d'), cl = document.createElement('canvas'), clx = cl.getContext('2d');
+  var HOR = 0.6, WATER0 = 0.62, WATER1 = 0.76;
+  function resize() {
+    var r = stage.getBoundingClientRect(); DPR = Math.min(2, window.devicePixelRatio || 1);
+    W = Math.max(320, Math.round(r.width)); H = Math.max(400, Math.round(r.height));
+    [cv, bg].forEach(function (c) { c.width = W * DPR; c.height = H * DPR; });
+    cl.width = W * 2 * DPR; cl.height = H * 0.6 * DPR;
+    dirty = true; seedParticles();
+  }
+  var dirty = true, look = {};
+
+  function ridge(x, seed, amp, freq) { return Math.sin(x * freq + seed) * amp * 0.55 + Math.sin(x * freq * 2.3 + seed * 1.7) * amp * 0.28 + Math.sin(x * freq * 5.1 + seed * 0.6) * amp * 0.12 + Math.sin(x * freq * 11.7 + seed * 2.9) * amp * 0.05; }
+
+  function computeLook() {
+    var w = WORLDS[S.world], wx = WEATHER[S.weather], se = SEASONS[S.season];
+    var s = skyAt(S.minute), L = daylight(S.minute);
+    var top = mix(grey(s.top, wx.cloud * 0.55), '#5A6372', wx.dim * 0.55 * L);
+    var hor = mix(grey(s.hor, wx.cloud * 0.5), '#8E96A0', wx.dim * 0.5 * L);
+    top = mix(top, w.glow, 0.08); hor = mix(hor, w.glow, 0.16);
+    if (L < 0.2) { top = mix(top, '#05080F', wx.dim * 0.4); hor = mix(hor, '#0B1220', wx.dim * 0.4); }
+    var landDay = mix(se.paddy, '#3F6A30', 0.25), landNight = '#0A1410';
+    var land = mix(landNight, grey(landDay, wx.dim * 0.4), Math.max(0.08, L * (1 - wx.dim * 0.35)));
+    var hillFar = mix(hor, mix(top, '#2B3A4A', 0.3), 0.45), hillMid = mix(hillFar, land, 0.55);
+    look = { w: w, wx: wx, se: se, top: top, hor: hor, L: L, land: land, hillFar: hillFar, hillMid: hillMid, paddy: mix(landNight, grey(se.paddy, wx.dim * 0.35), Math.max(0.1, L * (1 - wx.dim * 0.3))), phase: phaseOf(S.minute) };
+  }
+
+  function paintBackground() {
+    computeLook();
+    var g = bgx, lk = look; g.setTransform(DPR, 0, 0, DPR, 0, 0);
+    if (S.ground === 'plain' || S.tier === 'essential') {
+      var dark = lk.L < 0.35; g.fillStyle = dark ? lk.w.dGround : mix(lk.w.ground, lk.hor, 0.08); g.fillRect(0, 0, W, H); return;
+    }
+    if (S.ground === 'solid') { g.fillStyle = S.solid; g.fillRect(0, 0, W, H); var vg = g.createRadialGradient(W * 0.5, H * 0.35, 10, W * 0.5, H * 0.5, Math.max(W, H)); vg.addColorStop(0, 'rgba(255,255,255,0.08)'); vg.addColorStop(1, 'rgba(0,0,0,0.12)'); g.fillStyle = vg; g.fillRect(0, 0, W, H); return; }
+    var hy = H * HOR;
+    var sg = g.createLinearGradient(0, 0, 0, hy); sg.addColorStop(0, lk.top); sg.addColorStop(0.72, mix(lk.top, lk.hor, 0.7)); sg.addColorStop(1, lk.hor);
+    g.fillStyle = sg; g.fillRect(0, 0, W, hy + 2);
+    /* sun or moon */
+    var day = S.minute >= RISE - 20 && S.minute <= SET + 20, t, cx, cy;
+    if (day) t = (S.minute - RISE) / (SET - RISE); else t = ((S.minute - SET + 1440) % 1440) / (1440 - (SET - RISE));
+    t = Math.max(-0.05, Math.min(1.05, t)); cx = W * (0.08 + t * 0.84); cy = hy - Math.sin(Math.PI * Math.max(0, Math.min(1, t))) * hy * 0.78 + 10;
+    lk.cel = { x: cx, y: cy, day: day };
+    var veil = 1 - lk.wx.cloud * 0.8;
+    if (day) {
+      var R = Math.max(W, H) * 0.42, gl = g.createRadialGradient(cx, cy, 2, cx, cy, R);
+      var warm = mix('#FFE3A8', lk.w.glow, 0.25);
+      gl.addColorStop(0, rgba(warm, 0.75 * veil + 0.1)); gl.addColorStop(0.12, rgba(warm, 0.32 * veil + 0.05)); gl.addColorStop(1, rgba(warm, 0));
+      g.fillStyle = gl; g.fillRect(0, 0, W, hy);
+      if (veil > 0.25) { g.fillStyle = rgba('#FFF6DE', Math.min(1, veil + 0.1)); g.beginPath(); g.arc(cx, cy, Math.max(14, W * 0.018), 0, Math.PI * 2); g.fill(); }
+    } else {
+      var mr = Math.max(11, W * 0.013), mg = g.createRadialGradient(cx, cy, mr, cx, cy, mr * 9);
+      mg.addColorStop(0, rgba('#DCE3F2', 0.28 * veil + 0.04)); mg.addColorStop(1, 'rgba(220,227,242,0)'); g.fillStyle = mg; g.fillRect(0, 0, W, hy);
+      if (veil > 0.3) {
+        g.save(); g.beginPath(); g.arc(cx, cy, mr, 0, Math.PI * 2); g.clip();
+        g.fillStyle = rgba('#F3F1E8', veil); g.fillRect(cx - mr, cy - mr, mr * 2, mr * 2);
+        /* shadow disc: covers the moon at new moon, slides off by full moon */
+        var ph = S.moon, d = ph < 0.5 ? mr * 2 * (ph / 0.5) : mr * 2 * ((1 - ph) / 0.5);
+        g.fillStyle = rgba(lk.top, 0.93); g.beginPath(); g.arc(ph < 0.5 ? cx - d : cx + d, cy, mr * 1.04, 0, Math.PI * 2); g.fill();
+        g.restore();
+      }
+    }
+    /* horizon glow when the sun is low */
+    var low = day ? Math.max(0, 1 - Math.abs(Math.sin(Math.PI * Math.max(0, Math.min(1, t))) * 2.2)) : 0;
+    if (low > 0) { var hg = g.createLinearGradient(0, hy - H * 0.22, 0, hy); hg.addColorStop(0, rgba(lk.w.glow, 0)); hg.addColorStop(1, rgba(mix('#FFB070', lk.w.glow, 0.3), 0.35 * low * veil + 0.05)); g.fillStyle = hg; g.fillRect(0, hy - H * 0.22, W, H * 0.22); }
+    /* three ranges of hills, paler with distance */
+    var r = rng(7), x;
+    var ranges = [{ base: 0.085, amp: 0.1, f: 6.2, s: 1.3, c: mix(lk.hillFar, lk.hor, 0.55) }, { base: 0.045, amp: 0.08, f: 4.4, s: 4.1, c: mix(lk.hillFar, lk.hor, 0.25) }, { base: 0.012, amp: 0.05, f: 3.1, s: 8.7, c: lk.hillMid }];
+    ranges.forEach(function (rg, idx) {
+      var hgr = g.createLinearGradient(0, hy - H * (rg.base + rg.amp), 0, hy); hgr.addColorStop(0, mix(rg.c, lk.hor, 0.12)); hgr.addColorStop(1, mix(rg.c, lk.hor, 0.35 - idx * 0.1));
+      g.fillStyle = hgr; g.beginPath(); g.moveTo(0, hy + 1);
+      for (x = 0; x <= W; x += 3) g.lineTo(x, hy - H * rg.base - Math.max(-H * 0.01, ridge(x / W, rg.s, H * rg.amp, rg.f))); g.lineTo(W, hy + 1); g.closePath(); g.fill();
+    });
+    /* far shore: a band of trees, and its reflection */
+    var shore = mix(lk.hillMid, lk.land, 0.55), crowns = [];
+    var rt = rng(23); for (x = -10; x < W + 20; x += 6 + rt() * 10) crowns.push({ x: x, h: 6 + rt() * 16 + (rt() < 0.08 ? 18 : 0), w: 7 + rt() * 9 });
+    function shoreline(yBase, dir, alpha) { g.fillStyle = rgba(shore, alpha); g.beginPath(); g.moveTo(-10, yBase); crowns.forEach(function (c) { g.ellipse(c.x, yBase - dir * c.h * 0.55, c.w, c.h * 0.6, 0, 0, Math.PI * 2); }); g.fill(); g.fillStyle = rgba(shore, alpha * 0.55); g.fillRect(0, Math.min(yBase, yBase - dir * 3), W, 3); }
+    shoreline(hy + 3, 1, 1);
+    /* water: the sky reflected, darker */
+    var w0 = hy + 6, w1 = H * WATER1;
+    var wg = g.createLinearGradient(0, w0, 0, w1); wg.addColorStop(0, mix(lk.hor, '#1A2A33', 0.22)); wg.addColorStop(0.55, mix(mix(lk.top, lk.hor, 0.5), '#0E1C26', 0.3)); wg.addColorStop(1, mix(lk.top, '#08121A', 0.42));
+    g.fillStyle = wg; g.fillRect(0, w0, W, w1 - w0);
+    shoreline(w0, -1, 0.35);
+    if (lk.cel && (day ? veil > 0.2 : veil > 0.35)) {
+      for (var i = 0; i < 26; i++) { var yy = w0 + (i / 26) * (w1 - w0), ww = (8 + Math.random() * 30) * (1 + i / 10); g.fillStyle = rgba(day ? '#FFE9BE' : '#E6EBF5', (0.5 - i / 60) * veil); g.fillRect(lk.cel.x - ww / 2, yy, ww, 1.4); }
+    }
+    for (i = 0; i < 70; i++) { var ly = w0 + Math.pow(r(), 1.6) * (w1 - w0), lx = r() * W, lw = 10 + r() * 60; g.fillStyle = rgba('#FFFFFF', 0.03 + r() * 0.05 * (0.3 + lk.L)); g.fillRect(lx, ly, lw, 1); }
+    /* lotus pads near the near shore, a few flowers by day */
+    var rl = rng(5);
+    for (i = 0; i < 22; i++) { var px0 = W * (0.22 + rl() * 0.4), py0 = w1 - 4 - rl() * (w1 - w0) * 0.28, pw = 6 + rl() * 9; g.fillStyle = mix(mix('#3F6A30', lk.land, 0.5), '#06100A', (1 - lk.L) * 0.5); g.beginPath(); g.ellipse(px0, py0, pw, pw * 0.32, 0, 0.25, Math.PI * 2 - 0.25); g.lineTo(px0, py0); g.fill();
+      if (i % 6 === 0 && lk.L > 0.3) { g.fillStyle = rgba(mix('#E8A6B8', lk.w.glow, 0.15), 0.9); g.beginPath(); g.ellipse(px0 + 2, py0 - 4, 3, 4.5, 0, 0, Math.PI * 2); g.fill(); } }
+    /* bund and paddy terraces */
+    var rows = 8, edges = [];
+    for (i = 0; i <= rows; i++) edges.push(w1 + 3 + (H - w1) * Math.pow(i / rows, 1.45));
+    function edgeY(k, xx) { return edges[k] + (k === 0 || k === rows ? 0 : Math.sin(xx / W * 4.6 + k * 1.7) * (2 + k * 0.8)); }
+    g.fillStyle = mix(look.paddy, '#06100A', (1 - lk.L) * 0.4); g.fillRect(0, w1 - 2, W, H - w1 + 2);
+    for (i = 0; i < rows; i++) {
+      var c = mix(look.paddy, mix(look.paddy, '#E9E2A0', 0.22), (i % 2) * 0.6 * lk.L);
+      g.fillStyle = mix(c, '#06100A', (1 - lk.L) * 0.35 + i * 0.012); g.beginPath(); g.moveTo(0, edgeY(i, 0));
+      for (x = 0; x <= W; x += 6) g.lineTo(x, edgeY(i, x)); for (x = W; x >= 0; x -= 6) g.lineTo(x, edgeY(i + 1, x)); g.closePath(); g.fill();
+      if (lk.wx.rain > 0 || lk.wx.mist || S.season === 4) { g.fillStyle = rgba(mix(lk.hor, '#FFFFFF', 0.2), 0.05 + lk.wx.cloud * 0.05); g.beginPath(); g.moveTo(0, edgeY(i, 0)); for (x = 0; x <= W; x += 6) g.lineTo(x, edgeY(i, x) + 1); for (x = W; x >= 0; x -= 6) g.lineTo(x, edgeY(i, x) + (edgeY(i + 1, x) - edgeY(i, x)) * 0.3); g.closePath(); g.fill(); }
+      g.strokeStyle = rgba(mix(lk.land, '#000000', 0.45), 0.55); g.lineWidth = 1 + i * 0.25; g.beginPath();
+      for (x = 0; x <= W; x += 6) { if (x === 0) g.moveTo(x, edgeY(i, x)); else g.lineTo(x, edgeY(i, x)); } g.stroke();
+      if (i >= 4 && S.tier === 'rich') { var rs2 = rng(300 + i), cnt = Math.round(W / (14 - i)); g.strokeStyle = rgba(mix(look.paddy, '#F2EBB0', 0.35 * lk.L), 0.25 + lk.L * 0.2); g.lineWidth = 1; g.beginPath(); for (var k2 = 0; k2 < cnt; k2++) { var sx = rs2() * W, sy = edgeY(i, sx) + rs2() * (edgeY(i + 1, sx) - edgeY(i, sx)), sh = 3 + i * 1.2; g.moveTo(sx, sy); g.lineTo(sx + (rs2() - 0.5) * 3, sy - sh); } g.stroke(); }
+    }
+    /* coconut palms and a kumbuk on the bund */
+    var sil = mix(lk.land, '#050A07', 0.55 + (1 - lk.L) * 0.3);
+    var ph0 = Math.min(H, W * 1.1);
+    palm(g, W * 0.08, w1 + 2, ph0 * 0.36, -0.12, sil); palm(g, W * 0.15, w1 + 4, ph0 * 0.27, 0.08, sil); palm(g, W * 0.86, w1 + 1, ph0 * 0.33, 0.1, sil);
+    if (W > 600) tree(g, W * 0.7, w1 + 1, ph0 * 0.16, sil);
+    /* stars */
+    lk.stars = [];
+    if (lk.L < 0.25 && lk.wx.cloud < 0.7) { var rs = rng(42); for (i = 0; i < 160; i++) lk.stars.push({ x: rs() * W, y: Math.pow(rs(), 1.4) * hy * 0.9, r: rs() * 1.2 + 0.2, p: rs() * 6 }); }
+    paintClouds();
+  }
+
+  function palm(g, x, y, h, lean, col) {
+    g.strokeStyle = col; g.fillStyle = col; g.lineCap = 'round';
+    var tx = x + lean * h * 1.6, ty = y - h;
+    g.lineWidth = Math.max(3, h * 0.035); g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + lean * h * 0.2, y - h * 0.55, tx, ty); g.stroke();
+    var fr = 11;
+    for (var i = 0; i < fr; i++) {
+      /* fronds fan across the top and droop under their own weight */
+      var a = -Math.PI + (i / (fr - 1)) * Math.PI + lean * 0.6, len = h * (0.34 + ((i * 7) % 3) * 0.05);
+      var up = Math.sin(a); /* -1 at the top, 0 at the sides */
+      var ex = tx + Math.cos(a) * len, ey = ty + len * (0.42 + up * 0.08);
+      var mx = tx + Math.cos(a) * len * 0.55, my = ty + up * len * 0.42 - len * 0.05;
+      g.lineWidth = Math.max(1.4, h * 0.011); g.beginPath(); g.moveTo(tx, ty); g.quadraticCurveTo(mx, my, ex, ey); g.stroke();
+      g.lineWidth = 1;
+      for (var k = 2; k < 16; k++) {
+        var tt = k / 16, px = (1 - tt) * (1 - tt) * tx + 2 * (1 - tt) * tt * mx + tt * tt * ex, py = (1 - tt) * (1 - tt) * ty + 2 * (1 - tt) * tt * my + tt * tt * ey;
+        var ll = len * 0.15 * (1 - tt * 0.55), dx = Math.cos(a) >= 0 ? 1 : -1;
+        g.beginPath(); g.moveTo(px, py); g.lineTo(px + dx * ll * 0.35, py + ll); g.moveTo(px, py); g.lineTo(px - dx * ll * 0.15, py + ll * 0.95); g.stroke();
+      }
+    }
+    g.beginPath(); g.arc(tx, ty + 2, h * 0.025, 0, Math.PI * 2); g.fill();
+  }
+  function tree(g, x, y, h, col) {
+    g.fillStyle = col; g.fillRect(x - h * 0.03, y - h * 0.5, h * 0.06, h * 0.5);
+    var rr = rng(99); for (var i = 0; i < 14; i++) { g.beginPath(); g.ellipse(x + (rr() - 0.5) * h * 0.9, y - h * 0.6 - rr() * h * 0.4, h * (0.16 + rr() * 0.12), h * (0.1 + rr() * 0.08), 0, 0, Math.PI * 2); g.fill(); }
+  }
+
+  function paintClouds() {
+    var g = clx, lk = look, cw = W * 2, ch = H * 0.6; g.setTransform(DPR, 0, 0, DPR, 0, 0); g.clearRect(0, 0, cw, ch);
+    if (S.ground !== 'sky' || S.tier === 'essential') return;
+    var n = Math.round(4 + lk.wx.cloud * 22), r = rng(11 + S.weather), base = mix(lk.hor, '#FFFFFF', 0.25 * lk.L), shade = mix(lk.top, '#1B2230', 0.35 + lk.wx.dim * 0.4);
+    for (var i = 0; i < n; i++) {
+      var x = r() * cw, y = ch * (0.08 + r() * 0.55 * (0.4 + lk.wx.cloud * 0.6)), s = (0.6 + r() * 1.3) * W * 0.12;
+      for (var k = 0; k < 9; k++) {
+        var px = x + (r() - 0.5) * s * 2.2, py = y + (r() - 0.5) * s * 0.25, pr = s * (0.22 + r() * 0.3);
+        g.save(); g.translate(px, py); g.scale(2.1, 1);
+        var gr = g.createRadialGradient(0, -pr * 0.35, 1, 0, 0, pr);
+        gr.addColorStop(0, rgba(mix(base, shade, lk.wx.dim * 0.8), 0.3 + lk.wx.cloud * 0.38)); gr.addColorStop(0.55, rgba(mix(base, shade, 0.35 + lk.wx.dim * 0.45), 0.18 + lk.wx.cloud * 0.3)); gr.addColorStop(1, rgba(shade, 0));
+        g.fillStyle = gr; g.beginPath(); g.arc(0, 0, pr, 0, Math.PI * 2); g.fill(); g.restore();
+      }
+    }
+  }
+
+  /* ---------- particles ---------- */
+  var drops = [], ripples = [], flies = [], bolt = 0, nextBolt = 4000;
+  function seedParticles() {
+    var wx = WEATHER[S.weather], n = S.tier === 'rich' && S.ground === 'sky' ? wx.rain : 0, r = Math.random;
+    if (W < 600) n = Math.round(n * 0.55);
+    drops = []; for (var i = 0; i < n; i++) drops.push({ x: r() * W * 1.2 - W * 0.1, y: r() * H, v: 9 + r() * 7, l: 10 + r() * 14 });
+    ripples = [];
+    var ph = phaseOf(S.minute), wantFlies = S.tier === 'rich' && S.ground === 'sky' && (ph === 'dusk' || ph === 'night') && wx.rain < 200;
+    flies = []; if (wantFlies) for (i = 0; i < (W < 600 ? 10 : 18); i++) flies.push({ x: r() * W, y: H * (0.7 + r() * 0.28), a: r() * 6.28, s: 0.2 + r() * 0.4, p: r() * 6.28 });
+  }
+
+  var cloudX = 0, last = 0, acc = 0, frames = 0, fpsT = 0, fps = 0, raf = 0;
+  function frame(ts) {
+    raf = requestAnimationFrame(frame);
+    if (document.hidden) return;
+    var dt = ts - last; if (dt < 32) return; last = ts; frames++;
+    if (ts - fpsT > 1000) { fps = frames; frames = 0; fpsT = ts; document.getElementById('m-fps').textContent = String(fps); }
+    draw(dt, ts);
+  }
+  function draw(dt, ts) {
+    if (dirty) { paintBackground(); dirty = false; updateText(); bakeFrost(); }
+    var g = ctx, lk = look; g.setTransform(DPR, 0, 0, DPR, 0, 0);
+    g.clearRect(0, 0, W, H); g.drawImage(bg, 0, 0, W, H);
+    if (S.ground === 'sky' && S.tier !== 'essential') {
+      cloudX = (cloudX + dt * 0.004 * (1 + lk.wx.cloud)) % W;
+      g.drawImage(cl, -cloudX, 0, W * 2, H * 0.6);
+      if (cloudX > 0) g.drawImage(cl, W * 2 - cloudX, 0, W * 2, H * 0.6);
+      if (lk.stars && lk.stars.length) for (var i = 0; i < lk.stars.length; i++) { var st = lk.stars[i]; g.fillStyle = 'rgba(255,250,235,' + (0.35 + 0.4 * Math.sin(ts * 0.0012 + st.p)) * (1 - lk.wx.cloud) + ')'; g.fillRect(st.x, st.y, st.r * 1.4, st.r * 1.4); }
+    }
+    var w0 = H * WATER0, w1 = H * WATER1, wind = 0.18;
+    if (drops.length) {
+      g.strokeStyle = rgba(mix(lk.hor, '#FFFFFF', 0.4), 0.28 + lk.L * 0.15); g.lineWidth = 1; g.beginPath();
+      for (i = 0; i < drops.length; i++) {
+        var d = drops[i]; d.y += d.v * dt / 16; d.x += d.v * wind * dt / 16;
+        g.moveTo(d.x, d.y); g.lineTo(d.x - d.l * wind, d.y - d.l);
+        var hitY = d.x > 0 ? (d.y > w0 && d.y < w1 && Math.random() < 0.08 ? d.y : 0) : 0;
+        if (hitY && ripples.length < 90) { ripples.push({ x: d.x, y: d.y, r: 0.5, a: 0.5 }); d.y = -20 - Math.random() * 80; d.x = Math.random() * W * 1.2 - W * 0.1; }
+        if (d.y > H) { d.y = -20 - Math.random() * 60; d.x = Math.random() * W * 1.2 - W * 0.1; }
+      }
+      g.stroke();
+      g.strokeStyle = rgba('#FFFFFF', 0.25);
+      for (i = ripples.length - 1; i >= 0; i--) { var rp = ripples[i]; rp.r += dt * 0.012; rp.a -= dt * 0.0009; if (rp.a <= 0) { ripples.splice(i, 1); continue; } g.globalAlpha = rp.a; g.beginPath(); g.ellipse(rp.x, rp.y, rp.r * 3, rp.r * 0.9, 0, 0, Math.PI * 2); g.stroke(); }
+      g.globalAlpha = 1;
+      g.fillStyle = rgba(mix(lk.hor, '#C8D0D8', 0.5), 0.06 + lk.wx.dim * 0.1); g.fillRect(0, 0, W, H);
+    }
+    if (lk.wx.mist && S.ground === 'sky' && S.tier !== 'essential') {
+      for (i = 0; i < 4; i++) { var my = H * (0.56 + i * 0.07), mxo = (ts * 0.006 * (i + 1)) % W; var mg = g.createLinearGradient(0, my - 30, 0, my + 40); mg.addColorStop(0, 'rgba(240,244,246,0)'); mg.addColorStop(0.5, rgba(mix('#F2F5F6', lk.hor, 0.3), 0.18 + lk.L * 0.12)); mg.addColorStop(1, 'rgba(240,244,246,0)'); g.fillStyle = mg; g.fillRect(-mxo, my - 30, W * 2, 70); }
+    }
+    if (flies.length) {
+      for (i = 0; i < flies.length; i++) { var f = flies[i]; f.a += (Math.random() - 0.5) * 0.3; f.x += Math.cos(f.a) * f.s * dt / 16; f.y += Math.sin(f.a) * f.s * 0.5 * dt / 16; if (f.x < 0) f.x = W; if (f.x > W) f.x = 0; if (f.y < H * 0.66) f.y = H * 0.66; if (f.y > H) f.y = H * 0.98;
+        var al = 0.4 + 0.6 * Math.max(0, Math.sin(ts * 0.003 + f.p)), fg = g.createRadialGradient(f.x, f.y, 0, f.x, f.y, 9); fg.addColorStop(0, 'rgba(238,246,150,' + al + ')'); fg.addColorStop(1, 'rgba(238,246,150,0)'); g.fillStyle = fg; g.beginPath(); g.arc(f.x, f.y, 9, 0, Math.PI * 2); g.fill(); }
+    }
+    if (lk.wx.bolt && S.tier === 'rich' && S.ground === 'sky') {
+      nextBolt -= dt; if (nextBolt <= 0) { bolt = 1; nextBolt = 5000 + Math.random() * 9000; }
+      if (bolt > 0) { g.fillStyle = 'rgba(225,232,255,' + bolt * 0.35 + ')'; g.fillRect(0, 0, W, H); if (bolt > 0.7) { g.strokeStyle = 'rgba(245,248,255,0.9)'; g.lineWidth = 2; g.beginPath(); var bx = W * (0.3 + Math.random() * 0.5), by = 0; g.moveTo(bx, by); while (by < H * 0.55) { bx += (Math.random() - 0.5) * 40; by += 20 + Math.random() * 25; g.lineTo(bx, by); } g.stroke(); } bolt -= dt * 0.004; }
+    }
+    document.getElementById('m-parts').textContent = String(drops.length + ripples.length + flies.length);
+  }
+
+  /* ---------- text and UI ---------- */
+  function fmt(m) { var h = Math.floor(m / 60), mm = m % 60; return (h < 10 ? '0' : '') + h + ':' + (mm < 10 ? '0' : '') + mm; }
+  function lines() {
+    var h = S.minute / 60, wx = WEATHER[S.weather].id, hello = h < 4 ? 'Good night' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : h < 20 ? 'Good evening' : 'Good night';
+    var by = { clear: { m: 'A clear sky over the paddy. The first bell is at 7:30.', a: 'The day is wide open. Two lessons left.', e: 'The tank holds the last light. Tomorrow is ready.', n: 'The stars are out. Rest well.' },
+      cloudy: { m: 'Soft cloud over the hills. An easy start.', a: 'A grey afternoon, cool enough to think.', e: 'Cloud gathers in the west. A quiet evening.', n: 'No stars tonight, only quiet.' },
+      drizzle: { m: 'A light drizzle on the wewa. Take the umbrella.', a: 'Drizzle on the tin roof. Two lessons left.', e: 'Drizzle at dusk. The register is done.', n: 'Rain whispers on the leaves. Sleep well.' },
+      monsoon: { m: 'Rain on the wewa. The register can wait for the first bell.', a: 'Monsoon rain on the roof. Some students may come late.', e: 'Heavy rain at dusk. Everything for tomorrow is saved.', n: 'The rain keeps going. You can stop for today.' },
+      storm: { m: 'Thunder over the hills. Stay dry on the way.', a: 'A storm is passing. Lessons are saved offline.', e: 'Lightning in the west. Close the day gently.', n: 'A stormy night. Nothing needs you now.' },
+      mist: { m: 'Mist on the paddy after the rain.', a: 'Everything smells of rain. The air is clear.', e: 'Mist rising off the tank. A soft evening.', n: 'Wet leaves and fireflies.' } }[wx];
+    var k = h < 4 || h >= 20 ? 'n' : h < 12 ? 'm' : h < 17 ? 'a' : 'e';
+    return { hello: hello + ', Nirmala', line: by[k] };
+  }
+  function updateText() {
+    var lk = look, l = lines(), w = WORLDS[S.world];
+    document.getElementById('hello').textContent = l.hello; document.getElementById('line').textContent = l.line;
+    document.getElementById('stamp').textContent = fmt(S.minute);
+    document.getElementById('sky-now').textContent = WEATHER[S.weather].name + ' · ' + SEASONS[S.season].name;
+    document.getElementById('hour-o').textContent = fmt(S.minute) + ' · ' + lk.phase + (S.follow ? ' · now' : '');
+    document.getElementById('season-o').textContent = SEASONS[S.season].note;
+    document.getElementById('weather-o').textContent = WEATHER[S.weather].name;
+    document.getElementById('world-o').textContent = w.name;
+    document.getElementById('ground-o').textContent = { sky: 'Living sky', solid: 'Solid colour', plain: 'Plain world ground' }[S.ground];
+    document.getElementById('tier-o').textContent = { rich: 'Rich', balanced: 'Balanced', essential: 'Essential' }[S.tier];
+    document.getElementById('m-moon').textContent = moonName(S.moon);
+    var loop = S.tier === 'rich' && S.ground === 'sky' && !reduce;
+    document.getElementById('m-loop').textContent = loop ? 'on, 30 fps cap' : 'off';
+    if (!loop) document.getElementById('m-fps').textContent = '0';
+    applyWorld(lk);
+    syncPressed();
+  }
+
+  function chip(label, onClick, sw) { var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; if (sw) { var s = document.createElement('span'); s.className = 'sw'; s.style.background = sw; b.appendChild(s); } b.appendChild(document.createTextNode(label)); b.addEventListener('click', onClick); return b; }
+  var groups = { seasons: [], weathers: [], worlds: [], grounds: {}, tiers: {} };
+  SEASONS.forEach(function (s, i) { var b = chip(s.name, function () { S.season = i; changed(); }, s.paddy); groups.seasons.push(b); document.getElementById('seasons').appendChild(b); });
+  WEATHER.forEach(function (w, i) { var b = chip(w.name, function () { S.weather = i; changed(true); }); groups.weathers.push(b); document.getElementById('weathers').appendChild(b); });
+  WORLDS.forEach(function (w, i) { var b = chip(w.name, function () { S.world = i; changed(); }, w.lamp); groups.worlds.push(b); document.getElementById('worlds').appendChild(b); });
+  [['sky', 'Living sky'], ['solid', 'Solid colour'], ['plain', 'Plain']].forEach(function (g) { var b = chip(g[1], function () { S.ground = g[0]; changed(true); }); groups.grounds[g[0]] = b; document.getElementById('grounds').appendChild(b); });
+  [['rich', 'Rich'], ['balanced', 'Balanced'], ['essential', 'Essential']].forEach(function (t) { var b = chip(t[1], function () { S.tier = t[0]; changed(true); }); groups.tiers[t[0]] = b; document.getElementById('tiers').appendChild(b); });
+  function syncPressed() {
+    groups.seasons.forEach(function (b, i) { b.setAttribute('aria-pressed', String(i === S.season)); });
+    groups.weathers.forEach(function (b, i) { b.setAttribute('aria-pressed', String(i === S.weather)); });
+    groups.worlds.forEach(function (b, i) { b.setAttribute('aria-pressed', String(i === S.world)); });
+    Object.keys(groups.grounds).forEach(function (k) { groups.grounds[k].setAttribute('aria-pressed', String(k === S.ground)); });
+    Object.keys(groups.tiers).forEach(function (k) { groups.tiers[k].setAttribute('aria-pressed', String(k === S.tier)); });
+    document.getElementById('now').setAttribute('aria-pressed', String(S.follow));
+  }
+  var hourIn = document.getElementById('hour'); hourIn.value = S.minute;
+  var lastPhase = phaseOf(S.minute);
+  function changed(reseed) {
+    var ph = phaseOf(S.minute); if (ph !== lastPhase) { lastPhase = ph; reseed = true; }
+    dirty = true; if (reseed) seedParticles(); schedule();
+  }
+  hourIn.addEventListener('input', function () { S.follow = false; stopPlay(); S.minute = +hourIn.value; changed(); });
+  document.getElementById('solid').addEventListener('input', function (e) { S.solid = e.target.value; S.ground = 'solid'; changed(true); });
+  document.getElementById('now').addEventListener('click', function () { stopPlay(); var d = colomboNow(); S.follow = true; S.minute = d.getHours() * 60 + d.getMinutes(); hourIn.value = S.minute; changed(true); });
+  document.getElementById('cards-t').addEventListener('click', function (e) { S.cards = !S.cards; document.getElementById('app').hidden = !S.cards; e.currentTarget.setAttribute('aria-pressed', String(S.cards)); });
+  /* ---------- the app, dressed by the world ---------- */
+  var PHASE_TINT = { predawn: ['#24304A', 0.12], dawn: ['#F3C6B0', 0.06], morning: ['#FFFFFF', 0], afternoon: ['#F2D79A', 0.04], dusk: ['#3A2A3A', 0.1], night: ['#000000', 0] };
+  function ornament(kind, col) {
+    var c = encodeURIComponent(col), s;
+    if (kind === 'liyawela') s = "<svg xmlns='http://www.w3.org/2000/svg' width='48' height='12'><path d='M0 6 C8 0 16 0 24 6 S40 12 48 6' fill='none' stroke='" + c + "' stroke-width='1'/><ellipse cx='12' cy='3.2' rx='3' ry='1.4' fill='" + c + "' transform='rotate(-25 12 3.2)'/><ellipse cx='36' cy='8.8' rx='3' ry='1.4' fill='" + c + "' transform='rotate(-25 36 8.8)'/><circle cx='24' cy='6' r='1.2' fill='" + c + "'/></svg>";
+    else if (kind === 'ripple') s = "<svg xmlns='http://www.w3.org/2000/svg' width='40' height='12'><path d='M0 4 Q10 1 20 4 T40 4 M0 8 Q10 5 20 8 T40 8' fill='none' stroke='" + c + "' stroke-width='0.8' opacity='0.9'/></svg>";
+    else if (kind === 'branch') s = "<svg xmlns='http://www.w3.org/2000/svg' width='36' height='12'><path d='M0 7 L36 7 M8 7 L12 3 M20 7 L24 11 M30 7 L33 3' fill='none' stroke='" + c + "' stroke-width='1'/><ellipse cx='13' cy='2.5' rx='2.2' ry='1' fill='" + c + "'/><ellipse cx='25' cy='11' rx='2.2' ry='1' fill='" + c + "'/></svg>";
+    else if (kind === 'stance') s = "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='12'><rect x='5' y='3' width='6' height='6' fill='none' stroke='" + c + "' stroke-width='1' transform='rotate(45 8 6)'/><path d='M0 6 L2 6 M14 6 L16 6' stroke='" + c + "' stroke-width='1'/></svg>";
+    else if (kind === 'lace') s = "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='12'><path d='M0 3 A8 8 0 0 0 16 3' fill='none' stroke='" + c + "' stroke-width='0.8'/><circle cx='8' cy='8' r='1.1' fill='" + c + "'/><path d='M0 3 L16 3' stroke='" + c + "' stroke-width='0.6'/></svg>";
+    else s = "<svg xmlns='http://www.w3.org/2000/svg' width='8' height='12'><path d='M0 6 L8 6' stroke='" + c + "' stroke-width='0.75'/></svg>";
+    return 'url("data:image/svg+xml,' + s.replace(/"/g, "'").replace(/#/g, '%23') + '")';
+  }
+  var appEl = document.getElementById('app');
+  function applyWorld(lk) {
+    var w = WORLDS[S.world], st = w.style, dark = lk.L < 0.35 || lk.phase === 'dusk' || lk.phase === 'night' || lk.phase === 'predawn', p = dark ? w.dark : w.light;
+    var tint = PHASE_TINT[lk.phase], ground = tint[1] ? mix(p.ground, tint[0], tint[1]) : p.ground;
+    var line = mix(ground, p.ink, p.lineAmount || 0.2), quiet = mix(ground, p.ink, 0.45);
+    var set = function (k, v) { appEl.style.setProperty(k, v); };
+    set('--w-ground', ground); set('--w-raised', p.raised); set('--w-raised-a', rgba(p.raised, 0.92)); set('--w-raised-b', rgba(p.raised, 0.95));
+    set('--w-sunken', p.sunken); set('--w-ink', p.ink); set('--w-soft', p.inkSoft); set('--w-faint', p.inkFaint); set('--w-line', line); set('--w-quiet', quiet);
+    set('--w-lamp', p.lamp); set('--w-on', p.onLamp); set('--w-deep', p.lampDeep); set('--w-glow', p.glow); set('--w-orn', p.ornament); set('--w-focus', p.focus);
+    set('--w-lamp-wash', rgba(p.lamp, dark ? 0.18 : 0.12));
+    set('--r-c', st.rc); set('--r-s', st.rs); set('--r-ch', st.rch); set('--r-f', st.rf);
+    set('--r-c-n', st.rc.split(' ')[0]); set('--r-s-n', st.rs.split(' ')[0]);
+    set('--lw', st.lw + 'px');
+    set('--pf', st.pf === 'gradient' ? 'linear-gradient(180deg,' + mix(p.lamp, '#FFFFFF', 0.3) + ',' + p.lamp + ')' : p.lamp);
+    set('--glow-sh', st.gl ? '0 0 14px ' + rgba(p.glow, dark ? 0.45 : 0.35) : 'none');
+    set('--surf-edge', st.edge === 'hairline' ? st.lw + 'px solid ' + line : st.edge === 'frame' ? '1px solid ' + p.ink : '0');
+    set('--surf-shadow', st.sh ? '0 8px 18px ' + rgba(dark ? '#000000' : mix(p.ink, '#000000', 0.3), dark ? 0.35 : 0.16) : 'none');
+    set('--orn-url', ornament(st.orn, p.ornament));
+    set('--lab-ls', (st.ls || 0.9) + 'px'); set('--lab-w', st.ls ? '600' : '500'); set('--btn-ls', st.ls ? '0.4px' : '0');
+    appEl.dataset.label = st.label; appEl.dataset.chip = st.chip;
+    document.querySelectorAll('.w-surface').forEach(function (el) { el.dataset.frame = String(st.edge === 'frame'); });
+    document.querySelectorAll('.w-btn.primary').forEach(function (el) { el.dataset.double = String(st.de); });
+    /* text over the sky */
+    var behind = S.ground === 'solid' ? S.solid : S.ground === 'plain' || S.tier === 'essential' ? ground : mix(lk.top, lk.hor, 0.45);
+    var light = lum(behind) > 0.36;
+    set('--sky-ink', light ? (S.ground === 'sky' ? '#1E1A14' : p.ink) : '#FBF6EA');
+    set('--sky-shade', S.ground === 'sky' ? (light ? 'rgba(255,250,240,0.45)' : 'rgba(0,0,0,0.38)') : 'transparent');
+    if (S.ground === 'plain' || S.tier === 'essential') { set('--sky-ink', p.ink); }
+    document.getElementById('app-world-desc').textContent = w.desc;
+    document.getElementById('app-world-names').textContent = w.si + ' · ' + w.ta;
+    document.getElementById('app-ground').textContent = { sky: 'Living sky', solid: 'Solid colour', plain: 'Plain' }[S.ground];
+    document.getElementById('app-tier').textContent = { rich: 'Full', balanced: 'Balanced', essential: 'Simple' }[S.tier];
+    document.getElementById('sw-hour').setAttribute('aria-checked', String(S.follow));
+    appWorldBtns.forEach(function (b, i) { b.setAttribute('aria-pressed', String(i === S.world)); });
+  }
+  var appWorldBtns = [];
+  WORLDS.forEach(function (w, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'w-chip'; b.textContent = w.name;
+    b.addEventListener('click', function () { S.world = i; changed(); });
+    appWorldBtns.push(b); document.getElementById('app-worlds').appendChild(b);
+  });
+  document.querySelectorAll('.w-chips[data-single="true"]').forEach(function (g) {
+    g.addEventListener('click', function (e) { var t = e.target.closest('.w-chip'); if (!t) return; g.querySelectorAll('.w-chip').forEach(function (c) { c.setAttribute('aria-pressed', String(c === t)); }); });
+  });
+  var SPACES = { home: 'Home', att: 'Attendance', set: 'Settings' };
+  function go(id) {
+    ['home', 'att', 'set'].forEach(function (k) { document.getElementById('scr-' + k).hidden = k !== id; });
+    document.querySelectorAll('.w-tab').forEach(function (t) { if (t.dataset.go === id) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current'); });
+    document.getElementById('space-name').textContent = SPACES[id];
+    appEl.querySelector('.w-scroll').scrollTop = 0;
+  }
+  appEl.addEventListener('click', function (e) { var t = e.target.closest('[data-go]'); if (t) go(t.dataset.go); });
+  document.getElementById('sw-hour').addEventListener('click', function () { if (S.follow) { S.follow = false; changed(); } else document.getElementById('now').click(); });
+
+
+  /* ---------- letting the scene breathe ---------- */
+  S.surf = 'paper'; S.home = 'cards'; S.settle = false;
+  var fc = document.createElement('canvas'), fx = fc.getContext('2d'), fs = document.createElement('canvas'), fsx = fs.getContext('2d');
+  var scrollEl = appEl.querySelector('.w-scroll'), frostMs = 0, frostN = 0;
+  function bakeFrost() {
+    if (S.surf !== 'frost') { document.getElementById('m-frost').textContent = 'off'; return; }
+    var t0 = performance.now();
+    /* Two cheap downscales give a soft blur on any device, no filter support needed */
+    fs.width = Math.max(8, Math.round(W / 24)); fs.height = Math.max(8, Math.round(H / 24));
+    fc.width = Math.max(16, Math.round(W / 6)); fc.height = Math.max(16, Math.round(H / 6));
+    fsx.imageSmoothingEnabled = true; fsx.drawImage(bg, 0, 0, fs.width, fs.height);
+    fx.imageSmoothingEnabled = true; fx.imageSmoothingQuality = 'high'; fx.drawImage(fs, 0, 0, fc.width, fc.height);
+    appEl.style.setProperty('--frost', 'url(' + fc.toDataURL('image/jpeg', 0.82) + ')');
+    appEl.style.setProperty('--frost-size', W + 'px ' + H + 'px');
+    frostMs = performance.now() - t0; frostN++;
+    document.getElementById('m-frost').textContent = frostN + '× · ' + frostMs.toFixed(1) + ' ms';
+    placeFrost();
+  }
+  function frostTint() {
+    var cs = getComputedStyle(appEl), raised = cs.getPropertyValue('--w-raised').trim() || '#FBF6EA', dark = lum(raised) < 0.3;
+    appEl.style.setProperty('--frost-tint', 'linear-gradient(' + rgba(raised, dark ? 0.62 : 0.58) + ',' + rgba(raised, dark ? 0.7 : 0.66) + ')');
+    appEl.style.setProperty('--frost-hi', dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.55)');
+    appEl.style.setProperty('--frost-bar', rgba(raised, dark ? 0.72 : 0.7));
+  }
+  var placing = 0;
+  function placeFrost() {
+    if (S.surf !== 'frost' || placing) return;
+    placing = requestAnimationFrame(function () {
+      placing = 0; var sr = stage.getBoundingClientRect();
+      appEl.querySelectorAll('.w-surface').forEach(function (el) { var r = el.getBoundingClientRect(); el.style.backgroundPosition = '0 0, ' + (sr.left - r.left) + 'px ' + (sr.top - r.top) + 'px'; });
+    });
+  }
+  scrollEl.addEventListener('scroll', placeFrost, { passive: true });
+  var _apply = applyWorld; applyWorld = function (lk) { _apply(lk); appEl.dataset.surf = S.surf; appEl.dataset.home = S.home; frostTint(); syncBreathe(); };
+  var surfB = {}, homeB = {};
+  [['paper', 'Paper'], ['frost', 'Frost']].forEach(function (o) { var b = chip(o[1], function () { S.surf = o[0]; appEl.dataset.surf = S.surf; if (S.surf === 'paper') appEl.querySelectorAll('.w-surface').forEach(function (el) { el.style.backgroundPosition = ''; }); dirty = true; schedule(); syncBreathe(); }); surfB[o[0]] = b; document.getElementById('surfs').appendChild(b); });
+  [['cards', 'Home opens on cards'], ['sky', 'Home opens on the sky']].forEach(function (o) { var b = chip(o[1], function () { S.home = o[0]; appEl.dataset.home = S.home; document.getElementById('scr-home').classList.remove('open'); fitHome(); syncBreathe(); placeFrost(); }); homeB[o[0]] = b; document.getElementById('homes').appendChild(b); });
+  function syncBreathe() {
+    Object.keys(surfB).forEach(function (k) { surfB[k].setAttribute('aria-pressed', String(k === S.surf)); });
+    Object.keys(homeB).forEach(function (k) { homeB[k].setAttribute('aria-pressed', String(k === S.home)); });
+    document.getElementById('settle-t').setAttribute('aria-pressed', String(S.settle));
+    document.getElementById('surf-o').textContent = S.surf === 'frost' ? 'Frost, baked once' : 'Paper';
+  }
+  function fitHome() { var h = document.getElementById('scr-home'); h.style.minHeight = S.home === 'sky' ? (scrollEl.clientHeight - 18) + 'px' : ''; }
+  document.getElementById('peek').addEventListener('click', function () { document.getElementById('scr-home').classList.add('open'); placeFrost(); });
+  /* Look up: the app steps aside and the scene is the whole screen */
+  function lookUp(on) { appEl.classList.toggle('looking', on); document.getElementById('look').setAttribute('aria-pressed', String(on)); }
+  document.getElementById('look').addEventListener('click', function (e) { e.stopPropagation(); lookUp(true); });
+  document.getElementById('hello').addEventListener('click', function () { lookUp(true); });
+  stage.addEventListener('click', function (e) { if (appEl.classList.contains('looking') && !e.target.closest('#look')) { lookUp(false); wake(); } }, true);
+  /* Settle when idle: after a quiet spell on Home, the app drifts out of the way */
+  var idleT = 0;
+  function wake() { clearTimeout(idleT); if (S.settle) idleT = setTimeout(function () { if (!document.getElementById('scr-home').hidden && document.activeElement.tagName !== 'INPUT') lookUp(true); }, 12000); }
+  ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(function (ev) { stage.addEventListener(ev, wake, { passive: true }); });
+  document.getElementById('settle-t').addEventListener('click', function () { S.settle = !S.settle; syncBreathe(); wake(); });
+  var _go = go; go = function (id) { _go(id); placeFrost(); };
+  window.addEventListener('resize', function () { fitHome(); placeFrost(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && appEl.classList.contains('looking')) lookUp(false); });
+
+  var playing = 0, playT0 = 0, playFrom = 0;
+  function stopPlay() { if (playing) { cancelAnimationFrame(playing); playing = 0; document.getElementById('play').textContent = 'Play the day'; } }
+  document.getElementById('play').addEventListener('click', function () {
+    if (playing) { stopPlay(); return; }
+    S.follow = false; playFrom = 300; playT0 = 0; document.getElementById('play').textContent = 'Stop';
+    var dur = reduce ? 1 : 14000;
+    function step(ts) { if (!playT0) playT0 = ts; var p = Math.min(1, (ts - playT0) / dur); S.minute = Math.round(playFrom + p * 1110) % 1440; hourIn.value = S.minute; changed(); if (!loopOn()) draw(16, ts); if (p < 1) playing = requestAnimationFrame(step); else stopPlay(); }
+    playing = requestAnimationFrame(step);
+  });
+
+  /* ---------- scheduling: loop only at rich tier ---------- */
+  function loopOn() { return S.tier === 'rich' && S.ground === 'sky' && !reduce; }
+  var minuteTimer = 0;
+  function schedule() {
+    cancelAnimationFrame(raf); raf = 0;
+    if (loopOn()) { raf = requestAnimationFrame(frame); }
+    else { draw(16, performance.now()); }
+  }
+  setInterval(function () { if (!S.follow) return; var d = colomboNow(), m = d.getHours() * 60 + d.getMinutes(); if (m !== S.minute) { S.minute = m; hourIn.value = m; changed(); } }, 60000);
+  window.addEventListener('resize', function () { resize(); schedule(); });
+  resize(); schedule();
+})();
+</script>
+
+</body></html>

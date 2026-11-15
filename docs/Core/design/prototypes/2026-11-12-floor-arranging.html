@@ -1,0 +1,477 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Floor Arranging</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@500;600&display=swap">
+<style>
+/* Layout: a phone on the left you can touch, short notes on the right that read out what each gesture saves. */
+:root{
+  --ground:#e9efe8; --phone:#f6f8f4; --surface:#ffffff; --ink:#1b2820; --muted:#5a6b5f;
+  --line:#d3ddd3; --leaf:#2f7a55; --leaf-soft:#dcebe1; --lamp:#d99a1e; --lamp-soft:#fbefd2;
+  --shadow:0 18px 40px -12px rgba(22,48,32,.35),0 4px 10px rgba(22,48,32,.12);
+  --display:"Sora","Plus Jakarta Sans",system-ui,sans-serif;
+  --body:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ground:#0d1410; --phone:#121b16; --surface:#19251e; --ink:#e4eee7; --muted:#9bb0a2;
+  --line:#2a3a31; --leaf:#6cc59a; --leaf-soft:#1f3a2c; --lamp:#f0b847; --lamp-soft:#3a2f14;
+  --shadow:0 18px 40px -12px rgba(0,0,0,.7),0 4px 10px rgba(0,0,0,.4); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --ground:#0d1410; --phone:#121b16; --surface:#19251e; --ink:#e4eee7; --muted:#9bb0a2;
+  --line:#2a3a31; --leaf:#6cc59a; --leaf-soft:#1f3a2c; --lamp:#f0b847; --lamp-soft:#3a2f14;
+  --shadow:0 18px 40px -12px rgba(0,0,0,.7),0 4px 10px rgba(0,0,0,.4); color-scheme:dark}
+html,body{height:100%}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
+.wrap{max-width:1040px;margin:0 auto;display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:40px;align-items:start}
+@media (max-width:820px){.wrap{grid-template-columns:minmax(0,1fr);gap:28px}}
+
+/* phone */
+.phone{position:relative;background:var(--phone);border:1px solid var(--line);border-radius:34px;height:min(780px,86vh);
+  overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 60px -30px rgba(22,48,32,.35);user-select:none;-webkit-user-select:none}
+.bar{display:flex;align-items:center;gap:10px;padding:18px 18px 10px;min-height:64px}
+.bar h1{font-family:var(--display);font-size:22px;font-weight:600;margin:0;flex:1;letter-spacing:-.01em}
+.bar .sub{display:block;font-family:var(--body);font-size:12px;font-weight:500;color:var(--muted);letter-spacing:0}
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px var(--body);
+  min-height:44px;padding:0 16px;border-radius:999px;cursor:pointer}
+.btn.primary{background:var(--leaf);border-color:var(--leaf);color:var(--phone)}
+.btn:focus-visible,.piece:focus-visible,.chip:focus-visible,.seg button:focus-visible,.grip:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+.seg{display:inline-flex;background:var(--leaf-soft);border-radius:999px;padding:3px}
+.seg button{appearance:none;border:0;background:transparent;color:var(--ink);font:600 13px var(--body);min-height:38px;padding:0 14px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.floor{flex:1;overflow-y:auto;padding:4px 14px 120px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.arranging .floor{padding-bottom:150px}
+
+.group{margin-bottom:18px;border-radius:22px;padding:6px;transition:background-color .2s}
+.group.target{background:var(--leaf-soft)}
+.ghead{display:flex;align-items:center;gap:8px;padding:6px 6px 8px;min-height:36px}
+.ghead h2{font:600 13px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0;flex:1}
+.ghead .hint{font-size:12px;color:var(--leaf);font-weight:600}
+.grip{display:none;appearance:none;border:0;background:transparent;color:var(--muted);width:44px;height:44px;margin:-6px -6px -6px 0;border-radius:12px;cursor:grab;touch-action:none}
+.arranging .grip{display:inline-flex;align-items:center;justify-content:center}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.piece{position:relative;appearance:none;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  border-radius:18px;padding:14px;min-height:92px;font:inherit;display:flex;flex-direction:column;gap:4px;cursor:pointer;touch-action:pan-y;
+  -webkit-touch-callout:none}
+.piece.w{grid-column:span 2;min-height:84px}
+.piece .k{font-size:12px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px}
+.piece .v{font-family:var(--display);font-size:17px;font-weight:600;line-height:1.25}
+.piece .n{font-size:13px;color:var(--muted)}
+.piece.lit{background:linear-gradient(160deg,var(--lamp-soft),var(--surface) 70%);border-color:var(--lamp)}
+.piece .badge{position:absolute;top:12px;right:12px;min-width:22px;height:22px;border-radius:11px;background:var(--lamp);color:var(--phone);font-size:12px;font-weight:700;display:grid;place-items:center;padding:0 6px}
+.arranging .piece{cursor:grab}
+.arranging .piece::after{content:"";position:absolute;inset:-1px;border-radius:18px;border:1.5px dashed transparent;pointer-events:none}
+.arranging .piece:hover::after{border-color:var(--line)}
+.piece.slot{background:transparent;border:1.5px dashed var(--leaf);box-shadow:none}
+.piece.slot>*{visibility:hidden}
+
+/* zoomed out: each group is one band */
+.groups-view .tiles{display:none}
+.groups-view .group{background:var(--surface);border:1px solid var(--line);padding:10px 12px;margin-bottom:10px;cursor:grab;touch-action:none}
+.groups-view .group.slot{background:transparent;border:1.5px dashed var(--leaf)}
+.groups-view .group.slot>*{visibility:hidden}
+.groups-view .ghead h2{font:600 16px var(--display);text-transform:none;letter-spacing:0;color:var(--ink)}
+.mini{display:none;gap:4px;flex-wrap:wrap;padding:2px 6px 4px}
+.groups-view .mini{display:flex}
+.mini i{display:block;height:10px;width:18px;border-radius:3px;background:var(--leaf-soft)}
+.mini i.w{width:40px}.mini i.lit{background:var(--lamp)}
+
+/* the lifted copy that follows the finger */
+.ghost{position:fixed;z-index:50;pointer-events:none;margin:0;box-shadow:var(--shadow);will-change:transform}
+.ghost.piece,.ghost.group{background:var(--surface)}
+.tier-essential .ghost{box-shadow:none;outline:2px solid var(--leaf)}
+
+/* tray */
+.tray{position:absolute;left:0;right:0;bottom:0;padding:12px 14px 16px;background:var(--surface);border-top:1px solid var(--line);
+  transform:translateY(110%);transition:transform .28s cubic-bezier(.2,.9,.3,1);z-index:20}
+.arranging .tray{transform:none}
+.tray.over{background:var(--lamp-soft)}
+.tray h3{margin:0 0 8px;font:600 12px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tray .chips{display:flex;gap:8px;overflow-x:auto;min-height:44px;align-items:center}
+.tray .empty{font-size:13px;color:var(--muted)}
+.chip{appearance:none;border:1px solid var(--line);background:var(--phone);color:var(--ink);font:600 13px var(--body);min-height:44px;padding:0 14px;border-radius:999px;white-space:nowrap;touch-action:none;cursor:grab}
+.tier-essential .tray{transition:none}
+
+/* toast and sheet */
+.toast{position:absolute;left:14px;right:14px;bottom:110px;z-index:30;background:var(--ink);color:var(--phone);border-radius:16px;padding:8px 8px 8px 16px;
+  display:flex;align-items:center;gap:10px;font-size:14px;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .2s,transform .2s}
+.toast.show{opacity:1;transform:none;pointer-events:auto}
+.toast span{flex:1}
+.toast button{appearance:none;border:0;background:transparent;color:var(--lamp);font:700 14px var(--body);min-height:44px;padding:0 12px;cursor:pointer}
+.sheet{position:absolute;inset:0;z-index:40;background:rgba(10,20,14,.35);display:flex;align-items:flex-end}
+.sheet[hidden]{display:none!important}
+.sheet .card{background:var(--surface);width:100%;border-radius:24px 24px 0 0;padding:18px 16px 22px;display:grid;gap:10px}
+.sheet .card h3{margin:0;font:600 17px var(--display)}
+.sheet .row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* notes */
+.notes h2{font-family:var(--display);font-size:clamp(26px,3.4vw,34px);line-height:1.15;margin:0 0 10px;letter-spacing:-.02em;text-wrap:balance}
+.notes p{margin:0 0 14px;max-width:62ch;color:var(--muted)}
+.notes h3{font:600 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:26px 0 10px}
+.gest{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.gest li{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr);gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.gest b{font-weight:600}
+.gest code{font-size:12.5px;background:var(--leaf-soft);padding:1px 6px;border-radius:6px;word-break:break-word}
+@media (max-width:460px){.gest li{grid-template-columns:minmax(0,1fr);gap:2px}}
+.log{font:12.5px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-height:86px;overflow-x:auto;white-space:pre}
+.tierpick{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.tray,.toast{transition:none}}
+</style>
+
+<div class="wrap">
+  <div class="phone" id="phone">
+    <div class="bar" id="bar"></div>
+    <div class="floor" id="floor" role="list" aria-label="Classroom floor"></div>
+    <div class="toast" id="toast" role="status"><span id="toastText"></span><button type="button" id="undo">Undo</button></div>
+    <div class="tray" id="tray" aria-label="Put away">
+      <h3>Put away · drag here to hide, drag out to bring back</h3>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="sheet" id="sheet" hidden><div class="card" id="sheetCard" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></div></div>
+    <div class="sr" aria-live="assertive" id="live"></div>
+  </div>
+
+  <div class="notes">
+    <h2>Lift a piece, and the floor makes room.</h2>
+    <p>Hold any piece on the phone. It lifts under your finger, and the pieces around it slide out of the way while you move. Drop it into another group to move it there. Drag a group's handle and the floor zooms out so whole groups can be reordered. When you let go, it zooms back in.</p>
+    <p>There are no arrows on screen. Tapping a piece while arranging opens a short "Move to" sheet. A keyboard uses Space to lift, the arrow keys to move and Space to drop, and a screen reader hears every new place. So nobody needs to drag.</p>
+
+    <h3>Motion, as verger would set it</h3>
+    <div class="tierpick">
+      <div class="seg" role="group" aria-label="Motion tier" id="tiers">
+        <button type="button" data-tier="rich">Rich</button>
+        <button type="button" data-tier="balanced">Balanced</button>
+        <button type="button" data-tier="essential">Essential</button>
+      </div>
+    </div>
+    <p style="margin-top:10px">Rich adds a spring, a lift shadow and a slight tilt. Balanced keeps the slide and drops the rest. Essential has no motion: places swap at once, and an outline replaces the shadow.</p>
+
+    <h3>What each gesture saves</h3>
+    <ul class="gest">
+      <li><b>Move inside a group</b><span>Saves the new order with <code>dropSurface(id, visible, index)</code>. Hidden pieces stay where they were.</span></li>
+      <li><b>Drop in another group</b><span>Saves the new group with <code>setSurfaceZone</code>, then the order.</span></li>
+      <li><b>Drag a group's handle</b><span>Zooms out to bands, and saves the group order with <code>setGroupOrder</code>.</span></li>
+      <li><b>Drop on "Put away"</b><span>Hides the piece with <code>setSurfaceHidden(id, true)</code>. Dragging it back out undoes that.</span></li>
+      <li><b>Undo</b><span>Puts back the layout from before the move, as a single edit.</span></li>
+    </ul>
+
+    <h3>Last save</h3>
+    <div class="log" id="log">Nothing moved yet.</div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const P = {
+    next:{k:'Now',v:'8B Science',n:'10:30 · Lab 2',w:1,lit:1},
+    att:{k:'Attendance',v:'8B not taken',n:'Take before 11:00',badge:'!'},
+    mark:{k:'Marking',v:'12 left',n:'Grade 9 essays'},
+    c8a:{k:'Class',v:'8A',n:'34 students'},
+    c8b:{k:'Class',v:'8B',n:'31 students'},
+    c9c:{k:'Class',v:'9C',n:'29 students'},
+    notes:{k:'Tool',v:'Notes',n:'4 drafts'},
+    bank:{k:'Tool',v:'Question bank',n:'218 questions'},
+    time:{k:'Tool',v:'Timetable',n:'This week'},
+    msg:{k:'Messages',v:'Parents',n:'3 unread',badge:'3'},
+    exam:{k:'Tool',v:'Exam marks',n:'Term 3'}
+  };
+  const label = id => P[id].v;
+  let groups = [
+    {id:'today', title:'Today', pieces:['next','att','mark']},
+    {id:'classes', title:'My classes', pieces:['c8a','c8b','c9c']},
+    {id:'tools', title:'Tools', pieces:['notes','msg','bank','time']}
+  ];
+  let tray = ['exam'];
+  let arranging = false, view = 'pieces', drag = null, kdrag = null, zoomedForDrag = false;
+  let history = [];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let tier = reduce ? 'essential' : 'rich';
+
+  const $ = id => document.getElementById(id);
+  const phone = $('phone'), floor = $('floor'), bar = $('bar'), chips = $('chips'), trayEl = $('tray');
+  const snap = () => JSON.stringify({groups, tray});
+  const restore = s => { const o = JSON.parse(s); groups = o.groups; tray = o.tray; };
+  const groupOf = id => groups.find(g => g.pieces.includes(id));
+  const say = t => { const l = $('live'); l.textContent = ''; setTimeout(() => l.textContent = t, 30); };
+
+  function pieceHTML(id, extra=''){
+    const p = P[id];
+    return `<button type="button" role="listitem" class="piece${p.w?' w':''}${p.lit?' lit':''}${extra}" data-piece="${id}" data-flip="p:${id}"
+      aria-label="${p.k}, ${p.v}${arranging ? ', place '+(groupOf(id).pieces.indexOf(id)+1)+' of '+groupOf(id).pieces.length+' in '+groupOf(id).title : ''}">
+      ${p.badge?`<span class="badge" aria-hidden="true">${p.badge}</span>`:''}
+      <span class="k">${p.k}</span><span class="v">${p.v}</span><span class="n">${p.n}</span></button>`;
+  }
+  const gripSVG = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><g fill="currentColor"><circle cx="6" cy="4" r="1.6"/><circle cx="12" cy="4" r="1.6"/><circle cx="6" cy="9" r="1.6"/><circle cx="12" cy="9" r="1.6"/><circle cx="6" cy="14" r="1.6"/><circle cx="12" cy="14" r="1.6"/></g></svg>';
+
+  function render(){
+    phone.classList.toggle('arranging', arranging);
+    phone.classList.toggle('groups-view', view === 'groups');
+    phone.className = phone.className.replace(/\btier-\w+/g,'').trim() + ' tier-' + tier;
+    bar.innerHTML = arranging
+      ? `<div class="seg" role="group" aria-label="Arrange"><button type="button" data-view="pieces" aria-pressed="${view==='pieces'}">Pieces</button><button type="button" data-view="groups" aria-pressed="${view==='groups'}">Groups</button></div><span style="flex:1"></span><button type="button" class="btn primary" id="done">Done</button>`
+      : `<h1>Classroom<span class="sub">Thursday · Good morning, Ms Perera</span></h1><button type="button" class="btn" id="arrange">Arrange</button>`;
+    floor.innerHTML = groups.map(g => {
+      const target = drag && drag.kind==='piece' && drag.group===g.id && drag.group!==drag.fromGroup;
+      const slotG = drag && drag.kind==='group' && drag.id===g.id;
+      return `<section class="group${target?' target':''}${slotG?' slot':''}" data-group="${g.id}" data-flip="g:${g.id}" aria-label="${g.title}">
+        <div class="ghead"><h2>${g.title}</h2>${target?`<span class="hint">Move to ${g.title}</span>`:''}
+          <button type="button" class="grip" data-grip="${g.id}" aria-label="Move group ${g.title}">${gripSVG}</button></div>
+        <div class="mini" aria-hidden="true">${g.pieces.map(id=>`<i class="${P[id].w?'w':''}${P[id].lit?' lit':''}"></i>`).join('')}</div>
+        <div class="tiles" data-tiles="${g.id}">${g.pieces.map(id => pieceHTML(id, (drag&&drag.kind==='piece'&&drag.id===id)||(kdrag===id)?' slot':'')).join('')}</div>
+      </section>`;
+    }).join('');
+    if (kdrag) { const el = floor.querySelector(`[data-piece="${kdrag}"]`); el.classList.remove('slot'); el.style.boxShadow='var(--shadow)'; el.style.outline='3px solid var(--leaf)'; }
+    chips.innerHTML = tray.length ? tray.map(id => `<button type="button" class="chip" data-chip="${id}" data-flip="p:${id}">${label(id)}</button>`).join('') : '<span class="empty">Nothing put away</span>';
+    document.querySelectorAll('#tiers button').forEach(b => b.setAttribute('aria-pressed', b.dataset.tier===tier));
+  }
+
+  /* FLIP: remember where things were, change, then glide them from there */
+  function flip(change){
+    const first = new Map();
+    phone.querySelectorAll('[data-flip]').forEach(el => first.set(el.dataset.flip, el.getBoundingClientRect()));
+    change(); render();
+    if (tier === 'essential') return;
+    const ease = tier === 'rich' ? 'transform 380ms cubic-bezier(.2,1.3,.35,1)' : 'transform 220ms cubic-bezier(.25,.8,.3,1)';
+    phone.querySelectorAll('[data-flip]').forEach(el => {
+      const a = first.get(el.dataset.flip); if (!a) return;
+      const b = el.getBoundingClientRect();
+      const dx = a.left - b.left, dy = a.top - b.top;
+      const sx = b.width ? a.width / b.width : 1, sy = b.height ? a.height / b.height : 1;
+      const scale = Math.abs(sx-1) > .05 || Math.abs(sy-1) > .05;
+      if (!dx && !dy && !scale) return;
+      el.style.transformOrigin = 'top left'; el.style.transition = 'none';
+      el.style.transform = `translate(${dx}px,${dy}px)` + (scale ? ` scale(${sx},${sy})` : '');
+      requestAnimationFrame(() => requestAnimationFrame(() => { el.style.transition = ease; el.style.transform = ''; }));
+      el.addEventListener('transitionend', () => { el.style.transition = ''; el.style.transformOrigin=''; }, {once:true});
+    });
+  }
+
+  function enterArrange(){ if (arranging) return; flip(() => { arranging = true; }); say('Arranging. Hold and drag pieces, or tap one to move it.'); }
+  function leaveArrange(){ flip(() => { arranging = false; view = 'pieces'; }); hideToast(); say('Done arranging. Saved.'); }
+
+  /* ---------- pointer drag ---------- */
+  let press = null;
+  floor.addEventListener('contextmenu', e => e.preventDefault());
+  phone.addEventListener('pointerdown', e => {
+    if (e.button !== 0 || drag) return;
+    const piece = e.target.closest('.piece'), grip = e.target.closest('.grip'), chip = e.target.closest('.chip');
+    const band = view==='groups' && arranging ? e.target.closest('.group') : null;
+    const target = grip || chip || band || piece; if (!target) return;
+    const hold = grip || chip ? 0 : arranging ? 170 : 380;
+    press = {x:e.clientX, y:e.clientY, id:e.pointerId, el:target, kind: grip||band ? 'group' : 'piece', moved:false};
+    const begin = () => { if (!press) return; const pr = press; press = null;
+      if (!arranging) enterArrange();
+      if (pr.kind === 'group') startGroupDrag(grip ? grip.dataset.grip : band.dataset.group, pr, !!grip);
+      else startPieceDrag(chip ? chip.dataset.chip : piece.dataset.piece, pr, !!chip);
+    };
+    if (hold === 0) { e.preventDefault(); begin(); } else press.timer = setTimeout(begin, hold);
+  });
+  addEventListener('pointermove', e => {
+    if (press && !drag && Math.hypot(e.clientX-press.x, e.clientY-press.y) > 8) { clearTimeout(press.timer); press.moved = true; press = null; }
+    if (drag && e.pointerId === drag.pointer) { drag.x = e.clientX; drag.y = e.clientY; moveGhost(); track(); }
+  });
+  addEventListener('pointerup', e => {
+    if (press) { clearTimeout(press.timer); const pr = press; press = null;
+      if (arranging && pr.kind==='piece' && pr.el.classList.contains('piece')) openSheet(pr.el.dataset.piece); }
+    if (drag && e.pointerId === drag.pointer) drop();
+  });
+  addEventListener('pointercancel', e => { if (press) { clearTimeout(press.timer); press = null; } if (drag && e.pointerId === drag.pointer) drop(); });
+  document.addEventListener('touchmove', e => { if (drag) e.preventDefault(); }, {passive:false});
+
+  function makeGhost(el, x, y){
+    const keep = el.style.transform; el.style.transform = 'none';
+    const r = el.getBoundingClientRect(); el.style.transform = keep;
+    const g = el.cloneNode(true); g.classList.add('ghost'); g.classList.remove('slot','target'); g.removeAttribute('data-flip');
+    g.style.transform = ''; g.style.transition = '';
+    g.style.left = r.left+'px'; g.style.top = r.top+'px'; g.style.width = r.width+'px'; g.style.height = r.height+'px';
+    phone.appendChild(g);
+    return {g, ox:x-r.left, oy:y-r.top, left:r.left, top:r.top};
+  }
+  function moveGhost(){
+    const d = drag; const tx = d.x - d.ox - d.left, ty = d.y - d.oy - d.top;
+    const tilt = tier==='rich' && d.kind==='piece' ? Math.max(-3, Math.min(3, (d.x - (d.lastX ?? d.x)) * .4)) : 0;
+    d.lastX = d.x;
+    const lift = tier==='essential' ? 1 : 1.04;
+    d.ghost.style.transform = `translate(${tx}px,${ty}px) scale(${lift}) rotate(${tilt}deg)`;
+  }
+  function startPieceDrag(id, pr, fromTray){
+    const el = (fromTray ? chips : floor).querySelector(fromTray ? `[data-chip="${id}"]` : `[data-piece="${id}"]`);
+    const before = snap(); const g0 = groupOf(id);
+    const gh = makeGhost(el, pr.x, pr.y);
+    drag = {kind:'piece', id, pointer:pr.id, x:pr.x, y:pr.y, ghost:gh.g, ox:gh.ox, oy:gh.oy, left:gh.left, top:gh.top,
+      before, fromGroup: g0 ? g0.id : null, group: g0 ? g0.id : null, fromTray};
+    if (fromTray) { tray = tray.filter(t => t !== id); render(); }
+    else render();
+    if (navigator.vibrate) try { navigator.vibrate(8); } catch {}
+    moveGhost(); say(`Lifted ${label(id)}.`); autoScroll();
+  }
+  function startGroupDrag(id, pr, fromGrip){
+    zoomedForDrag = view === 'pieces';
+    if (zoomedForDrag) flip(() => { view = 'groups'; });
+    const el = floor.querySelector(`[data-group="${id}"]`);
+    const gh = makeGhost(el, pr.x, pr.y);
+    const w = parseFloat(gh.g.style.width);
+    const ox = Math.min(Math.max(pr.x - gh.left, 24), w - 24);
+    drag = {kind:'group', id, pointer:pr.id, x:pr.x, y:pr.y, ghost:gh.g, ox, oy:28, left:gh.left, top:gh.top, before:snap()};
+    render(); moveGhost(); say(`Lifted group ${groups.find(g=>g.id===id).title}.`); autoScroll();
+  }
+
+  function overTray(){ const r = trayEl.getBoundingClientRect(); return drag.y > r.top; }
+  function track(){
+    const d = drag;
+    if (d.kind === 'group') {
+      const others = [...floor.querySelectorAll('.group')].filter(s => s.dataset.group !== d.id);
+      let idx = others.length;
+      for (let i=0;i<others.length;i++){ const r = others[i].getBoundingClientRect(); if (d.y < r.top + r.height/2) { idx = i; break; } }
+      const cur = groups.findIndex(g => g.id === d.id);
+      if (idx !== cur) flip(() => { const [g] = groups.splice(cur,1); groups.splice(idx,0,g); });
+      return;
+    }
+    const inTray = overTray(); trayEl.classList.toggle('over', inTray);
+    if (inTray) return;
+    // which group is under the finger (nearest band vertically)
+    const secs = [...floor.querySelectorAll('.group')];
+    let sec = secs[0], best = Infinity;
+    for (const s of secs){ const r = s.getBoundingClientRect(); const dist = d.y < r.top ? r.top - d.y : d.y > r.bottom ? d.y - r.bottom : 0; if (dist < best) { best = dist; sec = s; } }
+    const gid = sec.dataset.group;
+    const tiles = [...sec.querySelectorAll('.piece')].filter(t => t.dataset.piece !== d.id);
+    let idx = tiles.length;
+    for (let i=0;i<tiles.length;i++){
+      const r = tiles[i].getBoundingClientRect();
+      if (d.y < r.top) { idx = i; break; }
+      if (d.y <= r.bottom && d.x < r.left + r.width/2) { idx = i; break; }
+    }
+    const cg = groupOf(d.id);
+    const curIdx = cg ? cg.pieces.indexOf(d.id) : -1;
+    if (cg && cg.id === gid && curIdx === idx) return;
+    flip(() => {
+      if (cg) cg.pieces = cg.pieces.filter(p => p !== d.id);
+      const g = groups.find(x => x.id === gid); g.pieces.splice(idx, 0, d.id); d.group = gid;
+    });
+    if (cg && cg.id !== gid) say(`Over ${groups.find(x=>x.id===gid).title}`);
+  }
+  function autoScroll(){
+    if (!drag) return;
+    const r = floor.getBoundingClientRect(), edge = 56;
+    const tr = trayEl.getBoundingClientRect();
+    const bottom = arranging ? Math.min(r.bottom, tr.top) : r.bottom;
+    let v = 0;
+    if (drag.y < r.top + edge) v = -Math.ceil((r.top + edge - drag.y) / 6);
+    else if (drag.y > bottom - edge && drag.y < bottom) v = Math.ceil((drag.y - (bottom - edge)) / 6);
+    if (v) { floor.scrollTop += v; track(); }
+    requestAnimationFrame(autoScroll);
+  }
+
+  function drop(){
+    const d = drag; drag = null; trayEl.classList.remove('over');
+    const finish = () => { d.ghost.remove(); };
+    let msg;
+    if (d.kind === 'piece') {
+      const toTray = d.y > trayEl.getBoundingClientRect().top;
+      if (toTray || !groupOf(d.id)) {
+        flip(() => { const g = groupOf(d.id); if (g) g.pieces = g.pieces.filter(p => p !== d.id); if (!tray.includes(d.id)) tray.push(d.id); });
+        msg = d.fromTray ? null : `Put away ${label(d.id)}`;
+        if (msg) logSave(`setSurfaceHidden('${d.id}', true)`);
+      } else {
+        render();
+        const g = groupOf(d.id), at = g.pieces.indexOf(d.id) + 1;
+        if (d.fromTray) { msg = `Brought back ${label(d.id)}`; logSave(`setSurfaceHidden('${d.id}', false)\nsetSurfaceZone('${d.id}', '${g.id}')\ndropSurface('${d.id}', visible, ${at-1})`); }
+        else if (g.id !== d.fromGroup) { msg = `Moved ${label(d.id)} to ${g.title}`; logSave(`setSurfaceZone('${d.id}', '${g.id}')\ndropSurface('${d.id}', visible, ${at-1})`); }
+        else if (d.before !== snap()) { msg = `${label(d.id)}, ${at} of ${g.pieces.length}`; logSave(`dropSurface('${d.id}', visible, ${at-1})`); }
+        say(`Dropped. ${label(d.id)}, ${at} of ${g.pieces.length} in ${g.title}.`);
+      }
+      settleGhost(d, finish, `[data-piece="${d.id}"],[data-chip="${d.id}"]`);
+    } else {
+      const changed = d.before !== snap();
+      if (zoomedForDrag) { flip(() => { view = 'pieces'; }); zoomedForDrag = false; } else render();
+      if (changed) { msg = `Moved group ${groups.find(g=>g.id===d.id).title}`; logSave(`setGroupOrder([${groups.map(g=>`'${g.id}'`).join(', ')}])`); }
+      settleGhost(d, finish, `[data-group="${d.id}"]`);
+      say(`Dropped group. ${groups.map(g=>g.title).join(', ')}.`);
+    }
+    if (msg && d.before !== snap()) { history.push(d.before); showToast(msg); }
+  }
+  function settleGhost(d, done, sel){
+    const el = phone.querySelector(sel);
+    if (!el || tier === 'essential') { done(); return; }
+    const r = el.getBoundingClientRect();
+    d.ghost.style.transition = tier==='rich' ? 'transform 260ms cubic-bezier(.2,1.2,.35,1), opacity 200ms' : 'transform 180ms ease-out, opacity 160ms';
+    const sx = r.width / parseFloat(d.ghost.style.width), sy = r.height / parseFloat(d.ghost.style.height);
+    d.ghost.style.transformOrigin = 'top left';
+    d.ghost.style.transform = `translate(${r.left-d.left}px,${r.top-d.top}px) scale(${sx},${sy})`;
+    d.ghost.style.opacity = '.0';
+    setTimeout(done, 260);
+  }
+
+  /* ---------- toast, undo, log ---------- */
+  let toastTimer;
+  function showToast(t){ $('toastText').textContent = t; $('toast').classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 4200); }
+  function hideToast(){ $('toast').classList.remove('show'); }
+  $('undo').addEventListener('click', () => { const s = history.pop(); if (!s) return; flip(() => restore(s)); hideToast(); say('Undone.'); logSave('setLayout(previous)   // one edit back'); });
+  function logSave(t){ $('log').textContent = t + "\n\n// patch group: " + (t.startsWith('setGroupOrder') ? "'groups'" : "'arrangement'") + ", saved on this device for this account and bond"; }
+
+  /* ---------- single-pointer and keyboard paths ---------- */
+  function openSheet(id){
+    const g = groupOf(id); const i = g.pieces.indexOf(id);
+    const card = $('sheetCard');
+    card.innerHTML = `<h3 id="sheetTitle">Move ${label(id)}</h3>
+      <div class="row">${i>0?`<button class="btn" data-act="first">To the top of ${g.title}</button>`:''}${i<g.pieces.length-1?`<button class="btn" data-act="last">To the end of ${g.title}</button>`:''}</div>
+      <div class="row">${groups.filter(x=>x.id!==g.id).map(x=>`<button class="btn" data-act="to:${x.id}">Into ${x.title}</button>`).join('')}</div>
+      <div class="row"><button class="btn" data-act="away">Put away</button><span style="flex:1"></span><button class="btn primary" data-act="close">Close</button></div>`;
+    $('sheet').hidden = false; card.querySelector('button').focus();
+    card.onclick = e => { const b = e.target.closest('[data-act]'); if (!b) return; const a = b.dataset.act; $('sheet').hidden = true;
+      if (a === 'close') return;
+      const before = snap(); let msg;
+      flip(() => {
+        g.pieces = g.pieces.filter(p => p !== id);
+        if (a === 'first') { g.pieces.unshift(id); msg = `${label(id)}, 1 of ${g.pieces.length}`; logSave(`moveSurface('${id}', visible, 'first')`); }
+        else if (a === 'last') { g.pieces.push(id); msg = `${label(id)}, ${g.pieces.length} of ${g.pieces.length}`; logSave(`moveSurface('${id}', visible, 'last')`); }
+        else if (a === 'away') { tray.push(id); msg = `Put away ${label(id)}`; logSave(`setSurfaceHidden('${id}', true)`); }
+        else { const t = groups.find(x => x.id === a.slice(3)); t.pieces.push(id); msg = `Moved ${label(id)} to ${t.title}`; logSave(`setSurfaceZone('${id}', '${t.id}')`); }
+      });
+      history.push(before); showToast(msg); say(msg);
+      const el = floor.querySelector(`[data-piece="${id}"]`); if (el) el.focus();
+    };
+  }
+  $('sheet').addEventListener('click', e => { if (e.target.id === 'sheet') $('sheet').hidden = true; });
+
+  let kBefore = null;
+  phone.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !$('sheet').hidden) { $('sheet').hidden = true; return; }
+    const piece = e.target.closest && e.target.closest('.piece'); if (!piece || !arranging) return;
+    const id = piece.dataset.piece;
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      if (!kdrag) { kdrag = id; kBefore = snap(); render(); refocus(id); say(`Lifted ${label(id)}. Arrow keys move it, Space drops it, Escape puts it back.`); }
+      else { kdrag = null; render(); refocus(id); const g = groupOf(id); say(`Dropped. ${label(id)}, ${g.pieces.indexOf(id)+1} of ${g.pieces.length} in ${g.title}.`);
+        if (kBefore !== snap()) { history.push(kBefore); showToast(`Moved ${label(id)}`); logSave(`dropSurface('${id}', visible, ${g.pieces.indexOf(id)})`); } }
+      return;
+    }
+    if (e.key === 'Escape' && kdrag) { kdrag = null; flip(() => restore(kBefore)); refocus(id); say('Put back.'); return; }
+    if (!kdrag) return;
+    const dir = {ArrowUp:-1, ArrowLeft:-1, ArrowDown:1, ArrowRight:1}[e.key]; if (!dir) return;
+    e.preventDefault();
+    flip(() => {
+      let gi = groups.findIndex(g => g.pieces.includes(id)); let g = groups[gi]; const i = g.pieces.indexOf(id);
+      g.pieces.splice(i,1);
+      if (dir < 0 && i === 0 && gi > 0) { g = groups[gi-1]; g.pieces.push(id); }
+      else if (dir > 0 && i === g.pieces.length && gi < groups.length-1) { g = groups[gi+1]; g.pieces.unshift(id); }
+      else g.pieces.splice(Math.max(0, Math.min(g.pieces.length, i + dir)), 0, id);
+    });
+    refocus(id); const g = groupOf(id); say(`${label(id)}, ${g.pieces.indexOf(id)+1} of ${g.pieces.length} in ${g.title}`);
+  });
+  const refocus = id => { const el = floor.querySelector(`[data-piece="${id}"]`); if (el) el.focus(); };
+
+  /* ---------- bar buttons ---------- */
+  bar.addEventListener('click', e => {
+    if (e.target.closest('#arrange')) enterArrange();
+    else if (e.target.closest('#done')) leaveArrange();
+    else { const b = e.target.closest('[data-view]'); if (b && b.dataset.view !== view) flip(() => { view = b.dataset.view; }); }
+  });
+  document.getElementById('tiers').addEventListener('click', e => { const b = e.target.closest('[data-tier]'); if (b) { tier = b.dataset.tier; render(); } });
+
+  render();
+})();
+</script>
+
+</body></html>

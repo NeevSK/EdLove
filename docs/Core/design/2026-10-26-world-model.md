@@ -1,13 +1,16 @@
 ---
 title: "The Gurudevi World Model: One Mental Model for Web, Mobile and Explore"
-status: "proposed"
+status: "superseded"
 created: 2026-10-26
-updated: 2026-10-26
+updated: 2026-11-15
+superseded_by: "Core/design/worlds-reference.md"
 author: "Naveen"
 tags: [gurudevi-mobile, gurudevi-web, explore, design, worlds, scene, mental-model]
 ---
 
 # The Gurudevi World Model
+
+> **Superseded on 2026-11-15** by [`worlds-reference.md`](worlds-reference.md), which describes the worlds as built. Kept for its history and reasoning.
 
 Every screen in Gurudevi, on web, mobile and explore.gurudevi.app, is drawn from one answer to six questions: **which world, what hour, which place, what backdrop, how rich, and what is the person doing.** One shared resolver turns those answers into a `Scene`, and each platform only paints it. This is how the October web floors, the October mobile worlds and the sun-and-moon idea fit together without fighting.
 

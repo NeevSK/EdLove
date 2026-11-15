@@ -1,14 +1,17 @@
 ---
 title: "The Living Worlds Real Integration Master Specification"
-status: "active"
+status: "superseded"
 created: 2026-10-28
-updated: 2026-10-28
+updated: 2026-11-15
+superseded_by: "Core/design/worlds-reference.md"
 author: "Naveen"
 scribe: "Antigravity"
 tags: [worlds, scene, architecture, integration, living-world, cross-platform, atlas, flow-dag]
 ---
 
 # The Living Worlds Real Integration Master Specification
+
+> **Superseded on 2026-11-15** by [`worlds-reference.md`](../Core/design/worlds-reference.md), which describes the worlds as built. Kept for its history and reasoning.
 
 > **Cardinal Principle: Real Substrates Over Abstract Toys**  
 > Living Worlds is not a museum demo or a marketing sidecar. It is the real sensory, visual, and spatial operating engine of the Gurudevi & EdLove platform across all live user journeys (Self, Classroom, Community, Library, Profile, Settings) on both **Next.js 16 Web** and **Expo 58 React Native**.
