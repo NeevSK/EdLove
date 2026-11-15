@@ -16,6 +16,7 @@ import {
   PrincipalLeaves,
   PrincipalPulse,
 } from '../admin/principal/principalParts';
+import { FounderBroadcast, FounderPulse, FounderSchools } from '../admin/founder/founderParts';
 import { useWorkspaceCanvas } from '../../../lib/canvas/useWorkspaceCanvas';
 import {
   useWorkspaceDomain,
@@ -136,7 +137,10 @@ function buildAccountDraftScope(
  * role has comes from the catalog (entries with that role); this only says how
  * each one looks.
  */
-const ROLE_PART_DRAWINGS: Readonly<Record<string, () => ReactNode>> = {
+const ROLE_PART_DRAWINGS: Readonly<Record<string, (person: { userId?: string }) => ReactNode>> = {
+  'founder-pulse': ({ userId }) => <FounderPulse userId={userId} />,
+  'founder-schools': () => <FounderSchools />,
+  'founder-broadcast': () => <FounderBroadcast />,
   'principal-pulse': () => <PrincipalPulse />,
   'principal-brief': () => <PrincipalBrief />,
   'principal-curriculum': () => <PrincipalCurriculum />,
@@ -168,7 +172,9 @@ export function WorkspaceFloor({
         ? 'principal'
         : normalizedCapacity === 'guardian' || normalizedCapacity === 'parent'
           ? 'guardian'
-          : 'teacher';
+          : normalizedCapacity === 'founder'
+            ? 'founder'
+            : 'teacher';
 
   const [activeRole, setActiveRole] = useState<WorkspaceRoleFilter>(defaultRole);
   const roleLensKey = `sanctuary-role-lens:workspace:${subjectId ?? 'guest'}:${scope?.bondId ?? 'unselected'}`;
@@ -180,7 +186,7 @@ export function WorkspaceFloor({
       const stored = window.localStorage.getItem(roleLensKey);
       if (
         stored &&
-        ['all', 'common', 'teacher', 'student', 'principal', 'guardian'].includes(stored)
+        ['all', 'common', 'teacher', 'student', 'principal', 'guardian', 'founder'].includes(stored)
       ) {
         setActiveRole(stored as WorkspaceRoleFilter);
       }
@@ -1101,7 +1107,7 @@ export function WorkspaceFloor({
                 <section aria-label="For your role" className={styles.roleParts} data-role={effectiveRole}>
                   {roleParts.map((entry) => (
                     <div key={entry.id} data-feature={entry.id}>
-                      {ROLE_PART_DRAWINGS[entry.id]?.()}
+                      {ROLE_PART_DRAWINGS[entry.id]?.({ userId: subjectId })}
                     </div>
                   ))}
                 </section>

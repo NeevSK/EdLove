@@ -13,10 +13,14 @@ workspace: large landscape, dense, cost 106/400
     Notices and messages [tile-grid] 240h w1
       Guardian Portal 140h w1
       Circulars & Notices 280h w1
-    School [mixed-tiles] 360h w2
+    School [tile-grid] 360h w2
       Principal Command Center 140h w1.2
-      Tuition & Fees 140h w2
-      Doorway Kiosk 140h w1
-      ID Badges 140h w1
+      Campus pulse 140h w1
+      Morning brief 140h w1
+      Curriculum pacing 140h w1
+      Staff leave requests 140h w1 (folded)
+      Tuition & Fees 140h w2 (folded)
+      Doorway Kiosk 140h w1 (folded)
+      ID Badges 140h w1 (folded)
       School Profile 140h w1 (folded)
       Events 140h w1 (folded)

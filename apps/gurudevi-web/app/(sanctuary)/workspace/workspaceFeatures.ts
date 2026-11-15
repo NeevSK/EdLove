@@ -8,7 +8,7 @@ import { TIMELESS, type TimeProfile } from '@repo/core/logic/registry/timeProfil
 import { APP_CATALOG } from '../../../lib/appCatalog';
 import type { WorkspaceRoleFilter } from '../components/RoleLensSwitcher';
 
-type WorkspaceRole = 'teacher' | 'student' | 'principal' | 'guardian';
+type WorkspaceRole = 'teacher' | 'student' | 'principal' | 'guardian' | 'founder';
 
 /**
  * A Workspace feature as the web's workspace screens show it. Nothing is
