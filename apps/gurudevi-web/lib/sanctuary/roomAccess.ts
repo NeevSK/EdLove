@@ -106,11 +106,13 @@ export async function resolveRoomPresentation(
   entry: ReadyEntry,
   room: TabDomain,
   fetcher: typeof fetch = fetch,
+  /** Whose role the room is for: the active bond's, except Self, which is the personal role. */
+  capacity: string | null = room === 'self' ? entry.primaryCapacity : entry.activeCapacity,
 ): Promise<RoomPresentation> {
   const permissions = await signedPermissions(supabase, entry, fetcher);
   const person = webPersonAccess(entry, permissions);
   return roomPresentationOf(
-    roomFeatures(APP_CATALOG, room, entry.activeCapacity, 'web'),
+    roomFeatures(APP_CATALOG, room, capacity, 'web'),
     (action, subject, requirement) => evaluateFeatureFor(person, action, subject, requirement),
     true,
   );

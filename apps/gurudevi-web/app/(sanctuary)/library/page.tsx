@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { classifyGurudeviHost } from '../../../lib/host-routing';
 import { resolveAuthorizedEntry } from '../../../lib/sanctuary/authorizedEntry';
 import { resolveSanctuaryDevSession } from '../../../lib/sanctuary/devSession';
+import { resolveRoomPresentation } from '../../../lib/sanctuary/roomAccess';
 import { createServerSupabaseClient } from '../../../lib/supabase/server';
 import { SanctuaryShell } from '../components/SanctuaryShell';
 import { LibraryFloor } from './LibraryFloor';
@@ -64,6 +65,7 @@ export default async function LibraryPage({
           accountId={devSession.accountId}
           displayName={devSession.displayName}
           mode="account"
+          capacity={devSession.capacity}
         />
       </SanctuaryShell>
     );
@@ -91,9 +93,16 @@ export default async function LibraryPage({
   if (entry.kind === 'unavailable')
     return <LibraryState detail={entry.message} title="Library is unavailable" />;
 
+  const presentation = await resolveRoomPresentation(supabase, entry, 'library');
+
   return (
     <SanctuaryShell displayName={entry.displayName} navigationPrefix="">
-      <LibraryFloor accountId={entry.accountId} displayName={entry.displayName} />
+      <LibraryFloor
+        accountId={entry.accountId}
+        displayName={entry.displayName}
+        capacity={entry.activeCapacity}
+        presentation={presentation}
+      />
     </SanctuaryShell>
   );
 }

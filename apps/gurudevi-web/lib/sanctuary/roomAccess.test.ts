@@ -129,4 +129,12 @@ describe('SanctuaryFeature on the web', () => {
     );
     expect(trusted.attendance).toBe('available');
   });
+
+  it('Self is the personal room: it follows the personal role, not the active bond', async () => {
+    const principalAtSchool = { ...teacher, activeCapacity: 'principal' };
+    const supabase = { auth: { getSession: vi.fn().mockResolvedValue({ data: {}, error: null }) } };
+    const modes = await resolveRoomPresentation(supabase as never, principalAtSchool, 'self');
+    expect(Object.keys(modes)).toContain('working');
+    expect(Object.keys(modes)).not.toContain('leadership');
+  });
 });

@@ -1,5 +1,4 @@
 import { roomFeatures } from '@repo/core/logic/floor';
-import type { FeaturePresentationMode } from '@repo/core/logic/permissions/featurePresentation';
 import {
   type CapabilityDeclaration,
   declaredCapability,
@@ -80,20 +79,7 @@ export function isPracticeAvailableForRole(featureId: string, role?: WorkspaceRo
   return result.available;
 }
 
-/**
- * Whether the room lists a feature, given SanctuaryFeature's decisions from
- * the server (lib/sanctuary/roomAccess.ts). Hidden and unsupported features,
- * and features not in this person's room, take no place. With no decisions
- * (explore, dev preview) every feature is listed.
- */
-export function presentationShows(
-  presentation: Readonly<Record<string, FeaturePresentationMode>> | undefined,
-  featureId: string,
-): boolean {
-  if (!presentation) return true;
-  const mode = presentation[featureId];
-  return mode !== undefined && mode !== 'hidden' && mode !== 'unsupported';
-}
+export { presentationShows } from '../../../lib/roomFeatures';
 
 export function filterWorkspaceFeatures(
   features: readonly WorkspaceFeatureItem[],

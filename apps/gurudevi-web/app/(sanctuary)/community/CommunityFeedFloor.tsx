@@ -16,6 +16,11 @@ import {
   isExploreCapacity,
   useExploreCapacity,
 } from '../../../lib/explore/exploreCapacity';
+import {
+  presentationShows,
+  type RoomPresentationMap,
+  webRoomFeatures,
+} from '../../../lib/roomFeatures';
 import { timeGreeting } from '../../../lib/timeGreeting';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
@@ -34,6 +39,20 @@ const COMMUNITY_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
 export type CommunityFloorMode = 'account' | 'explore';
 export type CommunityPillar = 'feed' | 'groups' | 'messages';
 
+/** The catalog features the Community floor draws as its sections, and how each is drawn. */
+const PILLAR_OF: Readonly<Record<string, CommunityPillar>> = {
+  hearth: 'feed',
+  circles: 'groups',
+  messages: 'messages',
+};
+const PILLAR_LOOK: Readonly<Record<CommunityPillar, { label: string; glyph: string }>> = {
+  feed: { label: 'Feed', glyph: '💬' },
+  groups: { label: 'Groups', glyph: '👥' },
+  messages: { label: 'Messages', glyph: '✉️' },
+};
+/** Every Community feature the web opens, from the Community catalog. */
+const COMMUNITY_FEATURES = webRoomFeatures('community');
+
 export function CommunityFeedFloor({
   mode = 'account',
   result: initialResult,
@@ -43,6 +62,7 @@ export function CommunityFeedFloor({
   initialPillar,
   initialConversationId,
   initialIncognito,
+  presentation,
 }: Readonly<{
   mode?: CommunityFloorMode;
   result: CommunityGroupsResult;
@@ -52,8 +72,23 @@ export function CommunityFeedFloor({
   initialPillar?: CommunityPillar;
   initialConversationId?: string;
   initialIncognito?: boolean;
+  /** SanctuaryFeature's decisions from the server; missing lists every feature. */
+  presentation?: RoomPresentationMap;
 }>) {
-  const [activePillar, setActivePillar] = useState<CommunityPillar>(initialPillar ?? 'feed');
+  const features = useMemo(
+    () => COMMUNITY_FEATURES.filter((feature) => presentationShows(presentation, feature.id)),
+    [presentation],
+  );
+  // Which sections exist comes from the catalog; their order on the tab strip is how the web draws them.
+  const pillars = useMemo(() => {
+    const present = new Set(features.map((feature) => PILLAR_OF[feature.id]));
+    return (Object.keys(PILLAR_LOOK) as CommunityPillar[]).filter((pillar) => present.has(pillar));
+  }, [features]);
+  const [chosenPillar, setActivePillar] = useState<CommunityPillar>(initialPillar ?? 'feed');
+  // A section the person may not have is never shown; fall back to the first they may.
+  const activePillar: CommunityPillar | null = pillars.includes(chosenPillar)
+    ? chosenPillar
+    : (pillars[0] ?? null);
   const exploreCapacity = useExploreCapacity();
   const roleLabel =
     primaryCapacity && isExploreCapacity(primaryCapacity)
@@ -70,7 +105,7 @@ export function CommunityFeedFloor({
   const quickAccess = useQuickAccessPreferences(
     'community',
     mode,
-    ['circles', 'announcements', 'forest'],
+    ['circles', 'community-notices', 'community-forest'],
     ['circles'],
   );
   const [isRefreshing, startRefresh] = useTransition();
@@ -246,24 +281,24 @@ export function CommunityFeedFloor({
         }}
         onReorderTask={(taskKey, destinationIndex) => workbench.reorder(taskKey, destinationIndex)}
         onOpenOverview={handleClearSelectedGroup}
-        quickAccessItems={[
-          { id: 'circles', label: 'Circles', emoji: '👥' },
-          { id: 'announcements', label: 'Broadcaster Updates', emoji: '📢' },
-          { id: 'forest', label: 'Community Forest', emoji: '🌳' },
-        ]}
+        quickAccessItems={features.map((feature) => ({
+          id: feature.id,
+          label: feature.label,
+          emoji: feature.symbol,
+        }))}
         quickAccessPinnedIds={quickAccess.pinnedIds}
         quickAccessUsage={quickAccess.usage}
         quickAccessPinLimit={quickAccess.pinLimit}
         onOpenQuickAccessItem={(item) => {
           quickAccess.trackUse(item.id);
-          if (item.id === 'announcements') {
-            router.push('/community/announcements');
-          } else if (item.id === 'circles') {
-            setActivePillar('groups');
+          const pillar = PILLAR_OF[item.id];
+          if (pillar) {
+            setActivePillar(pillar);
             handleClearSelectedGroup();
-          } else if (item.id === 'forest') {
-            router.push('/community/forest');
+            return;
           }
+          const feature = features.find((candidate) => candidate.id === item.id);
+          if (feature) router.push(feature.href);
         }}
         onToggleQuickAccessPin={quickAccess.togglePin}
       />
@@ -271,45 +306,25 @@ export function CommunityFeedFloor({
       {/* 3-PILLAR TRIAD SEGMENTED SWITCHER (Conforms to UI Kit Rule 9 Vector Glyphs) */}
       <div className={styles.pillarNavHorizon} role="tablist" aria-label="Community Sections">
         <div className={styles.pillarSegmentedPill}>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activePillar === 'feed'}
-            onClick={() => {
-              setActivePillar('feed');
-              handleClearSelectedGroup();
-            }}
-            className={activePillar === 'feed' ? styles.pillActive : styles.pill}
-          >
-            <span aria-hidden="true">💬</span>
-            <span>Feed</span>
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activePillar === 'groups'}
-            onClick={() => setActivePillar('groups')}
-            className={activePillar === 'groups' ? styles.pillActive : styles.pill}
-          >
-            <span aria-hidden="true">👥</span>
-            <span>Groups</span>
-            {visibleGroups.length > 0 && (
-              <span className={styles.pillBadge}>{visibleGroups.length}</span>
-            )}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activePillar === 'messages'}
-            onClick={() => {
-              setActivePillar('messages');
-              handleClearSelectedGroup();
-            }}
-            className={activePillar === 'messages' ? styles.pillActive : styles.pill}
-          >
-            <span aria-hidden="true">✉️</span>
-            <span>Messages</span>
-          </button>
+          {pillars.map((pillar) => (
+            <button
+              key={pillar}
+              type="button"
+              role="tab"
+              aria-selected={activePillar === pillar}
+              onClick={() => {
+                setActivePillar(pillar);
+                if (pillar !== 'groups') handleClearSelectedGroup();
+              }}
+              className={activePillar === pillar ? styles.pillActive : styles.pill}
+            >
+              <span aria-hidden="true">{PILLAR_LOOK[pillar].glyph}</span>
+              <span>{PILLAR_LOOK[pillar].label}</span>
+              {pillar === 'groups' && visibleGroups.length > 0 && (
+                <span className={styles.pillBadge}>{visibleGroups.length}</span>
+              )}
+            </button>
+          ))}
         </div>
       </div>
 

@@ -61,7 +61,13 @@ Only entries that have a `floor` are furniture. Other entries, such as a room sh
 ## Not done yet
 
 - **The web has no entitlement source.** On the web, SanctuaryFeature runs on the server: it uses the server-checked entry (account, bond, capacity, citizenship) and the permission snapshot that the API signs (`authority.refreshSnapshot`), and it checks the signature. There is no entitlement source yet, on the web or through the v1 API. So every web account counts as FREE, and a paid feature shows as needing an upgrade. If the snapshot is missing or does not check, protected features wait ("loading") rather than open.
-- **Only Workspace uses it on the web so far.** Self, Community and Library pages still list every catalog feature. Each page can call `resolveRoomPresentation` the same way.
+- **The web rooms and the catalog (14 Nov).** Every web room now reads its features from the catalog and gets SanctuaryFeature's decision from the server (`resolveRoomPresentation`):
+  - Workspace: its feature list and quick access.
+  - Community: the sections (feed, groups, messages) and quick access. The web's own drawing words stay in `CommunityFeedFloor`.
+  - Library: the overview shelves are laid out by the room floor (`RoomFloor`). Each catalog feature has a drawing in `LibraryFloor`, and "See all" opens a group.
+  - Self: the practices come from the Self entries offered to the person's own role. Each single practice belongs to the entry named by its `domain`. The Self overview keeps its own layout for now; moving it onto the room floor is the next step.
+- **Self has two maps from a practice to its entry.** One is each practice's `domain`, which the web uses. The other is each entry's `presentation.featureIds`. The two disagree: `breath_guide`, `energy_forecast` and `wind_down_ritual` are in no `featureIds` list, `reframe` is listed but has no practice, and three practices are listed under two entries. One of the two maps should go.
+- **Features with no screen on a platform say so.** Trust Network and School shelf have `webSupport: false` because the web has no drawing for them. School Forest is a web-only Community entry.
 - **The web asks for a fresh snapshot on every Workspace load.** That is one API call and one row upsert per load. It should be cached for each bond until shortly before it expires.
 - **Workforce is hidden on the web.** The catalog marks Workforce as `development`, so the web no longer lists it. Its page still exists.
 - **The phone's work floor is still opt-in.** It is switched on with `EXPO_PUBLIC_WORK_FLOOR=1`, and most Workspace features have no phone screen yet.

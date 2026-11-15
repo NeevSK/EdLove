@@ -55,6 +55,7 @@ const EXPECTED_DOMAIN_IDS = [
   'library-school-shelf',
   'community-explore',
   'community-notices',
+  'community-forest',
   'profile-card',
   'profile-bonds',
   'profile-invite',

@@ -41,6 +41,8 @@ export const LIBRARY_REGISTRY: Record<string, DomainFeature> = {
     lifecycle: REGISTRY_LIFECYCLE,
     capabilityRequirement: { action: 'read', subject: 'LibraryArchive' },
     tabDomain: 'library',
+    routes: { web: '/library' },
+    icon: '🗂️',
     analyticsKey: 'library.archive',
     journey: {
       featureId: 'archive',
@@ -88,6 +90,8 @@ export const LIBRARY_REGISTRY: Record<string, DomainFeature> = {
     lifecycle: REGISTRY_LIFECYCLE,
     capabilityRequirement: { action: 'read', subject: 'LibraryResource' },
     tabDomain: 'library',
+    routes: { web: '/library/tools' },
+    icon: '🧰',
     analyticsKey: 'library.hub',
   },
   curator: {
@@ -110,6 +114,8 @@ export const LIBRARY_REGISTRY: Record<string, DomainFeature> = {
     lifecycle: REGISTRY_LIFECYCLE,
     capabilityRequirement: { action: 'read', subject: 'LibraryReview' },
     tabDomain: 'library',
+    routes: { web: '/library/curator' },
+    icon: '✨',
     analyticsKey: 'library.curator',
   },
   'library-continue': {
@@ -123,7 +129,8 @@ export const LIBRARY_REGISTRY: Record<string, DomainFeature> = {
     label: 'Carry on reading',
     description: 'The books and lessons you were reading',
     capabilityRequirement: { action: 'read', subject: 'Library' },
-    routes: { mobile: '/library/shelf' },
+    routes: { mobile: '/library/shelf', web: '/library' },
+    icon: '📖',
     analyticsKey: 'library.continue',
   },
   'library-new': {
@@ -137,7 +144,8 @@ export const LIBRARY_REGISTRY: Record<string, DomainFeature> = {
     label: 'New on the shelves',
     description: 'What arrived in the library lately',
     capabilityRequirement: { action: 'read', subject: 'LibraryResource' },
-    routes: { mobile: '/library/shelf?sort=new' },
+    routes: { mobile: '/library/shelf?sort=new', web: '/library' },
+    icon: '🆕',
     analyticsKey: 'library.new',
   },
   'library-search': {
@@ -149,7 +157,8 @@ export const LIBRARY_REGISTRY: Record<string, DomainFeature> = {
     time: TIMELESS,
     label: 'Search the library',
     capabilityRequirement: { action: 'read', subject: 'LibrarySearch' },
-    routes: { mobile: '/library/shelf?search=1' },
+    routes: { mobile: '/library/shelf?search=1', web: '/library?search=1' },
+    icon: '🔍',
     analyticsKey: 'library.search',
   },
   'library-map': {
@@ -162,6 +171,8 @@ export const LIBRARY_REGISTRY: Record<string, DomainFeature> = {
     label: 'Library map',
     description: 'Walk the shelves by subject and grade',
     capabilityRequirement: { action: 'read', subject: 'Library' },
+    routes: { web: '/library/map' },
+    icon: '🧭',
     analyticsKey: 'library.map',
   },
   'library-contribute': {
@@ -175,6 +186,8 @@ export const LIBRARY_REGISTRY: Record<string, DomainFeature> = {
     label: 'Add a resource',
     citizenshipRequired: 2,
     capabilityRequirement: { action: 'create', subject: 'LibraryResource' },
+    routes: { web: '/library/contribute' },
+    icon: '➕',
     analyticsKey: 'library.contribute',
   },
   'library-school-shelf': {
@@ -187,6 +200,8 @@ export const LIBRARY_REGISTRY: Record<string, DomainFeature> = {
     label: 'School shelf',
     description: 'What your school put on its own shelf',
     citizenshipRequired: 1,
+    // The web has no school shelf screen yet.
+    webSupport: false,
     capabilityRequirement: { action: 'read', subject: 'LibraryResource' },
     routes: { mobile: '/library/shelf?from=school' },
     analyticsKey: 'library.school_shelf',

@@ -1,5 +1,6 @@
 'use client';
 
+import { roomFeatures } from '@repo/core/logic/floor';
 import { declaredPracticeCapability } from '@repo/core/logic/registry/capabilityManifest';
 import {
   resolveTemporalCoordinates,
@@ -17,9 +18,11 @@ import { DateTimeCombo, Dialog } from '@repo/ui/components/web';
 import { useQuery } from '@tanstack/react-query';
 import { Volume2, VolumeX } from 'lucide-react';
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { APP_CATALOG } from '../../../lib/appCatalog';
 import type { SelfCategory } from '../../../lib/canvas/useSelfCanvas';
 import { useSelfCanvas } from '../../../lib/canvas/useSelfCanvas';
 import { useExploreCapacity } from '../../../lib/explore/exploreCapacity';
+import { presentationShows, type RoomPresentationMap } from '../../../lib/roomFeatures';
 import {
   isSanctuaryAudioMuted,
   subscribeSanctuaryAudio,
@@ -139,12 +142,15 @@ export function SelfFloor({
   initialPracticing = false,
   initialCapacity,
   capacities = [],
+  presentation,
 }: Readonly<{
   accountId?: string;
   displayName: string;
   initialPracticing?: boolean;
   initialCapacity?: string;
   capacities?: readonly string[];
+  /** SanctuaryFeature's decisions from the server; missing lists every feature. */
+  presentation?: RoomPresentationMap;
 }>) {
   const [screen, setScreen] = useState<ScreenState>(initialScreen);
   const [isPracticing, setIsPracticing] = useState(initialPracticing || accountId === 'explore');
@@ -207,6 +213,22 @@ export function SelfFloor({
   const primaryRole =
     initialCapacity ?? (accountId === 'explore-guest' ? exploreCapacity : undefined);
   const isExplore = accountId === 'explore-guest' || accountId === 'explore' || initialPracticing;
+  // Which Self features this person has: the Self catalog entries offered to
+  // their role on the web that SanctuaryFeature lets them have. Each single
+  // practice belongs to one entry (its domain).
+  const offeredEntries = useMemo(
+    () =>
+      new Set(
+        roomFeatures(APP_CATALOG, 'self', primaryRole ?? null, 'web')
+          .filter((entry) => presentationShows(presentation, entry.id))
+          .map((entry) => entry.id),
+      ),
+    [primaryRole, presentation],
+  );
+  const offeredFeatures = useMemo(
+    () => SELF_FEATURE_MANIFEST.all.filter((feature) => offeredEntries.has(feature.domain)),
+    [offeredEntries],
+  );
   const practiceAdapter = useMemo(
     () =>
       accountId
@@ -622,7 +644,7 @@ export function SelfFloor({
                 }),
               );
             }}
-            quickAccessItems={SELF_FEATURE_MANIFEST.all.map((feature) => ({
+            quickAccessItems={offeredFeatures.map((feature) => ({
               id: feature.id,
               label: feature.label,
               emoji: feature.emoji,
@@ -649,7 +671,9 @@ export function SelfFloor({
                 phase={canvas.phase}
                 groupOrder={canvas.groupOrder}
                 floorSectionOrder={selfFurnitureOrder}
-                manifestAll={canvas.sortedManifestAll}
+                manifestAll={canvas.sortedManifestAll.filter((feature) =>
+                  offeredEntries.has(feature.domain),
+                )}
                 onOpenFeature={openFeature}
                 onOpenFireJournal={openFireJournal}
                 pinnedFeatures={canvas.pinnedFeatures}

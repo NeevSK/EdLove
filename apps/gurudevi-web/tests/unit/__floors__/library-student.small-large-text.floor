@@ -1,4 +1,4 @@
-library: compact portrait, standard, cost 100/400
+library: compact portrait, standard, cost 74/400
   Today 464h w3
     Reading now [lamp] 464h w3
       Carry on reading 182h w3
@@ -10,6 +10,3 @@ library: compact portrait, standard, cost 100/400
     Find [grouped-list] 294h w1 (below)
       Search the library 73h w1 (below)
       Library map 182h w1 (below)
-  School 291h w1 (below)
-    From your school [stream] 291h w1 (below)
-      School shelf 260h w1 (below)
