@@ -513,6 +513,12 @@
   margin-bottom: 0.75rem;
 }
 
+.roleParts {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
 .workspaceCatalog {
   display: grid;
   gap: 1.25rem;

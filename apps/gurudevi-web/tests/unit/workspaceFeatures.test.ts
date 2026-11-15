@@ -24,7 +24,8 @@ describe('workspace features from the catalog (G1)', () => {
 
   it('contains workspace features including submissions, climate, and tuition', () => {
     // Workforce is in development in the catalog, so the web does not list it yet.
-    expect(WORKSPACE_FEATURES.length).toBe(17);
+    // The principal's Command Center has no web screen of its own: its parts sit on the overview.
+    expect(WORKSPACE_FEATURES.length).toBe(16);
     expect(WORKSPACE_FEATURES.find((f) => f.id === 'submissions')).toBeDefined();
     expect(WORKSPACE_FEATURES.find((f) => f.id === 'climate')).toBeDefined();
     expect(WORKSPACE_FEATURES.find((f) => f.id === 'tuition')).toBeDefined();

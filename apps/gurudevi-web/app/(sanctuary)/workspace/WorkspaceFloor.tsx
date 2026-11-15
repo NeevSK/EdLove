@@ -7,7 +7,15 @@ import type { DomainTemporalHorizon, WorkbenchTaskDescriptor } from '@repo/core/
 import { DateTimeCombo } from '@repo/ui/components/web';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { roomFeatures } from '@repo/core/logic/floor';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { APP_CATALOG } from '../../../lib/appCatalog';
+import {
+  PrincipalBrief,
+  PrincipalCurriculum,
+  PrincipalLeaves,
+  PrincipalPulse,
+} from '../admin/principal/principalParts';
 import { useWorkspaceCanvas } from '../../../lib/canvas/useWorkspaceCanvas';
 import {
   useWorkspaceDomain,
@@ -122,6 +130,18 @@ function buildAccountDraftScope(
     date: selectedDate,
   };
 }
+
+/**
+ * How the web draws the role parts of the one Workspace overview. Which parts a
+ * role has comes from the catalog (entries with that role); this only says how
+ * each one looks.
+ */
+const ROLE_PART_DRAWINGS: Readonly<Record<string, () => ReactNode>> = {
+  'principal-pulse': () => <PrincipalPulse />,
+  'principal-brief': () => <PrincipalBrief />,
+  'principal-curriculum': () => <PrincipalCurriculum />,
+  'principal-leaves': () => <PrincipalLeaves />,
+};
 
 export function WorkspaceFloor({
   mode,
@@ -274,6 +294,15 @@ export function WorkspaceFloor({
   );
   const effectiveRole: WorkspaceRoleFilter =
     activeRole === 'all' || activeRole === 'common' ? defaultRole : activeRole;
+
+  // The chosen role's own parts, drawn on this one overview (switching the role swaps them).
+  const roleParts = useMemo(
+    () =>
+      roomFeatures(APP_CATALOG, 'workspace', effectiveRole, 'web').filter(
+        (entry) => ROLE_PART_DRAWINGS[entry.id] && presentationShows(presentation, entry.id),
+      ),
+    [effectiveRole, presentation],
+  );
 
   const posture = useMemo(
     () => getWorkspaceOverviewPosture(effectiveRole, coordinates.intent, coordinates.dateLabel),
@@ -1067,6 +1096,16 @@ export function WorkspaceFloor({
                   </div>
                 ) : null}
               </LivingCard>
+
+              {roleParts.length > 0 ? (
+                <section aria-label="For your role" className={styles.roleParts} data-role={effectiveRole}>
+                  {roleParts.map((entry) => (
+                    <div key={entry.id} data-feature={entry.id}>
+                      {ROLE_PART_DRAWINGS[entry.id]?.()}
+                    </div>
+                  ))}
+                </section>
+              ) : null}
 
               <section
                 aria-labelledby="workspace-catalog-title"
