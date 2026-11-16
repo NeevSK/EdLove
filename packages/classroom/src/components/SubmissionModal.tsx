@@ -9,8 +9,8 @@
  */
 
 import { handleAPIError } from '@repo/core/logic';
-import { WaitingSign } from '@repo/ui/components/native';
-import { Dialog } from '@repo/ui/components/native';
+import { imagePickerOptionsFor } from '@repo/core/logic/files/filePolicy';
+import { Dialog, WaitingSign } from '@repo/ui/components/native';
 import { Camera, CircleCheck, Send, Trash2, X } from '@repo/ui/icons';
 import {
   Box,
@@ -28,9 +28,7 @@ import {
 } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { confirmAction } from '@repo/ui/utils/dialogs';
-
 import * as ImagePicker from 'expo-image-picker';
-import { imagePickerOptionsFor } from '@repo/core/logic/files/filePolicy';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
@@ -150,7 +148,7 @@ export default function SubmissionModal({
 
   if (showSuccess) {
     return (
-      <SanctuaryModal isOpen={isOpen} onClose={() => {}} title="">
+      <Dialog open={isOpen} onClose={() => {}} title="">
         <VStack className="items-center justify-center p-8 gap-6">
           <Box className="w-24 h-24 bg-phase-reward/10 rounded-full items-center justify-center border border-phase-reward/20">
             <Icon as={CircleCheck} size="xl" className="text-phase-reward" />
@@ -168,8 +166,8 @@ export default function SubmissionModal({
     );
   }
   return (
-    <SanctuaryModal
-      isOpen={isOpen}
+    <Dialog
+      open={isOpen}
       onClose={handleCancel}
       title={t('submission.title') || 'Submit Work'}
       footer={
@@ -231,6 +229,7 @@ export default function SubmissionModal({
               <Box className="relative rounded-[24px] overflow-hidden border border-phase-border">
                 <Image source={{ uri: photoUri }} className="w-full h-48" resizeMode="cover" />
                 <Pressable
+                  accessibilityRole="button"
                   onPress={() => setPhotoUri(null)}
                   className="absolute top-3 right-3 p-2 bg-black/60 rounded-full border border-white/20"
                 >
