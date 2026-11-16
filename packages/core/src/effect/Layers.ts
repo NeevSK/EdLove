@@ -17,7 +17,7 @@ import { Effect, Layer } from 'effect';
 /** Growth data from Supabase, loaded on first use like the others. Not in AppLayer until consumed. */
 export const GrowthLive = Layer.effect(
   GrowthPort,
-  Effect.promise(() =>
+  Effect.tryPromise(() =>
     import('@repo/core/adapters/supabase/growth.adapter').then(
       (m) => new m.SupabaseGrowthAdapter(),
     ),
@@ -30,7 +30,7 @@ export const GrowthLive = Layer.effect(
  */
 export const EntitlementLive = Layer.effect(
   EntitlementPort,
-  Effect.promise(() =>
+  Effect.tryPromise(() =>
     import('@repo/core/adapters/supabase/supabaseEntitlement.adapter').then(
       (m) => new m.SupabaseEntitlementAdapter(),
     ),
@@ -40,7 +40,7 @@ export const EntitlementLive = Layer.effect(
 /** The signed permission snapshot, read and checked from the local PowerSync database. */
 export const PermissionSnapshotLive = Layer.effect(
   PermissionSnapshotPort,
-  Effect.promise(() =>
+  Effect.tryPromise(() =>
     import('@repo/core/adapters/powersync/permissionSnapshot.adapter').then(
       (m) => m.powerSyncPermissionSnapshots,
     ),
