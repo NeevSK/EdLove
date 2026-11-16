@@ -6,11 +6,17 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { RG_REFERENCE_ARGS } from '../../tooling/reference-only.mjs';
 
 const REPO_ROOT = resolve(import.meta.dirname, '../..');
 const { default: ts } = await import(
-  resolve(REPO_ROOT, 'node_modules/.pnpm/@typescript+typescript6@6.0.2/node_modules/@typescript/typescript6/lib/typescript.js')
+  pathToFileURL(
+    resolve(
+      REPO_ROOT,
+      'node_modules/.pnpm/@typescript+typescript6@6.0.2/node_modules/@typescript/typescript6/lib/typescript.js',
+    ),
+  ).href
 );
 
 function machineFiles() {

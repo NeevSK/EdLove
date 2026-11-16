@@ -123,6 +123,7 @@ const DEFAULT_T2_ROOTS = ['packages/core/src/'];
 export const RETIRED = [/^packages\/core\/src\/api\/(?!v1\/)/];
 
 export function tierOf(filePath) {
+  filePath = filePath.replace(/\\/g, '/');
   if (RETIRED.some((re) => re.test(filePath))) return 'RETIRED';
   const placed = PLACEMENTS[filePath];
   if (placed) return placed.tier;

@@ -42,6 +42,7 @@ function runRgCount(pattern, optsOrArgs = []) {
     '-g', '!**/node_modules/**',
     // A device name on Windows; rg can't open it and it can't hold source.
     '-g', '!**/NUL',
+    '-g', '!**/NUL/**',
     ...RG_REFERENCE_ARGS,
     ...extraArgs,
     '--stats',
@@ -78,7 +79,6 @@ function countFromSites() {
   return runRgCount('(?:\\.from\\([`\'"]|(?:supabase|supabaseClient|client|db)\\.from\\()');
 }
 
-<<<<<<< HEAD
 // State seam (docs/architecture/2026-11-11-product-shape-and-tool-ownership.md, section 7).
 // Expected failures become Schema.TaggedErrorClass so they can cross the wire; these two only go down.
 function countPlainErrorSubclasses() {
@@ -179,7 +179,8 @@ function reactLintCounts() {
     reactLint = {};
     let out = '';
     try {
-      out = execFileSync('node_modules/.bin/oxlint', ['-c', '.oxlintrc.react.json', '-f', 'json', 'packages', 'apps'], {
+      const cmd = 'pnpm exec oxlint -c .oxlintrc.react.json -f json packages apps';
+      out = execSync(cmd, {
         cwd: REPO_ROOT,
         encoding: 'utf8',
         maxBuffer: 64 * 1024 * 1024,
@@ -234,7 +235,7 @@ function countCatchAndLogOnly() {
     const out = execFileSync(
       'rg',
       ['-U', '-c', String.raw`catch \(\w*\) \{\s*\n\s*console\.(error|warn|log)\([^\n]*\);?\s*\n\s*\}`, 'packages', 'apps',
-        '-g', '*.{ts,tsx}', '-g', '!**/node_modules/**', '-g', '!**/__tests__/**', '-g', '!**/*.test.*', ...RG_REFERENCE_ARGS],
+        '-g', '*.{ts,tsx}', '-g', '!**/node_modules/**', '-g', '!**/__tests__/**', '-g', '!**/*.test.*', '-g', '!**/NUL', '-g', '!**/NUL/**', ...RG_REFERENCE_ARGS],
       { cwd: REPO_ROOT, encoding: 'utf8' },
     );
     return out.split('\n').filter(Boolean).reduce((n, line) => n + Number(line.split(':').pop()), 0);
@@ -246,7 +247,7 @@ function countCatchAndLogOnly() {
 // Files that hand-roll debounce or throttle with setTimeout; use @repo/core/hooks/usePacer or
 // TanStack Pacer's Debouncer/Throttler instead.
 function countHandRolledPacing() {
-  const base = ['-g', '*.{ts,tsx}', '-g', '!**/node_modules/**', '-g', '!**/__tests__/**', '-g', '!**/*.test.*', ...RG_REFERENCE_ARGS];
+  const base = ['-g', '*.{ts,tsx}', '-g', '!**/node_modules/**', '-g', '!**/__tests__/**', '-g', '!**/*.test.*', '-g', '!**/NUL', '-g', '!**/NUL/**', ...RG_REFERENCE_ARGS];
   try {
     const named = execFileSync('rg', ['-l', '-i', 'debounce|throttle', 'packages', 'apps', ...base], { cwd: REPO_ROOT, encoding: 'utf8' })
       .split('\n').filter(Boolean);
@@ -263,7 +264,7 @@ function countHandRolledLoadingFlags() {
     const out = execFileSync(
       'rg',
       ['-c', String.raw`\[is\w*(Loading|Submitting|Saving|Sending|Processing|Fetching|Uploading|Creating|Deleting|Updating), set\w+\] = useState`,
-        'packages', 'apps', '-g', '*.{ts,tsx}', '-g', '!**/node_modules/**', '-g', '!**/__tests__/**', '-g', '!**/*.test.*', ...RG_REFERENCE_ARGS],
+        'packages', 'apps', '-g', '*.{ts,tsx}', '-g', '!**/node_modules/**', '-g', '!**/__tests__/**', '-g', '!**/*.test.*', '-g', '!**/NUL', '-g', '!**/NUL/**', ...RG_REFERENCE_ARGS],
       { cwd: REPO_ROOT, encoding: 'utf8' },
     );
     return out.split('\n').filter(Boolean).reduce((n, line) => n + Number(line.split(':').pop()), 0);
@@ -308,8 +309,23 @@ function countRootScripts() {
 
 function countFilesOver800Loc() {
   try {
-    const cmd = `rg --files packages apps -g "*.ts" -g "*.tsx" -g "!**/__tests__/**" -g "!**/*.test.*" -g "!**/dist/**" -g "!**/generated/**" -g "!**/node_modules/**" ${RG_REFERENCE_ARGS.map((a) => `'${a}'`).join(' ')}`;
-    const files = execSync(cmd, { cwd: REPO_ROOT, encoding: 'utf8' }).trim().split(/\r?\n/).filter(Boolean);
+    const args = [
+      '--files',
+      'packages',
+      'apps',
+      '-g', '*.ts',
+      '-g', '*.tsx',
+      '-g', '!**/__tests__/**',
+      '-g', '!**/*.test.*',
+      '-g', '!**/dist/**',
+      '-g', '!**/generated/**',
+      '-g', '!**/node_modules/**',
+      '-g', '!**/NUL',
+      '-g', '!**/NUL/**',
+      ...RG_REFERENCE_ARGS,
+    ];
+    const out = execFileSync('rg', args, { cwd: REPO_ROOT, encoding: 'utf8' });
+    const files = out.trim().split(/\r?\n/).filter(Boolean);
     let count = 0;
     for (const file of files) {
       try {
