@@ -171,6 +171,7 @@ docs/research
 
 # Multi-agent teamwork scratch & ephemeral orchestration state
 .agents/teamwork/
+.agents/state/coordination.sqlite*
 .tmp/
 .tmp-*/
 PROJECT.md

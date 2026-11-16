@@ -1,0 +1,932 @@
+diff --git "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615" "b/C:\\x\\research\\coordination-study\\experiment\\audit.mjs"
+index e69de29bb..a676a220b 100644
+--- "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615"
++++ "b/C:\\x\\research\\coordination-study\\experiment\\audit.mjs"
+@@ -0,0 +1,34 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import crypto from 'node:crypto';
++import { fileURLToPath } from 'node:url';
++
++const here = path.dirname(fileURLToPath(import.meta.url));
++const study = path.resolve(here, '..');
++const manifest = JSON.parse(fs.readFileSync(path.join(study, 'trial-manifest.json'), 'utf8'));
++const sha = (value) => crypto.createHash('sha256').update(value).digest('hex');
++const frozenHash = sha(fs.readFileSync(path.join(here, 'controller.frozen.mjs')));
++const rows = [];
++const signatures = new Map();
++for (const trial of manifest.trials) {
++  const packet = JSON.parse(fs.readFileSync(trial.packetFile, 'utf8'));
++  const signature = JSON.stringify({ request: packet.request, sources: packet.sources.map(({ id, sha256 }) => ({ id, sha256 })), outputShape: packet.outputShape, toolActionLimit: packet.toolActionLimit });
++  const previous = signatures.get(trial.caseId);
++  signatures.set(trial.caseId, signature);
++  const sourcesIntact = packet.sources.every((source) => sha(fs.readFileSync(path.join(trial.directory, source.file))) === source.sha256);
++  const controllerIntact = sha(fs.readFileSync(path.join(trial.directory, 'tools/controller.mjs'))) === frozenHash;
++  let outputValid = null;
++  let hasRawFinal = false;
++  if (trial.output) {
++    const output = JSON.parse(fs.readFileSync(trial.output, 'utf8'));
++    outputValid = output.workId === packet.workId;
++    hasRawFinal = fs.existsSync(path.join(path.dirname(trial.output), 'raw-final.txt'));
++  }
++  rows.push({ trialId: trial.trialId, matchedCasePacket: previous === undefined || previous === signature, sourcesIntact, controllerIntact, outputValid, hasRawFinal, model: trial.model, effort: trial.reasoningEffort, withinToolLimit: Number.isInteger(trial.toolActionsObserved) ? trial.toolActionsObserved <= 20 : null });
++}
++const caseModels = [...new Set(manifest.trials.map((trial) => trial.caseId))].map((caseId) => ({ caseId, models: [...new Set(manifest.trials.filter((trial) => trial.caseId === caseId && trial.model).map((trial) => `${trial.model}@${trial.reasoningEffort}`))] }));
++const result = { observedAt: new Date().toISOString(), rows, caseModels, guarantees: 'File integrity, matching case inputs, observed model settings and model-visible invocation counts only. Not semantic truth, sandbox isolation or measured discovery recall.' };
++fs.writeFileSync(path.join(study, 'artifact-audit.json'), JSON.stringify(result, null, 2));
++const violations = rows.filter((row) => !row.matchedCasePacket || !row.sourcesIntact || !row.controllerIntact || row.outputValid === false || row.withinToolLimit === false);
++console.log(JSON.stringify({ cases: caseModels, prepared: rows.length, responsesReceived: rows.filter((row) => row.outputValid !== null).length, matchingWorkIds: rows.filter((row) => row.outputValid === true).length, violations }, null, 2));
++if (violations.length || caseModels.some((row) => row.models.length > 1)) process.exitCode = 1;
+diff --git "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615" "b/C:\\x\\research\\coordination-study\\experiment\\canaries.mjs"
+index e69de29bb..5913a6faa 100644
+--- "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615"
++++ "b/C:\\x\\research\\coordination-study\\experiment\\canaries.mjs"
+@@ -0,0 +1,47 @@
++import fs from 'node:fs';
++import os from 'node:os';
++import path from 'node:path';
++import { spawnSync } from 'node:child_process';
++import { fileURLToPath } from 'node:url';
++
++const here = path.dirname(fileURLToPath(import.meta.url));
++const repo = path.resolve(here, '../../..');
++const root = fs.mkdtempSync(path.join(os.tmpdir(), 'handoff-boundary-'));
++for (const name of ['gate.mjs', 'stop-gate.mjs']) fs.copyFileSync(path.join(repo, '.agents', name), path.join(root, name));
++const scenarios = [
++  ['recognized-input', 2], ['tool-input-envelope', 0], ['missing-input', 0],
++  ['missing-receipt', 2], ['auto-ground', 0], ['invalid-date-receipt', 0],
++  ['stop-outside-git', 0], ['stop-untracked-canary', 0], ['stop-staged-canary', 2],
++];
++const rows = [];
++for (const [id, expected] of scenarios) {
++  const cwd = path.join(root, id);
++  fs.mkdirSync(cwd);
++  let input = {};
++  if (id === 'recognized-input' || id === 'tool-input-envelope') {
++    fs.writeFileSync(path.join(cwd, 'source.ts'), Array.from({ length: 60 }, (_, n) => `export const value${n} = ${n};`).join('\n'));
++    const body = { file_path: 'source.ts', content: 'export const short=true;\n' };
++    input = id === 'recognized-input' ? { input: body } : { tool_name: 'Write', tool_input: body };
++  }
++  if (['missing-receipt', 'auto-ground', 'invalid-date-receipt'].includes(id)) input = { input: { file_path: 'src/View.tsx', content: "import { Text } from 'react-native';\nexport const View=()=>null;\n" } };
++  if (id === 'invalid-date-receipt') {
++    fs.mkdirSync(path.join(cwd, '.agents/state'), { recursive: true });
++    fs.writeFileSync(path.join(cwd, '.agents/state/receipt.json'), JSON.stringify({ lastGrounding: 'not-a-date', packages: { 'react-native': { version: 'latest', timestamp: 'not-a-date' } } }));
++  }
++  if (id === 'stop-untracked-canary' || id === 'stop-staged-canary') {
++    const initialized = spawnSync('git', ['init', '--quiet'], { cwd, encoding: 'utf8' });
++    if (initialized.status !== 0) throw new Error(initialized.stderr);
++    fs.mkdirSync(path.join(cwd, 'apps/mobile'), { recursive: true });
++    fs.writeFileSync(path.join(cwd, 'apps/mobile/Canary.tsx'), "import { useAnimatedGestureHandler } from 'react-native-reanimated';\nconst gesture = useAnimatedGestureHandler({});\n");
++    if (id === 'stop-staged-canary') {
++      const staged = spawnSync('git', ['add', 'apps/mobile/Canary.tsx'], { cwd, encoding: 'utf8' });
++      if (staged.status !== 0) throw new Error(staged.stderr);
++    }
++  }
++  const script = id.startsWith('stop-') ? 'stop-gate.mjs' : 'gate.mjs';
++  const args = [path.join(root, script), ...(id === 'auto-ground' ? ['--auto-ground'] : [])];
++  const result = spawnSync(process.execPath, args, { cwd, input: JSON.stringify(input), encoding: 'utf8', timeout: 15000, env: { ...process.env, TERRAIN_AUTO_GROUND: '0', TERRAIN_TELEMETRY_OPT_IN: '0' } });
++  rows.push({ id, expected, actual: result.status, matched: result.status === expected, stdout: result.stdout, stderr: result.stderr, error: result.error?.message ?? null });
++}
++console.log(JSON.stringify({ observedAt: new Date().toISOString(), tier: 'G1 isolated subprocess boundaries', root, rows, allMatched: rows.every((row) => row.matched), limitations: ['Observed exit codes describe copied local scripts with synthetic inputs, not automatic hook invocation.', 'No network behavior or production performance was evaluated.'] }, null, 2));
++if (rows.some((row) => !row.matched)) process.exitCode = 1;
+diff --git "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615" "b/C:\\x\\research\\coordination-study\\experiment\\collect.mjs"
+index e69de29bb..142767a2c 100644
+--- "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615"
++++ "b/C:\\x\\research\\coordination-study\\experiment\\collect.mjs"
+@@ -0,0 +1,55 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import { execFileSync } from 'node:child_process';
++import { fileURLToPath } from 'node:url';
++
++const here = path.dirname(fileURLToPath(import.meta.url));
++const study = path.resolve(here, '..');
++const root = process.argv[2];
++const sessions = process.argv[3];
++if (!root || !sessions) throw new Error('usage: node collect.mjs prepared-root scoped-session-directory');
++const save = (file, value) => fs.writeFileSync(file, JSON.stringify(value, null, 2));
++const manifestFile = path.join(root, 'manifest.json');
++const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'));
++const matching = execFileSync('rg', ['-l', '--fixed-strings', path.basename(root), sessions, '-g', '*.jsonl'], { encoding: 'utf8' }).trim().split(/\r?\n/).filter(Boolean);
++const observed = [];
++for (const file of matching) {
++  const events = fs.readFileSync(file, 'utf8').trim().split('\n').map(JSON.parse);
++  const meta = events.find((event) => event.type === 'session_meta')?.payload;
++  const spawn = meta?.source?.subagent?.thread_spawn;
++  if (spawn?.parent_thread_id !== '01a1c971-6dff-7de1-946c-ded959a6e656' || !/^\/root\/work_\d+$/.test(spawn.agent_path ?? '')) continue;
++  const index = Number(spawn.agent_path.split('_').at(-1)) - 1;
++  const trial = manifest.trials[index];
++  if (!trial) throw new Error(`Unknown worker ${spawn.agent_path}`);
++  const outputDir = path.join(study, 'trials', trial.trialId);
++  fs.mkdirSync(outputDir, { recursive: true });
++  const contexts = events.filter((event) => event.type === 'turn_context').map((event) => ({ model: event.payload.model, effort: event.payload.effort }));
++  const calls = events.filter((event) => event.type === 'response_item' && ['function_call', 'custom_tool_call'].includes(event.payload.type));
++  const kept = events.filter((event) => event.type === 'response_item' && (['function_call', 'custom_tool_call', 'function_call_output', 'custom_tool_call_output', 'agent_message'].includes(event.payload.type) || event.payload.type === 'message' && ['user', 'assistant'].includes(event.payload.role)) || event.type === 'event_msg' && ['task_started', 'task_complete'].includes(event.payload.type));
++  save(path.join(outputDir, 'transcript.json'), { sessionId: meta.id, agentPath: spawn.agent_path, sourceTranscript: file, extraction: 'User requests, parent messages, tool calls and outputs, assistant messages, task lifecycle. System/developer instructions and private reasoning excluded.', events: kept });
++  const final = events.filter((event) => event.type === 'response_item' && event.payload.type === 'message' && event.payload.role === 'assistant' && event.payload.phase === 'final_answer').at(-1);
++  const finalText = final?.payload.content?.map((item) => item.text ?? '').join('') ?? null;
++  const originalDirectory = trial.originalDirectory ?? trial.directory;
++  const responseFile = path.join(originalDirectory, 'response.json');
++  let output = null;
++  if (finalText) {
++    fs.writeFileSync(path.join(outputDir, 'raw-final.txt'), finalText);
++    try { output = JSON.parse(finalText.replace(/^```(?:json)?\s*|\s*```$/g, '')); } catch {}
++  }
++  if (!output && fs.existsSync(responseFile)) output = JSON.parse(fs.readFileSync(responseFile, 'utf8'));
++  if (output) {
++    save(path.join(outputDir, 'response.json'), output);
++    const snapshot = path.join(outputDir, 'work');
++    fs.cpSync(originalDirectory, snapshot, { recursive: true });
++    Object.assign(trial, { originalDirectory, directory: snapshot, packetFile: path.join(snapshot, 'work.json') });
++  }
++  const usage = events.filter((event) => event.type === 'event_msg' && event.payload.type === 'token_count' && event.payload.info).at(-1)?.payload.info?.total_token_usage ?? null;
++  const errors = events.filter((event) => event.type === 'event_msg' && event.payload.type === 'task_complete' && event.payload.last_agent_message?.includes('usage limit')).map((event) => event.payload.last_agent_message);
++  const observedRecord = { collectedAt: new Date().toISOString(), sessionId: meta.id, agentPath: spawn.agent_path, contexts, toolActionsObserved: calls.length, toolActionDefinition: 'Model-visible function/custom tool invocations. Nested calls inside the exec entrypoint are retained in transcripts but not separately counted.', tokens: usage, monetaryCost: null, infrastructureErrors: errors, hasFinal: Boolean(finalText), hasOutput: Boolean(output), prototypeSha256: null };
++  save(path.join(outputDir, 'observation.json'), observedRecord);
++  Object.assign(trial, { status: output ? 'completed' : 'in_flight_or_failed', model: contexts.at(-1)?.model ?? null, reasoningEffort: contexts.at(-1)?.effort ?? null, toolActionsObserved: calls.length, tokens: usage, transcript: path.join(outputDir, 'transcript.json'), output: output ? path.join(outputDir, 'response.json') : null, monetaryCost: null });
++  observed.push({ trialId: trial.trialId, status: trial.status, toolActions: calls.length });
++}
++save(manifestFile, manifest);
++save(path.join(study, 'trial-manifest.json'), manifest);
++console.log(JSON.stringify({ observed, completed: manifest.trials.filter((trial) => trial.status === 'completed').length, total: manifest.trials.length }, null, 2));
+diff --git "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615" "b/C:\\x\\research\\coordination-study\\experiment\\controller.frozen.mjs"
+index e69de29bb..aea6c088f 100644
+--- "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615"
++++ "b/C:\\x\\research\\coordination-study\\experiment\\controller.frozen.mjs"
+@@ -0,0 +1,113 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import crypto from 'node:crypto';
++import { pathToFileURL } from 'node:url';
++
++export const stages = ['context', 'analysis', 'verification', 'reconciliation'];
++const sha = (value) => crypto.createHash('sha256').update(value).digest('hex');
++const object = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
++const exact = (value, keys) => object(value) && Object.keys(value).every((key) => keys.includes(key));
++const string = (value) => typeof value === 'string' && value.trim().length > 0;
++
++export function loadSources(packetFile) {
++  const packet = JSON.parse(fs.readFileSync(packetFile, 'utf8'));
++  return packet.sources.map((source) => ({
++    id: source.id,
++    sha256: sha(fs.readFileSync(path.resolve(path.dirname(packetFile), source.file))),
++  }));
++}
++
++export function createState(packetFile) {
++  return { version: 1, workId: JSON.parse(fs.readFileSync(packetFile, 'utf8')).workId, events: [] };
++}
++
++function actionError(action) {
++  if (!exact(action, ['id', 'kind', 'stage', 'summary', 'evidence', 'unresolved'])) return 'invalid_action_shape';
++  if (!string(action.id) || action.kind !== 'record' || !stages.includes(action.stage) || !string(action.summary)) return 'invalid_action_shape';
++  if (!Array.isArray(action.unresolved) || !action.unresolved.every(string)) return 'invalid_unresolved';
++  if (!Array.isArray(action.evidence) || !action.evidence.length) return 'incomplete_evidence';
++  if (!action.evidence.every((item) => exact(item, ['sourceId', 'sha256']) && string(item.sourceId) && /^[a-f0-9]{64}$/.test(item.sha256))) return 'invalid_evidence';
++  if (new Set(action.evidence.map((item) => item.sourceId)).size !== action.evidence.length) return 'duplicate_evidence';
++  return null;
++}
++
++export function project(state, sources) {
++  if (!exact(state, ['version', 'workId', 'events']) || state.version !== 1 || !string(state.workId) || !Array.isArray(state.events)) throw new Error('invalid_state');
++  const current = new Map(sources.map((source) => [source.id, source.sha256]));
++  const completed = [];
++  const invalidated = [];
++  let stale = false;
++  let unresolved = [];
++  const ids = new Set();
++  for (const [eventIndex, event] of state.events.entries()) {
++    const error = actionError(event);
++    if (error || ids.has(event.id)) throw new Error('invalid_event_history');
++    ids.add(event.id);
++    if (stages[eventIndex] !== event.stage) throw new Error('invalid_event_order');
++    const changed = event.evidence.some((item) => current.get(item.sourceId) !== item.sha256);
++    if (changed || stale) {
++      stale = true;
++      if (!invalidated.includes(event.stage)) invalidated.push(event.stage);
++    } else {
++      completed.push(event.stage);
++      unresolved = event.unresolved;
++    }
++  }
++  return { workId: state.workId, completed, invalidated, unresolved, nextAction: stages[completed.length] ?? (unresolved.length ? 'resolve_authority' : 'complete'), canComplete: completed.length === stages.length && unresolved.length === 0 };
++}
++
++export function record(state, action, sources) {
++  const error = actionError(action);
++  if (error) throw new Error(error);
++  const existing = state.events.find((event) => event.id === action.id);
++  if (existing) {
++    if (JSON.stringify(existing) !== JSON.stringify(action)) throw new Error('action_id_conflict');
++    return { state, duplicate: true, status: project(state, sources) };
++  }
++  const status = project(state, sources);
++  if (status.invalidated.length) throw new Error('stale_inputs_require_rebase');
++  if (action.stage !== status.nextAction) throw new Error('missing_prerequisite');
++  const sourceMap = new Map(sources.map((source) => [source.id, source.sha256]));
++  if (action.evidence.some((item) => sourceMap.get(item.sourceId) !== item.sha256)) throw new Error('stale_or_unknown_evidence');
++  const next = { ...state, events: [...state.events, action] };
++  return { state: next, duplicate: false, status: project(next, sources) };
++}
++
++function writeState(file, state) {
++  const temporary = `${file}.${crypto.randomUUID()}.tmp`;
++  fs.writeFileSync(temporary, JSON.stringify(state, null, 2), { flag: 'wx' });
++  fs.renameSync(temporary, file);
++}
++
++export function run(argv) {
++  const [command, packetFile, stateFile, actionFile] = argv;
++  if (!packetFile || !stateFile || !['init', 'status', 'record', 'rebase'].includes(command)) throw new Error('usage: controller.mjs init|status|record|rebase work.json state.json [action.json]');
++  const sources = loadSources(packetFile);
++  if (command === 'init') {
++    if (fs.existsSync(stateFile)) throw new Error('state_already_exists');
++    writeState(stateFile, createState(packetFile));
++  }
++  let state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
++  if (state.workId !== JSON.parse(fs.readFileSync(packetFile, 'utf8')).workId) throw new Error('work_id_mismatch');
++  if (command === 'record') {
++    const result = record(state, JSON.parse(fs.readFileSync(actionFile, 'utf8')), sources);
++    if (!result.duplicate) writeState(stateFile, result.state);
++    state = result.state;
++  }
++  if (command === 'rebase') {
++    const status = project(state, sources);
++    const first = status.invalidated[0];
++    if (first) {
++      const archive = `${stateFile}.previous-${crypto.randomUUID()}.json`;
++      fs.copyFileSync(stateFile, archive, fs.constants.COPYFILE_EXCL);
++      state = { ...state, events: state.events.slice(0, state.events.findIndex((event) => event.stage === first)) };
++      writeState(stateFile, state);
++    }
++  }
++  return { ...project(state, sources), sources, guarantees: 'Checks evidence references, source freshness and declared stage order. It does not establish truthful interpretation, actual reading, authorization identity, or resistance to direct local file edits.' };
++}
++
++if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
++  try { console.log(JSON.stringify(run(process.argv.slice(2)), null, 2)); }
++  catch (error) { console.error(JSON.stringify({ error: error.message })); process.exitCode = 1; }
++}
+diff --git "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615" "b/C:\\x\\research\\coordination-study\\experiment\\controller.mjs"
+index e69de29bb..14646af8e 100644
+--- "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615"
++++ "b/C:\\x\\research\\coordination-study\\experiment\\controller.mjs"
+@@ -0,0 +1,115 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import crypto from 'node:crypto';
++import { pathToFileURL } from 'node:url';
++
++export const stages = ['context', 'analysis', 'verification', 'reconciliation'];
++const sha = (value) => crypto.createHash('sha256').update(value).digest('hex');
++const normalize = (value) => Array.isArray(value) ? value.map(normalize) : value !== null && typeof value === 'object' ? Object.fromEntries(Object.entries(value).sort(([left], [right]) => left.localeCompare(right)).map(([key, item]) => [key, normalize(item)])) : value;
++const object = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
++const exact = (value, keys) => object(value) && Object.keys(value).every((key) => keys.includes(key));
++const string = (value) => typeof value === 'string' && value.trim().length > 0;
++
++export function loadSources(packetFile) {
++  const packet = JSON.parse(fs.readFileSync(packetFile, 'utf8'));
++  return packet.sources.map((source) => ({
++    id: source.id,
++    sha256: sha(fs.readFileSync(path.resolve(path.dirname(packetFile), source.file))),
++  }));
++}
++
++export function createState(packetFile) {
++  return { version: 1, workId: JSON.parse(fs.readFileSync(packetFile, 'utf8')).workId, sourceIds: loadSources(packetFile).map((source) => source.id).sort(), events: [] };
++}
++
++function actionError(action) {
++  if (!exact(action, ['id', 'kind', 'stage', 'summary', 'evidence', 'unresolved'])) return 'invalid_action_shape';
++  if (!string(action.id) || action.kind !== 'record' || !stages.includes(action.stage) || !string(action.summary)) return 'invalid_action_shape';
++  if (!Array.isArray(action.unresolved) || !action.unresolved.every(string)) return 'invalid_unresolved';
++  if (!Array.isArray(action.evidence) || !action.evidence.length) return 'incomplete_evidence';
++  if (!action.evidence.every((item) => exact(item, ['sourceId', 'sha256']) && string(item.sourceId) && /^[a-f0-9]{64}$/.test(item.sha256))) return 'invalid_evidence';
++  if (new Set(action.evidence.map((item) => item.sourceId)).size !== action.evidence.length) return 'duplicate_evidence';
++  return null;
++}
++
++export function project(state, sources) {
++  if (!exact(state, ['version', 'workId', 'sourceIds', 'events']) || state.version !== 1 || !string(state.workId) || !Array.isArray(state.sourceIds) || !state.sourceIds.every(string) || new Set(state.sourceIds).size !== state.sourceIds.length || !Array.isArray(state.events)) throw new Error('invalid_state');
++  const current = new Map(sources.map((source) => [source.id, source.sha256]));
++  const completed = [];
++  const invalidated = [];
++  const membershipChanged = JSON.stringify([...state.sourceIds].sort()) !== JSON.stringify(sources.map((source) => source.id).sort());
++  let stale = membershipChanged;
++  let unresolved = [];
++  const ids = new Set();
++  for (const [eventIndex, event] of state.events.entries()) {
++    const error = actionError(event);
++    if (error || ids.has(event.id)) throw new Error('invalid_event_history');
++    ids.add(event.id);
++    if (stages[eventIndex] !== event.stage) throw new Error('invalid_event_order');
++    const changed = event.evidence.some((item) => current.get(item.sourceId) !== item.sha256);
++    if (changed || stale) {
++      stale = true;
++      if (!invalidated.includes(event.stage)) invalidated.push(event.stage);
++    } else {
++      completed.push(event.stage);
++      unresolved = [...new Set([...unresolved, ...event.unresolved])];
++    }
++  }
++  return { workId: state.workId, completed, invalidated, unresolved, sourceSetChanged: membershipChanged, nextAction: stages[completed.length] ?? (unresolved.length ? 'resolve_authority' : 'complete'), canComplete: completed.length === stages.length && unresolved.length === 0 };
++}
++
++export function record(state, action, sources) {
++  const error = actionError(action);
++  if (error) throw new Error(error);
++  const existing = state.events.find((event) => event.id === action.id);
++  if (existing) {
++    if (JSON.stringify(normalize(existing)) !== JSON.stringify(normalize(action))) throw new Error('action_id_conflict');
++    return { state, duplicate: true, status: project(state, sources) };
++  }
++  const status = project(state, sources);
++  if (status.invalidated.length || status.sourceSetChanged) throw new Error('stale_inputs_require_rebase');
++  if (action.stage !== status.nextAction) throw new Error('missing_prerequisite');
++  const sourceMap = new Map(sources.map((source) => [source.id, source.sha256]));
++  if (action.evidence.some((item) => sourceMap.get(item.sourceId) !== item.sha256)) throw new Error('stale_or_unknown_evidence');
++  const next = { ...state, events: [...state.events, action] };
++  return { state: next, duplicate: false, status: project(next, sources) };
++}
++
++function writeState(file, state) {
++  const temporary = `${file}.${crypto.randomUUID()}.tmp`;
++  fs.writeFileSync(temporary, JSON.stringify(state, null, 2), { flag: 'wx' });
++  fs.renameSync(temporary, file);
++}
++
++export function run(argv) {
++  const [command, packetFile, stateFile, actionFile] = argv;
++  if (!packetFile || !stateFile || !['init', 'status', 'record', 'rebase'].includes(command)) throw new Error('usage: controller.mjs init|status|record|rebase work.json state.json [action.json]');
++  const sources = loadSources(packetFile);
++  if (command === 'init') {
++    if (fs.existsSync(stateFile)) throw new Error('state_already_exists');
++    writeState(stateFile, createState(packetFile));
++  }
++  let state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
++  if (state.workId !== JSON.parse(fs.readFileSync(packetFile, 'utf8')).workId) throw new Error('work_id_mismatch');
++  if (command === 'record') {
++    const result = record(state, JSON.parse(fs.readFileSync(actionFile, 'utf8')), sources);
++    if (!result.duplicate) writeState(stateFile, result.state);
++    state = result.state;
++  }
++  if (command === 'rebase') {
++    const status = project(state, sources);
++    const first = status.invalidated[0];
++    if (first || status.sourceSetChanged) {
++      const archive = `${stateFile}.previous-${crypto.randomUUID()}.json`;
++      fs.copyFileSync(stateFile, archive, fs.constants.COPYFILE_EXCL);
++      state = { ...state, sourceIds: sources.map((source) => source.id).sort(), events: status.sourceSetChanged ? [] : state.events.slice(0, state.events.findIndex((event) => event.stage === first)) };
++      writeState(stateFile, state);
++    }
++  }
++  return { ...project(state, sources), sources, guarantees: 'Checks evidence references, source freshness and declared stage order. It does not establish truthful interpretation, actual reading, authorization identity, or resistance to direct local file edits.' };
++}
++
++if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
++  try { console.log(JSON.stringify(run(process.argv.slice(2)), null, 2)); }
++  catch (error) { console.error(JSON.stringify({ error: error.message })); process.exitCode = 1; }
++}
+diff --git "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615" "b/C:\\x\\research\\coordination-study\\experiment\\controller.test.mjs"
+index e69de29bb..1f629a59b 100644
+--- "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615"
++++ "b/C:\\x\\research\\coordination-study\\experiment\\controller.test.mjs"
+@@ -0,0 +1,143 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import os from 'node:os';
++import path from 'node:path';
++import { spawnSync } from 'node:child_process';
++import { fileURLToPath } from 'node:url';
++import { createState, loadSources, project, record, stages } from './controller.mjs';
++
++const here = path.dirname(fileURLToPath(import.meta.url));
++function setup() {
++  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'handoff-'));
++  fs.writeFileSync(path.join(directory, 'a.txt'), 'stable authority');
++  fs.writeFileSync(path.join(directory, 'b.txt'), 'earlier authority');
++  const packetFile = path.join(directory, 'work.json');
++  fs.writeFileSync(packetFile, JSON.stringify({ workId: 'local-work', sources: [{ id: 'a', file: 'a.txt' }, { id: 'b', file: 'b.txt' }] }));
++  return { directory, packetFile, sources: loadSources(packetFile), state: createState(packetFile) };
++}
++function action(stage, sources, options = {}) {
++  return { id: `action-${stage}`, kind: 'record', stage, summary: `Reviewed ${stage}`, evidence: sources.map((source) => ({ sourceId: source.id, sha256: source.sha256 })), unresolved: [], ...options };
++}
++function completed(fixture) {
++  let state = fixture.state;
++  for (const stage of stages) state = record(state, action(stage, fixture.sources), fixture.sources).state;
++  return state;
++}
++
++test('missing prerequisite blocks reconciliation and does not mutate state', () => {
++  const f = setup();
++  assert.throws(() => record(f.state, action('reconciliation', f.sources), f.sources), /missing_prerequisite/);
++  assert.equal(f.state.events.length, 0);
++});
++test('unknown fields and discriminants cannot bypass action validation', () => {
++  const f = setup();
++  for (const patch of [{ completed: true }, { kind: 'approve' }, { stage: 'complete' }, { id: '' }, { unresolved: [5] }]) assert.throws(() => record(f.state, action('context', f.sources, patch), f.sources));
++});
++test('missing, duplicate and fabricated evidence are rejected', () => {
++  const f = setup();
++  assert.throws(() => record(f.state, action('context', f.sources, { evidence: [] }), f.sources), /incomplete_evidence/);
++  assert.throws(() => record(f.state, action('context', f.sources, { evidence: [{ sourceId: 'missing', sha256: '0'.repeat(64) }] }), f.sources), /stale_or_unknown_evidence/);
++  const duplicate = action('context', f.sources);
++  duplicate.evidence.push(duplicate.evidence[0]);
++  assert.throws(() => record(f.state, duplicate, f.sources), /duplicate_evidence/);
++});
++test('identical repeated action is idempotent including reordered object keys', () => {
++  const f = setup();
++  const first = action('context', f.sources);
++  const state = record(f.state, first, f.sources).state;
++  const reordered = Object.fromEntries(Object.entries(first).reverse());
++  const replay = record(state, reordered, f.sources);
++  assert.equal(replay.duplicate, true);
++  assert.equal(replay.state.events.length, 1);
++  assert.throws(() => record(state, { ...first, summary: 'different payload' }, f.sources), /action_id_conflict/);
++});
++test('same action ID cannot conceal changed nested evidence', () => {
++  const f = setup();
++  const first = action('context', f.sources);
++  const state = record(f.state, first, f.sources).state;
++  assert.throws(() => record(state, { ...first, evidence: [{ sourceId: 'a', sha256: '0'.repeat(64) }] }, f.sources), /action_id_conflict/);
++});
++test('all completed stages become stale after a dependency hash changes', () => {
++  const f = setup();
++  const state = completed(f);
++  fs.writeFileSync(path.join(f.directory, 'a.txt'), 'new authority');
++  const changed = loadSources(f.packetFile);
++  const status = project(state, changed);
++  assert.deepEqual(status.completed, []);
++  assert.deepEqual(status.invalidated, stages);
++  assert.equal(status.canComplete, false);
++  assert.throws(() => record(state, action('context', changed), changed), /action_id_conflict|stale_inputs_require_rebase/);
++});
++test('source membership additions and removals invalidate prior work', () => {
++  const f = setup();
++  const state = completed(f);
++  for (const changed of [f.sources.slice(0, 1), [...f.sources, { id: 'c', sha256: '0'.repeat(64) }]]) {
++    const status = project(state, changed);
++    assert.equal(status.sourceSetChanged, true);
++    assert.equal(status.canComplete, false);
++    assert.deepEqual(status.invalidated, stages);
++  }
++});
++test('a source change preserves the valid independent prefix', () => {
++  const f = setup();
++  let state = record(f.state, action('context', [f.sources[0]]), f.sources).state;
++  state = record(state, action('analysis', [f.sources[1]]), f.sources).state;
++  fs.writeFileSync(path.join(f.directory, 'b.txt'), 'new authority');
++  const status = project(state, loadSources(f.packetFile));
++  assert.deepEqual(status.completed, ['context']);
++  assert.deepEqual(status.invalidated, ['analysis']);
++  assert.equal(status.nextAction, 'analysis');
++});
++test('remaining material decisions prevent completed status', () => {
++  const f = setup();
++  let state = f.state;
++  for (const stage of stages) state = record(state, action(stage, f.sources, { unresolved: ['Owner decision absent'] }), f.sources).state;
++  const status = project(state, f.sources);
++  assert.equal(status.nextAction, 'resolve_authority');
++  assert.equal(status.canComplete, false);
++});
++test('forged stage order and unknown persisted state fields are rejected', () => {
++  const f = setup();
++  assert.throws(() => project({ ...f.state, completed: stages }, f.sources), /invalid_state/);
++  assert.throws(() => project({ ...f.state, events: [action('verification', f.sources)] }, f.sources), /invalid_event_order/);
++});
++
++test('a later empty action cannot silently clear an earlier material decision', () => {
++  const f = setup();
++  let state = record(f.state, action('context', f.sources, { unresolved: ['Owner decision absent'] }), f.sources).state;
++  for (const stage of stages.slice(1)) state = record(state, action(stage, f.sources), f.sources).state;
++  assert.equal(project(state, f.sources).canComplete, false);
++  assert.deepEqual(project(state, f.sources).unresolved, ['Owner decision absent']);
++});
++test('actual process restart recovers state and rebase archives stale history', () => {
++  const f = setup();
++  const stateFile = path.join(f.directory, 'state.json');
++  const invoke = (...args) => {
++    const result = spawnSync(process.execPath, [path.join(here, 'controller.mjs'), ...args], { encoding: 'utf8' });
++    assert.equal(result.status, 0, result.stderr);
++    return JSON.parse(result.stdout);
++  };
++  invoke('init', f.packetFile, stateFile);
++  const first = action('context', [f.sources[0]]);
++  const second = action('analysis', [f.sources[1]]);
++  for (const item of [first, second]) {
++    const actionFile = path.join(f.directory, `${item.id}.json`);
++    fs.writeFileSync(actionFile, JSON.stringify(item));
++    invoke('record', f.packetFile, stateFile, actionFile);
++  }
++  assert.deepEqual(invoke('status', f.packetFile, stateFile).completed, ['context', 'analysis']);
++  fs.writeFileSync(path.join(f.directory, 'b.txt'), 'new authority');
++  assert.deepEqual(invoke('status', f.packetFile, stateFile).invalidated, ['analysis']);
++  const rebased = invoke('rebase', f.packetFile, stateFile);
++  assert.deepEqual(rebased.completed, ['context']);
++  assert.equal(rebased.nextAction, 'analysis');
++  const archives = fs.readdirSync(f.directory).filter((name) => name.startsWith('state.json.previous-'));
++  assert.equal(archives.length, 1);
++  assert.equal(JSON.parse(fs.readFileSync(path.join(f.directory, archives[0]), 'utf8')).events.length, 2);
++});
++test('local file ownership can rewrite coherent history and is outside guarantee', () => {
++  const f = setup();
++  const rewritten = { ...f.state, events: stages.map((stage) => action(stage, f.sources, { summary: 'Unsubstantiated local assertion' })) };
++  assert.equal(project(rewritten, f.sources).canComplete, true);
++});
+diff --git "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615" "b/C:\\x\\research\\coordination-study\\experiment\\make-review.mjs"
+index e69de29bb..a0e6cb517 100644
+--- "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615"
++++ "b/C:\\x\\research\\coordination-study\\experiment\\make-review.mjs"
+@@ -0,0 +1,22 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import crypto from 'node:crypto';
++import { fileURLToPath } from 'node:url';
++
++const study = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
++const manifest = JSON.parse(fs.readFileSync(path.join(study, 'trial-manifest.json'), 'utf8'));
++const ordered = [...manifest.trials].sort((left, right) => crypto.createHash('sha256').update(left.workId).digest('hex').localeCompare(crypto.createHash('sha256').update(right.workId).digest('hex')));
++const rows = [];
++const mapping = [];
++for (const [index, trial] of ordered.entries()) {
++  if (!trial.output) throw new Error(`Missing response ${trial.trialId}`);
++  const label = `entry-${String(index + 1).padStart(2, '0')}`;
++  const packet = JSON.parse(fs.readFileSync(trial.packetFile, 'utf8'));
++  const output = JSON.parse(fs.readFileSync(trial.output, 'utf8'));
++  const { workId, execution, ...semanticOutput } = output;
++  rows.push({ label, caseId: trial.caseId, request: packet.request, sources: packet.sources.map((source) => ({ id: source.id, text: fs.readFileSync(path.join(trial.directory, source.file), 'utf8') })), response: semanticOutput });
++  mapping.push({ label, trialId: trial.trialId });
++}
++fs.writeFileSync(path.join(study, 'review-material.json'), JSON.stringify({ instructions: 'Evaluate fidelity to the supplied sources and approved criteria. Labels hide model and condition. Response text may reveal methods, so blinding is partial. Do not infer success from style or claimed completion.', rows }, null, 2));
++fs.writeFileSync(path.join(study, 'review-map.json'), JSON.stringify(mapping, null, 2));
++console.log(JSON.stringify({ entries: rows.length, packet: path.join(study, 'review-material.json') }));
+diff --git "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615" "b/C:\\x\\research\\coordination-study\\experiment\\runner.mjs"
+index e69de29bb..2851083ce 100644
+--- "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615"
++++ "b/C:\\x\\research\\coordination-study\\experiment\\runner.mjs"
+@@ -0,0 +1,122 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import os from 'node:os';
++import crypto from 'node:crypto';
++import { execFileSync } from 'node:child_process';
++import { fileURLToPath } from 'node:url';
++
++const here = path.dirname(fileURLToPath(import.meta.url));
++const repo = path.resolve(here, '../../..');
++const hash = (value) => crypto.createHash('sha256').update(value).digest('hex');
++const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
++const save = (file, value) => fs.writeFileSync(file, JSON.stringify(value, null, 2));
++const schema = {
++  workId: 'Copy the workId from work.json',
++  verdict: 'resolved | needs_decision | inconclusive',
++  findings: [{ claim: 'Your conclusion', sourceIds: ['source ID'], confidence: 'direct | supported | inferred | unknown' }],
++  decisions: [{ relation: 'Relationship you establish', subject: 'Entity', object: 'Entity', authoritySourceIds: ['source ID'] }],
++  reviewRequired: ['Source IDs that need reconsideration'],
++  unresolved: ['Material unresolved questions'],
++  execution: { runtimeHookStatus: 'observed | configured_only | unavailable | not_applicable', canaryEvidence: 'Path or null', completedSteps: [], invalidatedSteps: [], nextAction: 'Next concrete action' },
++  limitations: ['Limits on this conclusion'],
++};
++const cases = [
++  { id: 'documents', task: 'We need an accurate entry path for Gurudevi documentation. Explain how the introduction and Covenant relate, identify any document lifecycle changes needed, and preserve the useful purpose of both.', sources: [
++    ['intro', 'docs/Core/what-is-gurudevi.md', 1, 32], ['covenant', 'docs/Core/gurudevi-soul-and-core-covenant.md', 1, 35], ['covenant-scope', 'docs/Core/gurudevi-soul-and-core-covenant.md', 200, 220],
++  ] },
++  { id: 'capabilities', task: 'Resume the API foundation work. Establish what the current API admits, what the earlier empty-contract description means now, and whether this authorizes implementing business procedures. Identify records needing review.', sources: [
++    ['catalog-description', 'packages/core/src/flows/pjc/api.foundation.json', 1, 60], ['router', 'apps/sanctuary-api/src/core/router.ts', 1, 100], ['capabilities', 'apps/sanctuary-api/src/modules/catalog.ts', 115, 205], ['foundation-policy', 'apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md', 1, 45],
++  ] },
++  { id: 'instructions', task: 'Prepare to add a shared UI field that calls an API. Determine the applicable API and UI conventions from these records, identify inconsistent guidance, and say which instructions need reconsideration before implementation.', sources: [
++    ['older-workflow', '.agents/workflows/code-execution.md', 1, 100], ['platform-rules', 'AGENTS.md', 1, 180],
++  ] },
++  { id: 'hooks', task: 'Can we rely on automatic grounding and completion checks in this Codex session? Examine the supplied records and the available tools. Use a harmless local invocation if useful, but distinguish a manually invoked script from automatic interception. Report what is established and what is unavailable.', sources: [
++    ['hook-config', '.claude/settings.json', 1, 60], ['gate-description', '.agents/gate.mjs', 1, 65], ['gate-entry', '.agents/gate.mjs', 950, 1100],
++  ] },
++  { id: 'resume', task: 'Continue the interrupted change. Some prior work is still valid and one source changed. Determine what can be inherited, what must be reconsidered, and the next action. Preserve completed work that is unaffected.', synthetic: [
++    { id: 'stable-source', text: 'The accepted account identifier is immutable. Revision: stable-1. This record did not change after the handoff.' },
++    { id: 'changed-source', text: 'Revision: access-2. Owner clarification: invitation possession never grants school authority; server-confirmed membership is required.' },
++    { id: 'handoff', text: 'Completed: identity inspection used stable-source revision stable-1. Completed: authority analysis used changed-source revision access-1, which said invitation possession grants school access. Verification and reconciliation were not started. No deployed changes were made.' },
++  ] },
++  { id: 'authority', task: 'Prepare the sharing behavior for private journals. Determine whether the current record authorizes implementation and identify the next material decision, without inventing product policy.', synthetic: [
++    { id: 'proposal-a', text: 'Status: proposed. Author: implementing agent. Date: 2026-11-10. Suggested behavior: principals may view all private journal entries for safeguarding. Owner acceptance: absent.' },
++    { id: 'proposal-b', text: 'Status: proposed. Author: design agent. Date: 2026-11-11. Suggested behavior: journals remain owner-only, with explicit person-initiated sharing. Owner acceptance: absent.' },
++    { id: 'governance', text: 'Approved procedure: agents can investigate and propose options. The human product owner decides journal disclosure policy. Neither agent may approve its own proposal. Product-owner decision is not present in the supplied record.' },
++  ] },
++];
++
++function prepare(destination) {
++  const root = destination ? path.resolve(destination) : fs.mkdtempSync(path.join(os.tmpdir(), 'handoff-'));
++  fs.mkdirSync(root, { recursive: true });
++  if (fs.existsSync(path.join(root, 'manifest.json'))) throw new Error('destination already prepared');
++  const revision = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: repo, encoding: 'utf8' }).trim();
++  const observations = [];
++  const rows = [];
++  const snapshots = cases.map((item) => {
++    const sources = (item.sources ?? []).map(([id, file, start, end]) => {
++      const full = fs.readFileSync(path.join(repo, file));
++      const lines = full.toString('utf8').split(/\r?\n/);
++      const text = lines.slice(start - 1, end).map((line, index) => `${start + index}: ${line}`).join('\n');
++      return { id, text, origin: file, lineStart: start, lineEnd: Math.min(end, lines.length), fullSha256: hash(full), extractSha256: hash(text) };
++    });
++    for (const source of item.synthetic ?? []) sources.push({ ...source, origin: 'synthetic fixture', extractSha256: hash(source.text) });
++    return { ...item, sources };
++  });
++  const conditions = {
++    X: 'Use the supplied project context and available tools to answer the request. Return your result in the required JSON shape.',
++    Y: 'Before answering, recover the existing intent and decisions, inspect implementation evidence, distinguish historical and current state, record the consequential choices and sources, and reconcile affected records. Report unknowns explicitly. Return your result in the required JSON shape.',
++    Z: 'Use tools/controller.mjs to initialize persisted work state from work.json, inspect status, and record context, analysis, verification, and reconciliation in order. Record an action by writing JSON {id,kind:"record",stage,summary,evidence:[{sourceId,sha256}],unresolved:[]} and calling node tools/controller.mjs record work.json state.json action.json. Evidence hashes come from the controller status sources. Use node tools/controller.mjs status work.json state.json to resume. If a source changed, use rebase to preserve the valid prefix and archive prior state. The controller checks structure and source freshness; you remain responsible for truthful interpretation. Return your result in the required JSON shape.',
++  };
++  for (const fixture of snapshots) {
++    for (const condition of ['X', 'Y', 'Z']) {
++      for (const repeat of [1, 2]) {
++        const workId = crypto.randomUUID();
++        const directory = path.join(root, `work-${workId.slice(0, 8)}`);
++        fs.mkdirSync(path.join(directory, 'sources'), { recursive: true });
++        fs.mkdirSync(path.join(directory, 'tools'));
++        const sources = fixture.sources.map((source) => {
++          const file = `sources/${source.id}.txt`;
++          fs.writeFileSync(path.join(directory, file), source.text);
++          return { id: source.id, file, sha256: source.extractSha256, origin: source.origin, lineStart: source.lineStart, lineEnd: source.lineEnd };
++        });
++        const packet = { workId, request: fixture.task, sources, procedure: conditions[condition], outputShape: schema, toolActionLimit: 20, instructions: 'Work only with these frozen sources and the provided local tools. Do not read neighboring work folders, manifests, evaluator material or the original repository. Do not modify sources. Write only local state/action files if needed, and return JSON. Null resource measurements are preferable to invented measurements.' };
++        save(path.join(directory, 'work.json'), packet);
++        fs.copyFileSync(path.join(here, 'controller.frozen.mjs'), path.join(directory, 'tools/controller.mjs'));
++        rows.push({ trialId: `${fixture.id}-${condition}-${repeat}`, caseId: fixture.id, condition, repeat, workId, directory, packetFile: path.join(directory, 'work.json'), status: 'not_started', model: null, reasoningEffort: null, toolActionsObserved: null, tokens: null, monetaryCost: null, transcript: null, output: null });
++      }
++    }
++    observations.push({ caseId: fixture.id, sources: fixture.sources });
++  }
++  const manifest = { version: 1, createdAt: new Date().toISOString(), revision, root, conditions: { X: 'current setup', Y: 'explicit pstack procedures', Z: 'executable procedure prototype' }, baselineContamination: 'Current workspace AGENTS.md already activates pstack. X is not a no-pstack control. Trial forks also inherit system instructions; prompts cannot erase them.', trialCount: rows.length, limits: { maxToolActions: 20, infrastructureRetries: 1, repeats: 2 }, snapshots: observations, trials: rows };
++  save(path.join(root, 'manifest.json'), manifest);
++  return { root, manifestFile: path.join(root, 'manifest.json'), trials: rows.map(({ trialId, packetFile }) => ({ trialId, packetFile })) };
++}
++
++function structuralScore(manifest) {
++  return manifest.trials.map((trial) => {
++    if (!trial.output) return { trialId: trial.trialId, status: 'inconclusive', reason: 'No actual agent output recorded' };
++    const result = read(trial.output);
++    const packet = read(trial.packetFile);
++    const ids = new Set(packet.sources.map((source) => source.id));
++    const checks = {
++      matchingWorkId: result.workId === trial.workId,
++      verdict: ['resolved', 'needs_decision', 'inconclusive'].includes(result.verdict),
++      findings: Array.isArray(result.findings) && result.findings.length > 0 && result.findings.every((item) => typeof item.claim === 'string' && Array.isArray(item.sourceIds) && item.sourceIds.length > 0 && item.sourceIds.every((id) => ids.has(id))),
++      decisions: Array.isArray(result.decisions) && result.decisions.every((item) => Array.isArray(item.authoritySourceIds) && item.authoritySourceIds.every((id) => ids.has(id))),
++      reviewRequired: Array.isArray(result.reviewRequired) && result.reviewRequired.every((id) => ids.has(id)),
++      unresolved: Array.isArray(result.unresolved),
++      execution: result.execution !== null && typeof result.execution === 'object',
++      limitations: Array.isArray(result.limitations),
++      toolBudget: Number.isInteger(trial.toolActionsObserved) ? trial.toolActionsObserved <= 20 : null,
++    };
++    return { trialId: trial.trialId, checks, structuralStatus: Object.values(checks).some((value) => value === false) ? 'not_verified' : Object.values(checks).some((value) => value === null) ? 'inconclusive' : 'verified', semanticStatus: 'requires_independent_review', caveat: 'Structure and references do not prove correct interpretation or real tool execution.' };
++  });
++}
++
++try {
++  const [command, location] = process.argv.slice(2);
++  if (command === 'prepare') console.log(JSON.stringify(prepare(location), null, 2));
++  else if (command === 'list') console.log(JSON.stringify(read(path.join(location, 'manifest.json')).trials, null, 2));
++  else if (command === 'score') console.log(JSON.stringify(structuralScore(read(path.join(location, 'manifest.json'))), null, 2));
++  else throw new Error('usage: runner.mjs prepare [outside-repo-directory] | list directory | score directory');
++} catch (error) { console.error(error.message); process.exitCode = 1; }
+diff --git "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615" "b/C:\\x\\research\\coordination-study\\experiment\\summarize.mjs"
+index e69de29bb..a4edda67a 100644
+--- "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615"
++++ "b/C:\\x\\research\\coordination-study\\experiment\\summarize.mjs"
+@@ -0,0 +1,23 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import { fileURLToPath } from 'node:url';
++
++const study = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
++const read = (file) => JSON.parse(fs.readFileSync(path.join(study, file), 'utf8').replace(/^\uFEFF/, ''));
++const manifest = read('trial-manifest.json');
++const structural = new Map(read('structural-results.json').map((row) => [row.trialId, row]));
++const reviewFile = path.join(study, 'semantic-review.json');
++const review = fs.existsSync(reviewFile) ? read('semantic-review.json') : null;
++const mapping = new Map(read('review-map.json').map((row) => [row.label, row.trialId]));
++const reviewRows = review ? Array.isArray(review) ? review : review.rows ?? review.results ?? review.reviews ?? [] : [];
++const semantic = new Map(reviewRows.map((row) => [mapping.get(row.label), row]));
++const groups = [];
++for (const caseId of [...new Set(manifest.trials.map((trial) => trial.caseId))]) {
++  for (const condition of ['X', 'Y', 'Z']) {
++    const trials = manifest.trials.filter((trial) => trial.caseId === caseId && trial.condition === condition);
++    groups.push({ caseId, condition, models: [...new Set(trials.map((trial) => `${trial.model}@${trial.reasoningEffort}`))], returned: trials.filter((trial) => trial.output).length, structuralVerified: trials.filter((trial) => structural.get(trial.trialId)?.structuralStatus === 'verified').length, structuralIssues: trials.flatMap((trial) => Object.entries(structural.get(trial.trialId)?.checks ?? {}).filter(([, value]) => value === false).map(([check]) => ({ trialId: trial.trialId, check }))), semantic: trials.map((trial) => ({ trialId: trial.trialId, review: semantic.get(trial.trialId) ?? null })), toolCalls: trials.map((trial) => trial.toolActionsObserved), tokens: trials.map((trial) => trial.tokens), monetaryCost: null });
++  }
++}
++const result = { observedAt: new Date().toISOString(), responses: manifest.trials.filter((trial) => trial.output).length, required: 36, structuralVerified: [...structural.values()].filter((row) => row.structuralStatus === 'verified').length, semanticReviews: semantic.size, groups, limitations: ['Hand-selected cases with two repetitions per condition do not support general performance or causal superiority claims.', 'Baseline already includes pstack; Y is a bounded procedure reminder rather than the complete suite.', 'Models differ between case groups following user instruction; compare within case only.', 'Structural status reflects limited shape and source-ID checks, not complete schema enforcement or semantic truth.', 'Runtime token usage includes cached input and infrastructure attempts. Monetary cost is unknown.'] };
++fs.writeFileSync(path.join(study, 'comparison.json'), JSON.stringify(result, null, 2));
++console.log(JSON.stringify({ responses: result.responses, required: result.required, structuralVerified: result.structuralVerified, semanticReviews: result.semanticReviews, groups: groups.map(({ caseId, condition, returned, structuralVerified, structuralIssues }) => ({ caseId, condition, returned, structuralVerified, structuralIssues })) }, null, 2));
+diff --git "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615" "b/C:\\x\\research\\coordination-study\\experiment\\verify-local.mjs"
+index e69de29bb..2eddd0b9e 100644
+--- "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615"
++++ "b/C:\\x\\research\\coordination-study\\experiment\\verify-local.mjs"
+@@ -0,0 +1,19 @@
++import fs from 'node:fs';
++import os from 'node:os';
++import path from 'node:path';
++import { spawnSync } from 'node:child_process';
++import { fileURLToPath } from 'node:url';
++
++const here = path.dirname(fileURLToPath(import.meta.url));
++const rows = [];
++for (const [variant, filename] of [['frozen', 'controller.frozen.mjs'], ['hardened', 'controller.mjs']]) {
++  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'handoff-check-'));
++  fs.copyFileSync(path.join(here, filename), path.join(root, 'controller.mjs'));
++  fs.copyFileSync(path.join(here, 'controller.test.mjs'), path.join(root, 'controller.test.mjs'));
++  const result = spawnSync(process.execPath, ['--test', '--test-reporter=tap', path.join(root, 'controller.test.mjs')], { encoding: 'utf8', timeout: 30000 });
++  rows.push({ variant, file: filename, status: result.status, stdout: result.stdout, stderr: result.stderr, error: result.error?.message ?? null });
++}
++const result = { observedAt: new Date().toISOString(), engine: process.version, tier: 'G1 synthetic controller boundaries and real local subprocess restarts', rows, limitations: ['The frozen and hardened versions are distinct. Trial-agent results use only the frozen controller.', 'Tests verify declared source references and state behavior; they do not prove human intent or automatic Codex interception.', 'The hardened version deliberately preserves unresolved declarations and has no authenticated decision-resolution command.'] };
++fs.writeFileSync(path.join(here, '../local-verification.json'), JSON.stringify(result, null, 2));
++console.log(JSON.stringify(rows.map((row) => ({ variant: row.variant, status: row.status, summary: row.stdout.split('\n').filter((line) => /^# (tests|pass|fail|skipped)/.test(line)) })), null, 2));
++if (rows.find((row) => row.variant === 'hardened').status !== 0) process.exitCode = 1;
+diff --git "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615" b/C:/x/docs/architecture/2026-11-11-agent-coordination-study.md
+index e69de29bb..63d3a512d 100644
+--- "a/C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-empty-ada06e4a25754a1a8a5a961df5373615"
++++ b/C:/x/docs/architecture/2026-11-11-agent-coordination-study.md
+@@ -0,0 +1,184 @@
++---
++title: "Persistent coordination for AI development: investigation and experiments"
++status: "active"
++created: 2026-11-11
++updated: 2026-11-11
++author: "Codex"
++tags: [agents, architecture, coordination, provenance, experiments, pstack]
++---
++
++# Persistent coordination for AI development
++
++This study examines how project knowledge, responsibilities, procedures, and execution history can be connected for AI-assisted engineering. It contains a proposed architecture and an isolated controller. Neither is a production service or a replacement for existing product authorities. All 36 trial responses were collected and independently reviewed. The study supports specific mechanical checks, but does not establish a general reasoning advantage from the added procedures.
++
++The study artifacts are in [research/coordination-study](../../research/coordination-study/). The [protocol](../../research/coordination-study/protocol.json), [amendments](../../research/coordination-study/protocol-amendments.json), and [decision trail](../../research/coordination-study/decisions.tsv) record scope and consequential changes. The user requested reuse of investigators and cheaper models where sufficient. Controlled trial contexts remain fresh. Comparisons are grouped by case and model.
++
++## What exists and where the connections stop
++
++The [knowledge investigation](../../research/coordination-study/knowledge-findings.json) and [procedure investigation](../../research/coordination-study/procedure-findings.json) preserve source locators, evidence classifications, history, and limitations. These are observations of a changing working tree. Git HEAD changed during the study because other work continued. Each snapshot's own revision, timestamp, and content hashes apply; the report does not assume one immutable repository revision.
++
++| Existing authority or mechanism | What it represents | Observed boundary |
++| --- | --- | --- |
++| PJC | Feature, intent, journey, requirements, scenarios, implementation bindings, observations, impacts, and evidence | Generic links do not express scoped expansion, clarification, or supersession. Static validity does not establish current prose or behavioral truth. |
++| API module and capability catalog | Declared admission, kind, channel, assurance, and required evidence | Does not grant permission to invent product policy or establish successful execution. |
++| API conformance | Joins declared capabilities with cards, selected document tables, contract/router, tagged evidence, callers, and channels | PJC narrative is outside this join. Handler-related freshness uses filesystem modification times, which differ from content-version semantics. |
++| Domain cards and architectural decisions | Human decisions about ownership, authority, boundaries, and sequencing | Proposal, implementation description, and governing decision can coexist in a document and require scope-aware interpretation. |
++| Platform discovery and Scout | Source and dependency discovery | Some caught discovery failures can be rendered as no traces. No measured recall for the whole study was established. |
++| Product FlowDAGs | Product journey structure and validation | Product journey state is not an engineering run or developer workflow execution. |
++| Agent workflow documents and pstack | Procedures interpreted by an agent | Numbered steps and instructions are not an executing state machine. |
++| Local gates, receipts, and CI | Selected dialect, dependency, evidence, and architecture checks | Invocation, payload compatibility, coverage, and failure behavior must be tested independently of comments and configuration. |
++
++The observed PJC check returned zero structural errors, 428 gap entries, and 113 bindings. This is a G0 declaration check, not 428 independently confirmed defects or proof of working application journeys. See investigation command records for the exact scope.
++
++Two source cases illustrate why relationships need scope. The Covenant expands the introduction and explicitly supersedes only overlapping pillar definitions. Both relations are valid simultaneously. The API PJC narrative describes an empty v1 contract, while the supplied router and catalog declare six foundation capabilities. An empty business contract is a separate qualification and does not conflict with horizontal identity and authority admission.
++
++## Proposed architecture
++
++The project needs a connection between the existing knowledge authorities and a persistent record of engineering work. A context result is a projection with provenance and gaps. It is not a new source of product truth.
++
++```mermaid
++flowchart TD
++    P[PJC and product decisions] --> R[Context resolution]
++    A[API catalogs and domain cards] --> R
++    S[Source, designs, history and evidence] --> R
++    R --> C[Persistent engineering change]
++    C --> W[Versioned procedure and permitted actions]
++    W --> T[Deterministic tools]
++    W --> M[AI investigation and interpretation]
++    W --> H[Human decisions when required]
++    T --> E[Recorded results and evidence]
++    M --> E
++    H --> E
++    E --> V[Validate and evaluate transition]
++    V --> W
++    V --> Q[Reconciliation obligations]
++    Q --> P
++    Q --> A
++```
++
++### Knowledge and source identity
++
++Keep PJC record IDs, API capability names, domain-card/module identities, source paths and symbols, and scenario IDs as distinct references to their respective authorities. Record cross-system associations explicitly. A shared display name is not an identity join.
++
++A source reference contains its locator, exact content hash or provider version, observed revision, observation time, and scope. A relationship contains subject, predicate, object, scope, source references, classification, and temporal applicability. Classifications are declared, mechanically extracted, inferred, and unresolved. The last two must not silently become accepted decisions.
++
++Relations include ownership, dependency, implementation, verification, clarification, expansion, supersession, and historical applicability. Supersession names the affected statement or section. It does not retire the entire source unless the authorizing decision has that scope. Observation time and a document's effective time are separate.
++
++### Responsibilities and authority
++
++The coordinator owns the change's goal, dependencies, integration, and handoff. Investigators provide source-backed observations. Implementers produce scoped changes. Verifiers evaluate outputs and claims independently. A product owner supplies decisions requiring product authority. Graph ownership is a maintenance/contact relation, not runtime permission.
++
++AI can propose an interpretation, discover an unrecorded dependency, or identify a suspected conflict. It cannot promote its own inference to an accepted owner decision. A valid structured record is not evidence of a correct interpretation. Missing source access remains an explicit coverage gap.
++
++### Proposed interfaces
++
++These contracts are design outputs for future tooling, not added public application endpoints.
++
++| Interface | Input | Output and rule |
++| --- | --- | --- |
++| `resolveContext` | Explicit selectors such as PJC IDs, capability names, files, symbols, and required evidence categories | Source snapshots, classified relations, applicable decisions, existing behavior, declared dependencies, and coverage gaps. Natural-language matching first produces recorded candidate selectors. |
++| `createChange` | Goal, scope, authorizing source, context snapshot, procedure ID and version | Persistent change ID, run ID, initial state, dependencies, and completion criteria. The procedure version is pinned for the run. |
++| `recordAction` | Change/run/action ID, action kind, typed input/output, source dependencies, evidence, actor identity, and outcome | Append-only event or explicit rejection. Identical retries are idempotent; conflicting payloads under an existing action ID are rejected. |
++| `evaluateNext` | Recorded events, pinned procedure, current source versions, and authority | Allowed actions, blocked prerequisites, invalidated work, and unresolved decisions. It does not infer that an omitted relationship is absent. |
++| `resumeChange` | Change ID and current source observations | Valid completed work, invalidated dependent work, retained history, and next permitted actions. |
++| `reconcileChange` | Changed artifacts, declared relationships, and check evidence | Obligations to update, reverify, or explicitly review affected records. Prose drift candidates require interpretation. |
++
++Procedure definitions specify required inputs and outputs, permissible transitions, dependencies, retry boundaries, failure outcomes, and completion criteria. Production design must add authenticated decision resolution, trusted persistence, concurrent-writer handling, and runtime adapters. The isolated prototype intentionally does not implement those mechanisms.
++
++### Persistence and change propagation
++
++Persist engineering changes and runs separately from product journey state. Record decisions and action events with evidence. Derive status from events rather than trusting a mutable `done` flag. Preserve earlier decisions and invalidate only the dependent work affected by new inputs. A changed source set also requires context reconsideration.
++
++Start integration in developer tooling through existing PJC and conformance readers. Developer coordination belongs outside product screens and the Sanctuary business API. Before choosing its permanent module, inspect the platform-MCP package's current service contracts and testable entry points. The report recommends that seam, not a new parallel product namespace or database platform.
++
++## Experiment method and evidence
++
++The prepared suite contains six cases, three conditions, and two repetitions, for 36 fresh contexts. Every case's source extracts are frozen and hashed once, then copied identically across conditions. Two cases use synthetic handoffs or competing proposals. The tasks inspect bounded source packets rather than discover an entire repository. That isolates reasoning about supplied relationships but does not measure discovery recall.
++
++Condition X uses the current project context. Condition Y adds explicit pstack-derived recovery, investigation, and reconciliation instructions. It is a bounded procedural treatment, not the full pstack multi-agent stack. Condition Z adds actual local controller calls. All conditions can access the same provided tools. The existing root already activates pstack, so X is not a clean no-pstack baseline.
++
++Document and API case groups use Sol. After the user's model preference, the remaining complete case groups use Luna. Effective model and reasoning settings are taken from scoped transcripts. Comparison across these strata cannot establish a model-independent treatment effect. Token records report runtime usage including cached input; monetary cost is unknown.
++
++Candidate directories and work IDs are neutral. Candidates do not receive the condition mapping or evaluation oracle. Root instructions and tool metadata are shared, so blinding and filesystem isolation are partial. Source boundaries are instructed rather than enforced by a sandbox. Transcript checks must distinguish actual reading and controller invocation from self-report.
++
++The [collector](../../research/coordination-study/experiment/collect.mjs) extracts task messages, actual tool calls and outputs, final responses, model settings, and usage from only matching child sessions of this coordinator. It excludes private reasoning and system/developer instruction text. It preserves raw final text separately from parsed responses and copies each completed work directory into the study. Tool counts are model-visible invocations, not arbitrary subprocess actions inside a shell command. One initial usage-limit failure was retried once before a usable response; the trial transcript retains both task starts.
++
++Source-fidelity criteria were formalized from the approved case goals after the coordinator had seen early outputs. The Terra reviewer received all 36 outputs under neutral labels before inspecting their model/condition mapping. Response wording can reveal methodology, so this is partial blinding and engineering judgment, not a preregistered causal experiment. Execution fields were examined separately after that semantic review.
++
++### Local controller checks
++
++The frozen controller supplied to candidates is preserved as [controller.frozen.mjs](../../research/coordination-study/experiment/controller.frozen.mjs). A hardened version is [controller.mjs](../../research/coordination-study/experiment/controller.mjs). They have separate evidence and must not be conflated.
++
++G1 local boundary and subprocess checks ran against 13 scenarios. The frozen version passed 10 and failed three: payload-key reorder idempotency, changed source-set membership, and silently clearing a prior unresolved decision. The hardened version passed all 13. The [raw verification record](../../research/coordination-study/local-verification.json) includes both results. These tests use synthetic state with real Node processes and local files. They do not prove production operation, model reasoning, human authority, concurrency safety, or automatic hook interception.
++
++The hardened controller preserves unresolved declarations across later stages. It has no authenticated resolution action, so unresolved decisions remain blocked rather than being cleared through a new interpretation. It checks declared source hashes and stage order, but an owner of its local files can manufacture coherent history. An explicit test demonstrates that bypass. Source hashing also cannot prove a source was read or understood.
++
++### Existing gate canaries
++
++Nine G1 isolated subprocess canaries reproduced the investigator's exit-code observations. The [reproduction script](../../research/coordination-study/experiment/canaries.mjs) copies the existing scripts into temporary directories and uses synthetic content with real Node and Git. The [raw reproduction](../../research/coordination-study/canary-reproduction.json) records stdout and stderr.
++
++| Boundary | Observed result |
++| --- | --- |
++| Recognized `input.file_path/content`, truncating 60 lines | Rejects with exit 2 |
++| Same truncation under `tool_input` | Exits 0 without the expected check |
++| Missing path/input | Exits 0 |
++| Native input without a receipt | Rejects with exit 2 |
++| Same input with `--auto-ground` | Exits 0 and creates a fresh receipt |
++| Receipt with invalid timestamp | Exits 0 |
++| Stop script outside Git | Exits 0 |
++| Native violation in a nested untracked directory | Reports clean and exits 0 |
++| Same violation staged | Rejects with exit 2 |
++
++These results establish specific script behavior, not live hook registration. The inspected Codex CLI supports hooks, but current-session automatic interception remains unobserved. The Claude configuration declares pre-write and completion actions; actual compatibility with the installed runtime must be verified separately. No claim is made that Codex lacks hooks.
++
++## Results and interpretation
++
++All 36 responses are preserved with source packets, raw final text, actual tool calls, model settings, and available token records. All post-run source and controller hashes match their prepared snapshots. Each case group used one model and effort setting across all conditions. Every trial stayed within 20 model-visible tool calls. See the [artifact audit](../../research/coordination-study/artifact-audit.json), [comparison](../../research/coordination-study/comparison.json), and [trial manifest](../../research/coordination-study/trial-manifest.json).
++
++| Case and model | Structural checks X / Y / Z | Main-answer review X / Y / Z |
++| --- | --- | --- |
++| Introduction and Covenant, Sol | 2 / 2 / 2 | 2 supported / 2 supported / 2 supported |
++| API scope, Sol | 2 / 2 / 2 | 2 supported / 2 supported / 2 supported |
++| Older instructions, Luna | 2 / 1 / 2 | 1 supported and 1 partial in each condition |
++| Hook observation, Luna | 2 / 2 / 2 | 2 supported / 2 supported / 2 supported |
++| Resume, Luna | 1 / 1 / 2 | 2 partial / 2 supported / 2 supported |
++| Missing authority, Luna | 2 / 0 / 2 | 2 supported / 2 supported / 2 supported |
++
++Each cell covers two repetitions. Structural and semantic outcomes are separate. The limited structural checker accepted 31 responses and flagged five: two wrong work IDs and three findings without source IDs. The latter include unknown/absence claims, so the flags reflect a source-reference policy rather than proof of incorrect reasoning. Original responses were not repaired to pass.
++
++The static artifact review also found that the original local `resume-Y-1/work/response.json` ends with a literal backslash-n outside its JSON object. That malformed local file is retained unchanged as negative evidence. The separately captured final response parses as JSON but still has the wrong work ID. The limited structural score uses the captured final response and does not count this separate file-format failure. A coordinator-authored syntax error in `source-coverage.json` was corrected; it was not candidate evidence.
++
++The independent source-fidelity review classified 31 main answers as supported and five as partial. These are not the same 31 responses as the structural passes. Two resume answers claimed a matching historical handoff hash that the synthetic handoff did not contain. Three older-instruction answers overextended the conflict, treating compatible package placement or resource constraints as contradicted, or omitting the world-recipe boundary. The correct main direction did not justify those extra claims. See the [semantic review](../../research/coordination-study/semantic-review.json).
++
++All 12 Z runs invoked the controller and persisted four stage records. A direct projection of their saved states showed seven `canComplete: true` and five blocked by declared unresolved items. These values describe the controller's local review procedure, not completion of the underlying product work. The [saved-state projection](../../research/coordination-study/controller-run-status.json) and transcripts permit independent checking.
++
++The resume fixture supplied a written handoff rather than the prior persisted controller state or historical source bytes. Consequently the agent trials tested reasoning about that handoff. They did not demonstrate actual cross-session rebase of that interrupted change. Real subprocess restart and stale-prefix recovery were exercised separately in the G1 controller tests. Several trial execution fields also called verification/reconciliation stages complete while the underlying change remained unverified. The independent review flags those as review-stage declarations, not product-work evidence; some next actions omitted explicit reconciliation.
++
++In these curated packets, the baseline already reached the main document, API, hook, and owner-authority conclusions. Added procedures did not eliminate unsupported claims. The controller made declared transitions and evidence inspectable and rejected modeled violations in local tests. The evidence does not establish a general semantic improvement, discovery completeness, or production-ready enforcement. The useful next investment is stronger authority and evidence connections at specific boundaries, rather than adding another broad prompt or declaring the prototype a complete organization model.
++
++### Independent verification and quality gate
++
++Terra checked selected source citations, independently reran the hardened controller's 13 tests, reviewed all neutral response labels, and challenged the reproduction path. It found that the runner initially copied the hardened controller for new preparations while integrity checks expected the frozen version. The runner was corrected to use the frozen file. A fresh preparation then matched its hash, and all 36 unrun entries scored inconclusive. Existing results were not regenerated or replaced. See [verification.json](../../research/coordination-study/verification.json).
++
++This is G0 source/configuration inspection and G1 synthetic boundaries with real local Node/Git subprocesses. It does not establish deployed API behavior, device behavior, automatic Codex hook interception, authenticated decision approval, concurrent writers, or exhaustive citation/relationship coverage. The independent reviewer is a separate model execution, not a deterministic oracle.
++
++The required broader anti-slop run exited 1 at aislop with 48 errors and 1,304 warnings across the then-current working tree. CNG, native-slop, and hollow-stub stages exited zero; later chained stages did not run. The extracted study diagnostics contained no errors and 72 formatting warnings, including preserved trial artifacts. This does not attribute the whole-tree failures to this study or waive them. See [gate result](../../research/coordination-study/anti-slop-result.json), [full output](../../research/coordination-study/anti-slop-output.txt), and [scoped diagnostics](../../research/coordination-study/anti-slop-diagnostics.json).
++
++## Prioritized implementation handoff
++
++Retain PJC, domain cards, capability declarations, conformance readers, and their existing authorities. Keep engineering execution state separate from product journey state. The following are proposed future changes, not implemented production mechanisms.
++
++| Priority | Existing seam and proposed change | Acceptance evidence |
++| --- | --- | --- |
++| P0 | Discovery/Scout result contracts distinguish available, empty, partial, and failed source searches | Inject provider/process failure and prove it cannot be rendered as a verified empty result; retain underlying diagnostics. |
++| P0 | Hook adapters validate actual installed-runtime payloads and registration separately from scanning | Harmless automatic edit and completion canaries in Codex; missing paths, unknown envelopes, failed scanners, invalid receipt dates, and nested untracked files cannot claim a completed check. |
++| P1 | Developer context projection joins explicit PJC IDs, capability names, scoped source claims, and evidence | The known empty-v1 narrative is surfaced for review after its bound contract changes, while business-admission deferral is retained. |
++| P1 | Persistent engineering change/run/action records and final-output validation | Wrong work IDs and conflicting duplicate actions are rejected; a restart retains valid work; content and source-set changes invalidate dependents. |
++| P1 | Scoped decision and reconciliation records preserve owner authority and unresolved dependencies | Introduction expansion and partial supersession coexist; an agent cannot clear an owner decision merely by submitting an empty unresolved list. Authenticated resolution requires a distinct action. |
++| P2 | Runtime integration and broader evidence | Demonstrate the same contracts on real authoring boundaries, concurrent runs, representative changes, and realistic incomplete discovery before wider adoption. |
++
++Place a context projection behind the existing developer gateway only after grounding its current callable contract. Use PJC's existing filesystem loader and journey projection and conformance's typed readers as sources. Do not copy their declarations into a parallel product catalog. Permanent persistence, authorization integration, and runtime hook deployment remain separate implementation work requiring their own bounded design and verification.
++
++To reproduce local boundary checks, run `node research/coordination-study/experiment/verify-local.mjs` and `node research/coordination-study/experiment/canaries.mjs`. To prepare another fresh agent matrix, run `node research/coordination-study/experiment/runner.mjs prepare` and use the resulting neutral work packets. Dispatch one fresh context per packet, limit active workers to three, preserve raw results, and apply the same case/model grouping. `score` only checks recorded outputs; it never runs or fabricates an agent response. A new preparation observes current repository sources, so use the archived trial work folders for exact replay of this study's source bytes.
++
++Connected source limitations are in [source-coverage.json](../../research/coordination-study/source-coverage.json). Public Slack and Linear calls failed, Graphify required reauthentication, and no production observability, error-tracker, or analytics evidence was evaluated. Prior Codex message records are preserved as source claims, not accepted runtime proof.

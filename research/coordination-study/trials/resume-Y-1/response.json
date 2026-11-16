@@ -1,0 +1,77 @@
+{
+  "workId": "b6ce6ce6-4636-4424-8506-f5d38bfe083c",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "The immutable account identifier conclusion remains valid because its source is unchanged.",
+      "sourceIds": [
+        "stable-source",
+        "handoff"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The prior authority conclusion is stale: it relied on access-1, while current access-2 says invitation possession never grants school authority and server-confirmed membership is required.",
+      "sourceIds": [
+        "changed-source",
+        "handoff"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "No implementation or deployment change is evidenced; verification and reconciliation had not been started in the handoff.",
+      "sourceIds": [
+        "handoff"
+      ],
+      "confidence": "direct"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "identity conclusion retained from",
+      "subject": "immutable account identifier conclusion",
+      "object": "stable-source revision stable-1",
+      "authoritySourceIds": [
+        "stable-source"
+      ]
+    },
+    {
+      "relation": "authority rule supersedes prior access-1 rule",
+      "subject": "server-confirmed membership required for school authority; invitation possession grants none",
+      "object": "changed-source revision access-2",
+      "authoritySourceIds": [
+        "changed-source"
+      ]
+    },
+    {
+      "relation": "describes prior execution state",
+      "subject": "verification/reconciliation not started; no deployed changes reported",
+      "object": "handoff",
+      "authoritySourceIds": [
+        "handoff"
+      ]
+    }
+  ],
+  "reviewRequired": [
+    "changed-source"
+  ],
+  "unresolved": [],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "context",
+      "analysis",
+      "verification evidence review",
+      "reconciliation"
+    ],
+    "invalidatedSteps": [
+      "prior authority analysis based on access-1"
+    ],
+    "nextAction": "Implement or inspect the school access path to ensure it grants authority only after server-confirmed membership, then verify that behavior; no code location or runtime evidence was supplied."
+  },
+  "limitations": [
+    "The supplied handoff and source records do not identify an implementation path or provide runtime or canary evidence.",
+    "The local workflow controller validates stage ordering and source fingerprints, but does not prove the truth of interpretations or observed runtime behavior."
+  ]
+}

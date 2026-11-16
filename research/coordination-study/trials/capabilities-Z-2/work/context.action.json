@@ -1,0 +1,25 @@
+{
+  "id": "context-1",
+  "kind": "record",
+  "stage": "context",
+  "summary": "Read all four frozen sources. Router and capability manifest describe implemented foundation procedures; catalog and policy retain older reset descriptions. Policy explicitly separates resumed horizontal engineering from deferred business admission.",
+  "evidence": [
+    {
+      "sourceId": "catalog-description",
+      "sha256": "63a45bacd8fb8a9cb8091004cc047002c95c05e542e97176f05c429fda2b65b2"
+    },
+    {
+      "sourceId": "router",
+      "sha256": "c385204744e1ec91d836641d9fc8c1e1d46fde5165ee292726528445ddced148"
+    },
+    {
+      "sourceId": "capabilities",
+      "sha256": "edbdad52b72393039c4ce47a7643cb1fbce586ef8e31d16144bdec07f7b9d446"
+    },
+    {
+      "sourceId": "foundation-policy",
+      "sha256": "04d75f48452448e9355de2cca56f51341cc3a51119ade1eb157ba7ec20f94f4d"
+    }
+  ],
+  "unresolved": []
+}

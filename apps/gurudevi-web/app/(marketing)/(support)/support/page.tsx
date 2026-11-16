@@ -5,6 +5,7 @@ import {
   extractSchoolSubdomain,
   GurudeviHost,
 } from '../../../../lib/host-routing';
+import { QueryProvider } from '../../../../lib/query/QueryProvider';
 import { getSupportConfig } from '../../../../lib/support/supportConfig';
 import {
   GRATITUDE_EMAIL,
@@ -76,72 +77,76 @@ export default async function SupportPage({
   // On Sanctuary subdomain: render inside the authenticated SanctuaryShell
   if (resolvedSurface === 'sanctuary') {
     return (
-      <SanctuaryShell
-        displayName={params?.name ?? 'Sanctuary Member'}
-        navigationPrefix=""
-        showAccountNavigation={true}
-        isExploreMode={false}
-      >
-        <main id="main-content" className="min-h-screen px-4 py-8 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-6xl">
-            <header className="mb-10 space-y-3">
-              <span className="rounded-full bg-emerald-100 border border-emerald-200 px-3 py-1 font-sans text-xs font-bold uppercase tracking-wider text-emerald-900">
-                {config.badge}
-              </span>
-              <h1 className="text-3xl font-medium tracking-tight text-ink sm:text-5xl">
-                {config.title}
-              </h1>
-              <p className="max-w-3xl text-base text-ink-soft leading-relaxed">
-                {config.description}
-              </p>
-            </header>
+      <QueryProvider>
+        <SanctuaryShell
+          displayName={params?.name ?? 'Sanctuary Member'}
+          navigationPrefix=""
+          showAccountNavigation={true}
+          isExploreMode={false}
+        >
+          <div className="min-h-screen px-4 py-8 sm:px-8 lg:px-12">
+            <div className="mx-auto max-w-6xl">
+              <header className="mb-10 space-y-3">
+                <span className="rounded-full bg-emerald-100 border border-emerald-200 px-3 py-1 font-sans text-xs font-bold uppercase tracking-wider text-emerald-900">
+                  {config.badge}
+                </span>
+                <h1 className="text-3xl font-medium tracking-tight text-ink sm:text-5xl">
+                  {config.title}
+                </h1>
+                <p className="max-w-3xl text-base text-ink-soft leading-relaxed">
+                  {config.description}
+                </p>
+              </header>
 
-            <SupportHub
-              config={config}
-              supportEmail={supportEmail}
-              institutionalEmail={institutionalEmail}
-              gratitudeEmail={gratitudeEmail}
-              formAction={formAction}
-            />
+              <SupportHub
+                config={config}
+                supportEmail={supportEmail}
+                institutionalEmail={institutionalEmail}
+                gratitudeEmail={gratitudeEmail}
+                formAction={formAction}
+              />
+            </div>
           </div>
-        </main>
-      </SanctuaryShell>
+        </SanctuaryShell>
+      </QueryProvider>
     );
   }
 
   // On Explore subdomain: render inside the Guest House SanctuaryShell
   if (resolvedSurface === 'explore') {
     return (
-      <SanctuaryShell
-        displayName="Guest Explorer"
-        navigationPrefix=""
-        showAccountNavigation={true}
-        isExploreMode={true}
-      >
-        <main id="main-content" className="min-h-screen px-4 py-8 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-6xl">
-            <header className="mb-10 space-y-3">
-              <span className="rounded-full bg-purple-100 border border-purple-200 px-3 py-1 font-sans text-xs font-bold uppercase tracking-wider text-purple-900">
-                {config.badge}
-              </span>
-              <h1 className="text-3xl font-medium tracking-tight text-ink sm:text-5xl">
-                {config.title}
-              </h1>
-              <p className="max-w-3xl text-base text-ink-soft leading-relaxed">
-                {config.description}
-              </p>
-            </header>
+      <QueryProvider>
+        <SanctuaryShell
+          displayName="Guest Explorer"
+          navigationPrefix=""
+          showAccountNavigation={true}
+          isExploreMode={true}
+        >
+          <div className="min-h-screen px-4 py-8 sm:px-8 lg:px-12">
+            <div className="mx-auto max-w-6xl">
+              <header className="mb-10 space-y-3">
+                <span className="rounded-full bg-purple-100 border border-purple-200 px-3 py-1 font-sans text-xs font-bold uppercase tracking-wider text-purple-900">
+                  {config.badge}
+                </span>
+                <h1 className="text-3xl font-medium tracking-tight text-ink sm:text-5xl">
+                  {config.title}
+                </h1>
+                <p className="max-w-3xl text-base text-ink-soft leading-relaxed">
+                  {config.description}
+                </p>
+              </header>
 
-            <SupportHub
-              config={config}
-              supportEmail={supportEmail}
-              institutionalEmail={institutionalEmail}
-              gratitudeEmail={gratitudeEmail}
-              formAction={formAction}
-            />
+              <SupportHub
+                config={config}
+                supportEmail={supportEmail}
+                institutionalEmail={institutionalEmail}
+                gratitudeEmail={gratitudeEmail}
+                formAction={formAction}
+              />
+            </div>
           </div>
-        </main>
-      </SanctuaryShell>
+        </SanctuaryShell>
+      </QueryProvider>
     );
   }
 

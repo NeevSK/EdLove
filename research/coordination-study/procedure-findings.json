@@ -1,0 +1,784 @@
+{
+  "title": "Procedure execution investigation",
+  "version": 1,
+  "observedAt": "2026-11-11T09:11:34.197Z",
+  "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+  "scope": "Agent procedure and enforcement machinery in C:/x; no production changes",
+  "sources": {
+    "registration": {
+      "path": ".claude/settings.json",
+      "line": 3,
+      "sha256": "f63e3d71cbb6a40445eb4e76748bb8975add91306b2ed21a589d0a09dde48ddd",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "parser": {
+      "path": ".agents/gate.mjs",
+      "line": 730,
+      "sha256": "fa91923bae98752b9d6b9e27e382ab1f4ed5b3ca05f05f09cb36ca6d6e565faa",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "noncode": {
+      "path": ".agents/gate.mjs",
+      "line": 753,
+      "sha256": "fa91923bae98752b9d6b9e27e382ab1f4ed5b3ca05f05f09cb36ca6d6e565faa",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "truncation": {
+      "path": ".agents/gate.mjs",
+      "line": 771,
+      "sha256": "fa91923bae98752b9d6b9e27e382ab1f4ed5b3ca05f05f09cb36ca6d6e565faa",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "receiptpath": {
+      "path": ".agents/gate.mjs",
+      "line": 826,
+      "sha256": "fa91923bae98752b9d6b9e27e382ab1f4ed5b3ca05f05f09cb36ca6d6e565faa",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "receiptage": {
+      "path": ".agents/gate.mjs",
+      "line": 849,
+      "sha256": "fa91923bae98752b9d6b9e27e382ab1f4ed5b3ca05f05f09cb36ca6d6e565faa",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "autoground": {
+      "path": ".agents/gate.mjs",
+      "line": 878,
+      "sha256": "fa91923bae98752b9d6b9e27e382ab1f4ed5b3ca05f05f09cb36ca6d6e565faa",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "prefailopen": {
+      "path": ".agents/gate.mjs",
+      "line": 1389,
+      "sha256": "fa91923bae98752b9d6b9e27e382ab1f4ed5b3ca05f05f09cb36ca6d6e565faa",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "stopstatus": {
+      "path": ".agents/stop-gate.mjs",
+      "line": 124,
+      "sha256": "55070fc89e727bdbbaa9a3ddeeea1fc312e62aed82c404075131c34f859babf2",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "stopexclusion": {
+      "path": ".agents/stop-gate.mjs",
+      "line": 232,
+      "sha256": "55070fc89e727bdbbaa9a3ddeeea1fc312e62aed82c404075131c34f859babf2",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "stopfallback": {
+      "path": ".agents/stop-gate.mjs",
+      "line": 289,
+      "sha256": "55070fc89e727bdbbaa9a3ddeeea1fc312e62aed82c404075131c34f859babf2",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "stopfailopen": {
+      "path": ".agents/stop-gate.mjs",
+      "line": 346,
+      "sha256": "55070fc89e727bdbbaa9a3ddeeea1fc312e62aed82c404075131c34f859babf2",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "postshaper": {
+      "path": ".agents/post-tool.mjs",
+      "line": 34,
+      "sha256": "35a5a9df79ce1ee116234cef75463fdc89aad334663f8e7e7678c03d12b74565",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "oldworkflow": {
+      "path": ".agents/workflows/code-execution.md",
+      "line": 10,
+      "sha256": "09a2913931f59e1cef3c350037bc7734a6279366765985b6f65717401b7d05fe",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "oldpalette": {
+      "path": ".agents/workflows/code-execution.md",
+      "line": 21,
+      "sha256": "09a2913931f59e1cef3c350037bc7734a6279366765985b6f65717401b7d05fe",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "currentui": {
+      "path": "AGENTS.md",
+      "line": 66,
+      "sha256": "8184fe58dcf2ece956cc61cd4581a6e9242bf359db6b07722e6a65b8586ad36f",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "currentapi": {
+      "path": "AGENTS.md",
+      "line": 76,
+      "sha256": "8184fe58dcf2ece956cc61cd4581a6e9242bf359db6b07722e6a65b8586ad36f",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "activation": {
+      "path": "AGENTS.md",
+      "line": 15,
+      "sha256": "8184fe58dcf2ece956cc61cd4581a6e9242bf359db6b07722e6a65b8586ad36f",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "routing": {
+      "path": ".agents/skills/poteto-mode/SKILL.md",
+      "line": 122,
+      "sha256": "ee1848c973a112026f09ba12ea7a13c1654006e7bf170d1c34bf5d5816bc439b",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "trail": {
+      "path": ".agents/skills/show-me-your-work/SKILL.md",
+      "line": 52,
+      "sha256": "920a8217cbb62f92a2222fb81fc9eab17ecd554a0277e444a95a927195139bd1",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "traillog": {
+      "path": ".agents/skills/show-me-your-work/scripts/log.sh",
+      "line": 40,
+      "sha256": "a65a4bc5fb7cdeadbdb7b7ff1ca4682f4d9c42420942b2977cd17b46c4ac338e",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "currentci": {
+      "path": ".github/workflows/pr-guard.yml",
+      "line": 82,
+      "sha256": "8527a5758d1d0d7b3eb8006d8b8e16b606a318cf3919df6b4feec06fe8a4402b",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "scheduledci": {
+      "path": ".github/workflows/quality-gate.yml",
+      "line": 84,
+      "sha256": "25f83aec64e59992c5fe9398b04b024f15f18c7cdcc73e9c8f7e597be80f5d01",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "scripts": {
+      "path": "package.json",
+      "line": 90,
+      "sha256": "d7ffd43a72e57ac9cfe8e26a787402ce902aa4be173220f32937d9c9c2d74e3c",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "codexrole": {
+      "path": ".codex/agents/gurudevi-web-luna.toml",
+      "line": 5,
+      "sha256": "11bc1bb7807cc3d384b5d4ec8d3980c1ab3df943128445cd9aeec0afecaa54b9",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    },
+    "receipt": {
+      "path": ".agents/state/receipt.json",
+      "line": 2,
+      "sha256": "9c647f8183777b732ce54de84d503fdbefddb6f5654916e357e7cafec79a748c",
+      "revision": "11c6be418bc6425e54faa67caac43e811cac1667",
+      "scope": "current working tree",
+      "observedAt": "2026-11-11T09:11:34.197Z"
+    }
+  },
+  "findings": [
+    {
+      "id": "P01",
+      "state": "configured",
+      "confidence": "direct",
+      "classification": "declared",
+      "claim": "Project Claude settings declares a Write|Edit pre-tool command with --auto-ground and a Stop command. This is a configuration declaration, not observed invocation.",
+      "sources": [
+        "registration"
+      ],
+      "limits": [
+        "Current Claude documentation uses nested hooks handlers. Local flat command entries were not validated by launching Claude.",
+        "No PostToolUse command is declared here."
+      ]
+    },
+    {
+      "id": "P02",
+      "state": "experimentally-enforced",
+      "confidence": "direct",
+      "classification": "mechanically-extracted",
+      "claim": "Direct subprocess invocation rejects a 60-line file truncation with the recognized input envelope, but silently allows the same proposed truncation under a tool_input envelope.",
+      "sources": [
+        "parser",
+        "truncation"
+      ],
+      "canaries": [
+        "recognized-input",
+        "tool-input-envelope",
+        "missing-input"
+      ],
+      "limits": [
+        "These runs prove copied script behavior, not automatic interception by Codex or Claude.",
+        "Current Claude official hook contract uses tool_input."
+      ]
+    },
+    {
+      "id": "P03",
+      "state": "observed",
+      "confidence": "direct",
+      "classification": "mechanically-extracted",
+      "claim": "A missing RN package receipt blocks; --auto-ground creates a fresh version latest receipt itself and permits the safe RN snippet without a prior compass invocation in this run.",
+      "sources": [
+        "autoground",
+        "registration"
+      ],
+      "canaries": [
+        "missing-receipt",
+        "auto-ground"
+      ],
+      "limits": [
+        "Receipt creation is observed; the gate receipt does not independently prove package declarations or external research were inspected."
+      ]
+    },
+    {
+      "id": "P04",
+      "state": "observed",
+      "confidence": "direct",
+      "classification": "mechanically-extracted",
+      "claim": "A receipt with not-a-date timestamp is accepted by the direct pre-tool invocation.",
+      "sources": [
+        "receiptage"
+      ],
+      "canaries": [
+        "invalid-date-receipt"
+      ],
+      "limits": [
+        "NaN age comparison is inferred from JavaScript expression plus matching observed exit0."
+      ]
+    },
+    {
+      "id": "P05",
+      "state": "observed",
+      "confidence": "direct",
+      "classification": "mechanically-extracted",
+      "claim": "Stop gate reports clean for a newly untracked nested directory containing a banned RN symbol; staging the same file makes it reject with exit2.",
+      "sources": [
+        "stopstatus",
+        "stopfallback"
+      ],
+      "canaries": [
+        "stop-untracked-canary",
+        "stop-staged-canary"
+      ],
+      "limits": [
+        "Git directory collapsing from status porcelain explains the missed input. No production Git index was changed."
+      ]
+    },
+    {
+      "id": "P06",
+      "state": "observed",
+      "confidence": "direct",
+      "classification": "mechanically-extracted",
+      "claim": "Stop gate exits0 without diagnostic outside a Git repository.",
+      "sources": [
+        "stopstatus",
+        "stopfailopen"
+      ],
+      "canaries": [
+        "stop-outside-git"
+      ],
+      "limits": [
+        "Exit0 alone must not be interpreted as evidence that verification ran."
+      ]
+    },
+    {
+      "id": "P07",
+      "state": "documented",
+      "confidence": "direct",
+      "classification": "declared",
+      "claim": "Pre-tool gate bypasses non-code documents and JSON; stop gate excludes packages/core, tooling, .agents, and tests from its RN scan. These checks do not govern project narrative freshness or complete engineering work state.",
+      "sources": [
+        "noncode",
+        "stopexclusion"
+      ],
+      "limits": [
+        "This is scoped code inspection, not a claim that no other independent checks cover these files."
+      ]
+    },
+    {
+      "id": "P08",
+      "state": "documented",
+      "confidence": "direct",
+      "classification": "declared",
+      "claim": "An older workflow still prescribes tRPC and fixed palette values, conflicting with currently applicable AGENTS requirements for native oRPC and world recipes.",
+      "sources": [
+        "oldworkflow",
+        "oldpalette",
+        "currentui",
+        "currentapi"
+      ],
+      "limits": [
+        "The workflow latest commit is a February merge; file date alone is not the authority rule. Supplied current AGENTS explicitly defines applicable current direction."
+      ]
+    },
+    {
+      "id": "P09",
+      "state": "configured",
+      "confidence": "direct",
+      "classification": "declared",
+      "claim": "The PR guard invokes check:anti-slop as required; the scheduled deep-quality workflow separately runs informational aislop and fallow with continue-on-error.",
+      "sources": [
+        "currentci",
+        "scheduledci",
+        "scripts"
+      ],
+      "limits": [
+        "No CI run, branch protection, or required-status settings were queried. A workflow definition is not deployed/run evidence.",
+        "No PJC or capability-conformance invocation found by text search across .github/workflows YAML. Indirect invocation through scripts was not exhaustively traced."
+      ]
+    },
+    {
+      "id": "P10",
+      "state": "documented",
+      "confidence": "direct",
+      "classification": "declared",
+      "claim": "Pstack routing defines prose playbooks and model-interpreted triggers. Its decision-log helper appends TSV rows, but does not validate source authority, evidence truth, requirement links, or permitted workflow transitions.",
+      "sources": [
+        "routing",
+        "trail",
+        "traillog",
+        "activation"
+      ],
+      "limits": [
+        "Shell helper writes timestamp and sanitized cells; semantics are still reviewed by agents."
+      ]
+    },
+    {
+      "id": "P11",
+      "state": "observed",
+      "confidence": "direct",
+      "classification": "unresolved",
+      "claim": "Local codex-cli 0.159.2 reports hooks stable true. No project registration binding the RN gate was found in .codex TOML or backup config. Current-session automatic hook interception remains unverified.",
+      "sources": [
+        "codexrole",
+        "registration"
+      ],
+      "commands": [
+        "codex --version",
+        "codex --help",
+        "codex features list",
+        "Scoped hook-key search in project .codex and user config"
+      ],
+      "limits": [
+        "Feature availability does not establish a hook is registered, trusted, invoked, or enforcing.",
+        "No live Codex session was started and no hook trust configuration was changed.",
+        "Project has config.toml.bak, not an active config.toml. Existing native agent registrations are web-specific roles."
+      ]
+    },
+    {
+      "id": "P12",
+      "state": "documented",
+      "confidence": "supported",
+      "classification": "inferred",
+      "claim": "Current receipts and gates address package freshness and RN source checks rather than persistent engineering-change lifecycle. A separate adapter would need explicit change identity, action/result records, invalidation, transition evaluation and durable resume contracts.",
+      "sources": [
+        "receiptpath",
+        "receiptage",
+        "receipt",
+        "routing",
+        "trail"
+      ],
+      "limits": [
+        "This is a design inference from the inspected subsystem, not an exhaustive repository-wide absence claim.",
+        "Receipt naming hashes projectRoot and raw .git/HEAD content; the referenced code does not resolve branch refs to a commit or hash imported package declarations."
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "from": ".claude/settings.json",
+      "type": "declares-invocation",
+      "to": ".agents/gate.mjs",
+      "classification": "declared",
+      "scope": "Claude project configuration"
+    },
+    {
+      "from": ".github/workflows/pr-guard.yml",
+      "type": "invokes",
+      "to": "package.json#check:anti-slop",
+      "classification": "mechanically-extracted",
+      "scope": "push and PR events for main-dev"
+    },
+    {
+      "from": "AGENTS.md",
+      "type": "instructs-loading",
+      "to": ".agents/skills/poteto-mode/SKILL.md",
+      "classification": "declared",
+      "scope": "substantive engineering work"
+    },
+    {
+      "from": ".agents/gate.mjs",
+      "type": "creates-or-refreshes",
+      "to": ".agents/state/receipt.json",
+      "classification": "mechanically-extracted",
+      "scope": "--auto-ground direct subprocess"
+    },
+    {
+      "from": "Codex current session",
+      "type": "automatically-intercepts-with",
+      "to": ".agents/gate.mjs",
+      "classification": "unresolved",
+      "scope": "current runtime"
+    },
+    {
+      "from": ".agents/workflows/code-execution.md",
+      "type": "conflicts-with-current-prescriptions",
+      "to": "AGENTS.md",
+      "classification": "mechanically-extracted",
+      "scope": "API transport and UI color sourcing"
+    }
+  ],
+  "runtime": {
+    "codexCliVersion": "0.159.2",
+    "hooksFeature": {
+      "status": "stable",
+      "enabled": true,
+      "source": "codex features list"
+    },
+    "autoInterception": "unobserved",
+    "claudeLaunch": "not performed",
+    "postToolRegistration": "not found in scoped configs"
+  },
+  "canaryEvidence": {
+    "tier": "G1 isolated subprocess boundary evidence; real Node/Git and copied source scripts, synthetic content",
+    "proves": "The nine recorded invocations produce the recorded exit codes and diagnostics under this environment.",
+    "doesNotProve": "Automatic interception in current Codex or Claude sessions, all parser paths, CI execution, or production behavior.",
+    "root": "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl",
+    "rows": [
+      {
+        "id": "recognized-input",
+        "command": [
+          "C:\\Users\\Naween\\AppData\\Local\\mise\\installs\\node\\24.22.2\\node.exe",
+          "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\gate.mjs"
+        ],
+        "cwd": "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\recognized-input",
+        "input": {
+          "input": {
+            "file_path": "source.ts",
+            "content": "export const short=true;\n"
+          }
+        },
+        "status": 2,
+        "signal": null,
+        "error": null,
+        "stdout": "",
+        "stderr": "\n🛑 [RN-TERRAIN PRE-TOOL GATE: SUSPECTED BAD TRUNCATION / CODE REGRESSION]\n─────────────────────────────────────────────────────────────────\n  Target Surface:  source.ts\n  Original Lines:  60 lines\n  Resulting Lines: 2 lines (Dropped 58 lines / 97% loss)\n\n  PROTECTION TRIGGERED:\n  This edit deletes a massive portion of an existing file. This is a common\n  AI failure mode where older features or helper code are accidentally wiped out.\n\n  REMEDIATION:\n  • If you intended to edit a specific part, use a targeted edit rather than\n    overwriting the entire file.\n  • If this deletion is intentional, include the comment `// @allow-truncation`\n    in the file to permit the edit.\n─────────────────────────────────────────────────────────────────\n",
+        "elapsedMs": 104,
+        "receipt": null
+      },
+      {
+        "id": "tool-input-envelope",
+        "command": [
+          "C:\\Users\\Naween\\AppData\\Local\\mise\\installs\\node\\24.22.2\\node.exe",
+          "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\gate.mjs"
+        ],
+        "cwd": "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\tool-input-envelope",
+        "input": {
+          "tool_name": "Write",
+          "tool_input": {
+            "file_path": "source.ts",
+            "content": "export const short=true;\n"
+          }
+        },
+        "status": 0,
+        "signal": null,
+        "error": null,
+        "stdout": "",
+        "stderr": "",
+        "elapsedMs": 81,
+        "receipt": null
+      },
+      {
+        "id": "missing-input",
+        "command": [
+          "C:\\Users\\Naween\\AppData\\Local\\mise\\installs\\node\\24.22.2\\node.exe",
+          "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\gate.mjs"
+        ],
+        "cwd": "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\missing-input",
+        "input": {},
+        "status": 0,
+        "signal": null,
+        "error": null,
+        "stdout": "",
+        "stderr": "",
+        "elapsedMs": 82,
+        "receipt": null
+      },
+      {
+        "id": "missing-receipt",
+        "command": [
+          "C:\\Users\\Naween\\AppData\\Local\\mise\\installs\\node\\24.22.2\\node.exe",
+          "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\gate.mjs"
+        ],
+        "cwd": "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\missing-receipt",
+        "input": {
+          "input": {
+            "file_path": "src/View.tsx",
+            "content": "import { Text } from 'react-native';\nexport const View=()=>null;\n"
+          }
+        },
+        "status": 2,
+        "signal": null,
+        "error": null,
+        "stdout": "",
+        "stderr": "\n🛑 [RN-TERRAIN PRE-TOOL GROUNDING GATE: ACTION BLOCKED]\n─────────────────────────────────────────────────────────────────\n  Target Surface:      src/View.tsx\n  Ungrounded Packages: react-native\n\n  CRITICAL INSTRUCTION FOR AI AGENT:\n  Before writing or editing React Native code, you MUST consult the Outside\n  Referent for all ungrounded packages: [react-native]\n\n  BATCH REMEDIATION (Ground all packages at once):\n    CLI Command: npx @intuitui-labs/rn-terrain compass react-native\n    MCP Tools:   Call tcdi_compass for each package:\n      • tcdi_compass(package_name: \"react-native\")\n─────────────────────────────────────────────────────────────────\n\n",
+        "elapsedMs": 89,
+        "receipt": null
+      },
+      {
+        "id": "auto-ground",
+        "command": [
+          "C:\\Users\\Naween\\AppData\\Local\\mise\\installs\\node\\24.22.2\\node.exe",
+          "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\gate.mjs",
+          "--auto-ground"
+        ],
+        "cwd": "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\auto-ground",
+        "input": {
+          "input": {
+            "file_path": "src/View.tsx",
+            "content": "import { Text } from 'react-native';\nexport const View=()=>null;\n"
+          }
+        },
+        "status": 0,
+        "signal": null,
+        "error": null,
+        "stdout": "",
+        "stderr": "⚡ [RN-TERRAIN AUTO-GROUND]: In-flight receipt cut for [react-native].\n",
+        "elapsedMs": 5857,
+        "receipt": {
+          "lastGrounding": "2026-11-11T09:07:56.185Z",
+          "packages": {
+            "react-native": {
+              "version": "latest",
+              "timestamp": "2026-11-11T09:07:56.185Z"
+            }
+          },
+          "lastAction": "auto_ground_on_intercept"
+        }
+      },
+      {
+        "id": "invalid-date-receipt",
+        "command": [
+          "C:\\Users\\Naween\\AppData\\Local\\mise\\installs\\node\\24.22.2\\node.exe",
+          "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\gate.mjs"
+        ],
+        "cwd": "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\invalid-date-receipt",
+        "input": {
+          "input": {
+            "file_path": "src/View.tsx",
+            "content": "import { Text } from 'react-native';\nexport const View=()=>null;\n"
+          }
+        },
+        "status": 0,
+        "signal": null,
+        "error": null,
+        "stdout": "",
+        "stderr": "",
+        "elapsedMs": 535,
+        "receipt": {
+          "lastGrounding": "not-a-date",
+          "packages": {
+            "react-native": {
+              "version": "latest",
+              "timestamp": "not-a-date"
+            }
+          }
+        }
+      },
+      {
+        "id": "stop-outside-git",
+        "command": [
+          "C:\\Users\\Naween\\AppData\\Local\\mise\\installs\\node\\24.22.2\\node.exe",
+          "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\stop-gate.mjs"
+        ],
+        "cwd": "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\stop-outside-git",
+        "input": "",
+        "status": 0,
+        "signal": null,
+        "error": null,
+        "stdout": "",
+        "stderr": "",
+        "elapsedMs": 192,
+        "receipt": null
+      },
+      {
+        "id": "stop-untracked-canary",
+        "command": [
+          "C:\\Users\\Naween\\AppData\\Local\\mise\\installs\\node\\24.22.2\\node.exe",
+          "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\stop-gate.mjs"
+        ],
+        "cwd": "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\stop-untracked-canary",
+        "input": "",
+        "status": 0,
+        "signal": null,
+        "error": null,
+        "stdout": "✓ [RN-TERRAIN STOP GATE]: All modified lines verified cleanly against New Architecture & modern runtimes.\n",
+        "stderr": "",
+        "elapsedMs": 275,
+        "receipt": null
+      },
+      {
+        "id": "stop-staged-canary",
+        "command": [
+          "C:\\Users\\Naween\\AppData\\Local\\mise\\installs\\node\\24.22.2\\node.exe",
+          "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\stop-gate.mjs"
+        ],
+        "cwd": "C:\\Users\\Naween\\AppData\\Local\\Temp\\coordination-hooks-sz7Rrl\\stop-untracked-canary",
+        "input": "",
+        "status": 2,
+        "signal": null,
+        "error": null,
+        "stdout": "",
+        "stderr": "\n🛑 [RN-TERRAIN STOP GATE: TASK COMPLETION REJECTED]\n─────────────────────────────────────────────────────────────────\n  Task completion rejected. The following architectural violations were\n  introduced in modified lines (2 total):\n\n  ❌ apps/mobile/Canary.tsx:1\n     Severed Symbol: useAnimatedGestureHandler (react-native-reanimated)\n     Required Fix:   Gesture.Pan().onUpdate(...)\n     Detail:         'useAnimatedGestureHandler' is removed in modern Reanimated worklets.\n\n  ❌ apps/mobile/Canary.tsx:2\n     Severed Symbol: useAnimatedGestureHandler (react-native-reanimated)\n     Required Fix:   Gesture.Pan().onUpdate(...)\n     Detail:         'useAnimatedGestureHandler' is removed in modern Reanimated worklets.\n\n  CRITICAL INSTRUCTION FOR AI AGENT:\n  You cannot complete this session while severed or removed APIs remain\n  in the lines you introduced. Fix the issues listed above, then re-verify.\n─────────────────────────────────────────────────────────────────\n\n"
+      }
+    ],
+    "reproduction": {
+      "scripts": [
+        "Copy .agents/gate.mjs and .agents/stop-gate.mjs unchanged into a fresh TEMP directory.",
+        "Run each row with node script, row.input JSON on stdin, and row.command args. Use an isolated cwd per row."
+      ],
+      "fixtureSetup": {
+        "recognized-input": "Create source.ts with 60 separate exported constant lines.",
+        "tool-input-envelope": "Same 60-line source.ts.",
+        "missing-input": "Empty directory.",
+        "missing-receipt": "Empty directory.",
+        "auto-ground": "Empty directory; --auto-ground argument.",
+        "invalid-date-receipt": "Create .agents/state/receipt.json with lastGrounding and packages.react-native.timestamp both not-a-date, version latest.",
+        "stop-outside-git": "Empty directory without git init.",
+        "stop-untracked-canary": "git init; create apps/mobile/Canary.tsx with import { useAnimatedGestureHandler } from 'react-native-reanimated'; and a call to useAnimatedGestureHandler({}). Do not stage.",
+        "stop-staged-canary": "Same nested canary, then git add apps/mobile/Canary.tsx before running stop gate."
+      },
+      "timeoutMs": 15000,
+      "envOverrides": {
+        "TERRAIN_AUTO_GROUND": "0",
+        "TERRAIN_TELEMETRY_OPT_IN": "0"
+      },
+      "expectedExitCodes": [
+        2,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        2
+      ]
+    }
+  },
+  "history": [
+    {
+      "commit": "9d4959facf",
+      "date": "2026-10-17",
+      "source": "git blame gate.mjs lines 725-755 and 865-881",
+      "observation": "Current input extraction and auto-ground receipt-writing were introduced or last touched here."
+    },
+    {
+      "commit": "a9731ac78",
+      "date": "2026-02-28",
+      "source": "git log -1 -- .agents/workflows/code-execution.md",
+      "observation": "Latest recorded touch to the older code-execution workflow is a merge, not evidence its policy is still current."
+    }
+  ],
+  "coverage": {
+    "sourceControl": "Git log and scoped blame inspected; PR discussions not queried.",
+    "issueTracker": "Not queried. No issue identifiers surfaced in scoped gate commit titles.",
+    "longForm": "Repository workflow, agent and pstack documents inspected. External docs store not queried.",
+    "teamChat": "Parent retains previously inspected relevant Codex chats; no Slack query performed by this investigator.",
+    "observability": "Not queried. Scoped hooks are local development processes; no production observability inference made.",
+    "errorTracking": "Not queried. No runtime incident identified as source for these hooks.",
+    "analytics": "Not queried. No product threshold or analytics-driven behavior in this slice.",
+    "externalPrimarySource": {
+      "url": "https://code.claude.com/docs/en/hooks",
+      "accessedAt": "2026-11-11T09:11:34.197Z",
+      "observations": [
+        "PreToolUse Write uses tool_input with file_path/content.",
+        "Current settings examples place type command handlers inside hooks arrays."
+      ],
+      "limitation": "Current docs compared to local config; installed Claude version and runtime acceptance not tested."
+    }
+  },
+  "failureModes": [
+    "Missing/mismatched payload can become exit0 without checking the proposed edit.",
+    "Self-minted grounding receipt can be mistaken for independent investigation evidence.",
+    "Invalid timestamp produces no stale receipt rejection in the observed path.",
+    "Git status may collapse untracked directories and the stop scan can miss nested files.",
+    "Errors and absent Git state may be converted to successful exit codes.",
+    "Prose procedures require agent compliance rather than mechanically evaluated transitions."
+  ],
+  "designConstraints": [
+    "Preserve current source authorities and distinguish declared/configured/invoked/enforced.",
+    "Validate event envelopes explicitly and represent unsupported inputs as unverified rather than clean.",
+    "Separate evidence producer from transition evaluator; receipt timestamp is not research proof.",
+    "Fingerprint exact relevant source revisions and dependency declarations, not raw branch ref text.",
+    "Persist change and action identity, input fingerprints, evidence pointers, validity and unresolved decisions.",
+    "Resume only unaffected completed work; source changes invalidate dependent results.",
+    "Report missing or failed checks explicitly and preserve an incomplete state."
+  ],
+  "filesRead": [
+    ".claude/settings.json",
+    ".agents/gate.mjs",
+    ".agents/gate.mjs",
+    ".agents/gate.mjs",
+    ".agents/gate.mjs",
+    ".agents/gate.mjs",
+    ".agents/gate.mjs",
+    ".agents/gate.mjs",
+    ".agents/stop-gate.mjs",
+    ".agents/stop-gate.mjs",
+    ".agents/stop-gate.mjs",
+    ".agents/stop-gate.mjs",
+    ".agents/post-tool.mjs",
+    ".agents/workflows/code-execution.md",
+    ".agents/workflows/code-execution.md",
+    "AGENTS.md",
+    "AGENTS.md",
+    "AGENTS.md",
+    ".agents/skills/poteto-mode/SKILL.md",
+    ".agents/skills/show-me-your-work/SKILL.md",
+    ".agents/skills/show-me-your-work/scripts/log.sh",
+    ".github/workflows/pr-guard.yml",
+    ".github/workflows/quality-gate.yml",
+    "package.json",
+    ".codex/agents/gurudevi-web-luna.toml",
+    ".agents/state/receipt.json"
+  ],
+  "ownership": "Only this JSON output is written in the repository. Scripts were copied into a fresh TEMP directory; git init and git add operated only in TEMP."
+}

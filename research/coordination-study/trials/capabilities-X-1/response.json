@@ -1,0 +1,121 @@
+{
+  "workId": "f8dfabb8-b637-4394-9213-7898bb3ed053",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "The supplied router and capability catalog agree on six admitted foundation procedures: identity.session, identity.scopes, identity.entry and identity.syncCredentials are queries; identity.createInitialBond and authority.refreshSnapshot are commands. All six catalog entries admit only the app channel, require session assurance and declare G2 as required evidence. Required evidence is not proof that G2 has passed; the catalog explicitly leaves owner confirmation of that bar pending.",
+      "sourceIds": [
+        "router",
+        "capabilities"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The router requires both identity and platform context before handling these procedures. The syncCredentials handler reports SERVICE_UNAVAILABLE when its issuer is absent. This establishes source-level wiring and guards, not observed runtime authentication or dependency behavior.",
+      "sourceIds": [
+        "router"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The catalog description's unqualified 'empty v1 contract' statement is stale relative to the six wired foundation procedures. Its narrower 'empty business contract' and 'empty business router' descriptions remain consistent with the supplied router: admitted identity and authority foundations do not constitute business feature admission. Historical pre-reset evidence still cannot establish current execution.",
+      "sourceIds": [
+        "catalog-description",
+        "router",
+        "capabilities"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The governing policy's factual description of 'two read-only identity procedures' also needs updating: the supplied current surface contains six procedures, including two commands and an authority namespace. Its normative scope remains horizontal foundation, with business admission deferred and product decisions unreplaced by engineering guidance.",
+      "sourceIds": [
+        "foundation-policy",
+        "router",
+        "capabilities"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "Resuming foundation work does not authorize implementing business procedures or migrating features. The policy explicitly defers business admission and unresolved product-policy choices; the catalog likewise treats feature/domain admission and capability-specific reconciliation as later work. Existing foundation commands do not imply general business authorization.",
+      "sourceIds": [
+        "foundation-policy",
+        "catalog-description",
+        "capabilities"
+      ],
+      "confidence": "supported"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "supersede factual claim of an empty overall v1 surface",
+      "subject": "router and six admitted capability entries",
+      "object": "catalog-description empty v1 contract sentence",
+      "authoritySourceIds": [
+        "router",
+        "capabilities",
+        "catalog-description"
+      ]
+    },
+    {
+      "relation": "supersede factual procedure count and read-only characterization",
+      "subject": "router and six admitted capability entries",
+      "object": "foundation-policy two read-only identity procedures sentence",
+      "authoritySourceIds": [
+        "router",
+        "capabilities",
+        "foundation-policy"
+      ]
+    },
+    {
+      "relation": "continues to constrain delivery scope despite stale descriptive text",
+      "subject": "foundation-policy horizontal foundation authorization",
+      "object": "business procedures and feature migrations remain deferred",
+      "authoritySourceIds": [
+        "foundation-policy",
+        "catalog-description"
+      ]
+    },
+    {
+      "relation": "does not establish",
+      "subject": "admitted status and declared G2 requirement",
+      "object": "passed G2 evidence, deployed execution, or business admission authorization",
+      "authoritySourceIds": [
+        "capabilities",
+        "foundation-policy",
+        "catalog-description"
+      ]
+    }
+  ],
+  "reviewRequired": [
+    "catalog-description",
+    "foundation-policy",
+    "capabilities"
+  ],
+  "unresolved": [
+    "Owner confirmation of G2 as the admission bar remains pending in the capability catalog; no passing evidence is supplied.",
+    "Actual contract declarations, full module admission lists, conformance reports, runtime execution and deployment status are not supplied.",
+    "Hosted identity ceremonies/session settings, production database grants, proxy/container deployment and R1 require separate evidence according to the catalog description.",
+    "Business capability admission and unresolved product policies require explicit later decisions; none are supplied here."
+  ],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "Read the work request and all four frozen source excerpts.",
+      "Compared router handlers against admitted capability entries.",
+      "Separated stale surface descriptions from continuing delivery-scope authority.",
+      "Identified records requiring review and limits on implementation authorization."
+    ],
+    "invalidatedSteps": [
+      "Treating the earlier empty-v1 description as a current inventory of all procedures.",
+      "Treating the policy's two-read-only-procedure description as the current surface.",
+      "Treating admission metadata or historical foundation evidence as current runtime verification or authorization to implement business procedures."
+    ],
+    "nextAction": "Review and reconcile the catalog-description and foundation-policy surface descriptions with the six foundation capabilities, preserve business-admission deferral, obtain the pending evidence-bar decision, and inspect current contract/conformance and runtime evidence before continuing authorized horizontal work."
+  },
+  "limitations": [
+    "Conclusions use only the four supplied frozen excerpts; the original repository and other records were not inspected.",
+    "No code was changed, no tests or runtime canary were run, and no live deployment or authorization behavior was observed.",
+    "The supplied excerpts do not establish that referenced historical evidence or open questions have since been resolved."
+  ]
+}

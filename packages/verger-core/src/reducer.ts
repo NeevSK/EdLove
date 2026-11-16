@@ -28,6 +28,7 @@ import {
 } from './signals';
 import type {
   Actuator,
+  AnticipateIntent,
   AppVisibility,
   Capability,
   CapacityFacts,
@@ -266,6 +267,8 @@ export interface VergerState {
   readonly screenAt: number | null;
   /** Frames before this time are the announced transition's, not evidence (R3). */
   readonly transitionUntil: number;
+  /** Until when feedforward anticipation holds ornamental levers stepped down. */
+  readonly anticipatingUntil: number | null;
   /** p5: the frames-caused pressure verger settled on per screen, applied on return (R4). */
   readonly screenMemory: Readonly<Record<string, Readonly<Record<string, number>>>>;
 
@@ -415,6 +418,7 @@ export function createVergerState(options: CreateVergerStateOptions): VergerStat
     screen: null,
     screenAt: null,
     transitionUntil: Number.NEGATIVE_INFINITY,
+    anticipatingUntil: null,
     screenMemory: {},
     polledMemory: null,
     stressEndMs: null,
@@ -1212,6 +1216,7 @@ function applyStandingPressure(state: VergerState, at: number): VergerState {
 
 function maybeIncrease(state: VergerState, at: number): VergerState {
   if (state.stack.length === 0 || !mayGrow(state)) return state;
+  if (state.anticipatingUntil !== null && at < state.anticipatingUntil) return state;
   // No raise while heat is recovering (P5); pacing after it is in the snapshot.
   if (heatRecovering(state, at)) return state;
   const thermal = thermalActing(state);
@@ -1518,6 +1523,92 @@ function onScreen(state: VergerState, event: Extract<VergerEvent, { type: 'scree
   };
 }
 
+export function isOrnamentalOrDeferrable(lever: LeverSpec, intent: AnticipateIntent): boolean {
+  if (lever.visualImpact === 'high') return false;
+  if (lever.closedLoopOnly && lever.maxLevel === 1) return false;
+  const isShaderOrEffect =
+    lever.requires?.some(
+      (r) => r.capability === 'renderEffect' || r.capability === 'runtimeShader',
+    ) ?? false;
+
+  if (intent === 'burst-sync') {
+    if (lever.target === 'cpu' || lever.target === 'network') {
+      return true;
+    }
+    if (lever.ambient || lever.motion) return true;
+    return false;
+  }
+
+  if (intent === 'canvas-mount') {
+    if (lever.target === 'gpu' || isShaderOrEffect || lever.ambient || lever.motion) {
+      return true;
+    }
+    return false;
+  }
+
+  // 'heavy-navigation': ambient, motion, shader/renderEffect, or low visual impact GPU/CPU
+  if (lever.ambient || lever.motion || isShaderOrEffect) {
+    return true;
+  }
+  if (lever.visualImpact === 'low' && (lever.target === 'gpu' || lever.target === 'cpu')) {
+    return true;
+  }
+  return false;
+}
+
+function onAnticipate(
+  state: VergerState,
+  event: Extract<VergerEvent, { type: 'anticipate' }>,
+  at: number,
+): VergerState {
+  const until = at + Math.max(0, event.durationMs);
+  let next: VergerState = {
+    ...state,
+    anticipatingUntil: Math.max(state.anticipatingUntil ?? 0, until),
+  };
+  if (!mayReduce(state)) {
+    return {
+      ...next,
+      lastAction: 'stale',
+      lastReason: `feedforward anticipation (${event.intent}): reducing is switched off`,
+    };
+  }
+  const candidates = governed(state).filter((lever) =>
+    isOrnamentalOrDeferrable(lever, event.intent),
+  );
+  let pressure = { ...state.pressure };
+  let stack = [...state.stack];
+  const pressureCause = { ...state.pressureCause };
+  const lowered: string[] = [];
+  for (const lever of candidates) {
+    const have = pressure[lever.id] ?? 0;
+    if (have < lever.maxLevel) {
+      pressure[lever.id] = have + 1;
+      stack.push(lever.id);
+      pressureCause[lever.id] = 'frames';
+      lowered.push(lever.id);
+    }
+  }
+  if (lowered.length === 0) {
+    return {
+      ...next,
+      lastAction: 'stale',
+      lastReason: `feedforward anticipation (${event.intent}): nothing left to lower`,
+    };
+  }
+  return {
+    ...next,
+    pressure,
+    stack,
+    pressureCause,
+    lastDecreaseAt: at,
+    lastPressureAt: at,
+    comfortSeen: false,
+    lastAction: 'decrease',
+    lastReason: `feedforward anticipation (${event.intent}): ${lowered.length} ornamental levers stepped down`,
+  };
+}
+
 function onFrameWindow(previous: VergerState, event: Extract<VergerEvent, { type: 'frame-window' }>) {
   const state = previous.framesHeard ? previous : { ...previous, framesHeard: true };
   // Frames within an announced transition are the app's expected work: neither stress nor comfort.
@@ -1747,6 +1838,9 @@ function step(state: VergerState, event: VergerEvent): VergerState {
     case 'screen':
       next = onScreen(next, input, at);
       break;
+    case 'anticipate':
+      next = onAnticipate(next, input, at);
+      break;
     case 'tick':
       break;
   }
@@ -1804,6 +1898,7 @@ interface ExpansionCandidate {
  */
 function expansionCandidates(state: VergerState, at: number): ExpansionCandidate[] {
   if (state.stack.length === 0 || !mayGrow(state) || heatRecovering(state, at)) return [];
+  if (state.anticipatingUntil !== null && at < state.anticipatingUntil) return [];
   if (state.contentionExhausted || contentionOf(state, at) !== 'none') return [];
   const readings = readingsOf(state, at);
   const out: ExpansionCandidate[] = [];
@@ -1831,7 +1926,9 @@ function expansionCandidates(state: VergerState, at: number): ExpansionCandidate
         ? state.upgradeAfterMs
         : (state.leverWait[id] ?? state.upgradeAfterMs);
     const since = Math.max(...evidence.map((a) => state.ampleSince[a] ?? at));
-    const readyAt = Math.max(since, state.lastIncreaseAt, state.lastDecreaseAt) + wait / confidence;
+    const readyAt =
+      Math.max(since, state.lastIncreaseAt, state.lastDecreaseAt, state.anticipatingUntil ?? 0) +
+      wait / confidence;
     out.push({
       id,
       readyAt,
@@ -2162,6 +2259,8 @@ export function nextTimedChangeAt(state: VergerState): number | null {
   if (!interactionIdle(state, now)) candidates.push(state.lastInteractionAt + ambientSleepAfterMs);
   candidates.push(state.lastInteractionAt + state.config.gestureQuietMs);
   if (Number.isFinite(state.scrollingUntil)) candidates.push(state.scrollingUntil);
+  if (state.anticipatingUntil !== null && state.anticipatingUntil > now)
+    candidates.push(state.anticipatingUntil);
   if (state.freezeSince !== null) candidates.push(state.freezeSince + state.config.gestureFreezeMaxMs);
   if (state.thermalCoolerSince !== null)
     candidates.push(state.thermalCoolerSince + state.config.thermalDwellMs);

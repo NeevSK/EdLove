@@ -1,0 +1,61 @@
+{
+  "workId": "d5e0d847-c36b-4974-b252-fa0047a716ef",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "The accepted account identifier remains immutable at revision stable-1; the prior identity inspection is unaffected and can be inherited.",
+      "sourceIds": [
+        "stable-source",
+        "handoff"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The prior authority analysis used superseded access-1 and must be reconsidered. Current access-2 says invitation possession does not grant school authority; server-confirmed membership is required.",
+      "sourceIds": [
+        "changed-source",
+        "handoff"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The handoff reports no deployed changes and says verification and reconciliation had not started.",
+      "sourceIds": [
+        "handoff"
+      ],
+      "confidence": "direct"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "authority requires",
+      "subject": "school access",
+      "object": "server-confirmed membership",
+      "authoritySourceIds": [
+        "changed-source"
+      ]
+    }
+  ],
+  "reviewRequired": [
+    "changed-source"
+  ],
+  "unresolved": [],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidatedSteps": [
+      "prior authority analysis based on access-1"
+    ],
+    "nextAction": "Inspect the relevant authorization implementation, enforce server-confirmed membership before granting school access, and then verify the behavior; no implementation target is identified by the supplied sources."
+  },
+  "limitations": [
+    "Only the frozen synthetic sources and local controller were available; no repository implementation or runtime evidence was inspected.",
+    "The controller confirms source freshness and stage order, not the truth of interpretations or the existence of deployed behavior."
+  ]
+}

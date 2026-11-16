@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "workId": "d7d07ebf-3c59-4223-bddb-8e4e749e0482",
+  "events": [
+    {
+      "id": "a1",
+      "kind": "record",
+      "stage": "context",
+      "summary": "Read the frozen hook configuration and gate source excerpts; the configuration declares PreToolUse for Write|Edit invoking gate.mjs with --auto-ground and Stop invoking stop-gate.mjs.",
+      "evidence": [
+        {
+          "sourceId": "hook-config",
+          "sha256": "1ff9e8153e210ad0df65d39e171bf4451c15bf764e2d9f7437db233cf88ce36f"
+        },
+        {
+          "sourceId": "gate-description",
+          "sha256": "8be0a0bb6386bf2caf3e1eaeb868f5d94de5241b1816143bc9f2a2adaea83db7"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "a2",
+      "kind": "record",
+      "stage": "analysis",
+      "summary": "The files establish declared hooks and intended gate behavior, including allow/deny exit semantics. The .claude/settings.json origin and these excerpts do not establish registration in this Codex session; the gate comment claiming cross-tool interception is not runtime evidence.",
+      "evidence": [
+        {
+          "sourceId": "hook-config",
+          "sha256": "1ff9e8153e210ad0df65d39e171bf4451c15bf764e2d9f7437db233cf88ce36f"
+        },
+        {
+          "sourceId": "gate-description",
+          "sha256": "8be0a0bb6386bf2caf3e1eaeb868f5d94de5241b1816143bc9f2a2adaea83db7"
+        },
+        {
+          "sourceId": "gate-entry",
+          "sha256": "6d7d8a471ad22c2a5722074fca09ee11045a2be8978bc4bc630e12492e867f42"
+        }
+      ],
+      "unresolved": [
+        "Whether Codex actually loads or invokes these hooks in this session.",
+        "Whether stop-gate.mjs performs effective completion checks."
+      ]
+    },
+    {
+      "id": "a3",
+      "kind": "record",
+      "stage": "verification",
+      "summary": "Manually invoked the supplied local controller init/status/record commands; status reports structural ordering/source freshness checks and explicitly excludes runtime behavior. No gate invocation or automatic interception was observed, and no harmless gate canary was run because the full gate executable and a target workspace runtime are not supplied here.",
+      "evidence": [
+        {
+          "sourceId": "hook-config",
+          "sha256": "1ff9e8153e210ad0df65d39e171bf4451c15bf764e2d9f7437db233cf88ce36f"
+        },
+        {
+          "sourceId": "gate-description",
+          "sha256": "8be0a0bb6386bf2caf3e1eaeb868f5d94de5241b1816143bc9f2a2adaea83db7"
+        }
+      ],
+      "unresolved": [
+        "Actual Codex hook loading and stop-gate behavior remain unavailable."
+      ]
+    },
+    {
+      "id": "a4",
+      "kind": "record",
+      "stage": "reconciliation",
+      "summary": "Reconciled the source claims with observed execution: hook configuration and gate design are established; automatic grounding/completion interception in this Codex session is not established. Controller use was manual and does not prove hooks fire.",
+      "evidence": [
+        {
+          "sourceId": "hook-config",
+          "sha256": "1ff9e8153e210ad0df65d39e171bf4451c15bf764e2d9f7437db233cf88ce36f"
+        },
+        {
+          "sourceId": "gate-description",
+          "sha256": "8be0a0bb6386bf2caf3e1eaeb868f5d94de5241b1816143bc9f2a2adaea83db7"
+        },
+        {
+          "sourceId": "gate-entry",
+          "sha256": "6d7d8a471ad22c2a5722074fca09ee11045a2be8978bc4bc630e12492e867f42"
+        }
+      ],
+      "unresolved": [
+        "Actual Codex hook loading and stop-gate behavior remain unavailable."
+      ]
+    }
+  ]
+}

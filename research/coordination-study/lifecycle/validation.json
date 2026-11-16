@@ -1,0 +1,159 @@
+{
+  "observedAt": "2026-11-11T17:26:14.811Z",
+  "scope": "Local executable feature lifecycle; no chat product implementation or deployment",
+  "packageTypes": {
+    "level": "G0",
+    "exitCode": 0,
+    "log": "check-types-final.log"
+  },
+  "packageBuild": {
+    "level": "G0",
+    "exitCode": 0,
+    "log": "build-final.log"
+  },
+  "packageTests": {
+    "level": "G1",
+    "exitCode": 0,
+    "checks": 99,
+    "files": 18,
+    "log": "test-final.log",
+    "limits": "Includes pre-existing and concurrent pipeline checks; their success is not live UI/device/product verification."
+  },
+  "independentCompiledLifecycle": {
+    "level": "G1",
+    "checks": 32,
+    "files": 5,
+    "evidence": "../lifecycle-verification.json"
+  },
+  "antiSlop": {
+    "exitCode": 1,
+    "errors": 48,
+    "warnings": 1482,
+    "pilotErrors": 0,
+    "pilotWarnings": 10,
+    "evidence": "gate-diagnostics.json",
+    "limits": "Snapshot before final inventory addition; later chained gates did not execute."
+  },
+  "actualHostHandoff": {
+    "productAuthor": "work_36",
+    "reviewer": "work_35",
+    "uxAuthor": "independent_verifier",
+    "artifact": "chat/history.json",
+    "scope": "Typed proposed specification; local handoff review only",
+    "screens": 2,
+    "stateAxes": 6,
+    "transitions": 12,
+    "journeys": 4
+  },
+  "currentPilot": {
+    "id": "chat-specification-20261111",
+    "revision": 24,
+    "readiness": "blocked",
+    "sourceChange": [
+      "changed_source:AGENTS.md"
+    ],
+    "staleArtifacts": [
+      "chat-analysis@1",
+      "chat-requirement@1",
+      "chat-invariant@1",
+      "chat-scenario@1",
+      "chat-analysis@2",
+      "chat-requirement@2",
+      "chat-invariant@2",
+      "chat-scenario@2",
+      "chat-experience@1"
+    ],
+    "artifact": "chat/status-current.json",
+    "procedureChanged": true,
+    "executionMode": "source",
+    "compiledObservation": "chat/status-compiled.json"
+  },
+  "delta": {
+    "artifact": "delta.diff",
+    "removedLines": 0,
+    "limits": "Tracked baseline includes preserved prior and concurrent package/AGENTS additions; new source files shown as complete additions."
+  },
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "12a68b0668378655fe443c2f04ce7a42e7f58b9df40fec9c776169ffc90f4041"
+    },
+    {
+      "path": "packages/platform-mcp/package.json",
+      "sha256": "4032742c287099e95f8a1ce9104fca4b3da63b1655db4ce01b7af43e6ef2acab"
+    },
+    {
+      "path": "packages/platform-mcp/src/index.ts",
+      "sha256": "74d1b28a5b933d832b3dff2c19cd11a7672bb14059f4f393fe0b01ad634c7beb"
+    },
+    {
+      "path": "packages/platform-mcp/src/services/HelpService.ts",
+      "sha256": "f4087cd77fddbdf4787996adb63d83e546bb9c66520bf3d26a624f3e13b6c3b5"
+    },
+    {
+      "path": "packages/platform-mcp/src/lifecycle/evaluate.test.ts",
+      "sha256": "c8fa7ed2c06ce27431ac563a5ad5737d23a2cbd03f0987f43ceb159a727d8420"
+    },
+    {
+      "path": "packages/platform-mcp/src/lifecycle/evaluate.ts",
+      "sha256": "69a977607b61ca4e51d6baf2745e1738e08fa2177d7d39f03326d36d32a01b92"
+    },
+    {
+      "path": "packages/platform-mcp/src/lifecycle/fixtures.ts",
+      "sha256": "f0b5c7b632544532e5157765ed38a9d366cb4e739679eacf3a7d10a9ff39e05d"
+    },
+    {
+      "path": "packages/platform-mcp/src/lifecycle/gateway.integration.test.ts",
+      "sha256": "c9e864241bf2a856976c75b18a2c5ea87d41b92b0465ae024a78eaf3f713c060"
+    },
+    {
+      "path": "packages/platform-mcp/src/lifecycle/impact.test.ts",
+      "sha256": "caeb455bf735c26f494ca4bb7fd99e77181ea2b55e58640a87cc35e367474f0c"
+    },
+    {
+      "path": "packages/platform-mcp/src/lifecycle/model.ts",
+      "sha256": "5bae6fbcaf9baef71da58cf7e45117243770267c1ae2414ee23a0e18e2c00d8d"
+    },
+    {
+      "path": "packages/platform-mcp/src/lifecycle/runtime.test.ts",
+      "sha256": "231dc74c0ae2aca0ea19b5ae1d7e028ba169dc48d02076a3acbc383b913a9268"
+    },
+    {
+      "path": "packages/platform-mcp/src/lifecycle/runtime.ts",
+      "sha256": "b6430566006a53d6bd2c7bd351a1ed26f47b5d7c947baf33edc431da3e553a2f"
+    },
+    {
+      "path": "packages/platform-mcp/src/lifecycle/store.test.ts",
+      "sha256": "388d25d2cdc487e7edfc8cf3110317b4d71e0df3f12edd0adb375a4a5f207b48"
+    },
+    {
+      "path": "packages/platform-mcp/src/lifecycle/store.ts",
+      "sha256": "5f15be664db4a4388d01740ac746fcfeacd78d0d869d38f81eddba9d54a90dc7"
+    },
+    {
+      "path": "packages/platform-mcp/src/services/CoordinationService.ts",
+      "sha256": "dd64aab0c792038c5d247213f0f0335a653d23c201e7948184e04cd2fec8f182"
+    },
+    {
+      "path": "packages/platform-mcp/src/coordination.ts",
+      "sha256": "27dff828cd7567c8f61edf158ec87d690927f7a14f1c39c4f515fbb4e5f58406"
+    },
+    {
+      "path": "packages/platform-mcp/src/cli/coordination.ts",
+      "sha256": "03faa0c2dbe7a2ea61b1242b3026881c9049edb515c9474afc51fe9ccd8916b2"
+    },
+    {
+      "path": "packages/platform-mcp/docs/feature-lifecycle.md",
+      "sha256": "1e090d467c8bea7b33f1d72d9fee2f465e548eb3908993545daf6408c6a38f68"
+    },
+    {
+      "path": "packages/platform-mcp/docs/developer-coordination.md",
+      "sha256": "8b651080eaf1bc1a028e4b1a040f8d417b40dab5fa5f531c079666c84db94e4c"
+    },
+    {
+      "path": "docs/architecture/2026-11-11-agent-coordination-study.md",
+      "sha256": "9f5a05f24c647ac1fff07755796e4955dc830c7597926b4628c9aea5deeb3849"
+    }
+  ],
+  "updatedAt": "2026-11-11T17:28:37.173Z"
+}

@@ -1,0 +1,80 @@
+{
+  "workId": "f8dfabb8-b637-4394-9213-7898bb3ed053",
+  "request": "Resume the API foundation work. Establish what the current API admits, what the earlier empty-contract description means now, and whether this authorizes implementing business procedures. Identify records needing review.",
+  "sources": [
+    {
+      "id": "catalog-description",
+      "file": "sources/catalog-description.txt",
+      "sha256": "63a45bacd8fb8a9cb8091004cc047002c95c05e542e97176f05c429fda2b65b2",
+      "origin": "packages/core/src/flows/pjc/api.foundation.json",
+      "lineStart": 1,
+      "lineEnd": 60
+    },
+    {
+      "id": "router",
+      "file": "sources/router.txt",
+      "sha256": "c385204744e1ec91d836641d9fc8c1e1d46fde5165ee292726528445ddced148",
+      "origin": "apps/sanctuary-api/src/core/router.ts",
+      "lineStart": 1,
+      "lineEnd": 51
+    },
+    {
+      "id": "capabilities",
+      "file": "sources/capabilities.txt",
+      "sha256": "edbdad52b72393039c4ce47a7643cb1fbce586ef8e31d16144bdec07f7b9d446",
+      "origin": "apps/sanctuary-api/src/modules/catalog.ts",
+      "lineStart": 115,
+      "lineEnd": 194
+    },
+    {
+      "id": "foundation-policy",
+      "file": "sources/foundation-policy.txt",
+      "sha256": "04d75f48452448e9355de2cca56f51341cc3a51119ade1eb157ba7ec20f94f4d",
+      "origin": "apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md",
+      "lineStart": 1,
+      "lineEnd": 45
+    }
+  ],
+  "procedure": "Use the supplied project context and available tools to answer the request. Return your result in the required JSON shape.",
+  "outputShape": {
+    "workId": "Copy the workId from work.json",
+    "verdict": "resolved | needs_decision | inconclusive",
+    "findings": [
+      {
+        "claim": "Your conclusion",
+        "sourceIds": [
+          "source ID"
+        ],
+        "confidence": "direct | supported | inferred | unknown"
+      }
+    ],
+    "decisions": [
+      {
+        "relation": "Relationship you establish",
+        "subject": "Entity",
+        "object": "Entity",
+        "authoritySourceIds": [
+          "source ID"
+        ]
+      }
+    ],
+    "reviewRequired": [
+      "Source IDs that need reconsideration"
+    ],
+    "unresolved": [
+      "Material unresolved questions"
+    ],
+    "execution": {
+      "runtimeHookStatus": "observed | configured_only | unavailable | not_applicable",
+      "canaryEvidence": "Path or null",
+      "completedSteps": [],
+      "invalidatedSteps": [],
+      "nextAction": "Next concrete action"
+    },
+    "limitations": [
+      "Limits on this conclusion"
+    ]
+  },
+  "toolActionLimit": 20,
+  "instructions": "Work only with these frozen sources and the provided local tools. Do not read neighboring work folders, manifests, evaluator material or the original repository. Do not modify sources. Write only local state/action files if needed, and return JSON. Null resource measurements are preferable to invented measurements."
+}

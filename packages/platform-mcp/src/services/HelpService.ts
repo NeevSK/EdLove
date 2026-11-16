@@ -40,6 +40,12 @@ Access all functionality through these four primary entry points:
 3. **sovereign_maintenance**: Refactoring, healing, imports normalization, and git checkpoints.
 4. **sovereign_guide**: Philosophy, orientation, tool inventory, and integration guidance.
 
+Developer changes can use **sovereign_coordination** with a strict JSON request:
+inventory, context, create, status, record, check, or lifecycle. Lifecycle manages typed
+requirements, invariants, role tasks, handoffs, reviews and reconsideration. It shares its local store and
+implementation with the package's coordination CLI. See docs/developer-coordination.md.
+Its ready-for-review result is not product approval or device evidence.
+
 ## 🌟 The Shiny Toolchain
 We integrate industry-leading Rust-based tools and native extractors for extreme performance:
 - **Ripgrep (grep)**: 100x faster content search.

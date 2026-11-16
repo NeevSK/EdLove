@@ -1,0 +1,114 @@
+[
+  {
+    "path": "research/coordination-study/lifecycle/radar/feedback-request.md",
+    "sha256": "b716a9d7375ab7dd3da0492d6387ea69af10da3ef86cc66ca955cc6472cc50bf"
+  },
+  {
+    "path": "packages/ui/src/theme/contracts.ts",
+    "sha256": "0ed7930661bc933ce56d19318e849880ada57a5be4b5e8c255296eafd0c92aaf"
+  },
+  {
+    "path": "packages/ui/src/theme/types.ts",
+    "sha256": "f53dfbb43995d4de40e0ee6c156796e7b070a1708f4e1d3d46b6a77b7aa59c0d"
+  },
+  {
+    "path": "packages/ui/src/theme/build.ts",
+    "sha256": "430f3b37f387f94b619e3fab246834071da3fd9c9c6b5130d3cf304674810cc9"
+  },
+  {
+    "path": "packages/ui/src/theme/css.ts",
+    "sha256": "80979805647a7d716bdaa5b2f2d1e46c3090355c209c4056a85496e1bdcc6a93"
+  },
+  {
+    "path": "packages/ui/src/theme/kitCss.ts",
+    "sha256": "a09c54df9edf16ecc6ba26718638b15b25a7103f7e9915410c6009ce083c4529"
+  },
+  {
+    "path": "packages/ui/src/components/shared/radarGeometry.ts",
+    "sha256": "18140cc86cd96e34559075b61ea1e6fe8252cf2bd8fd8fed4f5124fc49a8ffc0"
+  },
+  {
+    "path": "packages/ui/src/components/shared/feedbackScene.ts",
+    "sha256": "d9f98d75182f590b0ac6e3d9db10989051fe8bd346a2bc194f642cad1c3bff9b"
+  },
+  {
+    "path": "packages/ui/src/components/shared/__tests__/radarGeometry.test.ts",
+    "sha256": "ffcff422db0e8172c45ed1bf5ce4d839f6f6db0dda9b2cddff914d9fce9fa736"
+  },
+  {
+    "path": "packages/ui/src/components/shared/__tests__/feedbackScene.test.ts",
+    "sha256": "04a30c67be81ec156a7e91fe370e8c8b9960b44f76526bdef4bcc1583267692f"
+  },
+  {
+    "path": "packages/ui/src/components/native/Radar/Radar.tsx",
+    "sha256": "edf820230d6be50063906b10242860be101931ae17eb5bf0a3c03b213a7ec48c"
+  },
+  {
+    "path": "packages/ui/src/components/native/FeedbackScene/FeedbackScene.tsx",
+    "sha256": "4dc7386696aefeec4306afdc3a78ced8a49f05d5b532d94a63cd2af6102dafa4"
+  },
+  {
+    "path": "packages/ui/src/components/native/States/States.tsx",
+    "sha256": "9e194f0de9ceefdac757f7d3b9bee44d65fc88abc3e5c0cb8fdcd1172424c4da"
+  },
+  {
+    "path": "packages/ui/src/components/native/__tests__/radar.test.tsx",
+    "sha256": "5faa632ff51e50ba7b7b526b0c9eb52ae3177ba05a7d02d795246eb9ed7ea99e"
+  },
+  {
+    "path": "packages/ui/src/components/native/index.ts",
+    "sha256": "016f30c4aa175b67bec61bf78e55da41e5b75335c5a0a5c8baae0539807e5176"
+  },
+  {
+    "path": "packages/ui/src/components/web/Radar/Radar.tsx",
+    "sha256": "7a9c2c92ba1ae4692272f59b9f2b234329ecb2f7cedd169649505573e088a3f1"
+  },
+  {
+    "path": "packages/ui/src/components/web/FeedbackScene/FeedbackScene.tsx",
+    "sha256": "8be9e8aa687545ab1387f2dfb4614700b4723a276a3fc40bae25ddc676695b8b"
+  },
+  {
+    "path": "packages/ui/src/components/web/States/States.tsx",
+    "sha256": "9197100aceabb16d3c758bf9332bb78d34526678b09223b75af60eb3a6ef43fd"
+  },
+  {
+    "path": "packages/ui/src/components/web/index.ts",
+    "sha256": "36b45600249ff7f30effcbc7c4668b41e9386d80f1832efc6e18bb8081e4024d"
+  },
+  {
+    "path": "apps/gurudevi-web/app/(sanctuary)/kit/radar/page.tsx",
+    "sha256": "107b613e3e59a91cb9ca475e63a57053e601f13376c077aa7c812b3844e9aae0"
+  },
+  {
+    "path": "apps/gurudevi-web/app/(sanctuary)/kit/radar/RadarGalleryClient.tsx",
+    "sha256": "76a29f2cf17079d8c263726252b3f4ab6bf00df80e2c0c8449b88934fec26e45"
+  },
+  {
+    "path": "apps/gurudevi-web/app/(sanctuary)/kit/radar/radar-gallery.module.css",
+    "sha256": "ebea66046eb94e8ed0e6596712b4cf88274381207171de474e6385e86e2fae5e"
+  },
+  {
+    "path": "apps/gurudevi-web/tests/unit/kit/radar.test.tsx",
+    "sha256": "c85b476bca6fcf075e5fd25a0c3e4b20b942360dcebc390d192d73ae7a1a7265"
+  },
+  {
+    "path": "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx",
+    "sha256": "5038a46d57a9ea7e703ff09275756eaf977191dd51f85297525ee991ae625ddd"
+  },
+  {
+    "path": "packages/ui/src/components/native/Waiting/Waiting.tsx",
+    "sha256": "0d6ca90629fb991366e52bb30b41a24ec350fac780bcc496bf4eb8c4197b9947"
+  },
+  {
+    "path": "packages/ui/src/components/web/Waiting/Waiting.tsx",
+    "sha256": "c2f02c7d0dac4d1ee85d7af44874e3bb3d1123fc6ba14908a74861bf7fad8b17"
+  },
+  {
+    "path": "packages/ui/src/theme/perches.ts",
+    "sha256": "95450640ec8d44b98e33f8e5f581779b919159d63b49d2a8b5475cdcd1788e25"
+  },
+  {
+    "path": "packages/ui/assets/mascot/manifest.json",
+    "sha256": "602090aeec1cd04a41df4bf529476747bb493e71fa713814b067cc481cb619fc"
+  }
+]

@@ -7,10 +7,9 @@ import type {
   WorkspaceAppearancePreset,
   WorkspaceWallpaper,
 } from '@repo/core/types';
-import { WORLD_IDS, WORLDS, type WorldId } from '@repo/ui/theme';
-import { WorldPicker } from '@repo/ui/components/web';
+import { WORLDS, type WorldId } from '@repo/ui/theme';
+import { Drawer, WorldPicker } from '@repo/ui/components/web';
 import React, { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { getBackdropsForWorld, PRESET_WALLPAPERS } from '../../../lib/canvas/appearanceConstants';
 import {
   deleteCustomWallpaper,
@@ -318,29 +317,30 @@ export function FloorStudioDrawer({
     .map((id) => furnitureItems.find((f) => f.id === id))
     .filter((f): f is FurnitureDefinition => f !== undefined);
 
-  return createPortal(
-    <>
-      <div aria-hidden="true" className={styles.drawerOverlay} onClick={onClose} />
-      <aside aria-label="Floor Studio Configuration" className={styles.drawerPanel} role="dialog">
-        <header className={styles.drawerHeader}>
-          <div className={styles.drawerTitleGroup}>
-            <span aria-hidden="true">⚙️</span>
-            <div>
-              <h2 className={styles.drawerTitle}>Floor Studio</h2>
-              <p className={styles.drawerSubtitle}>{floorDomain} floor customization</p>
-            </div>
-          </div>
+  return (
+    <Drawer
+      open={isOpen}
+      onClose={onClose}
+      title="Floor Studio"
+      subtitle={`${floorDomain} floor customization`}
+      side="right"
+      footer={
+        <div className={styles.drawerFooter}>
+          <button className={styles.resetBtn} onClick={onResetFloorDefaults} type="button">
+            Reset Floor Defaults
+          </button>
           <button
-            aria-label="Close Floor Studio"
-            className={styles.closeButton}
+            className={styles.pillButton}
             onClick={onClose}
+            style={{ fontWeight: 600 }}
             type="button"
           >
-            ✕
+            Done
           </button>
-        </header>
-
-        <nav aria-label="Floor Studio Tabs" className={styles.tabNav} role="tablist">
+        </div>
+      }
+    >
+      <nav aria-label="Floor Studio Tabs" className={styles.tabNav} role="tablist">
           <button
             aria-selected={activeTab === 'atmosphere'}
             className={`${styles.tabButton} ${activeTab === 'atmosphere' ? styles.tabButtonActive : ''}`}
@@ -707,22 +707,6 @@ export function FloorStudioDrawer({
             </section>
           )}
         </div>
-
-        <footer className={styles.drawerFooter}>
-          <button className={styles.resetBtn} onClick={onResetFloorDefaults} type="button">
-            Reset Floor Defaults
-          </button>
-          <button
-            className={styles.pillButton}
-            onClick={onClose}
-            style={{ fontWeight: 600 }}
-            type="button"
-          >
-            Done
-          </button>
-        </footer>
-      </aside>
-    </>,
-    document.body,
+      </Drawer>
   );
 }

@@ -1,0 +1,66 @@
+{
+  "workId": "6b59bad1-1d94-4c3f-9bdf-331a7dce6554",
+  "request": "Continue the interrupted change. Some prior work is still valid and one source changed. Determine what can be inherited, what must be reconsidered, and the next action. Preserve completed work that is unaffected.",
+  "sources": [
+    {
+      "id": "stable-source",
+      "file": "sources/stable-source.txt",
+      "sha256": "4b79c412eb2ff7c1a12afc0c4f1381a645afb1bec52b8e818ecc682fccfa5b0e",
+      "origin": "synthetic fixture"
+    },
+    {
+      "id": "changed-source",
+      "file": "sources/changed-source.txt",
+      "sha256": "9d7849cd6e56d152e343bd4e053369adb3d594ce874485097a9b8b086dd6a40b",
+      "origin": "synthetic fixture"
+    },
+    {
+      "id": "handoff",
+      "file": "sources/handoff.txt",
+      "sha256": "ef404bd64b752e8221890a8ab4bcc512f09216aa6abe7ad9784d0a8f102fd7b7",
+      "origin": "synthetic fixture"
+    }
+  ],
+  "procedure": "Use tools/controller.mjs to initialize persisted work state from work.json, inspect status, and record context, analysis, verification, and reconciliation in order. Record an action by writing JSON {id,kind:\"record\",stage,summary,evidence:[{sourceId,sha256}],unresolved:[]} and calling node tools/controller.mjs record work.json state.json action.json. Evidence hashes come from the controller status sources. Use node tools/controller.mjs status work.json state.json to resume. If a source changed, use rebase to preserve the valid prefix and archive prior state. The controller checks structure and source freshness; you remain responsible for truthful interpretation. Return your result in the required JSON shape.",
+  "outputShape": {
+    "workId": "Copy the workId from work.json",
+    "verdict": "resolved | needs_decision | inconclusive",
+    "findings": [
+      {
+        "claim": "Your conclusion",
+        "sourceIds": [
+          "source ID"
+        ],
+        "confidence": "direct | supported | inferred | unknown"
+      }
+    ],
+    "decisions": [
+      {
+        "relation": "Relationship you establish",
+        "subject": "Entity",
+        "object": "Entity",
+        "authoritySourceIds": [
+          "source ID"
+        ]
+      }
+    ],
+    "reviewRequired": [
+      "Source IDs that need reconsideration"
+    ],
+    "unresolved": [
+      "Material unresolved questions"
+    ],
+    "execution": {
+      "runtimeHookStatus": "observed | configured_only | unavailable | not_applicable",
+      "canaryEvidence": "Path or null",
+      "completedSteps": [],
+      "invalidatedSteps": [],
+      "nextAction": "Next concrete action"
+    },
+    "limitations": [
+      "Limits on this conclusion"
+    ]
+  },
+  "toolActionLimit": 20,
+  "instructions": "Work only with these frozen sources and the provided local tools. Do not read neighboring work folders, manifests, evaluator material or the original repository. Do not modify sources. Write only local state/action files if needed, and return JSON. Null resource measurements are preferable to invented measurements."
+}

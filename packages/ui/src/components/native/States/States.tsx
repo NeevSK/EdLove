@@ -1,19 +1,10 @@
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import type { EmptyStateContract, ErrorStateContract } from '../../../theme/contracts';
 import { Button } from '../Button/Button';
-import { Perch } from '../Perch/Perch';
+import { FeedbackScene } from '../FeedbackScene/FeedbackScene';
 import { Text } from '../Text/Text';
 
-/** Tutii's scene box, scaled down: the perch is drawn in a 220 × 164 box. */
-const SCENE = { width: 176, height: 131 };
-
-function Scene() {
-  return (
-    <View style={styles.scene} importantForAccessibility="no-hide-descendants">
-      <Perch width={SCENE.width} height={SCENE.height} />
-    </View>
-  );
-}
+const SCENE_SIZE = 176;
 
 export interface EmptyStateProps extends EmptyStateContract {
   style?: StyleProp<ViewStyle>;
@@ -26,7 +17,7 @@ export interface EmptyStateProps extends EmptyStateContract {
 export function EmptyState({ title, message, action, style }: EmptyStateProps) {
   return (
     <View style={[styles.wrap, style]}>
-      <Scene />
+      <FeedbackScene state="empty" size={SCENE_SIZE} />
       <Text kind="title" align="center" role="heading">
         {title}
       </Text>
@@ -51,7 +42,7 @@ export interface ErrorStateProps extends ErrorStateContract {
 export function ErrorState({ title, message, retry, style }: ErrorStateProps) {
   return (
     <View role="alert" style={[styles.wrap, style]}>
-      <Scene />
+      <FeedbackScene state="error" size={SCENE_SIZE} />
       <Text kind="title" align="center" role="heading">
         {title}
       </Text>
@@ -67,5 +58,4 @@ export function ErrorState({ title, message, retry, style }: ErrorStateProps) {
 
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', gap: 10, paddingVertical: 24, paddingHorizontal: 16 },
-  scene: { width: SCENE.width, height: SCENE.height },
 });

@@ -1,0 +1,1030 @@
+{
+  "observedAt": "2026-11-11T10:26:57.015Z",
+  "responses": 36,
+  "required": 36,
+  "structuralVerified": 31,
+  "semanticReviews": 36,
+  "groups": [
+    {
+      "caseId": "documents",
+      "condition": "X",
+      "models": [
+        "gpt-6.1-sol@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 2,
+      "structuralIssues": [],
+      "semantic": [
+        {
+          "trialId": "documents-X-1",
+          "review": {
+            "label": "entry-30",
+            "caseId": "documents",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "intro:13; covenant:15; covenant-scope:208-211"
+          }
+        },
+        {
+          "trialId": "documents-X-2",
+          "review": {
+            "label": "entry-13",
+            "caseId": "documents",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "intro:13; covenant:15; covenant-scope:208-211"
+          }
+        }
+      ],
+      "toolCalls": [
+        3,
+        3
+      ],
+      "tokens": [
+        {
+          "input_tokens": 155034,
+          "cached_input_tokens": 121984,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2702,
+          "reasoning_output_tokens": 84,
+          "total_tokens": 157736
+        },
+        {
+          "input_tokens": 153718,
+          "cached_input_tokens": 141440,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2232,
+          "reasoning_output_tokens": 40,
+          "total_tokens": 155950
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "documents",
+      "condition": "Y",
+      "models": [
+        "gpt-6.1-sol@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 2,
+      "structuralIssues": [],
+      "semantic": [
+        {
+          "trialId": "documents-Y-1",
+          "review": {
+            "label": "entry-15",
+            "caseId": "documents",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "intro:13; covenant:15; covenant-scope:208-211"
+          }
+        },
+        {
+          "trialId": "documents-Y-2",
+          "review": {
+            "label": "entry-19",
+            "caseId": "documents",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "intro:13; covenant:15; covenant-scope:208-211"
+          }
+        }
+      ],
+      "toolCalls": [
+        3,
+        3
+      ],
+      "tokens": [
+        {
+          "input_tokens": 154082,
+          "cached_input_tokens": 150528,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2602,
+          "reasoning_output_tokens": 81,
+          "total_tokens": 156684
+        },
+        {
+          "input_tokens": 155222,
+          "cached_input_tokens": 150400,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2600,
+          "reasoning_output_tokens": 35,
+          "total_tokens": 157822
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "documents",
+      "condition": "Z",
+      "models": [
+        "gpt-6.1-sol@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 2,
+      "structuralIssues": [],
+      "semantic": [
+        {
+          "trialId": "documents-Z-1",
+          "review": {
+            "label": "entry-32",
+            "caseId": "documents",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "intro:13; covenant:15; covenant-scope:208-211"
+          }
+        },
+        {
+          "trialId": "documents-Z-2",
+          "review": {
+            "label": "entry-28",
+            "caseId": "documents",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "intro:13; covenant:15; covenant-scope:208-211"
+          }
+        }
+      ],
+      "toolCalls": [
+        9,
+        8
+      ],
+      "tokens": [
+        {
+          "input_tokens": 418128,
+          "cached_input_tokens": 409472,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3388,
+          "reasoning_output_tokens": 208,
+          "total_tokens": 421516
+        },
+        {
+          "input_tokens": 376948,
+          "cached_input_tokens": 367104,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2958,
+          "reasoning_output_tokens": 83,
+          "total_tokens": 379906
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "capabilities",
+      "condition": "X",
+      "models": [
+        "gpt-6.1-sol@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 2,
+      "structuralIssues": [],
+      "semantic": [
+        {
+          "trialId": "capabilities-X-1",
+          "review": {
+            "label": "entry-04",
+            "caseId": "capabilities",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "catalog-description:4,22; router:13-100; capabilities:115-205; foundation-policy:1-45"
+          }
+        },
+        {
+          "trialId": "capabilities-X-2",
+          "review": {
+            "label": "entry-22",
+            "caseId": "capabilities",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "catalog-description:4,22; router:13-100; capabilities:115-205; foundation-policy:1-45"
+          }
+        }
+      ],
+      "toolCalls": [
+        3,
+        3
+      ],
+      "tokens": [
+        {
+          "input_tokens": 157322,
+          "cached_input_tokens": 115840,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2846,
+          "reasoning_output_tokens": 49,
+          "total_tokens": 160168
+        },
+        {
+          "input_tokens": 157783,
+          "cached_input_tokens": 152448,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2527,
+          "reasoning_output_tokens": 72,
+          "total_tokens": 160310
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "capabilities",
+      "condition": "Y",
+      "models": [
+        "gpt-6.1-sol@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 2,
+      "structuralIssues": [],
+      "semantic": [
+        {
+          "trialId": "capabilities-Y-1",
+          "review": {
+            "label": "entry-12",
+            "caseId": "capabilities",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "catalog-description:4,22; router:13-100; capabilities:115-205; foundation-policy:1-45"
+          }
+        },
+        {
+          "trialId": "capabilities-Y-2",
+          "review": {
+            "label": "entry-27",
+            "caseId": "capabilities",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "catalog-description:4,22; router:13-100; capabilities:115-205; foundation-policy:1-45"
+          }
+        }
+      ],
+      "toolCalls": [
+        3,
+        3
+      ],
+      "tokens": [
+        {
+          "input_tokens": 158698,
+          "cached_input_tokens": 152192,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2698,
+          "reasoning_output_tokens": 51,
+          "total_tokens": 161396
+        },
+        {
+          "input_tokens": 157508,
+          "cached_input_tokens": 152448,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3102,
+          "reasoning_output_tokens": 102,
+          "total_tokens": 160610
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "capabilities",
+      "condition": "Z",
+      "models": [
+        "gpt-6.1-sol@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 2,
+      "structuralIssues": [],
+      "semantic": [
+        {
+          "trialId": "capabilities-Z-1",
+          "review": {
+            "label": "entry-20",
+            "caseId": "capabilities",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "catalog-description:4,22; router:13-100; capabilities:115-205; foundation-policy:1-45"
+          }
+        },
+        {
+          "trialId": "capabilities-Z-2",
+          "review": {
+            "label": "entry-34",
+            "caseId": "capabilities",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "catalog-description:4,22; router:13-100; capabilities:115-205; foundation-policy:1-45"
+          }
+        }
+      ],
+      "toolCalls": [
+        7,
+        6
+      ],
+      "tokens": [
+        {
+          "input_tokens": 342189,
+          "cached_input_tokens": 321920,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3392,
+          "reasoning_output_tokens": 184,
+          "total_tokens": 345581
+        },
+        {
+          "input_tokens": 298827,
+          "cached_input_tokens": 277504,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2848,
+          "reasoning_output_tokens": 210,
+          "total_tokens": 301675
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "instructions",
+      "condition": "X",
+      "models": [
+        "gpt-6-luna@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 2,
+      "structuralIssues": [],
+      "semantic": [
+        {
+          "trialId": "instructions-X-1",
+          "review": {
+            "label": "entry-10",
+            "caseId": "instructions",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "older-workflow:1-100; platform-rules:53-69,73-96,119-141,152-161"
+          }
+        },
+        {
+          "trialId": "instructions-X-2",
+          "review": {
+            "label": "entry-26",
+            "caseId": "instructions",
+            "verdict": "partial",
+            "assessment": "The main API and component directions are supported, but classifying all old package placement, motion, blur and 2GB constraints as conflicts is overbroad; absence from platform-rules lines 53-69 does not establish contradiction.",
+            "source": "older-workflow:1-100; platform-rules:53-69,73-96,119-141,152-161"
+          }
+        }
+      ],
+      "toolCalls": [
+        3,
+        3
+      ],
+      "tokens": [
+        {
+          "input_tokens": 146015,
+          "cached_input_tokens": 103936,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2465,
+          "reasoning_output_tokens": 274,
+          "total_tokens": 148480
+        },
+        {
+          "input_tokens": 146077,
+          "cached_input_tokens": 128512,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2820,
+          "reasoning_output_tokens": 288,
+          "total_tokens": 148897
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "instructions",
+      "condition": "Y",
+      "models": [
+        "gpt-6-luna@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 1,
+      "structuralIssues": [
+        {
+          "trialId": "instructions-Y-1",
+          "check": "findings"
+        }
+      ],
+      "semantic": [
+        {
+          "trialId": "instructions-Y-1",
+          "review": {
+            "label": "entry-18",
+            "caseId": "instructions",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "older-workflow:1-100; platform-rules:53-69,73-96,119-141,152-161"
+          }
+        },
+        {
+          "trialId": "instructions-Y-2",
+          "review": {
+            "label": "entry-16",
+            "caseId": "instructions",
+            "verdict": "partial",
+            "assessment": "The main UI and API direction is supported, but packages/ui and packages/core placement and the approval gate are described as conflicting or superseded without establishing a conflict. Compare older-workflow with platform-rules lines 53-62, 119-141.",
+            "source": "older-workflow:1-100; platform-rules:53-69,73-96,119-141,152-161"
+          }
+        }
+      ],
+      "toolCalls": [
+        6,
+        3
+      ],
+      "tokens": [
+        {
+          "input_tokens": 272665,
+          "cached_input_tokens": 251392,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 4535,
+          "reasoning_output_tokens": 452,
+          "total_tokens": 277200
+        },
+        {
+          "input_tokens": 145720,
+          "cached_input_tokens": 102912,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2422,
+          "reasoning_output_tokens": 269,
+          "total_tokens": 148142
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "instructions",
+      "condition": "Z",
+      "models": [
+        "gpt-6-luna@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 2,
+      "structuralIssues": [],
+      "semantic": [
+        {
+          "trialId": "instructions-Z-1",
+          "review": {
+            "label": "entry-17",
+            "caseId": "instructions",
+            "verdict": "partial",
+            "assessment": "The main API and component boundaries are supported, but package placement is classified as conflicting without sufficient basis. It also omits the world-recipe styling boundary in platform-rules lines 65-69.",
+            "source": "older-workflow:1-100; platform-rules:53-69,73-96,119-141,152-161"
+          }
+        },
+        {
+          "trialId": "instructions-Z-2",
+          "review": {
+            "label": "entry-36",
+            "caseId": "instructions",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "older-workflow:1-100; platform-rules:53-69,73-96,119-141,152-161"
+          }
+        }
+      ],
+      "toolCalls": [
+        9,
+        8
+      ],
+      "tokens": [
+        {
+          "input_tokens": 396263,
+          "cached_input_tokens": 368768,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3934,
+          "reasoning_output_tokens": 689,
+          "total_tokens": 400197
+        },
+        {
+          "input_tokens": 346754,
+          "cached_input_tokens": 319232,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3695,
+          "reasoning_output_tokens": 816,
+          "total_tokens": 350449
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "hooks",
+      "condition": "X",
+      "models": [
+        "gpt-6-luna@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 2,
+      "structuralIssues": [],
+      "semantic": [
+        {
+          "trialId": "hooks-X-1",
+          "review": {
+            "label": "entry-01",
+            "caseId": "hooks",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "hook-config:1-15; gate-description:1-16; gate-entry:950-981"
+          }
+        },
+        {
+          "trialId": "hooks-X-2",
+          "review": {
+            "label": "entry-29",
+            "caseId": "hooks",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "hook-config:1-15; gate-description:1-16; gate-entry:950-981"
+          }
+        }
+      ],
+      "toolCalls": [
+        8,
+        6
+      ],
+      "tokens": [
+        {
+          "input_tokens": 333721,
+          "cached_input_tokens": 323200,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2685,
+          "reasoning_output_tokens": 573,
+          "total_tokens": 336406
+        },
+        {
+          "input_tokens": 259551,
+          "cached_input_tokens": 242688,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2535,
+          "reasoning_output_tokens": 378,
+          "total_tokens": 262086
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "hooks",
+      "condition": "Y",
+      "models": [
+        "gpt-6-luna@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 2,
+      "structuralIssues": [],
+      "semantic": [
+        {
+          "trialId": "hooks-Y-1",
+          "review": {
+            "label": "entry-33",
+            "caseId": "hooks",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "hook-config:1-15; gate-description:1-16; gate-entry:950-981"
+          }
+        },
+        {
+          "trialId": "hooks-Y-2",
+          "review": {
+            "label": "entry-03",
+            "caseId": "hooks",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "hook-config:1-15; gate-description:1-16; gate-entry:950-981"
+          }
+        }
+      ],
+      "toolCalls": [
+        8,
+        5
+      ],
+      "tokens": [
+        {
+          "input_tokens": 332640,
+          "cached_input_tokens": 317952,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3608,
+          "reasoning_output_tokens": 836,
+          "total_tokens": 336248
+        },
+        {
+          "input_tokens": 246280,
+          "cached_input_tokens": 216832,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2166,
+          "reasoning_output_tokens": 326,
+          "total_tokens": 248446
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "hooks",
+      "condition": "Z",
+      "models": [
+        "gpt-6-luna@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 2,
+      "structuralIssues": [],
+      "semantic": [
+        {
+          "trialId": "hooks-Z-1",
+          "review": {
+            "label": "entry-08",
+            "caseId": "hooks",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "hook-config:1-15; gate-description:1-16; gate-entry:950-981"
+          }
+        },
+        {
+          "trialId": "hooks-Z-2",
+          "review": {
+            "label": "entry-07",
+            "caseId": "hooks",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "hook-config:1-15; gate-description:1-16; gate-entry:950-981"
+          }
+        }
+      ],
+      "toolCalls": [
+        9,
+        13
+      ],
+      "tokens": [
+        {
+          "input_tokens": 391439,
+          "cached_input_tokens": 377344,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 4113,
+          "reasoning_output_tokens": 1026,
+          "total_tokens": 395552
+        },
+        {
+          "input_tokens": 545268,
+          "cached_input_tokens": 517376,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 4280,
+          "reasoning_output_tokens": 574,
+          "total_tokens": 549548
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "resume",
+      "condition": "X",
+      "models": [
+        "gpt-6-luna@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 1,
+      "structuralIssues": [
+        {
+          "trialId": "resume-X-2",
+          "check": "matchingWorkId"
+        }
+      ],
+      "semantic": [
+        {
+          "trialId": "resume-X-1",
+          "review": {
+            "label": "entry-35",
+            "caseId": "resume",
+            "verdict": "partial",
+            "assessment": "Main inheritance and invalidation are supported, but the claim that a stable-source hash matches the handoff packet is unsupported: handoff and stable-source state a revision, not a handoff hash.",
+            "source": "stable-source and handoff synthetic records; changed-source synthetic owner clarification"
+          }
+        },
+        {
+          "trialId": "resume-X-2",
+          "review": {
+            "label": "entry-02",
+            "caseId": "resume",
+            "verdict": "partial",
+            "assessment": "Main inheritance and invalidation are supported, but the claim that a handoff hash matches is unsupported: handoff and stable-source contain a revision, not a handoff hash.",
+            "source": "stable-source and handoff synthetic records; changed-source synthetic owner clarification"
+          }
+        }
+      ],
+      "toolCalls": [
+        5,
+        10
+      ],
+      "tokens": [
+        {
+          "input_tokens": 206712,
+          "cached_input_tokens": 196608,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1958,
+          "reasoning_output_tokens": 405,
+          "total_tokens": 208670
+        },
+        {
+          "input_tokens": 388444,
+          "cached_input_tokens": 373632,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3477,
+          "reasoning_output_tokens": 880,
+          "total_tokens": 391921
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "resume",
+      "condition": "Y",
+      "models": [
+        "gpt-6-luna@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 1,
+      "structuralIssues": [
+        {
+          "trialId": "resume-Y-1",
+          "check": "matchingWorkId"
+        }
+      ],
+      "semantic": [
+        {
+          "trialId": "resume-Y-1",
+          "review": {
+            "label": "entry-05",
+            "caseId": "resume",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "stable-source and handoff synthetic records; changed-source synthetic owner clarification"
+          }
+        },
+        {
+          "trialId": "resume-Y-2",
+          "review": {
+            "label": "entry-06",
+            "caseId": "resume",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "stable-source and handoff synthetic records; changed-source synthetic owner clarification"
+          }
+        }
+      ],
+      "toolCalls": [
+        9,
+        7
+      ],
+      "tokens": [
+        {
+          "input_tokens": 369117,
+          "cached_input_tokens": 355328,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3782,
+          "reasoning_output_tokens": 815,
+          "total_tokens": 372899
+        },
+        {
+          "input_tokens": 285063,
+          "cached_input_tokens": 272256,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3861,
+          "reasoning_output_tokens": 647,
+          "total_tokens": 288924
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "resume",
+      "condition": "Z",
+      "models": [
+        "gpt-6-luna@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 2,
+      "structuralIssues": [],
+      "semantic": [
+        {
+          "trialId": "resume-Z-1",
+          "review": {
+            "label": "entry-24",
+            "caseId": "resume",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "stable-source and handoff synthetic records; changed-source synthetic owner clarification"
+          }
+        },
+        {
+          "trialId": "resume-Z-2",
+          "review": {
+            "label": "entry-31",
+            "caseId": "resume",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "stable-source and handoff synthetic records; changed-source synthetic owner clarification"
+          }
+        }
+      ],
+      "toolCalls": [
+        6,
+        6
+      ],
+      "tokens": [
+        {
+          "input_tokens": 248157,
+          "cached_input_tokens": 235392,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2640,
+          "reasoning_output_tokens": 319,
+          "total_tokens": 250797
+        },
+        {
+          "input_tokens": 250620,
+          "cached_input_tokens": 241536,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3004,
+          "reasoning_output_tokens": 647,
+          "total_tokens": 253624
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "authority",
+      "condition": "X",
+      "models": [
+        "gpt-6-luna@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 2,
+      "structuralIssues": [],
+      "semantic": [
+        {
+          "trialId": "authority-X-1",
+          "review": {
+            "label": "entry-21",
+            "caseId": "authority",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "proposal-a, proposal-b and governance synthetic records"
+          }
+        },
+        {
+          "trialId": "authority-X-2",
+          "review": {
+            "label": "entry-25",
+            "caseId": "authority",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "proposal-a, proposal-b and governance synthetic records"
+          }
+        }
+      ],
+      "toolCalls": [
+        3,
+        4
+      ],
+      "tokens": [
+        {
+          "input_tokens": 132930,
+          "cached_input_tokens": 128512,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1642,
+          "reasoning_output_tokens": 189,
+          "total_tokens": 134572
+        },
+        {
+          "input_tokens": 167014,
+          "cached_input_tokens": 163456,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1584,
+          "reasoning_output_tokens": 221,
+          "total_tokens": 168598
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "authority",
+      "condition": "Y",
+      "models": [
+        "gpt-6-luna@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 0,
+      "structuralIssues": [
+        {
+          "trialId": "authority-Y-1",
+          "check": "findings"
+        },
+        {
+          "trialId": "authority-Y-2",
+          "check": "findings"
+        }
+      ],
+      "semantic": [
+        {
+          "trialId": "authority-Y-1",
+          "review": {
+            "label": "entry-23",
+            "caseId": "authority",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "proposal-a, proposal-b and governance synthetic records"
+          }
+        },
+        {
+          "trialId": "authority-Y-2",
+          "review": {
+            "label": "entry-09",
+            "caseId": "authority",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "proposal-a, proposal-b and governance synthetic records"
+          }
+        }
+      ],
+      "toolCalls": [
+        4,
+        6
+      ],
+      "tokens": [
+        {
+          "input_tokens": 167866,
+          "cached_input_tokens": 162304,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2292,
+          "reasoning_output_tokens": 433,
+          "total_tokens": 170158
+        },
+        {
+          "input_tokens": 245341,
+          "cached_input_tokens": 231808,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2442,
+          "reasoning_output_tokens": 471,
+          "total_tokens": 247783
+        }
+      ],
+      "monetaryCost": null
+    },
+    {
+      "caseId": "authority",
+      "condition": "Z",
+      "models": [
+        "gpt-6-luna@medium"
+      ],
+      "returned": 2,
+      "structuralVerified": 2,
+      "structuralIssues": [],
+      "semantic": [
+        {
+          "trialId": "authority-Z-1",
+          "review": {
+            "label": "entry-14",
+            "caseId": "authority",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "proposal-a, proposal-b and governance synthetic records"
+          }
+        },
+        {
+          "trialId": "authority-Z-2",
+          "review": {
+            "label": "entry-11",
+            "caseId": "authority",
+            "verdict": "supported",
+            "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+            "source": "proposal-a, proposal-b and governance synthetic records"
+          }
+        }
+      ],
+      "toolCalls": [
+        8,
+        5
+      ],
+      "tokens": [
+        {
+          "input_tokens": 322911,
+          "cached_input_tokens": 308608,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3238,
+          "reasoning_output_tokens": 603,
+          "total_tokens": 326149
+        },
+        {
+          "input_tokens": 213369,
+          "cached_input_tokens": 203776,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2699,
+          "reasoning_output_tokens": 215,
+          "total_tokens": 216068
+        }
+      ],
+      "monetaryCost": null
+    }
+  ],
+  "limitations": [
+    "Hand-selected cases with two repetitions per condition do not support general performance or causal superiority claims.",
+    "Baseline already includes pstack; Y is a bounded procedure reminder rather than the complete suite.",
+    "Models differ between case groups following user instruction; compare within case only.",
+    "Structural status reflects limited shape and source-ID checks, not complete schema enforcement or semantic truth.",
+    "Runtime token usage includes cached input and infrastructure attempts. Monetary cost is unknown."
+  ]
+}

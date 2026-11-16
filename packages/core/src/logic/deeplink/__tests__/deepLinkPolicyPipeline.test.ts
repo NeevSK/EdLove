@@ -209,6 +209,18 @@ describe('routeManifest & deepLinkPolicyPipeline (G0 Contract & Pure Logic Tests
         url: 'https://sanctuary.gurudevi.app/self?feature=fire_journal',
       });
 
+      expect(classifyRouteIntent('https://explore.gurudevi.app/workspace')).toEqual({
+        kind: 'internalRoute',
+        path: '/workspace',
+        url: 'https://explore.gurudevi.app/workspace',
+      });
+
+      expect(classifyRouteIntent('https://explore.gurudevi.app/intro')).toEqual({
+        kind: 'internalRoute',
+        path: '/intro',
+        url: 'https://explore.gurudevi.app/intro',
+      });
+
       expect(classifyRouteIntent('https://gurudevi.app/library/resource/bio-101')).toEqual({
         kind: 'internalRoute',
         path: '/library/resource/bio-101',
@@ -219,6 +231,18 @@ describe('routeManifest & deepLinkPolicyPipeline (G0 Contract & Pure Logic Tests
         kind: 'internalRoute',
         path: '/self',
         url: 'gurudevi://self',
+      });
+
+      expect(classifyRouteIntent('gurudevi://intro')).toEqual({
+        kind: 'internalRoute',
+        path: '/intro',
+        url: 'gurudevi://intro',
+      });
+
+      expect(classifyRouteIntent('gurudevi://pulse')).toEqual({
+        kind: 'internalRoute',
+        path: '/pulse',
+        url: 'gurudevi://pulse',
       });
 
       expect(classifyRouteIntent('gurudevi://workspace/classroom/grade-10')).toEqual({

@@ -1,0 +1,116 @@
+{
+  "workId": "f24a02cd-45e8-4504-bb91-dc1bc78c2ed7",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "The intended entry path is What Is Gurudevi? for a short human introduction, followed by the Covenant for expanded governing commitments and product, integration, agentic capability, and implementation decisions. Both documents explicitly establish this sequence (intro line 13; covenant line 15).",
+      "sourceIds": [
+        "intro",
+        "covenant"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "Both documents are marked active. The Covenant supersedes only the overlapping pillar definitions in the introduction and the named 2026-10-10 manifesto; it does not supersede the introduction as a whole (covenant-scope lines 208–211). Archiving or deprecating the entire introduction would undermine the explicitly retained entry path.",
+      "sourceIds": [
+        "intro",
+        "covenant",
+        "covenant-scope"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "Keep the introduction active as the accessible overview, retaining its sanctuary, companion, convivial tools, and quiet cultivation framing. Treat its overlapping pillar definitions as subordinate to the Covenant. Any lifecycle annotation should record this scoped authority relationship rather than whole-document retirement.",
+      "sourceIds": [
+        "intro",
+        "covenant",
+        "covenant-scope"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The introduction's pillar section merits an alignment review against the Covenant's governing definitions. The supplied excerpts do not include those expanded definitions, so they do not establish a specific wording conflict or justify a particular replacement.",
+      "sourceIds": [
+        "intro",
+        "covenant-scope"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The Covenant describes an ecosystem and shared authority across multiple doors, not merely a mobile app, and expressly disclaims that all described capabilities are shipped. Documentation entry guidance should preserve that distinction.",
+      "sourceIds": [
+        "intro",
+        "covenant"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The listed philosophy, quiet cultivation, and omnichannel documents remain supporting references for narrower subjects; the supplied authority section does not retire them.",
+      "sourceIds": [
+        "covenant-scope"
+      ],
+      "confidence": "direct"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "entry_point_before",
+      "subject": "docs/Core/what-is-gurudevi.md",
+      "object": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "authoritySourceIds": [
+        "intro",
+        "covenant"
+      ]
+    },
+    {
+      "relation": "supersedes_overlapping_pillar_definitions_only",
+      "subject": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "object": "docs/Core/what-is-gurudevi.md",
+      "authoritySourceIds": [
+        "covenant-scope"
+      ]
+    },
+    {
+      "relation": "supersedes_overlapping_pillar_definitions_only",
+      "subject": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "object": "docs/decisions/2026-10-10-gurudevi-core-ecosystem-manifesto-and-architecture-covenant.md",
+      "authoritySourceIds": [
+        "covenant-scope"
+      ]
+    },
+    {
+      "relation": "retains_active_introductory_role_alongside",
+      "subject": "docs/Core/what-is-gurudevi.md",
+      "object": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "authoritySourceIds": [
+        "intro",
+        "covenant",
+        "covenant-scope"
+      ]
+    }
+  ],
+  "reviewRequired": [
+    "intro"
+  ],
+  "unresolved": [
+    "Whether any introductory pillar wording conflicts with the Covenant requires the omitted Covenant pillar sections.",
+    "The manifesto's current lifecycle metadata and non-overlapping purpose are not supplied; whole-document retirement cannot be determined."
+  ],
+  "execution": {
+    "runtimeHookStatus": "not_applicable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "Read work.json and all three supplied frozen source excerpts.",
+      "Established the explicit introduction-to-Covenant entry sequence.",
+      "Distinguished scoped supersession of definitions from document retirement.",
+      "Recorded recommendations and evidence limits without modifying sources."
+    ],
+    "invalidatedSteps": [],
+    "nextAction": "Retain both active documents and their reciprocal entry links; review the introduction's pillar section against the full Covenant, and record scoped supersession in lifecycle metadata or an authority note if the documentation system supports it. Inspect the manifesto separately before deciding any broader lifecycle change."
+  },
+  "limitations": [
+    "Only the three supplied excerpts were inspected; no original repository or external materials were accessed.",
+    "No documentation edits, runtime checks, or resource measurements were performed.",
+    "The existing links already express the requested reading order; supplied evidence does not establish that navigation or lifecycle tooling needs a code change."
+  ]
+}

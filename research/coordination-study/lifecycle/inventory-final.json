@@ -1,0 +1,351 @@
+{
+  "observedAt": "2026-11-11T17:20:44.611Z",
+  "tools": [
+    {
+      "id": "likec4",
+      "availability": "available",
+      "version": "1.60.0",
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "check-enabled",
+      "prerequisites": [
+        "Model files and installed package"
+      ],
+      "limits": [
+        "C4 validation checks model syntax and declared structure, not runtime hops or semantic correctness."
+      ]
+    },
+    {
+      "id": "k6",
+      "availability": "available",
+      "version": "2.3.0",
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "discovery-only",
+      "prerequisites": [
+        "Approved workload and target"
+      ],
+      "limits": [
+        "No load or network scans are run by inventory."
+      ]
+    },
+    {
+      "id": "syft",
+      "availability": "available",
+      "version": "1.55.0",
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "discovery-only",
+      "prerequisites": [
+        "Explicit scan target"
+      ],
+      "limits": [
+        "No filesystem scan is run by inventory."
+      ]
+    },
+    {
+      "id": "gitleaks",
+      "availability": "available",
+      "version": "8.30.1",
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "discovery-only",
+      "prerequisites": [
+        "Scoped repository or commit range"
+      ],
+      "limits": [
+        "A gitleaks version probe does not run a security review."
+      ]
+    },
+    {
+      "id": "osv-scanner",
+      "availability": "available",
+      "version": "2.7.0",
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "discovery-only",
+      "prerequisites": [
+        "Supported lockfile and scan scope"
+      ],
+      "limits": [
+        "No dependency scan is run by inventory."
+      ]
+    },
+    {
+      "id": "schemathesis",
+      "availability": "available",
+      "version": "4.33.1",
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "discovery-only",
+      "prerequisites": [
+        "Supported contract schema and approved target"
+      ],
+      "limits": [
+        "Do not create a parallel OpenAPI API contract."
+      ]
+    },
+    {
+      "id": "spectral",
+      "availability": "available",
+      "version": "6.17.1",
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "discovery-only",
+      "prerequisites": [
+        "Explicit ruleset and document"
+      ],
+      "limits": [
+        "No lint is run without a selected ruleset."
+      ]
+    },
+    {
+      "id": "squawk",
+      "availability": "available",
+      "version": "2.72.0",
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "discovery-only",
+      "prerequisites": [
+        "SQL input and selected rules"
+      ],
+      "limits": [
+        "No migration runtime behavior is exercised."
+      ]
+    },
+    {
+      "id": "rg",
+      "availability": "available",
+      "version": "15.1.0",
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "discovery-only",
+      "prerequisites": [],
+      "limits": [
+        "Search results do not establish complete source coverage."
+      ]
+    },
+    {
+      "id": "fd",
+      "availability": "available",
+      "version": "10.4.2",
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "discovery-only",
+      "prerequisites": [],
+      "limits": [
+        "Discovery output is not a complete repository inventory guarantee."
+      ]
+    },
+    {
+      "id": "ast-grep",
+      "availability": "available",
+      "version": "0.45.3",
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "discovery-only",
+      "prerequisites": [
+        "Query or rule"
+      ],
+      "limits": [
+        "AST matches do not prove semantic correctness."
+      ]
+    },
+    {
+      "id": "check:pjc-check",
+      "availability": "available",
+      "version": null,
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "check-enabled",
+      "prerequisites": [
+        "PJC catalog inputs and installed tsx package"
+      ],
+      "limits": [
+        "Availability means the command and its entrypoint resolve; the check has not run."
+      ]
+    },
+    {
+      "id": "check:c4-validate",
+      "availability": "available",
+      "version": null,
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "check-enabled",
+      "prerequisites": [
+        "Model files and installed LikeC4 package"
+      ],
+      "limits": [
+        "Availability means the command and its entrypoint resolve; the check has not run."
+      ]
+    },
+    {
+      "id": "check:api-composition",
+      "availability": "available",
+      "version": null,
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "check-enabled",
+      "prerequisites": [
+        "Required repository script and inputs"
+      ],
+      "limits": [
+        "Availability means the command and its entrypoint resolve; the check has not run."
+      ]
+    },
+    {
+      "id": "check:api-conformance",
+      "availability": "available",
+      "version": null,
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "check-enabled",
+      "prerequisites": [
+        "Sanctuary API package files and installed tsx package"
+      ],
+      "limits": [
+        "Availability means the command and its entrypoint resolve; the check has not run."
+      ]
+    },
+    {
+      "id": "check:ui-boundaries",
+      "availability": "available",
+      "version": null,
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "check-enabled",
+      "prerequisites": [
+        "Required repository script and inputs"
+      ],
+      "limits": [
+        "Availability means the command and its entrypoint resolve; the check has not run."
+      ]
+    },
+    {
+      "id": "check:sql-migrations",
+      "availability": "available",
+      "version": null,
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "check-enabled",
+      "prerequisites": [
+        "Required repository script and inputs"
+      ],
+      "limits": [
+        "A clean migration lint does not prove SQL runtime behavior."
+      ]
+    },
+    {
+      "id": "check:dependency-cohorts",
+      "availability": "available",
+      "version": null,
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "check-enabled",
+      "prerequisites": [
+        "Required repository script and inputs"
+      ],
+      "limits": [
+        "Availability means the command and its entrypoint resolve; the check has not run."
+      ]
+    },
+    {
+      "id": "security-review",
+      "availability": "blocked",
+      "version": null,
+      "observedAt": "2026-11-11T17:20:44.612Z",
+      "capability": "discovery-only",
+      "prerequisites": [
+        "Scoped security scan adapter"
+      ],
+      "limits": [
+        "A gitleaks executable alone does not run a security review."
+      ],
+      "detail": "Select a scan scope, then implement and verify a scoped adapter. Inventory does not run a security scan."
+    }
+  ],
+  "checks": [
+    {
+      "id": "pjc-check",
+      "impacts": [
+        "product"
+      ]
+    },
+    {
+      "id": "c4-validate",
+      "impacts": [
+        "architecture",
+        "integration"
+      ]
+    },
+    {
+      "id": "api-composition",
+      "impacts": [
+        "api",
+        "integration"
+      ]
+    },
+    {
+      "id": "api-conformance",
+      "impacts": [
+        "api"
+      ]
+    },
+    {
+      "id": "ui-boundaries",
+      "impacts": [
+        "web",
+        "native"
+      ]
+    },
+    {
+      "id": "sql-migrations",
+      "impacts": [
+        "database"
+      ]
+    },
+    {
+      "id": "dependency-cohorts",
+      "impacts": [
+        "dependencies"
+      ]
+    },
+    {
+      "id": "security-review",
+      "impacts": [
+        "security"
+      ]
+    }
+  ],
+  "lifecycles": {
+    "records": [
+      {
+        "id": "chat-specification-20261111",
+        "goal": "Specify a complete sourced chat feature and test reviewed agent handoffs; no product implementation or policy admission",
+        "scope": "feature",
+        "recordedRevision": 24,
+        "recordedTasks": [
+          {
+            "id": "product",
+            "role": "product",
+            "status": "accepted"
+          },
+          {
+            "id": "ux",
+            "role": "ux",
+            "status": "submitted"
+          },
+          {
+            "id": "visual-motion",
+            "role": "visual-motion",
+            "status": "open"
+          },
+          {
+            "id": "architecture",
+            "role": "architecture",
+            "status": "open"
+          },
+          {
+            "id": "dependencies",
+            "role": "dependencies",
+            "status": "open"
+          },
+          {
+            "id": "implementation",
+            "role": "implementation",
+            "status": "open"
+          },
+          {
+            "id": "verification",
+            "role": "verification",
+            "status": "open"
+          }
+        ]
+      }
+    ],
+    "truncated": false,
+    "freshness": "Not evaluated by inventory; retrieve lifecycle status before resuming."
+  }
+}

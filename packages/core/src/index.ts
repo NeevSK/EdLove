@@ -401,3 +401,5 @@ export { useWebTodos, type WebTodo, type UseWebTodosReturn } from './adapters/su
 export { z };
 
 export * from '@repo/core/platform/drivers';
+export * from './routing';
+

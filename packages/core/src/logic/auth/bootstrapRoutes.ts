@@ -43,6 +43,10 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     pathname === '/auth' ||
     pathname === '/auth/callback' ||
     pathname === '/onboarding' ||
+    pathname === '/pulse' ||
+    pathname === '/qr' ||
+    pathname === '/intro' ||
+    pathname === '/atlas' ||
     pathname.startsWith('/public-form');
   const isAppEntryPath = pathname === '/' || pathname === '/auth' || pathname === '/auth/callback';
   const isOnboardingPath = pathname === '/onboarding';

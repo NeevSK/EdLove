@@ -1,0 +1,1448 @@
+{
+  "observedAt": "2026-11-11T12:29:43.091Z",
+  "inventory": {
+    "observedAt": "2026-11-11T12:29:43.097Z",
+    "tools": [
+      {
+        "id": "likec4",
+        "availability": "available",
+        "version": "1.60.0",
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "check-enabled",
+        "prerequisites": [
+          "Model files and installed package"
+        ],
+        "limits": [
+          "C4 validation checks model syntax and declared structure, not runtime hops or semantic correctness."
+        ]
+      },
+      {
+        "id": "k6",
+        "availability": "available",
+        "version": "2.3.0",
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "discovery-only",
+        "prerequisites": [
+          "Approved workload and target"
+        ],
+        "limits": [
+          "No load or network scans are run by inventory."
+        ]
+      },
+      {
+        "id": "syft",
+        "availability": "available",
+        "version": "1.55.0",
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "discovery-only",
+        "prerequisites": [
+          "Explicit scan target"
+        ],
+        "limits": [
+          "No filesystem scan is run by inventory."
+        ]
+      },
+      {
+        "id": "gitleaks",
+        "availability": "available",
+        "version": "8.30.1",
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "discovery-only",
+        "prerequisites": [
+          "Scoped repository or commit range"
+        ],
+        "limits": [
+          "A gitleaks version probe does not run a security review."
+        ]
+      },
+      {
+        "id": "osv-scanner",
+        "availability": "available",
+        "version": "2.7.0",
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "discovery-only",
+        "prerequisites": [
+          "Supported lockfile and scan scope"
+        ],
+        "limits": [
+          "No dependency scan is run by inventory."
+        ]
+      },
+      {
+        "id": "schemathesis",
+        "availability": "available",
+        "version": "4.33.1",
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "discovery-only",
+        "prerequisites": [
+          "Supported contract schema and approved target"
+        ],
+        "limits": [
+          "Do not create a parallel OpenAPI API contract."
+        ]
+      },
+      {
+        "id": "spectral",
+        "availability": "available",
+        "version": "6.17.1",
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "discovery-only",
+        "prerequisites": [
+          "Explicit ruleset and document"
+        ],
+        "limits": [
+          "No lint is run without a selected ruleset."
+        ]
+      },
+      {
+        "id": "squawk",
+        "availability": "available",
+        "version": "2.72.0",
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "discovery-only",
+        "prerequisites": [
+          "SQL input and selected rules"
+        ],
+        "limits": [
+          "No migration runtime behavior is exercised."
+        ]
+      },
+      {
+        "id": "rg",
+        "availability": "available",
+        "version": "15.1.0",
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "discovery-only",
+        "prerequisites": [],
+        "limits": [
+          "Search results do not establish complete source coverage."
+        ]
+      },
+      {
+        "id": "fd",
+        "availability": "available",
+        "version": "10.4.2",
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "discovery-only",
+        "prerequisites": [],
+        "limits": [
+          "Discovery output is not a complete repository inventory guarantee."
+        ]
+      },
+      {
+        "id": "ast-grep",
+        "availability": "available",
+        "version": "0.45.3",
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "discovery-only",
+        "prerequisites": [
+          "Query or rule"
+        ],
+        "limits": [
+          "AST matches do not prove semantic correctness."
+        ]
+      },
+      {
+        "id": "check:pjc-check",
+        "availability": "available",
+        "version": null,
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "check-enabled",
+        "prerequisites": [
+          "PJC catalog inputs and installed tsx package"
+        ],
+        "limits": [
+          "Availability means the command and its entrypoint resolve; the check has not run."
+        ]
+      },
+      {
+        "id": "check:c4-validate",
+        "availability": "available",
+        "version": null,
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "check-enabled",
+        "prerequisites": [
+          "Model files and installed LikeC4 package"
+        ],
+        "limits": [
+          "Availability means the command and its entrypoint resolve; the check has not run."
+        ]
+      },
+      {
+        "id": "check:api-composition",
+        "availability": "available",
+        "version": null,
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "check-enabled",
+        "prerequisites": [
+          "Required repository script and inputs"
+        ],
+        "limits": [
+          "Availability means the command and its entrypoint resolve; the check has not run."
+        ]
+      },
+      {
+        "id": "check:api-conformance",
+        "availability": "available",
+        "version": null,
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "check-enabled",
+        "prerequisites": [
+          "Sanctuary API package files and installed tsx package"
+        ],
+        "limits": [
+          "Availability means the command and its entrypoint resolve; the check has not run."
+        ]
+      },
+      {
+        "id": "check:ui-boundaries",
+        "availability": "available",
+        "version": null,
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "check-enabled",
+        "prerequisites": [
+          "Required repository script and inputs"
+        ],
+        "limits": [
+          "Availability means the command and its entrypoint resolve; the check has not run."
+        ]
+      },
+      {
+        "id": "check:sql-migrations",
+        "availability": "available",
+        "version": null,
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "check-enabled",
+        "prerequisites": [
+          "Required repository script and inputs"
+        ],
+        "limits": [
+          "A clean migration lint does not prove SQL runtime behavior."
+        ]
+      },
+      {
+        "id": "check:dependency-cohorts",
+        "availability": "available",
+        "version": null,
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "check-enabled",
+        "prerequisites": [
+          "Required repository script and inputs"
+        ],
+        "limits": [
+          "Availability means the command and its entrypoint resolve; the check has not run."
+        ]
+      },
+      {
+        "id": "security-review",
+        "availability": "blocked",
+        "version": null,
+        "observedAt": "2026-11-11T12:29:43.097Z",
+        "capability": "discovery-only",
+        "prerequisites": [
+          "Scoped security scan adapter"
+        ],
+        "limits": [
+          "A gitleaks executable alone does not run a security review."
+        ],
+        "detail": "Select a scan scope, then implement and verify a scoped adapter. Inventory does not run a security scan."
+      }
+    ],
+    "checks": [
+      {
+        "id": "pjc-check",
+        "impacts": [
+          "product"
+        ]
+      },
+      {
+        "id": "c4-validate",
+        "impacts": [
+          "architecture",
+          "integration"
+        ]
+      },
+      {
+        "id": "api-composition",
+        "impacts": [
+          "api",
+          "integration"
+        ]
+      },
+      {
+        "id": "api-conformance",
+        "impacts": [
+          "api"
+        ]
+      },
+      {
+        "id": "ui-boundaries",
+        "impacts": [
+          "web",
+          "native"
+        ]
+      },
+      {
+        "id": "sql-migrations",
+        "impacts": [
+          "database"
+        ]
+      },
+      {
+        "id": "dependency-cohorts",
+        "impacts": [
+          "dependencies"
+        ]
+      },
+      {
+        "id": "security-review",
+        "impacts": [
+          "security"
+        ]
+      }
+    ]
+  },
+  "context": {
+    "status": "observed",
+    "journeyId": "journey:api.secure_operations",
+    "projection": {
+      "feature": {
+        "id": "feature:api.foundation",
+        "title": "Authorized API and agent execution"
+      },
+      "intent": {
+        "id": "intent:api.secure_foundation",
+        "title": "Build authorized and durable API operations before product capabilities",
+        "actor": "platform engineer or implementing agent",
+        "outcome": "Use canonical identity and existing data authorities to reject unauthorized work, preserve one mutation across retries and retain recoverable external intent."
+      },
+      "sharedWith": [],
+      "journey": {
+        "id": "journey:api.secure_operations",
+        "title": "Authenticate, scope, execute and recover a horizontal operation",
+        "situation": "The runtime checkpoint exists with an empty business contract; the owner authorized the remaining horizontal identity/data/reliability foundation.",
+        "outcome": "Real isolated PostgreSQL and synthetic capabilities demonstrate authenticated scoped access, durable replay/outbox control and truthful dependency failure without claiming a deployed business feature.",
+        "planning": {
+          "maturity": "development",
+          "implementation": "implemented",
+          "verification": "partial",
+          "priority": "P0"
+        },
+        "context": "other",
+        "preconditions": [
+          "Use the existing UUIDv8 account/profile and identity ledger; never treat provider subject, role selection or local data as server authority.",
+          "Apply the additive migrations only to a reviewed target; G2 runner creates its own disposable database with explicit caller acknowledgement."
+        ],
+        "entry": "step:api.secure_authenticate",
+        "development": {
+          "mode": "brownfield",
+          "existingBehavior": [
+            "Database identity, Bond, receipt and effect tables and Cedar policies survived the authorized API reset.",
+            "Previous parity audit confused SQL-owned resources with missing ORM models."
+          ],
+          "invariants": [
+            "Canonical UUIDv8 account remains distinct from credential/session subjects.",
+            "Missing/failed authority denies or reports unavailable; it never grants access.",
+            "Authorize before replay and lock supporting authority within the mutation transaction.",
+            "Receipt, database mutation and effect intent commit together; external send stays outside that transaction.",
+            "Keep native /api/v1 and empty business router; no compatibility aliases or fabricated ORM models."
+          ],
+          "openQuestions": [
+            "Hosted identity ceremonies/project session settings, production DB login grants, proxy/container deployment and R1 require separate evidence.",
+            "Provider handlers, capability-specific reconciliation, receipt/result retention and feature/domain admission remain explicit later work.",
+            "Mobile Drizzle/PowerSync upload and offline UI paths remain rebuild work; local caches do not grant server access."
+          ],
+          "integrationPoints": [
+            "apps/sanctuary-api/src/platform.ts",
+            "apps/sanctuary-api/src/security/security.ts",
+            "apps/sanctuary-api/src/operations/store.ts",
+            "packages/policies/src/authorizationAuthorities.json",
+            "apps/gurudevi-mobile/supabase/migrations/20261030020000_api_operation_foundation.sql"
+          ]
+        },
+        "steps": [
+          {
+            "id": "step:api.secure_authenticate",
+            "title": "Verify the acting account",
+            "interaction": "Verify credential claims then read the current canonical binding, account and session.",
+            "terminal": false,
+            "links": []
+          },
+          {
+            "id": "step:api.secure_scope",
+            "title": "Resolve relationships and resource facts",
+            "interaction": "Load a live supported Bond and server-derived target facts; use Cedar and scoped data enforcement.",
+            "terminal": false,
+            "links": []
+          },
+          {
+            "id": "step:api.secure_execute",
+            "title": "Coordinate the durable operation",
+            "interaction": "Reauthorize within the same transaction, reserve/lock the key and write mutation, receipt and effect intent.",
+            "terminal": false,
+            "links": []
+          },
+          {
+            "id": "step:api.secure_settled",
+            "title": "Observe replay or recoverable effect status",
+            "interaction": "Return committed/replayed result; explicit dispatcher fences claims and distinguishes acknowledged, failed and uncertain work.",
+            "terminal": true,
+            "links": []
+          },
+          {
+            "id": "step:api.secure_rejected",
+            "title": "Receive denial, conflict or unavailable feedback",
+            "interaction": "Expose a safe native error/recovery classification; do not fabricate success or repeat an uncertain side effect.",
+            "terminal": true,
+            "links": []
+          }
+        ],
+        "transitions": [
+          {
+            "id": "transition:api.secure_identity",
+            "from": "step:api.secure_authenticate",
+            "to": "step:api.secure_scope",
+            "action": "Verify canonical identity and load supported scope.",
+            "feedback": "Invalid/revoked identity fails closed; provider subject never becomes the account key.",
+            "links": []
+          },
+          {
+            "id": "transition:api.secure_permission",
+            "from": "step:api.secure_scope",
+            "to": "step:api.secure_execute",
+            "action": "Resolve resource facts and evaluate current permission.",
+            "feedback": "Cross-owner/foreign-school access denies; missing policy runtime is unavailable.",
+            "links": []
+          },
+          {
+            "id": "transition:api.secure_commit",
+            "from": "step:api.secure_execute",
+            "to": "step:api.secure_settled",
+            "action": "Use the transaction/receipt/outbox boundary and recover using the same operation identity.",
+            "feedback": "Matching replay returns one committed outcome; leases and DB fences bound effect attempts without promising exactly-once delivery.",
+            "links": []
+          },
+          {
+            "id": "transition:api.secure_identity_denied",
+            "from": "step:api.secure_authenticate",
+            "to": "step:api.secure_rejected",
+            "action": "Reject invalid, expired or revoked credentials.",
+            "feedback": "Native UNAUTHORIZED or SERVICE_UNAVAILABLE; no identity/secret-bearing error disclosure.",
+            "links": []
+          },
+          {
+            "id": "transition:api.secure_scope_denied",
+            "from": "step:api.secure_scope",
+            "to": "step:api.secure_rejected",
+            "action": "Reject revoked Bond, foreign resource or unsupported scope.",
+            "feedback": "Native FORBIDDEN or authority-unavailable feedback; no stored replay disclosure.",
+            "links": []
+          },
+          {
+            "id": "transition:api.secure_conflict",
+            "from": "step:api.secure_execute",
+            "to": "step:api.secure_rejected",
+            "action": "Detect changed payload/scope, historical incomplete work or uncertain COMMIT.",
+            "feedback": "Preserve operation_key_conflict, operation_recovery_required or operation_outcome_unknown classification.",
+            "links": []
+          }
+        ],
+        "requirements": [
+          {
+            "id": "requirement:api.secure_identity",
+            "title": "Verified canonical account",
+            "statement": "Verify issuer/audience/algorithm/expiry and live account/credential/session bindings; transaction-bound identity/scope checks lock authority rows.",
+            "classification": "constraint",
+            "origin": "user",
+            "links": [
+              "binding:api.secure_guide"
+            ]
+          },
+          {
+            "id": "requirement:api.secure_scope",
+            "title": "Scoped action and data admission",
+            "statement": "Derive facts server-side, re-evaluate Cedar and enforce account RLS through transaction-local verified claims; deny unsupported scopes including principal PERSONAL.",
+            "classification": "functional",
+            "origin": "user",
+            "links": [
+              "binding:api.secure_guide"
+            ]
+          },
+          {
+            "id": "requirement:api.secure_durability",
+            "title": "Durable replay and effects",
+            "statement": "Unique payload/scope-bound receipts coordinate one database mutation and outbox; reauthorize replay, fence leased work, bound retries and preserve uncertain outcomes.",
+            "classification": "quality",
+            "origin": "user",
+            "links": [
+              "binding:api.secure_guide"
+            ]
+          },
+          {
+            "id": "requirement:api.secure_operations",
+            "title": "Truthful operational admission",
+            "statement": "Shared PostgreSQL account budgets, bounded pools and readiness dependency/grant/RLS checks fail closed; no application or deployment completion is inferred from an empty router.",
+            "classification": "quality",
+            "origin": "user",
+            "links": [
+              "binding:api.secure_guide"
+            ]
+          }
+        ],
+        "bindings": [
+          {
+            "id": "binding:api.secure_security",
+            "category": "authentication",
+            "reference": "apps/sanctuary-api/src/security/security.ts",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_platform",
+            "category": "data",
+            "reference": "apps/sanctuary-api/src/platform.ts",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_store",
+            "category": "api",
+            "reference": "apps/sanctuary-api/src/operations/store.ts",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_dispatcher",
+            "category": "api",
+            "reference": "apps/sanctuary-api/src/operations/dispatcher.ts",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_authorities",
+            "category": "authorization",
+            "reference": "packages/policies/src/authorizationAuthorities.json",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_parity",
+            "category": "tool",
+            "reference": "scripts/check-authorization-parity.mjs",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_fingerprint",
+            "category": "api",
+            "reference": "packages/core/src/lib/sync/idempotency.ts",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_database_runner",
+            "category": "tool",
+            "reference": "apps/sanctuary-api/scripts/test-foundation-database.ts",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_security_test",
+            "category": "test",
+            "reference": "apps/sanctuary-api/src/security/__tests__/security.integration.ts",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_platform_test",
+            "category": "test",
+            "reference": "apps/sanctuary-api/src/platform.integration.ts",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_operations_test",
+            "category": "test",
+            "reference": "apps/sanctuary-api/src/operations/store.integration.ts",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_migration",
+            "category": "data",
+            "reference": "apps/gurudevi-mobile/supabase/migrations/20261030020000_api_operation_foundation.sql",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_rls_migration",
+            "category": "authorization",
+            "reference": "apps/gurudevi-mobile/supabase/migrations/20261030021000_user_rewards_rls_boundary.sql",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_quota_migration",
+            "category": "data",
+            "reference": "apps/gurudevi-mobile/supabase/migrations/20261030022000_api_request_budgets.sql",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_guide",
+            "category": "architecture",
+            "reference": "apps/sanctuary-api/docs/architecture/api-foundations/authority-and-durability.md",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          },
+          {
+            "id": "binding:api.secure_ci",
+            "category": "tool",
+            "reference": ".github/workflows/api-foundation-database.yml",
+            "status": "implemented",
+            "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+          }
+        ],
+        "impacts": [
+          {
+            "id": "impact:api.secure_fingerprint",
+            "title": "Canonical JSON fingerprints preserve prototype-named keys",
+            "statement": "The reused shared sorting function now uses own-property construction so JSON __proto__ fields cannot collide through a prototype setter. Boundary validation preserves the original JSON after validation.",
+            "origin": "source",
+            "links": [
+              "binding:api.secure_fingerprint"
+            ]
+          }
+        ],
+        "observations": [
+          {
+            "id": "observation:api.secure_sql_authority",
+            "title": "SQL authority differs from same-named ORM model",
+            "statement": "Six Cedar resources now have explicit migration-backed SQL classifications; the validator preserves other model, Cedar and snapshot checks and does not certify live deployment privileges.",
+            "origin": "source",
+            "links": [
+              "binding:api.secure_authorities",
+              "binding:api.secure_parity"
+            ]
+          }
+        ],
+        "platformDifferences": [
+          {
+            "id": "platform:api.secure_mobile",
+            "title": "Server authority is separate from local databases",
+            "statement": "Mobile Drizzle/PowerSync and browser data mechanisms are consumers; no client upload, feature UI, native bundle or device behavior is implemented by these server fixtures.",
+            "origin": "source",
+            "links": [
+              "binding:api.secure_guide"
+            ],
+            "platform": "shared"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "scenario:api.secure_identity",
+            "title": "Canonical authentication and scoped isolation",
+            "completion": "checkpoint",
+            "checkpointReason": "Credential/scope admission is a checkpoint; durable mutation and effects are verified separately.",
+            "transitions": [
+              "transition:api.secure_identity",
+              "transition:api.secure_permission"
+            ],
+            "expected": "Synthetic signed credentials, live isolated DB bindings, Cedar and account RLS agree on actor identity and reject cross-owner/school access.",
+            "links": [
+              "requirement:api.secure_identity",
+              "requirement:api.secure_scope",
+              "requirement:api.secure_durability",
+              "requirement:api.secure_operations"
+            ]
+          },
+          {
+            "id": "scenario:api.secure_rejection",
+            "title": "Revoked or foreign scope rejection",
+            "transitions": [
+              "transition:api.secure_identity",
+              "transition:api.secure_scope_denied"
+            ],
+            "expected": "Revocation prevents subsequent operations and stored replay disclosure; safe errors distinguish policy denial and unavailable authority.",
+            "links": [
+              "requirement:api.secure_identity",
+              "requirement:api.secure_scope",
+              "requirement:api.secure_durability",
+              "requirement:api.secure_operations"
+            ]
+          },
+          {
+            "id": "scenario:api.secure_durability",
+            "title": "Durable execution/replay/effect recovery",
+            "transitions": [
+              "transition:api.secure_identity",
+              "transition:api.secure_permission",
+              "transition:api.secure_commit"
+            ],
+            "expected": "Real PostgreSQL transactions exercise concurrent replay, rollback, scope conflict, leases, fenced acknowledgements, bounded retry and monotonic clock-skew behavior.",
+            "links": [
+              "requirement:api.secure_identity",
+              "requirement:api.secure_scope",
+              "requirement:api.secure_durability",
+              "requirement:api.secure_operations"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "evidence:api.secure_identity_g0_20261030",
+            "title": "Horizontal authority/durability G0",
+            "scenario": "scenario:api.secure_identity",
+            "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+            "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+            "tier": "G0",
+            "result": "passed",
+            "substitutions": [
+              "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+            ],
+            "limitations": "Strict contracts, source gates and bundle artifact only; no runtime proof. Raw diff/source fingerprints qualify mutable worktree, not clean HEAD. Broad monorepo anti-slop remains separate.",
+            "reference": "reports/api-authority-durability-foundation-20261030.json",
+            "links": [
+              "binding:api.secure_guide",
+              "binding:api.secure_database_runner"
+            ]
+          },
+          {
+            "id": "evidence:api.secure_identity_g1_20261030",
+            "title": "Horizontal authority/durability G1",
+            "scenario": "scenario:api.secure_identity",
+            "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+            "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+            "tier": "G1",
+            "result": "passed",
+            "substitutions": [
+              "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+            ],
+            "limitations": "Synthetic JWKS and host boundary assertions; no hosted issuer, database/provider or business operation proof from this tier.",
+            "reference": "reports/run-api_authority_boundary_20261030.log",
+            "links": [
+              "binding:api.secure_guide",
+              "binding:api.secure_database_runner"
+            ]
+          },
+          {
+            "id": "evidence:api.secure_identity_g2_20261030",
+            "title": "Horizontal authority/durability G2",
+            "scenario": "scenario:api.secure_identity",
+            "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+            "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+            "tier": "G2",
+            "result": "passed",
+            "substitutions": [
+              "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+            ],
+            "limitations": "Real isolated PostgreSQL 17.6, Cedar and SDK; synthetic JWT/JWKS, minimal Auth schema and in-memory HTTP. Selected actual migrations/resolver exercised, not full migration stream. No production DB login/provider/deployment/device proof or skipped assurance promotion.",
+            "reference": "reports/run-api_authority_durability_database_20261030.log",
+            "links": [
+              "binding:api.secure_guide",
+              "binding:api.secure_database_runner"
+            ]
+          },
+          {
+            "id": "evidence:api.secure_rejection_g0_20261030",
+            "title": "Horizontal authority/durability G0",
+            "scenario": "scenario:api.secure_rejection",
+            "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+            "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+            "tier": "G0",
+            "result": "passed",
+            "substitutions": [
+              "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+            ],
+            "limitations": "Strict contracts, source gates and bundle artifact only; no runtime proof. Raw diff/source fingerprints qualify mutable worktree, not clean HEAD. Broad monorepo anti-slop remains separate.",
+            "reference": "reports/api-authority-durability-foundation-20261030.json",
+            "links": [
+              "binding:api.secure_guide",
+              "binding:api.secure_database_runner"
+            ]
+          },
+          {
+            "id": "evidence:api.secure_rejection_g1_20261030",
+            "title": "Horizontal authority/durability G1",
+            "scenario": "scenario:api.secure_rejection",
+            "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+            "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+            "tier": "G1",
+            "result": "passed",
+            "substitutions": [
+              "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+            ],
+            "limitations": "Synthetic JWKS and host boundary assertions; no hosted issuer, database/provider or business operation proof from this tier.",
+            "reference": "reports/run-api_authority_boundary_20261030.log",
+            "links": [
+              "binding:api.secure_guide",
+              "binding:api.secure_database_runner"
+            ]
+          },
+          {
+            "id": "evidence:api.secure_rejection_g2_20261030",
+            "title": "Horizontal authority/durability G2",
+            "scenario": "scenario:api.secure_rejection",
+            "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+            "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+            "tier": "G2",
+            "result": "passed",
+            "substitutions": [
+              "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+            ],
+            "limitations": "Real isolated PostgreSQL 17.6, Cedar and SDK; synthetic JWT/JWKS, minimal Auth schema and in-memory HTTP. Selected actual migrations/resolver exercised, not full migration stream. No production DB login/provider/deployment/device proof or skipped assurance promotion.",
+            "reference": "reports/run-api_authority_durability_database_20261030.log",
+            "links": [
+              "binding:api.secure_guide",
+              "binding:api.secure_database_runner"
+            ]
+          },
+          {
+            "id": "evidence:api.secure_durability_g0_20261030",
+            "title": "Horizontal authority/durability G0",
+            "scenario": "scenario:api.secure_durability",
+            "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+            "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+            "tier": "G0",
+            "result": "passed",
+            "substitutions": [
+              "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+            ],
+            "limitations": "Strict contracts, source gates and bundle artifact only; no runtime proof. Raw diff/source fingerprints qualify mutable worktree, not clean HEAD. Broad monorepo anti-slop remains separate.",
+            "reference": "reports/api-authority-durability-foundation-20261030.json",
+            "links": [
+              "binding:api.secure_guide",
+              "binding:api.secure_database_runner"
+            ]
+          },
+          {
+            "id": "evidence:api.secure_durability_g1_20261030",
+            "title": "Horizontal authority/durability G1",
+            "scenario": "scenario:api.secure_durability",
+            "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+            "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+            "tier": "G1",
+            "result": "passed",
+            "substitutions": [
+              "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+            ],
+            "limitations": "Synthetic JWKS and host boundary assertions; no hosted issuer, database/provider or business operation proof from this tier.",
+            "reference": "reports/run-api_authority_boundary_20261030.log",
+            "links": [
+              "binding:api.secure_guide",
+              "binding:api.secure_database_runner"
+            ]
+          },
+          {
+            "id": "evidence:api.secure_durability_g2_20261030",
+            "title": "Horizontal authority/durability G2",
+            "scenario": "scenario:api.secure_durability",
+            "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+            "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+            "tier": "G2",
+            "result": "passed",
+            "substitutions": [
+              "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+            ],
+            "limitations": "Real isolated PostgreSQL 17.6, Cedar and SDK; synthetic JWT/JWKS, minimal Auth schema and in-memory HTTP. Selected actual migrations/resolver exercised, not full migration stream. No production DB login/provider/deployment/device proof or skipped assurance promotion.",
+            "reference": "reports/run-api_authority_durability_database_20261030.log",
+            "links": [
+              "binding:api.secure_guide",
+              "binding:api.secure_database_runner"
+            ]
+          }
+        ]
+      },
+      "scenarioPaths": [
+        {
+          "id": "scenario:api.secure_identity",
+          "title": "Canonical authentication and scoped isolation",
+          "expected": "Synthetic signed credentials, live isolated DB bindings, Cedar and account RLS agree on actor identity and reject cross-owner/school access.",
+          "start": "step:api.secure_authenticate",
+          "preconditions": [],
+          "completion": "checkpoint",
+          "checkpointReason": "Credential/scope admission is a checkpoint; durable mutation and effects are verified separately.",
+          "requirements": [
+            {
+              "id": "requirement:api.secure_identity",
+              "title": "Verified canonical account",
+              "statement": "Verify issuer/audience/algorithm/expiry and live account/credential/session bindings; transaction-bound identity/scope checks lock authority rows.",
+              "classification": "constraint",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            },
+            {
+              "id": "requirement:api.secure_scope",
+              "title": "Scoped action and data admission",
+              "statement": "Derive facts server-side, re-evaluate Cedar and enforce account RLS through transaction-local verified claims; deny unsupported scopes including principal PERSONAL.",
+              "classification": "functional",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            },
+            {
+              "id": "requirement:api.secure_durability",
+              "title": "Durable replay and effects",
+              "statement": "Unique payload/scope-bound receipts coordinate one database mutation and outbox; reauthorize replay, fence leased work, bound retries and preserve uncertain outcomes.",
+              "classification": "quality",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            },
+            {
+              "id": "requirement:api.secure_operations",
+              "title": "Truthful operational admission",
+              "statement": "Shared PostgreSQL account budgets, bounded pools and readiness dependency/grant/RLS checks fail closed; no application or deployment completion is inferred from an empty router.",
+              "classification": "quality",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:api.secure_guide",
+              "category": "architecture",
+              "reference": "apps/sanctuary-api/docs/architecture/api-foundations/authority-and-durability.md",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            }
+          ],
+          "evidence": [
+            {
+              "id": "evidence:api.secure_identity_g0_20261030",
+              "title": "Horizontal authority/durability G0",
+              "scenario": "scenario:api.secure_identity",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G0",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Strict contracts, source gates and bundle artifact only; no runtime proof. Raw diff/source fingerprints qualify mutable worktree, not clean HEAD. Broad monorepo anti-slop remains separate.",
+              "reference": "reports/api-authority-durability-foundation-20261030.json",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            },
+            {
+              "id": "evidence:api.secure_identity_g1_20261030",
+              "title": "Horizontal authority/durability G1",
+              "scenario": "scenario:api.secure_identity",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Synthetic JWKS and host boundary assertions; no hosted issuer, database/provider or business operation proof from this tier.",
+              "reference": "reports/run-api_authority_boundary_20261030.log",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            },
+            {
+              "id": "evidence:api.secure_identity_g2_20261030",
+              "title": "Horizontal authority/durability G2",
+              "scenario": "scenario:api.secure_identity",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G2",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Real isolated PostgreSQL 17.6, Cedar and SDK; synthetic JWT/JWKS, minimal Auth schema and in-memory HTTP. Selected actual migrations/resolver exercised, not full migration stream. No production DB login/provider/deployment/device proof or skipped assurance promotion.",
+              "reference": "reports/run-api_authority_durability_database_20261030.log",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            }
+          ],
+          "steps": [
+            {
+              "transition": {
+                "id": "transition:api.secure_identity",
+                "from": "step:api.secure_authenticate",
+                "to": "step:api.secure_scope",
+                "action": "Verify canonical identity and load supported scope.",
+                "feedback": "Invalid/revoked identity fails closed; provider subject never becomes the account key.",
+                "links": []
+              },
+              "from": {
+                "id": "step:api.secure_authenticate",
+                "title": "Verify the acting account",
+                "interaction": "Verify credential claims then read the current canonical binding, account and session.",
+                "terminal": false,
+                "links": []
+              },
+              "to": {
+                "id": "step:api.secure_scope",
+                "title": "Resolve relationships and resource facts",
+                "interaction": "Load a live supported Bond and server-derived target facts; use Cedar and scoped data enforcement.",
+                "terminal": false,
+                "links": []
+              }
+            },
+            {
+              "transition": {
+                "id": "transition:api.secure_permission",
+                "from": "step:api.secure_scope",
+                "to": "step:api.secure_execute",
+                "action": "Resolve resource facts and evaluate current permission.",
+                "feedback": "Cross-owner/foreign-school access denies; missing policy runtime is unavailable.",
+                "links": []
+              },
+              "from": {
+                "id": "step:api.secure_scope",
+                "title": "Resolve relationships and resource facts",
+                "interaction": "Load a live supported Bond and server-derived target facts; use Cedar and scoped data enforcement.",
+                "terminal": false,
+                "links": []
+              },
+              "to": {
+                "id": "step:api.secure_execute",
+                "title": "Coordinate the durable operation",
+                "interaction": "Reauthorize within the same transaction, reserve/lock the key and write mutation, receipt and effect intent.",
+                "terminal": false,
+                "links": []
+              }
+            }
+          ],
+          "disclaimer": "Declared scenario path; not evidence of execution."
+        },
+        {
+          "id": "scenario:api.secure_rejection",
+          "title": "Revoked or foreign scope rejection",
+          "expected": "Revocation prevents subsequent operations and stored replay disclosure; safe errors distinguish policy denial and unavailable authority.",
+          "start": "step:api.secure_authenticate",
+          "preconditions": [],
+          "completion": "outcome",
+          "requirements": [
+            {
+              "id": "requirement:api.secure_identity",
+              "title": "Verified canonical account",
+              "statement": "Verify issuer/audience/algorithm/expiry and live account/credential/session bindings; transaction-bound identity/scope checks lock authority rows.",
+              "classification": "constraint",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            },
+            {
+              "id": "requirement:api.secure_scope",
+              "title": "Scoped action and data admission",
+              "statement": "Derive facts server-side, re-evaluate Cedar and enforce account RLS through transaction-local verified claims; deny unsupported scopes including principal PERSONAL.",
+              "classification": "functional",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            },
+            {
+              "id": "requirement:api.secure_durability",
+              "title": "Durable replay and effects",
+              "statement": "Unique payload/scope-bound receipts coordinate one database mutation and outbox; reauthorize replay, fence leased work, bound retries and preserve uncertain outcomes.",
+              "classification": "quality",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            },
+            {
+              "id": "requirement:api.secure_operations",
+              "title": "Truthful operational admission",
+              "statement": "Shared PostgreSQL account budgets, bounded pools and readiness dependency/grant/RLS checks fail closed; no application or deployment completion is inferred from an empty router.",
+              "classification": "quality",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:api.secure_guide",
+              "category": "architecture",
+              "reference": "apps/sanctuary-api/docs/architecture/api-foundations/authority-and-durability.md",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            }
+          ],
+          "evidence": [
+            {
+              "id": "evidence:api.secure_rejection_g0_20261030",
+              "title": "Horizontal authority/durability G0",
+              "scenario": "scenario:api.secure_rejection",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G0",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Strict contracts, source gates and bundle artifact only; no runtime proof. Raw diff/source fingerprints qualify mutable worktree, not clean HEAD. Broad monorepo anti-slop remains separate.",
+              "reference": "reports/api-authority-durability-foundation-20261030.json",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            },
+            {
+              "id": "evidence:api.secure_rejection_g1_20261030",
+              "title": "Horizontal authority/durability G1",
+              "scenario": "scenario:api.secure_rejection",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Synthetic JWKS and host boundary assertions; no hosted issuer, database/provider or business operation proof from this tier.",
+              "reference": "reports/run-api_authority_boundary_20261030.log",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            },
+            {
+              "id": "evidence:api.secure_rejection_g2_20261030",
+              "title": "Horizontal authority/durability G2",
+              "scenario": "scenario:api.secure_rejection",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G2",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Real isolated PostgreSQL 17.6, Cedar and SDK; synthetic JWT/JWKS, minimal Auth schema and in-memory HTTP. Selected actual migrations/resolver exercised, not full migration stream. No production DB login/provider/deployment/device proof or skipped assurance promotion.",
+              "reference": "reports/run-api_authority_durability_database_20261030.log",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            }
+          ],
+          "steps": [
+            {
+              "transition": {
+                "id": "transition:api.secure_identity",
+                "from": "step:api.secure_authenticate",
+                "to": "step:api.secure_scope",
+                "action": "Verify canonical identity and load supported scope.",
+                "feedback": "Invalid/revoked identity fails closed; provider subject never becomes the account key.",
+                "links": []
+              },
+              "from": {
+                "id": "step:api.secure_authenticate",
+                "title": "Verify the acting account",
+                "interaction": "Verify credential claims then read the current canonical binding, account and session.",
+                "terminal": false,
+                "links": []
+              },
+              "to": {
+                "id": "step:api.secure_scope",
+                "title": "Resolve relationships and resource facts",
+                "interaction": "Load a live supported Bond and server-derived target facts; use Cedar and scoped data enforcement.",
+                "terminal": false,
+                "links": []
+              }
+            },
+            {
+              "transition": {
+                "id": "transition:api.secure_scope_denied",
+                "from": "step:api.secure_scope",
+                "to": "step:api.secure_rejected",
+                "action": "Reject revoked Bond, foreign resource or unsupported scope.",
+                "feedback": "Native FORBIDDEN or authority-unavailable feedback; no stored replay disclosure.",
+                "links": []
+              },
+              "from": {
+                "id": "step:api.secure_scope",
+                "title": "Resolve relationships and resource facts",
+                "interaction": "Load a live supported Bond and server-derived target facts; use Cedar and scoped data enforcement.",
+                "terminal": false,
+                "links": []
+              },
+              "to": {
+                "id": "step:api.secure_rejected",
+                "title": "Receive denial, conflict or unavailable feedback",
+                "interaction": "Expose a safe native error/recovery classification; do not fabricate success or repeat an uncertain side effect.",
+                "terminal": true,
+                "links": []
+              }
+            }
+          ],
+          "disclaimer": "Declared scenario path; not evidence of execution."
+        },
+        {
+          "id": "scenario:api.secure_durability",
+          "title": "Durable execution/replay/effect recovery",
+          "expected": "Real PostgreSQL transactions exercise concurrent replay, rollback, scope conflict, leases, fenced acknowledgements, bounded retry and monotonic clock-skew behavior.",
+          "start": "step:api.secure_authenticate",
+          "preconditions": [],
+          "completion": "outcome",
+          "requirements": [
+            {
+              "id": "requirement:api.secure_identity",
+              "title": "Verified canonical account",
+              "statement": "Verify issuer/audience/algorithm/expiry and live account/credential/session bindings; transaction-bound identity/scope checks lock authority rows.",
+              "classification": "constraint",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            },
+            {
+              "id": "requirement:api.secure_scope",
+              "title": "Scoped action and data admission",
+              "statement": "Derive facts server-side, re-evaluate Cedar and enforce account RLS through transaction-local verified claims; deny unsupported scopes including principal PERSONAL.",
+              "classification": "functional",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            },
+            {
+              "id": "requirement:api.secure_durability",
+              "title": "Durable replay and effects",
+              "statement": "Unique payload/scope-bound receipts coordinate one database mutation and outbox; reauthorize replay, fence leased work, bound retries and preserve uncertain outcomes.",
+              "classification": "quality",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            },
+            {
+              "id": "requirement:api.secure_operations",
+              "title": "Truthful operational admission",
+              "statement": "Shared PostgreSQL account budgets, bounded pools and readiness dependency/grant/RLS checks fail closed; no application or deployment completion is inferred from an empty router.",
+              "classification": "quality",
+              "origin": "user",
+              "links": [
+                "binding:api.secure_guide"
+              ]
+            }
+          ],
+          "bindings": [
+            {
+              "id": "binding:api.secure_guide",
+              "category": "architecture",
+              "reference": "apps/sanctuary-api/docs/architecture/api-foundations/authority-and-durability.md",
+              "status": "implemented",
+              "note": "Horizontal foundation source; evidence and substitutions are scenario-specific, not inferred from this file."
+            }
+          ],
+          "evidence": [
+            {
+              "id": "evidence:api.secure_durability_g0_20261030",
+              "title": "Horizontal authority/durability G0",
+              "scenario": "scenario:api.secure_durability",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G0",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Strict contracts, source gates and bundle artifact only; no runtime proof. Raw diff/source fingerprints qualify mutable worktree, not clean HEAD. Broad monorepo anti-slop remains separate.",
+              "reference": "reports/api-authority-durability-foundation-20261030.json",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            },
+            {
+              "id": "evidence:api.secure_durability_g1_20261030",
+              "title": "Horizontal authority/durability G1",
+              "scenario": "scenario:api.secure_durability",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G1",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Synthetic JWKS and host boundary assertions; no hosted issuer, database/provider or business operation proof from this tier.",
+              "reference": "reports/run-api_authority_boundary_20261030.log",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            },
+            {
+              "id": "evidence:api.secure_durability_g2_20261030",
+              "title": "Horizontal authority/durability G2",
+              "scenario": "scenario:api.secure_durability",
+              "revision": "a8291d40db91dffe4ba8fc35431abe04af81dc10+working-tree:api-authority-durability-20261030",
+              "environment": "Windows Node 24.22.2; PostgreSQL 17.6 disposable database; oRPC beta.46, Hono 5 RC1, JOSE 6.2.10, Cedar WASM 4.14",
+              "tier": "G2",
+              "result": "passed",
+              "substitutions": [
+                "Synthetic capabilities and JWT/JWKS; selected schema fixtures; no external provider or business procedure."
+              ],
+              "limitations": "Real isolated PostgreSQL 17.6, Cedar and SDK; synthetic JWT/JWKS, minimal Auth schema and in-memory HTTP. Selected actual migrations/resolver exercised, not full migration stream. No production DB login/provider/deployment/device proof or skipped assurance promotion.",
+              "reference": "reports/run-api_authority_durability_database_20261030.log",
+              "links": [
+                "binding:api.secure_guide",
+                "binding:api.secure_database_runner"
+              ]
+            }
+          ],
+          "steps": [
+            {
+              "transition": {
+                "id": "transition:api.secure_identity",
+                "from": "step:api.secure_authenticate",
+                "to": "step:api.secure_scope",
+                "action": "Verify canonical identity and load supported scope.",
+                "feedback": "Invalid/revoked identity fails closed; provider subject never becomes the account key.",
+                "links": []
+              },
+              "from": {
+                "id": "step:api.secure_authenticate",
+                "title": "Verify the acting account",
+                "interaction": "Verify credential claims then read the current canonical binding, account and session.",
+                "terminal": false,
+                "links": []
+              },
+              "to": {
+                "id": "step:api.secure_scope",
+                "title": "Resolve relationships and resource facts",
+                "interaction": "Load a live supported Bond and server-derived target facts; use Cedar and scoped data enforcement.",
+                "terminal": false,
+                "links": []
+              }
+            },
+            {
+              "transition": {
+                "id": "transition:api.secure_permission",
+                "from": "step:api.secure_scope",
+                "to": "step:api.secure_execute",
+                "action": "Resolve resource facts and evaluate current permission.",
+                "feedback": "Cross-owner/foreign-school access denies; missing policy runtime is unavailable.",
+                "links": []
+              },
+              "from": {
+                "id": "step:api.secure_scope",
+                "title": "Resolve relationships and resource facts",
+                "interaction": "Load a live supported Bond and server-derived target facts; use Cedar and scoped data enforcement.",
+                "terminal": false,
+                "links": []
+              },
+              "to": {
+                "id": "step:api.secure_execute",
+                "title": "Coordinate the durable operation",
+                "interaction": "Reauthorize within the same transaction, reserve/lock the key and write mutation, receipt and effect intent.",
+                "terminal": false,
+                "links": []
+              }
+            },
+            {
+              "transition": {
+                "id": "transition:api.secure_commit",
+                "from": "step:api.secure_execute",
+                "to": "step:api.secure_settled",
+                "action": "Use the transaction/receipt/outbox boundary and recover using the same operation identity.",
+                "feedback": "Matching replay returns one committed outcome; leases and DB fences bound effect attempts without promising exactly-once delivery.",
+                "links": []
+              },
+              "from": {
+                "id": "step:api.secure_execute",
+                "title": "Coordinate the durable operation",
+                "interaction": "Reauthorize within the same transaction, reserve/lock the key and write mutation, receipt and effect intent.",
+                "terminal": false,
+                "links": []
+              },
+              "to": {
+                "id": "step:api.secure_settled",
+                "title": "Observe replay or recoverable effect status",
+                "interaction": "Return committed/replayed result; explicit dispatcher fences claims and distinguishes acknowledged, failed and uncertain work.",
+                "terminal": true,
+                "links": []
+              }
+            }
+          ],
+          "disclaimer": "Declared scenario path; not evidence of execution."
+        }
+      ],
+      "sharedRequirements": [],
+      "sharedBindings": []
+    },
+    "sources": [
+      {
+        "path": "packages/core/src/flows/pjc/admin.school_connection.json",
+        "sha256": "ce26c05176caa685fa290eb773fdc586270b624cdc804c760423d714610f1f31"
+      },
+      {
+        "path": "packages/core/src/flows/pjc/admin.school_operations.json",
+        "sha256": "0a085b0e24cf4c09f61c27b279bb51068ead2e77591dada06374421d271a1669"
+      },
+      {
+        "path": "packages/core/src/flows/pjc/ai.assistant.json",
+        "sha256": "4b7162e3ef25e57a40c6df4c18a9693a64d00889aff21305ae314fa497408ac9"
+      },
+      {
+        "path": "packages/core/src/flows/pjc/api.foundation.json",
+        "sha256": "30cf7dfed60248f98179ba11115605f4c484df15e18d035d41c53be395bb6fb5"
+      },
+      {
+        "path": "packages/core/src/flows/pjc/catalog.v2.json",
+        "sha256": "cd7218f8f3ef908ff13a80475934563594041e0658d9a42992d2ac5464f03d12"
+      },
+      {
+        "path": "packages/core/src/flows/pjc/classroom.teacher_first_workspace.json",
+        "sha256": "051828520f9694421b11d1d59d1f6c356d98212d75146be7b0626eadc63dc769"
+      },
+      {
+        "path": "packages/core/src/flows/pjc/classroom.teaching_loop.json",
+        "sha256": "7658b2061a72091738e87b87e5de6b9aae8e0d6a18c6bf022cb0baff435b820f"
+      },
+      {
+        "path": "packages/core/src/flows/pjc/pjc.catalog.json",
+        "sha256": "e458e37c3906bda8e6c0daf8dbdb0b7076dedb0fb15d2b36440d1b938d5056b9"
+      },
+      {
+        "path": "packages/core/src/flows/pjc/platform.founder_cockpit.json",
+        "sha256": "a9208a99b09f72f2500475ccdf4fb8cb64e33d1cf6d7704ca0836fc96b50cfff"
+      },
+      {
+        "path": "packages/core/src/flows/pjc/school.founder_invitation.json",
+        "sha256": "f09e3a15604017b92546f12d00e005aa4c47f46fd4cc0ed4f939cb99359364e7"
+      },
+      {
+        "path": "packages/core/src/flows/pjc/self.learner_growth.json",
+        "sha256": "e4e22ac75d6e086534a5cb5a4ac1586a8de59815e90acb8203f1a6a126e9f84f"
+      },
+      {
+        "path": "scripts/pjc.ts",
+        "sha256": "31de3c20787cd07dc1c224c2b06d31e68e53f314e07a64c690a077805cfef928"
+      },
+      {
+        "path": "docs/architecture/model/gurudevi.c4",
+        "sha256": "ac50a6d9592bf864c4cd39729230b7add7305df2241017e6d0e9a80ceaec4476"
+      },
+      {
+        "path": "apps/sanctuary-api/src/modules/catalog.ts",
+        "sha256": "544022c277d252afd8fadd12622f8798ad352dd2b83fa6ff175a648c5ce51dbc"
+      }
+    ],
+    "coverageGaps": [
+      "PJC links are declarations; this reader does not establish execution or semantic correctness.",
+      "C4 and capability catalog hashes identify adjacent sources; their relationships are not automatically joined to this journey.",
+      "Chat history, external decisions, inaccessible sources and unregistered relationships are not searched by this projection."
+    ]
+  }
+}

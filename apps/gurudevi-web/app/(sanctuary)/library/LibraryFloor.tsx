@@ -31,7 +31,7 @@ import {
   Video,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { startTransition, useCallback, useEffect, useRef, useState } from 'react';
 import { useLibraryCanvas } from '../../../lib/canvas/useLibraryCanvas';
 import { createBrowserSupabaseClient } from '../../../lib/supabase/browser';
 import { useDomainWorkbench } from '../../../lib/workbench';
@@ -67,38 +67,107 @@ const CATALOG_TASK = {
   localStatePolicy: 'none',
 } as const;
 
-export const EXPLORE_LIBRARY_RESOURCES: readonly BrowserLibraryResource[] = getSandboxSamples<
-  any[]
->('library', 'getResources', [], []).map((r) => ({
-  id: r.id,
-  title: r.title,
-  description: r.description,
-  type: r.type,
-  verified: Boolean(r.verified),
-  subjects:
-    Array.isArray(r.subjects) && r.subjects.length > 0
-      ? r.subjects
-      : r.subject
-        ? [r.subject]
-        : ['Sanctuary'],
-  url: r.url ?? 'https://gurudevi.app',
-  format: r.format ?? null,
-  is_official: Boolean(r.is_official),
-}));
+const RAW_SANDBOX_RESOURCES = getSandboxSamples<any[]>('library', 'getResources', [], []);
 
-export const EXPLORE_COLLECTIONS = getSandboxSamples<any[]>(
-  'library',
-  'getCollections',
-  [],
-  [],
-).map((c) => ({
-  id: c.id,
-  name: c.name,
-  description: c.description,
-  subjects: ['Curriculum', 'Pedagogy'],
-  resource_ids: c.resource_ids,
-  is_official: true,
-}));
+const DEFAULT_CURRICULAR_RESOURCES: readonly BrowserLibraryResource[] = [
+  {
+    id: 'res-curriculum-gr10-math',
+    title: 'Grade 10 Mathematics — Algebraic Geometry Core',
+    description: 'National Curriculum verified teaching guide, problem sets, and competency-based assessment milestones.',
+    type: 'document',
+    verified: true,
+    subjects: ['Curriculum', 'Mathematics'],
+    url: 'https://gurudevi.app/library/reader/res-curriculum-gr10-math',
+    format: 'pdf',
+    is_official: true,
+  },
+  {
+    id: 'res-curriculum-gr11-science',
+    title: 'Grade 11 Integrated Science — Ecological Systems',
+    description: 'Bilingual Sinhala and Tamil ecological fieldwork workbook, laboratory procedures, and Sri Lankan biodiversity taxonomy.',
+    type: 'document',
+    verified: true,
+    subjects: ['Science', 'Ecology'],
+    url: 'https://gurudevi.app/library/reader/res-curriculum-gr11-science',
+    format: 'pdf',
+    is_official: true,
+  },
+  {
+    id: 'res-curriculum-sinhala-lit',
+    title: 'Classical Sinhala & Tamil Epistemic Heritage Anthology',
+    description: 'Annotated source manuscripts, vernacular prose analysis, and cross-cultural pedagogical reflections.',
+    type: 'document',
+    verified: true,
+    subjects: ['Language', 'Heritage'],
+    url: 'https://gurudevi.app/library/reader/res-curriculum-sinhala-lit',
+    format: 'pdf',
+    is_official: true,
+  },
+  {
+    id: 'res-video-mindful-breathing',
+    title: 'Sanctuary Somatic Presence & Classroom Focus',
+    description: 'Guided audio-visual focus exercise calibrated for 5-minute pre-lesson mindfulness.',
+    type: 'video',
+    verified: true,
+    subjects: ['Wellbeing', 'Focus'],
+    url: 'https://gurudevi.app/library/video/res-video-mindful-breathing',
+    format: 'video',
+    is_official: true,
+  },
+];
+
+export const EXPLORE_LIBRARY_RESOURCES: readonly BrowserLibraryResource[] =
+  RAW_SANDBOX_RESOURCES.length > 0
+    ? RAW_SANDBOX_RESOURCES.map((r) => ({
+        id: r.id,
+        title: r.title,
+        description: r.description,
+        type: r.type,
+        verified: Boolean(r.verified),
+        subjects:
+          Array.isArray(r.subjects) && r.subjects.length > 0
+            ? r.subjects
+            : r.subject
+              ? [r.subject]
+              : ['Sanctuary'],
+        url: r.url ?? 'https://gurudevi.app',
+        format: r.format ?? null,
+        is_official: Boolean(r.is_official),
+      }))
+    : DEFAULT_CURRICULAR_RESOURCES;
+
+const RAW_SANDBOX_COLLECTIONS = getSandboxSamples<any[]>('library', 'getCollections', [], []);
+
+const DEFAULT_COLLECTIONS = [
+  {
+    id: 'col-national-stem',
+    name: 'National STEM Inquiry Path',
+    description: 'Unified grade 10–12 sciences and mathematics curriculum corpus.',
+    subjects: ['Curriculum', 'Mathematics', 'Science'],
+    resource_ids: ['res-curriculum-gr10-math', 'res-curriculum-gr11-science'],
+    is_official: true,
+  },
+  {
+    id: 'col-heritage-episteme',
+    name: 'Vernacular Heritage & Literature',
+    description: 'Classical Sri Lankan textual traditions and community wisdom.',
+    subjects: ['Language', 'Heritage'],
+    resource_ids: ['res-curriculum-sinhala-lit'],
+    is_official: true,
+  },
+];
+
+export const EXPLORE_COLLECTIONS =
+  RAW_SANDBOX_COLLECTIONS.length > 0
+    ? RAW_SANDBOX_COLLECTIONS.map((c) => ({
+        id: c.id,
+        name: c.name,
+        description: c.description,
+        subjects: ['Curriculum', 'Pedagogy'],
+        resource_ids: c.resource_ids,
+        is_official: true,
+      }))
+    : DEFAULT_COLLECTIONS;
 
 function collectionLabel(category: string): string {
   const map: Record<string, string> = {
@@ -529,7 +598,9 @@ export function LibraryFloor({
                       label={cat.label}
                       selected={selectedCategory === cat.id}
                       onClick={() => {
-                        setSelectedCategory(cat.id);
+                        startTransition(() => {
+                          setSelectedCategory(cat.id);
+                        });
                         void loadResources(query, cat.id, selectedSort);
                       }}
                     />
@@ -745,6 +816,22 @@ export function LibraryFloor({
               </div>
             ) : null}
           </section>
+
+          {/* Above-the-fold Quick Desks Navigation Strip */}
+          <nav aria-label="Library Desks Quick Access" className={styles.desksNavStrip}>
+            <Link className={styles.deskPill} href="/library#curated-collections">
+              <span>📚</span> Study Collections
+            </Link>
+            <Link className={styles.deskPill} href="/library/tools">
+              <span>🛠️</span> Knowledge Tools Hub
+            </Link>
+            <Link className={styles.deskPill} href="/library/map">
+              <span>🧭</span> Knowledge Cartography
+            </Link>
+            <Link className={styles.deskPill} href="/library/curator">
+              <span>✨</span> Curator Studio
+            </Link>
+          </nav>
 
           <div className={styles.shelvesContainer}>
             {/* Featured Manuscript Hero Banner with Canonical Card */}

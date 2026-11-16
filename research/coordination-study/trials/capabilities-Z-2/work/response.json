@@ -1,0 +1,55 @@
+{
+  "workId": "0b1096cf-7523-4339-a496-ca7d6760689d",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "Current source admits six foundation capabilities, all for the app channel with session assurance: queries identity.session, identity.scopes, identity.entry and identity.syncCredentials; commands identity.createInitialBond and authority.refreshSnapshot. Router handlers match those six manifest entries.",
+      "sourceIds": ["router", "capabilities"],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The earlier empty-v1-contract description is stale as a claim about the entire current API. Its narrower empty-business-contract constraint remains compatible with the six foundation procedures; it does not mean the current API has no procedures.",
+      "sourceIds": ["catalog-description", "router", "capabilities", "foundation-policy"],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The policy's two-read-only-identity-procedures snapshot also needs updating: source now includes four queries and two commands. This factual update does not supersede the governing scope: horizontal engineering has resumed and business admission remains deferred. These records do not authorize implementing business procedures.",
+      "sourceIds": ["foundation-policy", "router", "capabilities"],
+      "confidence": "supported"
+    },
+    {
+      "claim": "All six capabilities declare requiredEvidence G2. That is an evidence requirement, not proof of achieved G2; the manifest comment still asks the owner to confirm that bar. No runtime execution or deployed feature coverage is established by these excerpts.",
+      "sourceIds": ["capabilities", "catalog-description", "foundation-policy"],
+      "confidence": "direct"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "updates factual procedure inventory in",
+      "subject": "router and capabilities",
+      "object": "catalog-description empty-v1 wording and foundation-policy two-procedure snapshot",
+      "authoritySourceIds": ["router", "capabilities"]
+    },
+    {
+      "relation": "continues to govern implementation scope despite stale inventory wording",
+      "subject": "foundation-policy horizontal-foundation authorization and business-admission deferral",
+      "object": "current six foundation capabilities and any proposed business procedure",
+      "authoritySourceIds": ["foundation-policy", "catalog-description"]
+    }
+  ],
+  "reviewRequired": ["catalog-description", "foundation-policy", "capabilities"],
+  "unresolved": [],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": ["context", "analysis", "verification", "reconciliation"],
+    "invalidatedSteps": [],
+    "nextAction": "Review catalog-description line 4 and foundation-policy lines 34-35 against the six-procedure inventory, preserving business deferral; obtain owner confirmation of the G2 bar and actual verification evidence before claiming verified foundation execution. Seek separate business admission before business implementation."
+  },
+  "limitations": [
+    "Only the four frozen excerpts were inspected; the full contract, module cards, test results, deployment and live runtime were unavailable.",
+    "Controller execution verified persisted stage order and current source hashes, not API runtime hooks, canaries, authorization coverage or semantic correctness.",
+    "Whether G2 has actually passed and whether its admission bar has owner confirmation remain unverified; neither is necessary to resolve the present scope question.",
+    "No source records were changed and no business procedures were implemented."
+  ]
+}

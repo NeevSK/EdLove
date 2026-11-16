@@ -1,0 +1,180 @@
+[
+  {
+    "trialId": "documents-Z-1",
+    "workId": "36f21a4a-8ec8-4e7c-ae7f-a92371235b28",
+    "completed": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidated": [],
+    "unresolved": [],
+    "nextAction": "complete",
+    "canComplete": true
+  },
+  {
+    "trialId": "documents-Z-2",
+    "workId": "cbee6005-7ce5-4fd1-ab5d-5d76acb5efb4",
+    "completed": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidated": [],
+    "unresolved": [],
+    "nextAction": "complete",
+    "canComplete": true
+  },
+  {
+    "trialId": "capabilities-Z-1",
+    "workId": "e5f99a23-f794-4ab0-b877-92dae54cb2ac",
+    "completed": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidated": [],
+    "unresolved": [
+      "Owner confirmation of G2 admission bar remains pending in manifest; actual G2 evidence is absent from supplied excerpts."
+    ],
+    "nextAction": "resolve_authority",
+    "canComplete": false
+  },
+  {
+    "trialId": "capabilities-Z-2",
+    "workId": "0b1096cf-7523-4339-a496-ca7d6760689d",
+    "completed": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidated": [],
+    "unresolved": [],
+    "nextAction": "complete",
+    "canComplete": true
+  },
+  {
+    "trialId": "instructions-Z-1",
+    "workId": "7863d878-7ac2-4035-bfac-beca65b181ed",
+    "completed": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidated": [],
+    "unresolved": [],
+    "nextAction": "complete",
+    "canComplete": true
+  },
+  {
+    "trialId": "instructions-Z-2",
+    "workId": "127c5897-fd9b-4616-81fa-51296dbbc9a0",
+    "completed": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidated": [],
+    "unresolved": [],
+    "nextAction": "complete",
+    "canComplete": true
+  },
+  {
+    "trialId": "hooks-Z-1",
+    "workId": "c05e60ef-c6c4-4835-8892-faa358a8ae1e",
+    "completed": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidated": [],
+    "unresolved": [
+      "Codex-specific hook registration and invocation status are not supplied; the configured Stop target implementation is not included."
+    ],
+    "nextAction": "resolve_authority",
+    "canComplete": false
+  },
+  {
+    "trialId": "hooks-Z-2",
+    "workId": "d7d07ebf-3c59-4223-bddb-8e4e749e0482",
+    "completed": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidated": [],
+    "unresolved": [
+      "Actual Codex hook loading and stop-gate behavior remain unavailable."
+    ],
+    "nextAction": "resolve_authority",
+    "canComplete": false
+  },
+  {
+    "trialId": "resume-Z-1",
+    "workId": "d5e0d847-c36b-4974-b252-fa0047a716ef",
+    "completed": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidated": [],
+    "unresolved": [],
+    "nextAction": "complete",
+    "canComplete": true
+  },
+  {
+    "trialId": "resume-Z-2",
+    "workId": "6b59bad1-1d94-4c3f-9bdf-331a7dce6554",
+    "completed": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidated": [],
+    "unresolved": [],
+    "nextAction": "complete",
+    "canComplete": true
+  },
+  {
+    "trialId": "authority-Z-1",
+    "workId": "eb437861-57a7-49b3-b523-8ba774223af2",
+    "completed": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidated": [],
+    "unresolved": [
+      "Which disclosure policy does the human product owner choose: broad safeguarding access, owner-only with explicit person-initiated sharing, or another specified policy?"
+    ],
+    "nextAction": "resolve_authority",
+    "canComplete": false
+  },
+  {
+    "trialId": "authority-Z-2",
+    "workId": "6e236213-d223-4b2e-89f7-4321d58f71f6",
+    "completed": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidated": [],
+    "unresolved": [
+      "Which journal disclosure policy does the human product owner approve?"
+    ],
+    "nextAction": "resolve_authority",
+    "canComplete": false
+  }
+]

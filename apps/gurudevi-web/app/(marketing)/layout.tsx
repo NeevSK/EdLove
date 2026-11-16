@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { headers } from 'next/headers';
 import { LivingGround } from '@repo/ui/components/web';
 import { classifyGurudeviHost } from '@/lib/host-routing';
+import { QueryProvider } from '@/lib/query/QueryProvider';
 import {
   generateOrganizationJsonLd,
   generateWebSiteJsonLd,
@@ -18,7 +19,7 @@ export default async function MarketingLayout({ children }: Readonly<{ children:
   // If accessed directly on an authenticated sanctuary, explore, or school host,
   // pass children through directly so the inner surface can render its own sovereign shell.
   if (hostKind === 'sanctuary' || hostKind === 'explore' || hostKind === 'school') {
-    return <>{children}</>;
+    return <QueryProvider>{children}</QueryProvider>;
   }
 
   const orgJsonLd = generateOrganizationJsonLd();

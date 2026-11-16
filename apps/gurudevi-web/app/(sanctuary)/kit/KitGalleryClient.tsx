@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import Link from 'next/link';
 import * as webKit from '@repo/ui/components/web';
 import { WorldScope } from '@repo/ui/theme/web';
 import { WORLD_IDS, WORLDS } from '@repo/ui/theme';
@@ -139,6 +140,7 @@ export function KitGalleryClient() {
       >
         <div>
           <span style={{ fontWeight: 700, fontSize: '15px', color: '#60a5fa' }}>UI Kit Gallery</span>
+          <Link href="/kit/radar">Radar examples</Link>
           <span
             style={{
               marginLeft: '8px',

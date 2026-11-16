@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import {
   classifyGurudeviHost,
   EXPLORE_GURUDEVI_HOST,
+  extractValidatedHost,
   isLocalPreviewHost,
   isSanctuaryPath,
   PUBLIC_GURUDEVI_HOST,
@@ -49,10 +50,57 @@ function clearSanctuarySessionCookies(
 }
 
 export async function proxy(request: NextRequest) {
-  const hostname = request.headers.get('host') ?? request.nextUrl.hostname;
+  // RFC 9110 Preflight Contract: respond cleanly to CORS OPTIONS requests with 204 No Content
+  if (request.method === 'OPTIONS') {
+    return new NextResponse(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': request.headers.get('origin') ?? '*',
+        'Access-Control-Allow-Methods': 'GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept, X-Requested-With',
+        'Access-Control-Max-Age': '86400',
+      },
+    });
+  }
+
+  const hostname = extractValidatedHost(
+    request.headers.get('host'),
+    request.headers.get('x-forwarded-host'),
+    request.nextUrl.hostname,
+  );
   const hostRouting = resolveHostRouting(hostname, request.nextUrl.pathname, request.method);
 
-  if (hostRouting.kind === 'not-found') return new NextResponse(null, { status: 404 });
+  if (hostRouting.kind === 'not-found') {
+    const isApi =
+      request.nextUrl.pathname.startsWith('/api/') ||
+      request.headers.get('accept')?.includes('application/json');
+
+    if (isApi) {
+      return new NextResponse(
+        JSON.stringify({
+          type: 'https://gurudevi.app/errors/not-found',
+          title: 'Not Found',
+          status: 404,
+          detail: 'The requested resource or endpoint was not found on this surface.',
+          instance: request.nextUrl.pathname,
+        }),
+        {
+          status: 404,
+          headers: {
+            'Content-Type': 'application/problem+json',
+            'X-Content-Type-Options': 'nosniff',
+          },
+        },
+      );
+    }
+
+    const destination = request.nextUrl.clone();
+    destination.pathname = '/not-found';
+    const notFoundResponse = NextResponse.rewrite(destination, { status: 404 });
+    const isLocal = isLocalPreviewHost(hostname);
+    const incomingHost = classifyGurudeviHost(hostname);
+    return applySecurityHeaders(notFoundResponse, incomingHost, isLocal);
+  }
   if (hostRouting.kind === 'redirect') {
     const isLocal = isLocalPreviewHost(hostname);
     if (isLocal) {
@@ -65,7 +113,11 @@ export async function proxy(request: NextRequest) {
         destination.hostname = 'localhost';
       }
       if (hostRouting.pathname) {
-        destination.pathname = hostRouting.pathname;
+        const [nextPath, nextSearch] = hostRouting.pathname.split('?');
+        destination.pathname = nextPath || '/';
+        if (typeof nextSearch === 'string') {
+          destination.search = `?${nextSearch}`;
+        }
       }
       return NextResponse.redirect(destination, 307);
     }
@@ -74,7 +126,11 @@ export async function proxy(request: NextRequest) {
     destination.hostname = hostRouting.host;
     destination.port = '';
     if (hostRouting.pathname) {
-      destination.pathname = hostRouting.pathname;
+      const [nextPath, nextSearch] = hostRouting.pathname.split('?');
+      destination.pathname = nextPath || '/';
+      if (typeof nextSearch === 'string') {
+        destination.search = `?${nextSearch}`;
+      }
     }
     return NextResponse.redirect(destination, 307);
   }
@@ -97,32 +153,43 @@ export async function proxy(request: NextRequest) {
   }
 
   const isLocal = isLocalPreviewHost(hostname);
-  return applySecurityHeaders(response, incomingHost === 'explore', isLocal);
+  return applySecurityHeaders(response, incomingHost, isLocal);
 }
 
 /**
  * Applies hardened security response headers.
  *
- * @param isExploreSurface - When true, enforces an explore-specific CSP that
- *   strictly allows connect-src 'self' (blocking all external auth and API endpoints).
- *   On Sanctuary/public, connect-src is dynamically resolved from the active
- *   session adapter rather than hardcoding third-party vendor hostnames.
+ * @param response - The outgoing Next.js response.
+ * @param hostKind - The active Gurudevi host surface (public, sanctuary, explore).
  * @param isLocal - In local development / preview hosts, permits ws: and 'unsafe-eval'
  *   required by Next.js Fast Refresh, React DevTools, and HMR.
  */
 function applySecurityHeaders(
   response: NextResponse,
-  isExploreSurface = false,
+  hostKind: 'public' | 'sanctuary' | 'explore' | 'school' | 'other' = 'other',
   isLocal = false,
 ): NextResponse {
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  response.headers.set('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
   response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
 
+  // Surface-aware Cache-Control:
+  // Public marketing content benefits from edge CDN caching with stale-while-revalidate.
+  // Private Sanctuary and demo Explore surfaces must remain private and unshared.
+  if (hostKind === 'public') {
+    response.headers.set(
+      'Cache-Control',
+      'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
+    );
+  } else if (hostKind === 'sanctuary' || hostKind === 'explore') {
+    response.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  }
+
   // Hexagonal CSP: dynamically resolved from registered adapters
-  const dynamicOrigins = isExploreSurface
+  const dynamicOrigins = hostKind === 'explore'
     ? []
     : resolveSanctuaryConnectOrigins();
 

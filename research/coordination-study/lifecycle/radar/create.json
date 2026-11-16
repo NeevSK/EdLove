@@ -1,0 +1,82 @@
+{
+  "action": "create",
+  "id": "multidimensional-radar-20261111",
+  "operationId": "create",
+  "expectedRevision": 0,
+  "goal": "Deliver a shared multidimensional radar experience while preserving distinct measures and attributed self/other perspectives, using existing scaffolding and explicit access contracts",
+  "scope": "feature",
+  "actors": [
+    {
+      "id": "work_36",
+      "roles": [
+        "product"
+      ]
+    },
+    {
+      "id": "independent_verifier",
+      "roles": [
+        "ux",
+        "visual-motion",
+        "architecture",
+        "dependencies"
+      ]
+    },
+    {
+      "id": "root",
+      "roles": [
+        "implementation"
+      ]
+    },
+    {
+      "id": "work_35",
+      "roles": [
+        "verification"
+      ]
+    }
+  ],
+  "sourcePaths": [
+    "research/coordination-study/lifecycle/radar/owner-request.md",
+    "AGENTS.md",
+    "docs/architecture/platform-map.md",
+    "docs/architecture/data-governance-and-records.md",
+    "docs/architecture/authority-model.md",
+    "apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md",
+    "apps/gurudevi-mobile/docs/Core/GROWTH_MODEL.md",
+    "docs/research/edu-audit/teacher-holistic-profile-idea.md",
+    "packages/core/src/types/Growth.ts",
+    "packages/core/src/logic/schemas/teacher-insights.schema.ts",
+    "packages/core/src/flows/classroom/teacherStudentRadarAttunement.flow.ts",
+    "packages/core/src/flows/classroom/studentProfileSoulView.flow.ts",
+    "packages/core/src/flows/pjc/classroom.teaching_loop.json",
+    "packages/core/src/flows/pjc/self.learner_growth.json",
+    "packages/self/src/components/TeacherVitalityCard.tsx",
+    "packages/self/src/components/ResonancePatternCard.tsx",
+    "packages/graphics/src/layouts/radarLayout.ts",
+    "packages/graphics/src/charts/RadarSpiderChart.tsx",
+    "packages/ui/src/components/InteractiveRadarChart.tsx",
+    "packages/graphics/package.json",
+    "packages/ui/package.json",
+    "packages/core/src/api/studentPotential.ts",
+    "apps/gurudevi-mobile/supabase/migrations/20260315000001_student_potential_analysis.sql",
+    "apps/sanctuary-api/src/modules/catalog.ts",
+    "pnpm-lock.yaml"
+  ],
+  "externalRefs": [
+    {
+      "system": "PJC",
+      "ref": "journey:teacher.student_attunement"
+    },
+    {
+      "system": "PJC",
+      "ref": "feature:self.learner_growth"
+    },
+    {
+      "system": "API",
+      "ref": "apps/sanctuary-api/src/modules/catalog.ts"
+    },
+    {
+      "system": "doc",
+      "ref": "research/coordination-study/lifecycle/radar/owner-request.md"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "id":"radar-requirement",
+    "scope":"Shared read-only radar experience for distinct domain measures",
+    "authorId":"work_36",
+    "sourcePaths":["research/coordination-study/lifecycle/radar/owner-request.md","AGENTS.md","docs/architecture/platform-map.md","docs/architecture/data-governance-and-records.md","docs/architecture/authority-model.md","apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md","apps/gurudevi-mobile/docs/Core/GROWTH_MODEL.md","docs/research/edu-audit/teacher-holistic-profile-idea.md","packages/core/src/types/Growth.ts","packages/core/src/logic/schemas/teacher-insights.schema.ts","packages/core/src/flows/classroom/teacherStudentRadarAttunement.flow.ts","packages/core/src/flows/classroom/studentProfileSoulView.flow.ts","packages/core/src/flows/pjc/classroom.teaching_loop.json","packages/core/src/flows/pjc/self.learner_growth.json","packages/self/src/components/TeacherVitalityCard.tsx","packages/self/src/components/ResonancePatternCard.tsx","packages/graphics/src/layouts/radarLayout.ts","packages/graphics/src/charts/RadarSpiderChart.tsx","packages/ui/src/components/InteractiveRadarChart.tsx","packages/graphics/package.json","packages/ui/package.json","packages/core/src/api/studentPotential.ts","apps/gurudevi-mobile/supabase/migrations/20260315000001_student_potential_analysis.sql","apps/sanctuary-api/src/modules/catalog.ts","pnpm-lock.yaml"],
+    "dependsOn":[{"id":"radar-analysis","version":1}],
+    "content":{
+      "kind":"requirement",
+      "statement":"Provide a shared read-only experience for viewing a person's existing multidimensional measures while preserving each measure's distinct definition and each perspective's attribution. This records the owner's clarification, 'Shared experience; distinct measures and perspectives' (research/coordination-study/lifecycle/radar/owner-request.md). It does not create a universal radar model or authorize new cross-person access.",
+      "classification":"functional",
+      "acceptance":[
+        "Render each selected existing measure using its own declared axes, value scale/units, measure identity/version and domain context. If those details are absent or unsupported, disclose that and do not substitute shared axes or a guessed range.",
+        "Keep self and other-person perspectives visibly attributed to the source/provenance supplied by the admitted caller. Show distinct perspectives separately; do not average, merge, rank, or infer that values are comparable.",
+        "Preserve missing, unavailable, denied and stale values as explicit states. Do not replace missing data with zero, silently omit it, or render an empty polygon as measured data.",
+        "Present loading, empty, source-unavailable, access-denied and recoverable-error states, with an accessible textual summary of axes, displayed values, units and missingness.",
+        "Operate read-only. Use caller-supplied results from an already admitted source or clearly labeled synthetic examples; do not add an endpoint, direct database path, write, edit, contribution, sharing grant, threshold alert or intervention.",
+        "Preserve the existing self-growth, teacher-student potential, teacher vitality and profile paths and their data. Integrate by an additive shared presentation seam only after Architecture identifies the appropriate platform-neutral core and owned web/native UI boundary.",
+        "Repair and verify the existing RadarChart/SpiderChart geometry before the new experience depends on it. The inspected RadarSpiderChart currently places each plotted vertex at the full radius without scaling by the value or maxValue; treat this as the first implementation repair candidate, not as evidence of a new business measure.",
+        "Synthetic fixtures are labeled synthetic throughout the view and are not presented as a real person's scores."
+      ],
+      "origin":"proposal",
+      "authorityRefs":["research/coordination-study/lifecycle/radar/owner-request.md"],
+      "unresolved":[
+        "The owner authorized shared presentation over distinct measures/perspectives. Measure definitions, score semantics, and cross-person visibility or editing authority remain unselected.",
+        "Existing domain endpoints and data contracts must be assessed for current API admission before live integration.",
+        "The first hosting routes/platforms and exact existing chart component are for Architecture and UX review."
+      ]
+    }
+  },
+  {
+    "id":"radar-invariant",
+    "scope":"Measure identity, perspective attribution, and read-authority invariant",
+    "authorId":"work_36",
+    "sourcePaths":["research/coordination-study/lifecycle/radar/owner-request.md","AGENTS.md","docs/architecture/platform-map.md","docs/architecture/data-governance-and-records.md","docs/architecture/authority-model.md","apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md","apps/gurudevi-mobile/docs/Core/GROWTH_MODEL.md","docs/research/edu-audit/teacher-holistic-profile-idea.md","packages/core/src/types/Growth.ts","packages/core/src/logic/schemas/teacher-insights.schema.ts","packages/core/src/flows/classroom/teacherStudentRadarAttunement.flow.ts","packages/core/src/flows/classroom/studentProfileSoulView.flow.ts","packages/core/src/flows/pjc/classroom.teaching_loop.json","packages/core/src/flows/pjc/self.learner_growth.json","packages/self/src/components/TeacherVitalityCard.tsx","packages/self/src/components/ResonancePatternCard.tsx","packages/graphics/src/layouts/radarLayout.ts","packages/graphics/src/charts/RadarSpiderChart.tsx","packages/ui/src/components/InteractiveRadarChart.tsx","packages/graphics/package.json","packages/ui/package.json","packages/core/src/api/studentPotential.ts","apps/gurudevi-mobile/supabase/migrations/20260315000001_student_potential_analysis.sql","apps/sanctuary-api/src/modules/catalog.ts","pnpm-lock.yaml"],
+    "dependsOn":[{"id":"radar-analysis","version":1}],
+    "content":{
+      "kind":"invariant",
+      "statement":"A shared renderer preserves domain-measure identity and perspective attribution. It may display a person's own measure or another person's measure only when the caller supplies an admitted, authorized read result; visualization does not grant access. Distinct measures remain distinct, and the renderer never infers cross-measure comparability or synthesizes an aggregate.",
+      "scope":["Measure definition and axis units","Self/observer perspective and provenance","Subject and relationship context from the caller","Missing, stale and unavailable observations","Shared chart geometry and textual equivalent"],
+      "violations":["Values from different measures or perspectives are combined, normalized or ranked without an explicit domain-approved rule.","A missing, denied or stale value is shown as zero or as a measured result.","Synthetic fixture values appear to belong to a real person.","The shared view reads or writes through an unadmitted API/direct database path, or grants new cross-person access.","Existing domain-specific records or flows are removed or silently changed as part of renderer reuse."],
+      "verification":"Use synthetic inputs to verify value-to-radius geometry, separate measures/perspectives, missing-data states and accessible text output. For any live caller, verify its admitted API and authority contract independently; geometry and UI tests do not prove measure validity, access policy or product approval."
+    }
+  },
+  {
+    "id":"radar-scenario",
+    "scope":"Read a self or permitted-other measure without blending perspectives",
+    "authorId":"work_36",
+    "sourcePaths":["research/coordination-study/lifecycle/radar/owner-request.md","AGENTS.md","docs/architecture/platform-map.md","docs/architecture/data-governance-and-records.md","docs/architecture/authority-model.md","apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md","apps/gurudevi-mobile/docs/Core/GROWTH_MODEL.md","docs/research/edu-audit/teacher-holistic-profile-idea.md","packages/core/src/types/Growth.ts","packages/core/src/logic/schemas/teacher-insights.schema.ts","packages/core/src/flows/classroom/teacherStudentRadarAttunement.flow.ts","packages/core/src/flows/classroom/studentProfileSoulView.flow.ts","packages/core/src/flows/pjc/classroom.teaching_loop.json","packages/core/src/flows/pjc/self.learner_growth.json","packages/self/src/components/TeacherVitalityCard.tsx","packages/self/src/components/ResonancePatternCard.tsx","packages/graphics/src/layouts/radarLayout.ts","packages/graphics/src/charts/RadarSpiderChart.tsx","packages/ui/src/components/InteractiveRadarChart.tsx","packages/graphics/package.json","packages/ui/package.json","packages/core/src/api/studentPotential.ts","apps/gurudevi-mobile/supabase/migrations/20260315000001_student_potential_analysis.sql","apps/sanctuary-api/src/modules/catalog.ts","pnpm-lock.yaml"],
+    "dependsOn":[{"id":"radar-analysis","version":1}],
+    "content":{
+      "kind":"scenario",
+      "preconditions":["A host surface supplies an existing measure and its attribution from an admitted read source, or selects a clearly labeled synthetic example.","For another person's data, the caller has already established authorized read scope; the shared renderer makes no access decision."],
+      "actions":["The user opens the shared read-only experience from an existing host surface.","The user selects one available domain measure and, where available, one separately attributed perspective.","The view receives axis definitions, scale/units and observation metadata from the caller.","The measure has complete values, some missing values, or cannot be loaded because the source is empty, unavailable, denied or failed."],
+      "expected":["For complete input, the polygon maps each value to its correct radial distance on that measure's declared scale; visible labels and a text equivalent identify axes, values, units, attribution and observation time when supplied.","A second measure or perspective is presented distinctly and never combined or compared by default.","Missing values remain visibly missing and are not treated as zero; no fabricated score or polygon is shown.","Empty, denied, stale, unavailable and error results have distinct truthful states; access-denied input reveals no values.","The view performs no writes and does not change the source record, existing route, sharing policy or domain-specific measure.","Synthetic examples are identified as synthetic and cannot be mistaken for a real person's record."]
+    }
+  }
+]

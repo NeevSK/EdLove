@@ -1,0 +1,64 @@
+{
+  "workId": "d64ae56f-5075-4136-b9d9-0ee4a9a02d27",
+  "request": "Prepare to add a shared UI field that calls an API. Determine the applicable API and UI conventions from these records, identify inconsistent guidance, and say which instructions need reconsideration before implementation.",
+  "sources": [
+    {
+      "id": "older-workflow",
+      "file": "sources/older-workflow.txt",
+      "sha256": "fd4804ba7e52adb9daa8debca167ce3d035dde642c6ccbc330c9aeeef5f7a9e0",
+      "origin": ".agents/workflows/code-execution.md",
+      "lineStart": 1,
+      "lineEnd": 59
+    },
+    {
+      "id": "platform-rules",
+      "file": "sources/platform-rules.txt",
+      "sha256": "da4d33bd15d81b461da20b2027eda8769a3c0e5baaae02aacd1919b8925995b9",
+      "origin": "AGENTS.md",
+      "lineStart": 1,
+      "lineEnd": 180
+    }
+  ],
+  "procedure": "Use the supplied project context and available tools to answer the request. Return your result in the required JSON shape.",
+  "outputShape": {
+    "workId": "Copy the workId from work.json",
+    "verdict": "resolved | needs_decision | inconclusive",
+    "findings": [
+      {
+        "claim": "Your conclusion",
+        "sourceIds": [
+          "source ID"
+        ],
+        "confidence": "direct | supported | inferred | unknown"
+      }
+    ],
+    "decisions": [
+      {
+        "relation": "Relationship you establish",
+        "subject": "Entity",
+        "object": "Entity",
+        "authoritySourceIds": [
+          "source ID"
+        ]
+      }
+    ],
+    "reviewRequired": [
+      "Source IDs that need reconsideration"
+    ],
+    "unresolved": [
+      "Material unresolved questions"
+    ],
+    "execution": {
+      "runtimeHookStatus": "observed | configured_only | unavailable | not_applicable",
+      "canaryEvidence": "Path or null",
+      "completedSteps": [],
+      "invalidatedSteps": [],
+      "nextAction": "Next concrete action"
+    },
+    "limitations": [
+      "Limits on this conclusion"
+    ]
+  },
+  "toolActionLimit": 20,
+  "instructions": "Work only with these frozen sources and the provided local tools. Do not read neighboring work folders, manifests, evaluator material or the original repository. Do not modify sources. Write only local state/action files if needed, and return JSON. Null resource measurements are preferable to invented measurements."
+}

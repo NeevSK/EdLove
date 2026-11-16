@@ -88,6 +88,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       suppressHydrationWarning
     >
       <head>
+        <link rel="dns-prefetch" href="https://sanctuary.gurudevi.app" />
+        <link rel="dns-prefetch" href="https://explore.gurudevi.app" />
+        <link rel="dns-prefetch" href="https://gurudevi.app" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

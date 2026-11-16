@@ -1,0 +1,21 @@
+{
+  "stage": "reconciliation",
+  "unresolved": [],
+  "kind": "record",
+  "id": "reconciliation-1",
+  "evidence": [
+    {
+      "sourceId": "intro",
+      "sha256": "a621766affdfd35df6c8054cb0529c99783ea39549660d55b9eb7cd3b2a0995d"
+    },
+    {
+      "sourceId": "covenant",
+      "sha256": "b25d935c9b55818fea4f7a69730db26d0d160182f6d5d681b5fd40aaf0438ed0"
+    },
+    {
+      "sourceId": "covenant-scope",
+      "sha256": "3b0f4b93f0f0602907972082067538d9bbe9e613b973b979b7271eb36065809b"
+    }
+  ],
+  "summary": "Resolved supplied entry-path and authority question: retain active introduction as first read and active Covenant as expanded governing reference. Recommended lifecycle reconciliation is section-level authority annotation/review of intro pillars, not whole-document supersession. Older manifesto is known only through a scoped supersession reference; its unique content and lifecycle remain unassessed. No source edits performed and no runtime hook/canary observed."
+}

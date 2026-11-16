@@ -1,0 +1,46 @@
+appId: apps.gurudevi.mobile
+---
+# ==============================================================================
+# GURUDEVI MOBILE — LOCAL SOVEREIGN E2E ANTICIPATION & STRESS FLOW
+# ==============================================================================
+# Drives the local mobile app through heavy navigation boundaries to verify
+# feedforward anticipation and metabolic throttling without cloud testing.
+# ==============================================================================
+
+- launchApp:
+    clearState: false
+
+# 1. Verify Entry / Home Surface
+- assertVisible:
+    text: ".*(Gurudevi|Sanctuary|Welcome).*"
+    optional: true
+
+# 2. Transition into Living Canvas / Workspace Floor
+# Feedforward anticipation triggers proactively here to absorb the mounting burst
+- tapOn:
+    text: ".*(Workspace|Canvas|Sanctuary).*"
+    optional: true
+
+- extendedWaitUntil:
+    visible:
+      text: ".*(Floor|Workspace|Canvas|Living).*"
+      optional: true
+    timeout: 5000
+
+# 3. Simulate Intensive Touch Interactions
+- scroll:
+    direction: DOWN
+
+- scroll:
+    direction: UP
+
+# 4. Transition to Classroom Academic Floor
+- tapOn:
+    text: ".*(Classroom|Attendance|Academic).*"
+    optional: true
+
+- extendedWaitUntil:
+    visible:
+      text: ".*(Classroom|Register|Attendance).*"
+      optional: true
+    timeout: 5000

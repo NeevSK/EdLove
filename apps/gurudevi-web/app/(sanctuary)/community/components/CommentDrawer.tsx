@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { Drawer } from '@repo/ui/components/web';
 import type { CommunityComment } from '../../../../lib/community/comments-contract';
 import { createCommunityComment, loadCommunityComments } from '../../../../lib/community/comments';
 import type { CommunityPost } from '../../../../lib/community/posts-contract';
@@ -80,77 +81,14 @@ export function CommentDrawer({
   };
 
   return (
-    <div className={styles.drawerBackdrop} role="dialog" aria-modal="true" aria-labelledby="drawer-title">
-      <div className={styles.drawerContainer}>
-        <header className={styles.drawerHeader}>
-          <div>
-            <h3 id="drawer-title" className={styles.drawerTitle}>
-              Thread Discussion
-            </h3>
-            <p className={styles.drawerSubtitle}>
-              In reply to {post.authorName || 'Seeker'}’s reflection
-            </p>
-          </div>
-          <button
-            type="button"
-            className={styles.drawerCloseButton}
-            onClick={onClose}
-            aria-label="Close discussion thread"
-          >
-            ✕
-          </button>
-        </header>
-
-        {/* Original Post Context */}
-        <div className={styles.drawerContextPost}>
-          <div className={styles.authorNameRow}>
-            <strong>{post.authorName || 'Seeker'}</strong>
-            {post.authorRole && <span className={styles.authorRolePill}>{post.authorRole}</span>}
-          </div>
-          <p className={styles.drawerContextText}>{post.content}</p>
-        </div>
-
-        {/* Comments Stream */}
-        <div className={styles.drawerCommentsList}>
-          {isLoading ? (
-            <div className={styles.emptyPostState}>
-              <p>Gathering reflections…</p>
-            </div>
-          ) : comments.length === 0 ? (
-            <div className={styles.emptyPostState}>
-              <span className={styles.emptyIcon}>💭</span>
-              <p>No replies in this thread yet. Open the dialogue!</p>
-            </div>
-          ) : (
-            comments.map((comment) => (
-              <div key={comment.id} className={styles.commentItem}>
-                <div className={styles.commentItemHeader}>
-                  <div className={styles.authorNameRow}>
-                    <span className={styles.authorAvatar} style={{ width: '1.8rem', height: '1.8rem', fontSize: '0.75rem' }}>
-                      {comment.authorName ? comment.authorName.charAt(0).toUpperCase() : 'S'}
-                    </span>
-                    <strong className={styles.authorName} style={{ fontSize: '0.85rem' }}>
-                      {comment.authorName || 'Seeker'}
-                    </strong>
-                  </div>
-                  <button
-                    type="button"
-                    className={`${styles.reactionButton} ${comment.userHasUpvoted ? styles.reactionButtonActive : ''}`}
-                    style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
-                    onClick={() => handleToggleUpvote(comment.id)}
-                  >
-                    <span>▲</span>
-                    <span>{comment.upvoteCount}</span>
-                  </button>
-                </div>
-                <p className={styles.commentContent}>{comment.content}</p>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Comment Composer */}
-        <form onSubmit={handleSubmit} className={styles.drawerReplyForm}>
+    <Drawer
+      open={true}
+      onClose={onClose}
+      title="Thread Discussion"
+      subtitle={`In reply to ${post.authorName || 'Seeker'}’s reflection`}
+      side="right"
+      footer={
+        <form onSubmit={handleSubmit} className={styles.drawerReplyForm} style={{ width: '100%', margin: 0 }}>
           <input
             type="text"
             className={styles.drawerReplyInput}
@@ -168,7 +106,55 @@ export function CommentDrawer({
             {isSubmitting ? 'Posting…' : 'Reply'}
           </button>
         </form>
+      }
+    >
+      {/* Original Post Context */}
+      <div className={styles.drawerContextPost}>
+        <div className={styles.authorNameRow}>
+          <strong>{post.authorName || 'Seeker'}</strong>
+          {post.authorRole && <span className={styles.authorRolePill}>{post.authorRole}</span>}
+        </div>
+        <p className={styles.drawerContextText}>{post.content}</p>
       </div>
-    </div>
+
+      {/* Comments Stream */}
+      <div className={styles.drawerCommentsList}>
+        {isLoading ? (
+          <div className={styles.emptyPostState}>
+            <p>Gathering reflections…</p>
+          </div>
+        ) : comments.length === 0 ? (
+          <div className={styles.emptyPostState}>
+            <span className={styles.emptyIcon}>💭</span>
+            <p>No replies in this thread yet. Open the dialogue!</p>
+          </div>
+        ) : (
+          comments.map((comment) => (
+            <div key={comment.id} className={styles.commentItem}>
+              <div className={styles.commentItemHeader}>
+                <div className={styles.authorNameRow}>
+                  <span className={styles.authorAvatar} style={{ width: '1.8rem', height: '1.8rem', fontSize: '0.75rem' }}>
+                    {comment.authorName ? comment.authorName.charAt(0).toUpperCase() : 'S'}
+                  </span>
+                  <strong className={styles.authorName} style={{ fontSize: '0.85rem' }}>
+                    {comment.authorName || 'Seeker'}
+                  </strong>
+                </div>
+                <button
+                  type="button"
+                  className={`${styles.reactionButton} ${comment.userHasUpvoted ? styles.reactionButtonActive : ''}`}
+                  style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
+                  onClick={() => handleToggleUpvote(comment.id)}
+                >
+                  <span>▲</span>
+                  <span>{comment.upvoteCount}</span>
+                </button>
+              </div>
+              <p className={styles.commentContent}>{comment.content}</p>
+            </div>
+          ))
+        )}
+      </div>
+    </Drawer>
   );
 }

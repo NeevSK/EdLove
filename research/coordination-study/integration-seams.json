@@ -1,0 +1,41 @@
+{
+  "scope": "Read-only integration grounding for persistent developer coordination. No implementation or installation.",
+  "candidate": {
+    "placement": "Developer tooling near packages/platform-mcp, with reusable typed coordination logic separate from the MCP transport. Start with a read-only context projection and one narrowly scoped local procedure before exposing writes or broad command execution.",
+    "classification": "proposal, not an existing interface or approved module boundary",
+    "reason": "The gateway already registers typed platform tools and forwards downstream calls. PJC already projects journeys, scenarios, requirements, bindings and evidence. The prototype remains experimental and is not an authority.",
+    "boundary": "Preserve PJC, domain cards and API catalog as distinct authorities; do not put engineering run state in product journeys or Sanctuary business API. Establish an explicit supported package export or adapter rather than reaching into an undocumented cross-package source path."
+  },
+  "existingEntrypoints": [
+    {"file":"packages/core/src/flows/pjc/catalogLoader.ts:11", "signature":"loadCatalogFile(file: string): unknown", "notes":"Node filesystem loader; validates manifest paths, returns unvalidated input or combined feature catalog. Platform MCP currently has no @repo/core dependency."},
+    {"file":"packages/core/src/flows/pjc/hierarchy.ts:168", "signature":"validateHierarchy(input: unknown)", "notes":"Returns errors and catalog when schema validation succeeds, plus structural validation. This does not prove semantic truth."},
+    {"file":"packages/core/src/flows/pjc/hierarchyQuery.ts:4", "signature":"inspectHierarchyJourney(catalog: PjcHierarchy, id: string)", "notes":"Returns null for missing journey or projection including ownership, scenarios, requirements, bindings and declared evidence. Scenario path explicitly disclaims execution evidence."},
+    {"file":"scripts/pjc.ts:794", "signature":"pjc tree [FEATURE_ID] | list | inspect ID | journey ID | trace ID | check [--file PATH] [--format json|text|markdown]", "notes":"Existing CLI is a reader and checker; inspect script input/output behavior before choosing it as process boundary."},
+    {"file":"packages/platform-mcp/src/index.ts:607", "signature":"private registerPlatformTool<T extends z.ZodObject<any>>(name, description, schema, handler: (args: z.infer<T>) => Promise<any>)", "notes":"MCP_MODE gates registration using gatewayTools and leanTools. A new named tool must be admitted in intended modes or routed as an existing action, with schemas and tests. Do not assume automatic discovery."},
+    {"file":"packages/platform-mcp/src/index.ts:581", "signature":"private registerDownstreamTool(serverName: string, tool: any)", "notes":"Forwards via downstreamClient.client.callTool({name: tool.name, arguments: args}); accepts passthrough input and reports isError. This is transport behavior, not trusted permission or a safe general command executor."},
+    {"file":"packages/platform-mcp/src/services/ScoutService.ts:14", "signature":"async handleSovereignScout(args: { query: string; target?: string })", "notes":"Returns MCP text result. Caught fd, docs and rg failures can collapse into no-traces output. Do not treat it as complete source coverage."},
+    {"file":"apps/sanctuary-api/src/conformance/reconcile.ts:70", "signature":"reconcile(input: ReconcileInput): ConformanceRow[]", "notes":"Pure conformance projection of its specified inputs. Its existing app ownership and dependencies require deliberate boundary design before developer tooling composes its results."},
+    {"file":"packages/platform-mcp/src/services/deviceProfileStore.ts:180", "signature":"initialize(database: DatabaseSync): void", "notes":"Existing domain-specific SQLite pattern uses node:sqlite and transactions; it is not a general change/event store and does not establish suitable concurrency or authorization contracts for coordination."}
+  ],
+  "minimalSlice": [
+    "Resolve one explicit PJC journey ID using load, validate and inspect; return source locators, declared graph edges and missing/failed sources distinctly. Preserve scope and source versions rather than assigning truth to semantic relations.",
+    "Represent philosophy or decision references as separately sourced, scoped links. Connect to existing requirement, scenario, binding and evidence IDs only when explicitly recorded or reviewed. Flag missing links, unobserved evidence and inaccessible sources as unknown; no theorem of semantic completeness follows.",
+    "Pin a typed procedure version and record one local change/run/action/evidence sequence with idempotent action IDs, source dependencies, restart recovery and explicit failure outcomes. This is a proposed contract, not an installed API. Ensure run state is distinct from source truth and owner approval.",
+    "Invoke one allowlisted existing reader through a typed adapter, recording actual result and failure separately from agent interpretation. Avoid arbitrary shell execution and do not treat MCP source text or schema validity as authorization."
+  ],
+  "overlapsAndBlockers": [
+    "DiscoveryService.handleContext({package?: string}) and handleGravity({package?: string}) already exist at DiscoveryService.ts:477,491; inspect their exact behavior before naming another context feature.",
+    "Gateway registerPlatformTool uses generic zod object validation while sovereign_discovery params are z.record(z.string(), z.any()); action-specific validation and mode registration need explicit design.",
+    "No authenticated human decision resolution, trusted append-only store, concurrency guarantee, runtime hook interception, or measured discovery recall is established by the study prototype.",
+    "Source locators and PJC generic links do not establish authoritative decision acceptance, scoped supersession, complete philosophy-to-code paths, actual test execution, or absence of unrecorded relationships.",
+    "Agent instruction and hook configurations in .agents and .claude are runtime-dependent; synthetic canaries showed specific bypasses, and automatic interception in this session remains unobserved.",
+    "Current access and build layering for PJC filesystem loader and API conformance readers is unresolved. No new dependency or cross-package private import is assumed approved."
+  ],
+  "verificationForFutureImplementation": [
+    "Run focused tests for the selected package and behavioral boundaries, including unknown sources, missing IDs, conflicting action retry, interrupted recovery, changed dependencies, execution errors, and concurrent writers where claimed.",
+    "pnpm --filter @repo/platform-mcp check-types; pnpm --filter @repo/platform-mcp test; pnpm --filter @repo/platform-mcp build; applicable PJC CLI and conformance tests if touched.",
+    "pnpm check:anti-slop and relevant architecture audits; inspect raw git diff. Existing full-tree anti-slop failure in the study is not evidence for or against future changes.",
+    "Validate actual host integration with harmless runtime canaries before making interception claims. The root toolchain check enforces .nvmrc Node minor, packageManager pnpm version and Doppler; no credentials are recorded here."
+  ],
+  "limits": ["No new API signatures are asserted for proposed functionality.", "This is bounded source inspection, not a complete repository or available-tool survey.", "No installation, implementation, production rollout or runtime validation was performed.", "The how and architect skills call for delegated design exploration; the parent explicitly prohibited child agents, so that panel was not performed."]
+}

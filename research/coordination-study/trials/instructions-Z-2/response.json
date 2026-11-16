@@ -1,0 +1,101 @@
+{
+  "workId": "127c5897-fd9b-4616-81fa-51296dbbc9a0",
+  "verdict": "needs_decision",
+  "findings": [
+    {
+      "claim": "For a reusable field, the current platform guidance points to owned native and web components with matching names and props, in their respective platform packages; app-local hand-built shared UI is not the prescribed seam.",
+      "sourceIds": [
+        "platform-rules"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The UI field should present input and state while API access belongs in shared platform/domain logic or a declarative hook; the supplied rules identify @repo/core as the platform spine for API clients and contracts, and prohibit clients from adding direct database paths until the v1 API covers them.",
+      "sourceIds": [
+        "platform-rules"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "Where a new API capability is needed, current guidance calls for a domain/subdomain capability and card, with the native oRPC v2 surface targeting /api/v1; it explicitly freezes direct client .from(), .rpc(), and realtime call sites.",
+      "sourceIds": [
+        "platform-rules"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The older workflow's tRPC/API-route framing, Zustand-as-source-of-truth prescription, fixed palette and motion rules conflict with the newer API, domain, and world-recipe conventions and need reconsideration before implementation.",
+      "sourceIds": [
+        "older-workflow",
+        "platform-rules"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The old workflow requires user approval of a plan before any implementation code, while the newer supplied rules require architecture discovery and a minimal additive seam but do not state that blanket approval gate; the older approval requirement should be reconciled with current authorization practice.",
+      "sourceIds": [
+        "older-workflow",
+        "platform-rules"
+      ],
+      "confidence": "supported"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "paired platform implementations with matching public props",
+      "subject": "reusable field UI",
+      "object": "@repo/ui/components/native and @repo/ui/components/web",
+      "authoritySourceIds": [
+        "platform-rules"
+      ]
+    },
+    {
+      "relation": "owns shared API clients and contracts",
+      "subject": "@repo/core",
+      "object": "shared API access",
+      "authoritySourceIds": [
+        "platform-rules"
+      ]
+    },
+    {
+      "relation": "targets",
+      "subject": "native oRPC v2 commands and queries",
+      "object": "/api/v1",
+      "authoritySourceIds": [
+        "platform-rules"
+      ]
+    },
+    {
+      "relation": "must be reconsidered before implementation",
+      "subject": "older-workflow",
+      "object": "tRPC, fixed visual prescriptions, and blanket approval gate",
+      "authoritySourceIds": [
+        "older-workflow",
+        "platform-rules"
+      ]
+    }
+  ],
+  "reviewRequired": [
+    "older-workflow"
+  ],
+  "unresolved": [
+    "The requested field's domain, subdomain, behavior, and target platform or platforms are unspecified, so the owning capability and exact API contract cannot be identified from these records.",
+    "The referenced architecture documents, package contracts, and existing field implementations were not included in the frozen sources and cannot be verified here."
+  ],
+  "execution": {
+    "runtimeHookStatus": "not_applicable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidatedSteps": [],
+    "nextAction": "Identify the field's owning domain and target platforms, then inspect the referenced API/domain and UI component contracts before drafting an implementation plan."
+  },
+  "limitations": [
+    "This conclusion uses only the two supplied frozen records; it does not verify live repository files, endpoint availability, or current runtime behavior.",
+    "The controller confirms source hashes and ordered stage records, not the truth of the interpretation."
+  ]
+}

@@ -1,0 +1,440 @@
+{
+  "observedAt": "2026-11-11T10:23:47.743Z",
+  "rows": [
+    {
+      "trialId": "documents-X-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "documents-X-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "documents-Y-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "documents-Y-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "documents-Z-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "documents-Z-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "capabilities-X-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "capabilities-X-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "capabilities-Y-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "capabilities-Y-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "capabilities-Z-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "capabilities-Z-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "instructions-X-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "instructions-X-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "instructions-Y-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "instructions-Y-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "instructions-Z-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "instructions-Z-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "hooks-X-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "hooks-X-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "hooks-Y-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "hooks-Y-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "hooks-Z-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "hooks-Z-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "resume-X-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "resume-X-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": false,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "resume-Y-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": false,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "resume-Y-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "resume-Z-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "resume-Z-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "authority-X-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "authority-X-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "authority-Y-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "authority-Y-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "authority-Z-1",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    },
+    {
+      "trialId": "authority-Z-2",
+      "matchedCasePacket": true,
+      "sourcesIntact": true,
+      "controllerIntact": true,
+      "outputValid": true,
+      "hasRawFinal": true,
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "withinToolLimit": true
+    }
+  ],
+  "caseModels": [
+    {
+      "caseId": "documents",
+      "models": [
+        "gpt-6.1-sol@medium"
+      ]
+    },
+    {
+      "caseId": "capabilities",
+      "models": [
+        "gpt-6.1-sol@medium"
+      ]
+    },
+    {
+      "caseId": "instructions",
+      "models": [
+        "gpt-6-luna@medium"
+      ]
+    },
+    {
+      "caseId": "hooks",
+      "models": [
+        "gpt-6-luna@medium"
+      ]
+    },
+    {
+      "caseId": "resume",
+      "models": [
+        "gpt-6-luna@medium"
+      ]
+    },
+    {
+      "caseId": "authority",
+      "models": [
+        "gpt-6-luna@medium"
+      ]
+    }
+  ],
+  "guarantees": "File integrity, matching case inputs, observed model settings and model-visible invocation counts only. Not semantic truth, sandbox isolation or measured discovery recall."
+}

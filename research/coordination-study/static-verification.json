@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "scope": [
+    "docs/architecture/2026-11-11-agent-coordination-study.md",
+    "research/coordination-study/"
+  ],
+  "checks": [
+    {
+      "name": "primary-report-local-links",
+      "command": "Node inline script: extract Markdown ](…) links from docs/architecture/2026-11-11-agent-coordination-study.md; ignore external schemes/anchors; resolve local targets relative to report directory.",
+      "localLinks": 22,
+      "resolved": 22,
+      "unresolved": []
+    },
+    {
+      "name": "study-json-artifacts",
+      "command": "Node inline script: recursively enumerate research/coordination-study/**/*.json; exclude transient partial writes by filename patterns *.partial.json, *.part.json, *.tmp.json, *.incomplete.json and delimited partial/tmp/incomplete tokens; JSON.parse all remaining files.",
+      "jsonFiles": 260,
+      "transientNameExclusions": 0,
+      "parseSuccesses": 259,
+      "parseFailures": [
+        {
+          "path": "research/coordination-study/trials/resume-Y-1/work/response.json",
+          "error": "Unexpected non-whitespace character after JSON at position 2582 (line 77 column 2); the preserved file ends with a literal backslash-n after the JSON object."
+        }
+      ],
+      "exceptions": [
+        "This is an original candidate artifact preserved as negative evidence; it was not repaired or excluded from parsing."
+      ]
+    },
+    {
+      "name": "finding-source-references",
+      "command": "Node inline script: load knowledge-findings.json and procedure-findings.json, resolve each declared sources[*].path against C:/x, check line/startLine/endLine against physical line counts, and verify finding source IDs exist.",
+      "sourceLocators": 54,
+      "missingPaths": 0,
+      "outOfBoundsLines": 0,
+      "unknownFindingSourceIds": 0
+    },
+    {
+      "name": "experiment-node-syntax",
+      "command": "PowerShell: Get-ChildItem research/coordination-study/experiment -Filter *.mjs -File; node --check <each FullName>.",
+      "modules": 10,
+      "passed": 10,
+      "failed": 0
+    },
+    {
+      "name": "resume-Y-1-raw-final-and-canonical-response",
+      "command": "Node: JSON.parse raw-final.txt and response.json; compare parsed values with JSON.stringify; separately JSON.parse work/response.json and inspect its ending.",
+      "rawFinalPath": "research/coordination-study/trials/resume-Y-1/raw-final.txt",
+      "canonicalResponsePath": "research/coordination-study/trials/resume-Y-1/response.json",
+      "rawFinalParses": true,
+      "canonicalResponseParses": true,
+      "parsedValuesEqual": true,
+      "originalWorkResponsePath": "research/coordination-study/trials/resume-Y-1/work/response.json",
+      "originalWorkResponseParses": false,
+      "difference": "The preserved raw final and canonical response parse to the same JSON object; the original local work response has an extra literal backslash-n after its object and fails JSON parsing. The original artifact remains unchanged."
+    },
+    {
+      "name": "scoped-new-file-whitespace",
+      "command": "PowerShell: recursively scan report and research/coordination-study text files with extensions .md, .json, .mjs, .tsv, .txt using Select-String -Pattern '[ \\t]+$'.",
+      "filesScanned": 455,
+      "trailingWhitespaceLines": 564,
+      "examples": [
+        "research/coordination-study/trials/capabilities-X-1/work/sources/capabilities.txt:8",
+        "research/coordination-study/trials/capabilities-X-1/work/sources/capabilities.txt:69",
+        "research/coordination-study/trials/capabilities-X-1/work/sources/capabilities.txt:71",
+        "research/coordination-study/trials/capabilities-X-1/work/sources/capabilities.txt:80",
+        "research/coordination-study/trials/capabilities-X-1/work/sources/foundation-policy.txt:10"
+      ],
+      "exceptions": [
+        "Whitespace in frozen extracts and raw files is preserved; no source artifacts were rewritten. Examples are not the full set."
+      ]
+    },
+    {
+      "name": "git-diff-check",
+      "command": "git diff --check -- docs/architecture/2026-11-11-agent-coordination-study.md research/coordination-study",
+      "diagnostics": 0,
+      "exceptions": [
+        "Git status reports both scoped paths as untracked, so git diff --check does not inspect their contents; the explicit scoped whitespace scan above does."
+      ]
+    }
+  ],
+  "limitations": [
+    "Checks are mechanical only; no study findings or trial semantics were evaluated.",
+    "Only static-verification.json was written. Files under test, including the malformed candidate artifact, were not changed."
+  ]
+}

@@ -1,18 +1,7 @@
 import { parseInstitutionalQR } from '@repo/scanner-kit';
-import {
-  Badge,
-  BadgeText,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-  VStack,
-} from '@repo/ui/primitives';
+import { Badge, Button, Surface, Text } from '@repo/ui/components/native';
 import { useState } from 'react';
+import { Pressable, ScrollView, View } from 'react-native';
 
 interface MockDurableAsset {
   id: string;
@@ -106,160 +95,157 @@ export default function MobileInventoryRoute() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-phase-canvas">
-      <VStack className="p-4 gap-4">
-        {/* Header */}
-        <VStack className="gap-1">
-          <HStack className="items-center justify-between">
-            <Heading size="xl" className="text-phase-world font-bold">
-              Materials & Asset Ledgers
-            </Heading>
-            <Badge className="bg-purple-500/10 border border-purple-500/20 rounded-full px-2.5 py-1">
-              <BadgeText className="text-purple-600 text-xs font-semibold">ERP Substrate</BadgeText>
-            </Badge>
-          </HStack>
-          <Text className="text-phase-muted text-sm">
-            Statutory Board of Survey equipment and continuous consumable stock.
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 16 }}>
+      {/* Header */}
+      <View style={{ gap: 4 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text kind="title" style={{ fontSize: 22, fontWeight: '700' }}>
+            Materials & Asset Ledgers
           </Text>
-        </VStack>
+          <Badge label="ERP Substrate" tone="lamp" />
+        </View>
+        <Text kind="body" tone="soft" style={{ fontSize: 13 }}>
+          Statutory Board of Survey equipment and continuous consumable stock.
+        </Text>
+      </View>
 
-        {/* Tab Switcher */}
-        <HStack className="bg-phase-surface/80 p-1 rounded-xl border border-phase-border/40">
-          <Pressable
-            className={`flex-1 py-2 rounded-lg items-center ${
-              activeTab === 'durable' ? 'bg-phase-canvas shadow-sm' : ''
-            }`}
-            onPress={() => setActiveTab('durable')}
+      {/* Tab Switcher */}
+      <Surface tone="raised" style={{ flexDirection: 'row', padding: 4, borderRadius: 12 }}>
+        <Pressable
+          style={{
+            flex: 1,
+            paddingVertical: 8,
+            borderRadius: 8,
+            alignItems: 'center',
+            backgroundColor: activeTab === 'durable' ? 'rgba(0,0,0,0.06)' : 'transparent',
+          }}
+          onPress={() => setActiveTab('durable')}
+        >
+          <Text
+            kind="body"
+            style={{ fontSize: 13, fontWeight: '600' }}
+            tone={activeTab === 'durable' ? 'ink' : 'soft'}
           >
-            <Text
-              className={`text-sm font-semibold ${
-                activeTab === 'durable' ? 'text-phase-world' : 'text-phase-muted'
-              }`}
-            >
-              Durable Equipment
-            </Text>
-          </Pressable>
-          <Pressable
-            className={`flex-1 py-2 rounded-lg items-center ${
-              activeTab === 'consumable' ? 'bg-phase-canvas shadow-sm' : ''
-            }`}
-            onPress={() => setActiveTab('consumable')}
+            Durable Equipment
+          </Text>
+        </Pressable>
+        <Pressable
+          style={{
+            flex: 1,
+            paddingVertical: 8,
+            borderRadius: 8,
+            alignItems: 'center',
+            backgroundColor: activeTab === 'consumable' ? 'rgba(0,0,0,0.06)' : 'transparent',
+          }}
+          onPress={() => setActiveTab('consumable')}
+        >
+          <Text
+            kind="body"
+            style={{ fontSize: 13, fontWeight: '600' }}
+            tone={activeTab === 'consumable' ? 'ink' : 'soft'}
           >
-            <Text
-              className={`text-sm font-semibold ${
-                activeTab === 'consumable' ? 'text-phase-world' : 'text-phase-muted'
-              }`}
-            >
-              Consumable Stock
-            </Text>
-          </Pressable>
-        </HStack>
+            Consumable Stock
+          </Text>
+        </Pressable>
+      </Surface>
 
-        {/* QR Scanner Action Bar */}
-        <HStack className="bg-phase-surface p-3 rounded-xl border border-phase-border/40 items-center justify-between">
-          <VStack className="flex-1 mr-2">
-            <Text className="text-xs text-phase-muted">Fast Asset Barcode Lookup</Text>
-            <Text className="text-sm font-semibold text-phase-world">
-              {scannedFeedback || 'Ready to scan QR / barcode'}
-            </Text>
-          </VStack>
-          <Button
-            className="bg-phase-primary px-3 py-1.5 rounded-lg h-9"
-            onPress={handleSimulateQRScan}
-          >
-            <ButtonText className="text-white text-xs font-bold">Scan Tag</ButtonText>
-          </Button>
-        </HStack>
+      {/* QR Scanner Action Bar */}
+      <Surface tone="raised" style={{ padding: 12, borderRadius: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={{ flex: 1, marginRight: 8, gap: 2 }}>
+          <Text kind="caption" tone="soft" style={{ fontSize: 11 }}>
+            Fast Asset Barcode Lookup
+          </Text>
+          <Text kind="body" style={{ fontSize: 13, fontWeight: '600' }}>
+            {scannedFeedback || 'Ready to scan QR / barcode'}
+          </Text>
+        </View>
+        <Button
+          size="sm"
+          variant="primary"
+          label="Scan Tag"
+          onPress={handleSimulateQRScan}
+        />
+      </Surface>
 
-        {/* Tab Content */}
-        {activeTab === 'durable' ? (
-          <VStack className="gap-3">
-            <Heading size="sm" className="text-phase-world font-semibold">
-              Tracked Equipment & Board of Survey Audit
-            </Heading>
-            {durables.map((item) => (
-              <View
-                key={item.id}
-                className="bg-phase-surface border border-phase-border/40 rounded-2xl p-4"
-              >
-                <VStack className="gap-2">
-                  <HStack className="items-center justify-between">
-                    <Heading size="sm" className="text-phase-world font-bold flex-1 mr-2">
-                      {item.name}
-                    </Heading>
-                    <Badge
-                      className={`rounded px-2 py-0.5 ${
-                        item.condition === 'serviceable' ? 'bg-emerald-500/10' : 'bg-amber-500/10'
-                      }`}
-                    >
-                      <BadgeText
-                        className={`text-xs font-medium ${
-                          item.condition === 'serviceable' ? 'text-emerald-600' : 'text-amber-600'
-                        }`}
-                      >
-                        {item.condition}
-                      </BadgeText>
-                    </Badge>
-                  </HStack>
-                  <Text className="text-xs text-phase-muted">📍 Location: {item.location}</Text>
-                  <Text className="text-xs text-phase-muted">👤 Custodian: {item.custodian}</Text>
-                  <HStack className="justify-between items-center pt-2 border-t border-phase-border/30">
-                    <Text className="text-xs text-phase-muted">{item.lastSurvey}</Text>
-                    <Badge className="bg-purple-500/10 rounded px-2 py-0.5">
-                      <BadgeText className="text-purple-600 text-xs">Form 47 Verified</BadgeText>
-                    </Badge>
-                  </HStack>
-                </VStack>
-              </View>
-            ))}
-          </VStack>
-        ) : (
-          <VStack className="gap-3">
-            <Heading size="sm" className="text-phase-world font-semibold">
-              Operational Consumables & Reorder Alerts
-            </Heading>
-            {consumables.map((item) => {
-              const isLow = item.quantity <= item.reorderLevel;
-              return (
-                <View
-                  key={item.id}
-                  className="bg-phase-surface border border-phase-border/40 rounded-2xl p-4"
-                >
-                  <VStack className="gap-2">
-                    <HStack className="items-center justify-between">
-                      <Heading size="sm" className="text-phase-world font-bold flex-1 mr-2">
-                        {item.name}
-                      </Heading>
-                      <Badge
-                        className={`rounded px-2 py-0.5 ${
-                          isLow ? 'bg-rose-500/10' : 'bg-emerald-500/10'
-                        }`}
-                      >
-                        <BadgeText
-                          className={`text-xs font-medium ${
-                            isLow ? 'text-rose-600' : 'text-emerald-600'
-                          }`}
-                        >
-                          {isLow ? 'Low Stock' : 'Adequate'}
-                        </BadgeText>
-                      </Badge>
-                    </HStack>
-                    <HStack className="items-center justify-between mt-1">
-                      <Text className="text-base font-bold text-phase-world">
-                        {item.quantity} {item.unit}
-                      </Text>
-                      <Text className="text-xs text-phase-muted">
-                        Reorder Min: {item.reorderLevel} {item.unit}
-                      </Text>
-                    </HStack>
-                    <Text className="text-xs text-phase-muted">📍 {item.location}</Text>
-                  </VStack>
+      {/* Tab Content */}
+      {activeTab === 'durable' ? (
+        <View style={{ gap: 12 }}>
+          <Text kind="title" style={{ fontSize: 15, fontWeight: '600' }}>
+            Tracked Equipment & Board of Survey Audit
+          </Text>
+          {durables.map((item) => (
+            <Surface key={item.id} tone="raised" style={{ padding: 16, borderRadius: 16 }}>
+              <View style={{ gap: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Text kind="title" style={{ fontSize: 14, fontWeight: '700', flex: 1, marginRight: 8 }}>
+                    {item.name}
+                  </Text>
+                  <Badge
+                    label={item.condition}
+                    tone={item.condition === 'serviceable' ? 'success' : 'lamp'}
+                  />
                 </View>
-              );
-            })}
-          </VStack>
-        )}
-      </VStack>
+                <Text kind="caption" tone="soft" style={{ fontSize: 12 }}>
+                  📍 Location: {item.location}
+                </Text>
+                <Text kind="caption" tone="soft" style={{ fontSize: 12 }}>
+                  👤 Custodian: {item.custodian}
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingTop: 8,
+                    borderTopWidth: 1,
+                    borderTopColor: 'rgba(0,0,0,0.06)',
+                  }}
+                >
+                  <Text kind="caption" tone="soft" style={{ fontSize: 11 }}>
+                    {item.lastSurvey}
+                  </Text>
+                  <Badge label="Form 47 Verified" tone="neutral" />
+                </View>
+              </View>
+            </Surface>
+          ))}
+        </View>
+      ) : (
+        <View style={{ gap: 12 }}>
+          <Text kind="title" style={{ fontSize: 15, fontWeight: '600' }}>
+            Operational Consumables & Reorder Alerts
+          </Text>
+          {consumables.map((item) => {
+            const isLow = item.quantity <= item.reorderLevel;
+            return (
+              <Surface key={item.id} tone="raised" style={{ padding: 16, borderRadius: 16 }}>
+                <View style={{ gap: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Text kind="title" style={{ fontSize: 14, fontWeight: '700', flex: 1, marginRight: 8 }}>
+                      {item.name}
+                    </Text>
+                    <Badge
+                      label={isLow ? 'Low Stock' : 'Adequate'}
+                      tone={isLow ? 'danger' : 'success'}
+                    />
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
+                    <Text kind="title" style={{ fontSize: 16, fontWeight: '700' }}>
+                      {item.quantity} {item.unit}
+                    </Text>
+                    <Text kind="caption" tone="soft" style={{ fontSize: 12 }}>
+                      Reorder Min: {item.reorderLevel} {item.unit}
+                    </Text>
+                  </View>
+                  <Text kind="caption" tone="soft" style={{ fontSize: 12 }}>
+                    📍 {item.location}
+                  </Text>
+                </View>
+              </Surface>
+            );
+          })}
+        </View>
+      )}
     </ScrollView>
   );
 }

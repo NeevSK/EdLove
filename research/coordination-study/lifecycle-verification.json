@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-11T22:55:28+05:30",
+  "scope": {
+    "acceptance": "research/coordination-study/lifecycle-acceptance.json",
+    "implementation": [
+      "packages/platform-mcp/src/lifecycle/model.ts",
+      "packages/platform-mcp/src/lifecycle/evaluate.ts",
+      "packages/platform-mcp/src/lifecycle/runtime.ts",
+      "packages/platform-mcp/src/lifecycle/store.ts",
+      "packages/platform-mcp/src/services/CoordinationService.ts",
+      "packages/platform-mcp/src/cli/coordination.ts"
+    ],
+    "method": "Independent source review, focused existing tests, and scratch adversarial/runtime cases; no production files changed."
+  },
+  "acceptedClaims": [
+    {
+      "claim": "Strict lifecycle request/artifact schemas reject unknown fields and distinguish artifact kinds, axes, statuses, evidence and tool decisions structurally.",
+      "evidence": [
+        "packages/platform-mcp/src/lifecycle/model.ts:5-50",
+        "packages/platform-mcp/src/lifecycle/evaluate.test.ts:74-87"
+      ]
+    },
+    {
+      "claim": "Source snapshots, procedure revision checks and dependency propagation preserve stale history and block affected readiness; refreshed source changes do not rewrite prior artifact snapshots.",
+      "evidence": [
+        "packages/platform-mcp/src/lifecycle/evaluate.ts:19-31",
+        "packages/platform-mcp/src/lifecycle/evaluate.ts:64-68",
+        "packages/platform-mcp/src/lifecycle/evaluate.test.ts:56-77"
+      ]
+    },
+    {
+      "claim": "Local review prevents same actor ID from submitting and accepting one task; evaluator explicitly disclaims identity/authentication of local role claims.",
+      "evidence": [
+        "packages/platform-mcp/src/lifecycle/evaluate.ts:102",
+        "packages/platform-mcp/src/lifecycle/evaluate.ts:44",
+        "packages/platform-mcp/src/lifecycle/runtime.ts:153"
+      ]
+    },
+    {
+      "claim": "SQLite revision CAS, unique operation IDs, transactional state+operation commits, and normalized Zod key order provide tested local concurrency/retry foundations.",
+      "evidence": [
+        "packages/platform-mcp/src/lifecycle/store.ts:31-46",
+        "packages/platform-mcp/src/lifecycle/store.ts:84-129",
+        "packages/platform-mcp/src/lifecycle/store.test.ts:60-105",
+        "research/coordination-study/lifecycle/canonical.mts"
+      ]
+    },
+    {
+      "claim": "Tool retry after an interrupted execution does not blindly rerun: begin state is durable and exact retry returns the existing pending operation.",
+      "evidence": [
+        "packages/platform-mcp/src/lifecycle/runtime.ts:44-58",
+        "packages/platform-mcp/src/lifecycle/runtime.ts:93-113",
+        "research/coordination-study/lifecycle/runtime-recovery.mts"
+      ]
+    },
+    {
+      "claim": "The current graph can execute a repository checker through its declared begin/execute/finish nodes and persist the observed result.",
+      "evidence": [
+        "packages/platform-mcp/src/lifecycle/runtime.ts:93-129",
+        "research/coordination-study/lifecycle/real-check.mts"
+      ]
+    },
+    {
+      "claim": "The final product v2 handoff and UX proposal have explicit lineage; UX consumes analysis@2 and all three reviewed product artifacts@2. The UX schema is complete at a structural level (2 screens, 6 axes, 12 transitions, 4 journeys, 3 motion requirements, 5 accessibility requirements, 4 combinations).",
+      "evidence": [
+        "research/coordination-study/lifecycle/chat/final-state.json",
+        "research/coordination-study/lifecycle/chat/ux-proposal.json",
+        "research/coordination-study/lifecycle/chat/product-review-v2.json"
+      ]
+    },
+    {
+      "claim": "Lifecycle CLI and MCP share persisted lifecycle state through a real handoff path, execute an allowlisted PJC check, and retrieve the accepted product outputs for the UX packet; compiled gateway route reproduced successfully.",
+      "evidence": [
+        "packages/platform-mcp/src/lifecycle/gateway.integration.test.ts",
+        "compiled focused test: COORDINATION_TEST_COMPILED=1; pnpm --filter @repo/platform-mcp exec vitest run src/lifecycle"
+      ]
+    },
+    {
+      "claim": "Cross-lifecycle impact identifies an affected lifecycle through shared declared source paths and preserves a declared independent branch.",
+      "evidence": [
+        "packages/platform-mcp/src/lifecycle/impact.test.ts"
+      ]
+    }
+  ],
+  "rejectedOrLimitedClaims": [
+    {
+      "claim": "The lifecycle is end-to-end verified through both the public CLI and MCP with durable restart/reconciliation.",
+      "status": "gateway-handoff-verified-only",
+      "evidence": "Lifecycle-specific gateway.integration.test.ts now drives CLI and MCP against one SQLite store, executes a real PJC check, publishes/submits/reviews product artifacts, retrieves the UX context packet and history, and rejects a forged run result. Source-mode package suite evidence: reports/run-packages_platform-mcp-test.log (87 tests/16 files, before concurrent simulator additions). Reproduced compiled mode with COORDINATION_TEST_COMPILED=1: focused lifecycle suite passed 32 tests/5 files. Broader production/restart/security claims remain limited."
+    },
+    {
+      "claim": "An interrupted tool invocation reaches an explicit unknown/interrupted state and can be reconciled.",
+      "status": "rejected",
+      "evidence": "After an injected runner interruption, identical retry returned duplicate=true and left the run pending at revision 4; runner call count remained 1. This avoids a possibly unsafe repeat but leaves no explicit interrupted state or recovery action. See `research/coordination-study/lifecycle/runtime-recovery.mts`."
+    },
+    {
+      "claim": "A successful checker command proves checker findings are clear or coverage is complete.",
+      "status": "rejected",
+      "evidence": "Actual graph run of pjc-check returned process ok=true, exitCode=0, errors=0, gaps=428; overall lifecycle stayed blocked. `matchingRun` gates on process result fields and input refs, not checker-specific findings or coverage (`packages/platform-mcp/src/lifecycle/evaluate.ts:10`). The structured stdout remains available for human review."
+    },
+    {
+      "claim": "Local actor role strings establish authenticated role authority or reviewer independence across real people.",
+      "status": "rejected-by-design-limit",
+      "evidence": "Actor IDs and role lists are local caller-provided claims. Same-ID self-review is blocked, but a second local actor ID is not proof of a distinct authenticated person. Runtime states this limitation (`packages/platform-mcp/src/lifecycle/runtime.ts:153`)."
+    },
+    {
+      "claim": "Manual-evidence and source authority strings establish semantic correctness or owner authorization.",
+      "status": "structure-only",
+      "evidence": "Current checks require typed supported manual-evidence, author match, source path and task input dependencies, and prohibit manual waiver of registered checks (`packages/platform-mcp/src/lifecycle/evaluate.ts:12`, `:91`, `:103`). They cannot authenticate the author, validate the truth of the claim, or make free-text authority references authoritative; semantic/owner review remains required."
+    },
+    {
+      "claim": "Plan refinement/replanning cannot erase previously declared obligations.",
+      "status": "verified-after-correction",
+      "evidence": "A scratch case refined product with `security-proof`, superseded analysis v1 with v2, and replanned; task and parent dependency edge remained. `research/coordination-study/lifecycle/adversarial.mts`; merge logic at `packages/platform-mcp/src/lifecycle/evaluate.ts:99`. It does not prove semantic completeness of the original plan."
+    },
+    {
+      "claim": "Typed experience references are fully cross-validated.",
+      "status": "partially-accepted",
+      "evidence": "Current evaluator rejects unresolved transition motion refs and invalid axis/state combinations (`packages/platform-mcp/src/lifecycle/evaluate.ts:74-79`); the adversarial scratch assertion confirmed unresolved motion is rejected. This is structural reference validation, not evidence that screen/state/error/recovery/motion design is semantically adequate."
+    },
+    {
+      "claim": "The serialized revision-24 final-state projection is current against all source files.",
+      "status": "rejected-current-status-confirms-stale",
+      "evidence": "status-current.json recomputed live status without mutation at revision 24: readiness blocked, 33 blockers, changed_source:AGENTS.md, procedure_changed=true, and staleArtifacts include analysis@2, requirement@2, invariant@2, scenario@2, and experience@1 in addition to preserved v1 history. Refresh is only for authorized reconsideration/rebase."
+    },
+    {
+      "claim": "The UX output is an accepted independent review or proves UX semantics.",
+      "status": "not-established",
+      "evidence": "UX artifact chat-experience@1 is submitted by local actor independent_verifier with tool decision feature-behavior=checker-gap. No UX review event exists. Its typed structure and handoff dependencies are verified; usability, accessibility, motion and recovery semantics remain unvalidated."
+    },
+    {
+      "claim": "External PJC metadata is resolved automatically by the correction decision.",
+      "status": "rejected",
+      "evidence": "Stored externalRefs still uses feature:ai.assistant; current source declares feature:ai.assistant_companion. The correction decision labels the old ref unvalidated and notes no automatic reconciliation."
+    },
+    {
+      "claim": "The declared impact test discovers all semantic cross-lifecycle dependencies.",
+      "status": "limited-to-declarations",
+      "evidence": "impact.test.ts verifies invalidation for declared shared source paths and dependencies, while preserving an independent declared branch. It cannot discover omitted/undeclared dependencies."
+    },
+    {
+      "claim": "A successful package test/build/typecheck run and PJC exit 0 establish production or product readiness.",
+      "status": "rejected",
+      "evidence": "G1 package report shows 87 tests/16 files before concurrent simulator additions; current compiled focused lifecycle suite is 32/5. Latest build and check-types reports are green. Product PJC is exit 0 with 428 gaps; final snapshot has 34 blockers and readiness=blocked. These checks do not establish real UI/API/storage behavior or policy authorization."
+    }
+  ],
+  "verificationRuns": [
+    {
+      "command": "pnpm --filter @repo/platform-mcp exec vitest run src/lifecycle/evaluate.test.ts src/lifecycle/store.test.ts",
+      "result": "pass: 2 files, 17 tests"
+    },
+    {
+      "command": "pnpm --filter @repo/platform-mcp exec vitest run src/coordinationGateway.integration.test.ts",
+      "result": "pass: 1 test; legacy coordination gateway path only, not lifecycle MCP interoperability"
+    },
+    {
+      "command": "pnpm --filter @repo/platform-mcp exec tsx ../../research/coordination-study/lifecycle/adversarial.mts",
+      "result": "pass: failed run rejected for passed verification; unresolved motion ref rejected; refined obligation preserved on replan"
+    },
+    {
+      "command": "pnpm --filter @repo/platform-mcp exec tsx ../../research/coordination-study/lifecycle/runtime-recovery.mts",
+      "result": "pass: runner invoked once; interrupted invocation remains pending; exact retry is duplicate and does not rerun"
+    },
+    {
+      "command": "pnpm --filter @repo/platform-mcp exec tsx ../../research/coordination-study/lifecycle/real-check.mts",
+      "result": "pass: actual PJC runner traversed recover/begin_tool/execute_tool/finish_tool/project; ok=true, exitCode=0, errors=0, gaps=428; lifecycle blocked"
+    },
+    {
+      "command": "pnpm --filter @repo/platform-mcp exec tsx ../../research/coordination-study/lifecycle/canonical.mts",
+      "result": "pass: equivalent reordered request keys parse to identical serialized payload"
+    },
+    {
+      "command": "COORDINATION_TEST_COMPILED=1; pnpm --filter @repo/platform-mcp exec vitest run src/lifecycle",
+      "result": "pass: 5 files, 32 tests; includes compiled lifecycle CLI↔MCP gateway test and real PJC invocation"
+    },
+    {
+      "command": "reports/run-packages_platform-mcp-test.log and reports/run-packages_platform-mcp-test-report.txt",
+      "result": "historical G1 pass: 16 files, 87 tests; occurred before concurrent flow simulator additions, so not asserted as current full-suite evidence"
+    },
+    {
+      "command": "reports/run-packages_platform-mcp-build-report.txt; reports/run-packages_platform-mcp-check-types-report.txt",
+      "result": "latest reports status SUCCESS with zero errors/warnings, at 22:49 IST"
+    },
+    {
+      "command": "research/coordination-study/lifecycle/anti-slop.txt and lifecycle/gate-diagnostics.json",
+      "result": "red: global 48 errors/1482 warnings; 0 own errors, 10 own warnings; no claim that the broader gate passed"
+    }
+  ],
+  "attentionFlags": [
+    "Interrupted tool execution is durably pending with no resume/reconcile action; keep it visibly blocked and do not claim restart recovery is complete.",
+    "Tool process success is not checker policy success or coverage. Preserve and surface checker stdout/gaps for independent review.",
+    "The root coordination flow is local integrity only; local SQLite and claimed actor roles are not authentication or tamper resistance.",
+    "Terra semantic review of an end-to-end vertical slice, multi-axis user behavior, exact upstream handoff, and obligation completeness has not been performed by this verifier.",
+    "Read-only research/coordination-study/lifecycle/chat/status-current.json has already recomputed freshness: revision 24 is blocked, changed_source:AGENTS.md and procedure_changed are present, and analysis@2, product v2 outputs and UX@1 are stale. Refresh is needed only to permit reconsideration/rebase, not to detect the staleness.",
+    "The lifecycle procedure fingerprint hashes lifecycle core modules and coordination runner dependencies but omits CoordinationService.ts, cli/coordination.ts and host gateway/index wrappers; wrapper changes may not invalidate prior lifecycle evidence.",
+    "The UX proposal is submitted with feature-behavior=checker-gap and has no UX review event. Product is accepted for handoff only; 34 blockers remain and the overall lifecycle stays blocked.",
+    "PJC externalRefs still contains feature:ai.assistant; the source ID is feature:ai.assistant_companion. A correction decision marks the old metadata unvalidated, but automatic reference reconciliation is absent.",
+    "Anti-slop remains globally red (48 errors/1482 warnings); lifecycle-scope diagnostics show 0 own errors and 10 warnings, including unused exports/types and file/function size warnings.",
+    "Local actor role claims and host-driven reasoning do not establish authenticated authority or autonomous execution; no production route, privacy/retention semantics, API admission, end-to-end behavior, or semantic UX adequacy is proven."
+  ],
+  "scratchCases": [
+    "research/coordination-study/lifecycle/adversarial.mts",
+    "research/coordination-study/lifecycle/runtime-recovery.mts",
+    "research/coordination-study/lifecycle/real-check.mts",
+    "research/coordination-study/lifecycle/canonical.mts"
+  ],
+  "finalAudit": {
+    "reviewedAt": "2026-11-11T22:52:50+05:30",
+    "persistedRevision": 24,
+    "projectionAtSnapshot": "blocked",
+    "blockerCount": 34,
+    "acceptedTasks": [
+      "product"
+    ],
+    "submittedUnreviewedTasks": [
+      "ux"
+    ],
+    "checkerGap": "ux:feature-behavior",
+    "freshness": {
+      "snapshotSources": 15,
+      "currentHashMismatches": [
+        "AGENTS.md"
+      ],
+      "remainingSourceCountMatching": 14,
+      "currentStatusSource": "research/coordination-study/lifecycle/chat/status-current.json",
+      "refreshPurpose": "reconsideration/rebase only"
+    },
+    "productLineage": "chat-analysis@2 -> chat-requirement@2, chat-invariant@2, chat-scenario@2 -> accepted product review -> chat-experience@1",
+    "uxStructure": {
+      "screens": 2,
+      "axes": 6,
+      "combinations": 4,
+      "transitions": 12,
+      "journeys": 4,
+      "accessibilityRequirements": 5,
+      "motionRequirements": 3
+    },
+    "pJcRun": {
+      "exitCode": 0,
+      "state": "finished",
+      "gaps": 428,
+      "interpretation": "structural/process success only",
+      "errors": 0,
+      "freshness": "Run evidence is historical for the prior source/procedure snapshot; current status blocks product work and the analysis@2 lineage is stale."
+    },
+    "correctionDecision": "external ref feature:ai.assistant remains stored and unvalidated; source ID feature:ai.assistant_companion",
+    "limits": [
+      "No UX review event or semantic validation",
+      "No production behavior or route/API/storage/privacy/retention proof",
+      "Local role claims are unauthenticated",
+      "Codex host supplies reasoning; no autonomous model provider",
+      "Lifecycle procedure fingerprint omits service/CLI/gateway wrapper files",
+      "Shared-source impact only covers declared dependencies",
+      "Anti-slop gate remains red"
+    ],
+    "staleHistoryAtSnapshot": [
+      "chat-analysis@1",
+      "chat-requirement@1",
+      "chat-invariant@1",
+      "chat-scenario@1"
+    ],
+    "currentSourceAffectedRefs": [
+      "chat-analysis@2",
+      "chat-requirement@2",
+      "chat-invariant@2",
+      "chat-scenario@2",
+      "chat-experience@1"
+    ],
+    "sourceChangeInterpretation": "Current status was already recomputed without mutation. Source refresh is required only before reconsidering/rebasing stale artifacts; it is not required to discover that they are stale.",
+    "currentStatus": {
+      "path": "research/coordination-study/lifecycle/chat/status-current.json",
+      "revision": 24,
+      "readiness": "blocked",
+      "blockerCount": 33,
+      "procedureChanged": true,
+      "changedSources": [
+        "AGENTS.md"
+      ],
+      "staleArtifacts": [
+        "chat-analysis@1",
+        "chat-requirement@1",
+        "chat-invariant@1",
+        "chat-scenario@1",
+        "chat-analysis@2",
+        "chat-requirement@2",
+        "chat-invariant@2",
+        "chat-scenario@2",
+        "chat-experience@1"
+      ],
+      "tasks": [
+        "product:stale",
+        "ux:stale",
+        "visual-motion:stale",
+        "architecture:stale",
+        "dependencies:stale",
+        "implementation:stale",
+        "verification:stale"
+      ]
+    }
+  }
+}

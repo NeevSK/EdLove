@@ -1,0 +1,2 @@
+relationship_id,source_candidate_id,target_candidate_id,relationship,source_id,observed_on,verification_status,notes
+oppia-android-companion-of-web,android,oppia,companion_mobile_client,oppia-android-readme,2026-11-08,official_docs_verified,Separate official repository in same Oppia organization; treat web and Android code/license scopes independently.

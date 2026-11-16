@@ -1,0 +1,86 @@
+{
+  "workId": "a6a1c5da-dc8f-4603-ae42-d04cfe3b6cd2",
+  "verdict": "needs_decision",
+  "findings": [
+    {
+      "claim": "For a shared field, current UI guidance places new browser and native implementations in @repo/ui/components/web and @repo/ui/components/native, with matching names and props; styling reads from world recipes.",
+      "sourceIds": [
+        "platform-rules"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "For API access, current guidance points to typed shared contracts/clients in @repo/core and Sanctuary API native oRPC v2 procedures on /api/v1; procedures require a domain/subdomain capability, catalog entry, and card. Client-side direct database, .rpc(), and realtime paths are frozen pending v1 API coverage.",
+      "sourceIds": [
+        "platform-rules"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The older workflow's references to packages/ui and packages/core, tRPC, Zustand as the API source of truth, fixed hex palette, and blanket shared-logic placement do not align with the current package map, API cutover, world-based UI recipes, and platform boundaries.",
+      "sourceIds": [
+        "older-workflow",
+        "platform-rules"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "No implementation substrate, active API contracts, field component signatures, or runtime/canary evidence was supplied, so exact files, procedure, and implementation status cannot be established.",
+      "sourceIds": [],
+      "confidence": "unknown"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "authoritative_for_new_shared_ui",
+      "subject": "platform-rules",
+      "object": "@repo/ui/components/web and @repo/ui/components/native with matching names and props",
+      "authoritySourceIds": [
+        "platform-rules"
+      ]
+    },
+    {
+      "relation": "authoritative_for_api_integration",
+      "subject": "platform-rules",
+      "object": "typed @repo/core API contract/client to a cataloged Sanctuary API capability on /api/v1; no new direct database client path",
+      "authoritySourceIds": [
+        "platform-rules"
+      ]
+    },
+    {
+      "relation": "historical_guidance_requiring_reconciliation",
+      "subject": "older-workflow",
+      "object": "legacy package locations, tRPC/Zustand assumptions, fixed visual tokens, and mandatory plan approval",
+      "authoritySourceIds": [
+        "older-workflow",
+        "platform-rules"
+      ]
+    }
+  ],
+  "reviewRequired": [
+    "older-workflow"
+  ],
+  "unresolved": [
+    "Which domain and subdomain own the API capability, and does that capability already exist in the catalog?",
+    "Which platforms need the field: browser, native, or both?",
+    "What request/response contract and loading, error, retry, and offline behavior should the field expose?",
+    "The older workflow requires explicit approval before implementation, while current platform rules do not establish that as a required gate; confirm whether this approval requirement remains active before implementation."
+  ],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "Read the supplied frozen older-workflow and platform-rules records.",
+      "Compared their UI package, API, styling, and approval guidance.",
+      "Recorded applicable conventions and unresolved implementation decisions."
+    ],
+    "invalidatedSteps": [
+      "Could not inspect implementation files, API contracts, package declarations, or runtime evidence because only the supplied frozen records were available and repository access was prohibited."
+    ],
+    "nextAction": "Reconcile or retire the older-workflow guidance, then inspect the owning domain capability and existing field component/API contracts before drafting an implementation plan."
+  },
+  "limitations": [
+    "This conclusion is based only on the two supplied excerpts; their full referenced documents and current repository implementation were not inspected.",
+    "The platform-rules excerpt establishes native oRPC v2 /api/v1 and browser boundary guidance, but does not specify the exact browser API transport for this field."
+  ]
+}

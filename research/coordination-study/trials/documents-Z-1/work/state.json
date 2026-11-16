@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "workId": "36f21a4a-8ec8-4e7c-ae7f-a92371235b28",
+  "events": [
+    {
+      "unresolved": [],
+      "stage": "context",
+      "evidence": [
+        {
+          "sha256": "a621766affdfd35df6c8054cb0529c99783ea39549660d55b9eb7cd3b2a0995d",
+          "sourceId": "intro"
+        },
+        {
+          "sha256": "b25d935c9b55818fea4f7a69730db26d0d160182f6d5d681b5fd40aaf0438ed0",
+          "sourceId": "covenant"
+        },
+        {
+          "sha256": "3b0f4b93f0f0602907972082067538d9bbe9e613b973b979b7271eb36065809b",
+          "sourceId": "covenant-scope"
+        }
+      ],
+      "kind": "record",
+      "summary": "Read all three frozen excerpts. The active introduction explicitly says start here and links to the active Covenant; the Covenant reciprocates that sequence. Scope of review is the entry path and document authority, not shipped capability verification.",
+      "id": "context-1"
+    },
+    {
+      "id": "analysis-1",
+      "kind": "record",
+      "unresolved": [],
+      "evidence": [
+        {
+          "sourceId": "intro",
+          "sha256": "a621766affdfd35df6c8054cb0529c99783ea39549660d55b9eb7cd3b2a0995d"
+        },
+        {
+          "sourceId": "covenant",
+          "sha256": "b25d935c9b55818fea4f7a69730db26d0d160182f6d5d681b5fd40aaf0438ed0"
+        },
+        {
+          "sourceId": "covenant-scope",
+          "sha256": "3b0f4b93f0f0602907972082067538d9bbe9e613b973b979b7271eb36065809b"
+        }
+      ],
+      "stage": "analysis",
+      "summary": "Entry sequence is introduction then Covenant. Covenant governs expanded product and architecture decisions; its supersession explicitly concerns overlapping pillar definitions, not the entire introduction. Preserve both active roles and mark or annotate the introduction pillar section as a summary subordinate to Covenant. Scope alone does not authorize retiring the whole older manifesto or narrower supporting references."
+    },
+    {
+      "id": "verification-1",
+      "unresolved": [],
+      "evidence": [
+        {
+          "sha256": "a621766affdfd35df6c8054cb0529c99783ea39549660d55b9eb7cd3b2a0995d",
+          "sourceId": "intro"
+        },
+        {
+          "sha256": "b25d935c9b55818fea4f7a69730db26d0d160182f6d5d681b5fd40aaf0438ed0",
+          "sourceId": "covenant"
+        },
+        {
+          "sha256": "3b0f4b93f0f0602907972082067538d9bbe9e613b973b979b7271eb36065809b",
+          "sourceId": "covenant-scope"
+        }
+      ],
+      "summary": "Checked conclusions against intro lines 3,13,18,26-30; Covenant lines 3,15,21-25; and scope lines 208-217. Both documents explicitly retain active status and reciprocal entry roles. Supersession is qualified by overlapping pillar definitions. No evidence establishes whole-document retirement or actual shipped capabilities. Controller status confirms sources remain fresh and preceding stages valid; it is structural validation, not semantic or runtime-hook proof.",
+      "kind": "record",
+      "stage": "verification"
+    },
+    {
+      "stage": "reconciliation",
+      "unresolved": [],
+      "kind": "record",
+      "id": "reconciliation-1",
+      "evidence": [
+        {
+          "sourceId": "intro",
+          "sha256": "a621766affdfd35df6c8054cb0529c99783ea39549660d55b9eb7cd3b2a0995d"
+        },
+        {
+          "sourceId": "covenant",
+          "sha256": "b25d935c9b55818fea4f7a69730db26d0d160182f6d5d681b5fd40aaf0438ed0"
+        },
+        {
+          "sourceId": "covenant-scope",
+          "sha256": "3b0f4b93f0f0602907972082067538d9bbe9e613b973b979b7271eb36065809b"
+        }
+      ],
+      "summary": "Resolved supplied entry-path and authority question: retain active introduction as first read and active Covenant as expanded governing reference. Recommended lifecycle reconciliation is section-level authority annotation/review of intro pillars, not whole-document supersession. Older manifesto is known only through a scoped supersession reference; its unique content and lifecycle remain unassessed. No source edits performed and no runtime hook/canary observed."
+    }
+  ]
+}

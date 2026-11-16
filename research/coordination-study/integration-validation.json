@@ -1,0 +1,125 @@
+{
+  "observedAt": "2026-11-11T12:36:41.564Z",
+  "packageBuild": {
+    "level": "G0",
+    "exitCode": 0,
+    "log": "integration-build-final.log",
+    "limits": "Earlier successful build snapshot; latest typecheck now fails, so current full-package build is not certified."
+  },
+  "packageTypes": {
+    "level": "G0",
+    "exitCode": 1,
+    "errors": 8,
+    "log": "integration-check-types-final.log",
+    "scope": "Latest current package typecheck; errors in concurrently edited pipeline files outside this workstream",
+    "earlierSuccess": "Observed before subsequent concurrent changes; not a current compile guarantee"
+  },
+  "packageTests": {
+    "level": "G1",
+    "exitCode": 0,
+    "files": 10,
+    "checks": 51,
+    "log": "integration-test-final.log",
+    "limits": "Includes existing pipeline tests; passing their stub assertions is not actual device or feature evidence. Run preceded latest concurrent pipeline changes; not evidence for those later bytes."
+  },
+  "compiledCliMcp": {
+    "level": "G1",
+    "checks": 1,
+    "exitCode": 0,
+    "command": "COORDINATION_TEST_COMPILED=1 pnpm --filter @repo/platform-mcp exec vitest run src/coordinationGateway.integration.test.ts"
+  },
+  "antiSlop": {
+    "exitCode": 1,
+    "output": "integration-anti-slop.txt",
+    "errors": 19,
+    "warnings": 1442,
+    "pilotErrors": 0,
+    "limits": "Snapshot preceded scoped formatting/export cleanup; later chained gates did not run."
+  },
+  "delta": {
+    "raw": "integration-delta.diff",
+    "removedLines": 0,
+    "limits": "Tracked package/AGENTS diffs include preserved concurrent work; study files shown as complete additions."
+  },
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "07cf422ce48145e6510e8a3db7a1bf0bdeaa0c9856f49ea1a2a0ef5e4abf3f84"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "f769159d72696fff743c630da6c8fbc2d6aaca63c1e71801ccb858b9382fa96c"
+    },
+    {
+      "path": "packages/platform-mcp/package.json",
+      "sha256": "f58ce982244e3954d15de8deb8e62e83c8d83ddece4757f47f2043126d55af3a"
+    },
+    {
+      "path": "packages/platform-mcp/src/index.ts",
+      "sha256": "2b4e4cfea25a6fd2428b96ec7d148128b6055a59427d320f68c0237a2aa5c955"
+    },
+    {
+      "path": "packages/platform-mcp/src/services/HelpService.ts",
+      "sha256": "7eb78fce963fd1e86da58a0e082e56fd0e90498d13f907828d61648049fd065e"
+    },
+    {
+      "path": "packages/platform-mcp/src/coordination.ts",
+      "sha256": "31e15c249e9754f9af615e1d40258b8ba58bbec02bfabc7d1d498bd63cad2bbd"
+    },
+    {
+      "path": "packages/platform-mcp/src/coordinationStore.ts",
+      "sha256": "e99423ca589945291849d6e57fca2cc66869e6a08bf2338e2e494ef2cd8914cd"
+    },
+    {
+      "path": "packages/platform-mcp/src/coordinationTools.ts",
+      "sha256": "04a682ada9d31a074f972fa4eb10afbe317da21175b99dea10b0d63365d702ef"
+    },
+    {
+      "path": "packages/platform-mcp/src/coordination.test.ts",
+      "sha256": "294106b62aafbcf2134cfd632e0d156b0a807891ffb51aa970bc1f0490463078"
+    },
+    {
+      "path": "packages/platform-mcp/src/coordinationTools.test.ts",
+      "sha256": "8acf97f63443d61ac399c045faa207b111f8e2b121c75715e80eee1803e52b88"
+    },
+    {
+      "path": "packages/platform-mcp/src/coordinationGateway.integration.test.ts",
+      "sha256": "5cfaa16ac40dfe6d0578df8216fa6a7f033311da921c59fc2c98152bfa242129"
+    },
+    {
+      "path": "packages/platform-mcp/src/services/CoordinationService.ts",
+      "sha256": "7bc65295827a877a80c4528b34aac0f5e7168321acc87a6dad0cb1ab07277d9b"
+    },
+    {
+      "path": "packages/platform-mcp/src/cli/coordination.ts",
+      "sha256": "031aeaf988e3e66a5d2905e24615ee35466f02c169d86c946a1c83515439f4e2"
+    },
+    {
+      "path": "packages/platform-mcp/docs/developer-coordination.md",
+      "sha256": "0140f4bd031c36ceab603c74c2a0be40c26e7477023ecc7fe0d1f5fb846f3d0b"
+    },
+    {
+      "path": "docs/architecture/2026-11-11-agent-coordination-study.md",
+      "sha256": "538f828ec0b9b86f2796cf75134b859e763280ea16b95d0545334c0eed1bf209"
+    }
+  ],
+  "pilotStatus": {
+    "readiness": "blocked",
+    "staleSources": [
+      "docs/architecture/2026-11-11-agent-coordination-study.md",
+      "packages/platform-mcp/docs/developer-coordination.md"
+    ],
+    "missingChecks": [
+      "api-composition"
+    ],
+    "artifact": "integration-pilot-state.json"
+  },
+  "updatedAt": "2026-11-11T12:38:53.592Z",
+  "scopedTypes": {
+    "level": "G0",
+    "exitCode": 0,
+    "config": "integration-tsconfig.json",
+    "log": "integration-scoped-types.log",
+    "limits": "Only eight new coordination files and imported dependencies; full package gate remains failed."
+  }
+}

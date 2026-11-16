@@ -1,0 +1,378 @@
+diff --git a/apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx b/apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx
+index b66b827e2..f1d6e4bad 100644
+--- a/apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx
++++ b/apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx
+@@ -1,6 +1,7 @@
+ 'use client';
+ 
+ import { useState, useMemo } from 'react';
++import Link from 'next/link';
+ import * as webKit from '@repo/ui/components/web';
+ import { WorldScope } from '@repo/ui/theme/web';
+ import { WORLD_IDS, WORLDS } from '@repo/ui/theme';
+@@ -139,6 +140,7 @@ export function KitGalleryClient() {
+       >
+         <div>
+           <span style={{ fontWeight: 700, fontSize: '15px', color: '#60a5fa' }}>UI Kit Gallery</span>
++          <Link href="/kit/radar">Radar examples</Link>
+           <span
+             style={{
+               marginLeft: '8px',
+diff --git a/apps/gurudevi-web/tests/unit/kit/webKitNames.test.tsx b/apps/gurudevi-web/tests/unit/kit/webKitNames.test.tsx
+index b6ef9dfbc..906666c59 100644
+--- a/apps/gurudevi-web/tests/unit/kit/webKitNames.test.tsx
++++ b/apps/gurudevi-web/tests/unit/kit/webKitNames.test.tsx
+@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
+ 
+ /** Pieces both sets must have; the native suite checks the same list. */
+ const SHARED = [
++  'Radar',
++  'FeedbackScene',
+   'ActionFab',
+   'AudioRecord',
+   'AppHeader',
+diff --git a/packages/ui/src/components/native/States/States.tsx b/packages/ui/src/components/native/States/States.tsx
+index 5bceb579c..6f7ccfb6f 100644
+--- a/packages/ui/src/components/native/States/States.tsx
++++ b/packages/ui/src/components/native/States/States.tsx
+@@ -1,19 +1,10 @@
+ import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+ import type { EmptyStateContract, ErrorStateContract } from '../../../theme/contracts';
+ import { Button } from '../Button/Button';
+-import { Perch } from '../Perch/Perch';
++import { FeedbackScene } from '../FeedbackScene/FeedbackScene';
+ import { Text } from '../Text/Text';
+ 
+-/** Tutii's scene box, scaled down: the perch is drawn in a 220 × 164 box. */
+-const SCENE = { width: 176, height: 131 };
+-
+-function Scene() {
+-  return (
+-    <View style={styles.scene} importantForAccessibility="no-hide-descendants">
+-      <Perch width={SCENE.width} height={SCENE.height} />
+-    </View>
+-  );
+-}
++const SCENE_SIZE = 176;
+ 
+ export interface EmptyStateProps extends EmptyStateContract {
+   style?: StyleProp<ViewStyle>;
+@@ -26,7 +17,7 @@ export interface EmptyStateProps extends EmptyStateContract {
+ export function EmptyState({ title, message, action, style }: EmptyStateProps) {
+   return (
+     <View style={[styles.wrap, style]}>
+-      <Scene />
++      <FeedbackScene state="empty" size={SCENE_SIZE} />
+       <Text kind="title" align="center" role="heading">
+         {title}
+       </Text>
+@@ -51,7 +42,7 @@ export interface ErrorStateProps extends ErrorStateContract {
+ export function ErrorState({ title, message, retry, style }: ErrorStateProps) {
+   return (
+     <View role="alert" style={[styles.wrap, style]}>
+-      <Scene />
++      <FeedbackScene state="error" size={SCENE_SIZE} />
+       <Text kind="title" align="center" role="heading">
+         {title}
+       </Text>
+@@ -67,5 +58,4 @@ export function ErrorState({ title, message, retry, style }: ErrorStateProps) {
+ 
+ const styles = StyleSheet.create({
+   wrap: { alignItems: 'center', gap: 10, paddingVertical: 24, paddingHorizontal: 16 },
+-  scene: { width: SCENE.width, height: SCENE.height },
+ });
+diff --git a/packages/ui/src/components/native/__tests__/inspector.test.tsx b/packages/ui/src/components/native/__tests__/inspector.test.tsx
+index fa4497574..266d200ad 100644
+--- a/packages/ui/src/components/native/__tests__/inspector.test.tsx
++++ b/packages/ui/src/components/native/__tests__/inspector.test.tsx
+@@ -30,6 +30,8 @@ function components(barrel: Record<string, unknown>) {
+ 
+ /** Pieces both sets must have; the web suite checks the same list. */
+ const SHARED = [
++  'Radar',
++  'FeedbackScene',
+   'ActionFab',
+   'AudioRecord',
+   'AppHeader',
+diff --git a/packages/ui/src/components/native/index.ts b/packages/ui/src/components/native/index.ts
+index a2e600728..c328fc84a 100644
+--- a/packages/ui/src/components/native/index.ts
++++ b/packages/ui/src/components/native/index.ts
+@@ -29,6 +29,7 @@ export {
+   type MessageListProps,
+ } from './Agent/Message';
+ export { Disclosure, type DisclosureProps } from './Basics/Disclosure';
++export { FeedbackScene, type FeedbackSceneProps } from './FeedbackScene/FeedbackScene';
+ export { Notice, type NoticeProps } from './Basics/Notice';
+ export { NumberStepper, type NumberStepperProps } from './Basics/NumberStepper';
+ export { SearchField, type SearchFieldProps } from './Basics/SearchField';
+@@ -130,6 +131,7 @@ export {
+   Progress,
+   type ProgressProps,
+ } from './Status/Status';
++export { Radar, type RadarProps } from './Radar/Radar';
+ export { Surface, type SurfaceProps } from './Surface/Surface';
+ export { LivingGround, type LivingGroundProps } from './LivingGround/LivingGround';
+ export { SwipeRow, type SwipeRowProps } from './SwipeRow/SwipeRow';
+diff --git a/packages/ui/src/components/web/States/States.tsx b/packages/ui/src/components/web/States/States.tsx
+index b928ca4b7..0f23c99e5 100644
+--- a/packages/ui/src/components/web/States/States.tsx
++++ b/packages/ui/src/components/web/States/States.tsx
+@@ -1,12 +1,12 @@
+ import type { EmptyStateContract, ErrorStateContract } from '../../../theme/contracts';
+ import { Button } from '../Button/Button';
+ import { cx } from '../cx';
+-import { Perch } from '../Perch/Perch';
++import { FeedbackScene } from '../FeedbackScene/FeedbackScene';
+ 
+-function Scene() {
++function Scene({ state }: { state: 'empty' | 'error' }) {
+   return (
+     <div className="gd-state-scene" aria-hidden="true">
+-      <Perch />
++      <FeedbackScene state={state} size={176} />
+     </div>
+   );
+ }
+@@ -19,7 +19,7 @@ export interface EmptyStateProps extends EmptyStateContract {
+ export function EmptyState({ title, message, action, className }: EmptyStateProps) {
+   return (
+     <section className={cx('gd-state', className)}>
+-      <Scene />
++      <Scene state="empty" />
+       <h2 className="gd-text" data-kind="title">
+         {title}
+       </h2>
+@@ -41,7 +41,7 @@ export interface ErrorStateProps extends ErrorStateContract {
+ export function ErrorState({ title, message, retry, className }: ErrorStateProps) {
+   return (
+     <section role="alert" className={cx('gd-state', className)}>
+-      <Scene />
++      <Scene state="error" />
+       <h2 className="gd-text" data-kind="title">
+         {title}
+       </h2>
+diff --git a/packages/ui/src/components/web/index.ts b/packages/ui/src/components/web/index.ts
+index 6d95e633d..c860e943b 100644
+--- a/packages/ui/src/components/web/index.ts
++++ b/packages/ui/src/components/web/index.ts
+@@ -51,6 +51,7 @@ export { Carousel, type CarouselProps } from './Carousel/Carousel';
+ export { Checkbox, type CheckboxProps } from './Checkbox/Checkbox';
+ export { Chip, type ChipProps, Chips, type ChipsProps } from './Chip/Chip';
+ export { Dialog, type DialogProps } from './Dialog/Dialog';
++export { Drawer, type DrawerProps } from './Drawer/Drawer';
+ export { Group, type GroupProps } from './Group/Group';
+ export { Icon, type IconProps } from './Icon/Icon';
+ export { IconButton, type IconButtonProps } from './IconButton/IconButton';
+@@ -172,3 +173,5 @@ export {
+   type ScrollAreaProps,
+ } from './ScrollArea/ScrollArea';
+ 
++export { Radar, type RadarProps } from './Radar/Radar';
++export { FeedbackScene, type FeedbackSceneProps } from './FeedbackScene/FeedbackScene';
+diff --git a/packages/ui/src/theme/build.ts b/packages/ui/src/theme/build.ts
+index f215f55c9..076a68ef5 100644
+--- a/packages/ui/src/theme/build.ts
++++ b/packages/ui/src/theme/build.ts
+@@ -715,6 +715,15 @@ export function buildRecipes(t: WorldTokens, s: WorldStyle, mode: WorldMode): Wo
+     message: buildMessage(t, s, text, surface),
+     time: buildTime(t, surface),
+     notice: buildNotice(t),
++    radar: {
++      grid: legible(t.inkFaint, t.ink, t.raised, 3),
++      stroke: legible(t.lampDeep, t.ink, t.raised, 3),
++      point: legible(t.lampDeep, t.ink, t.raised, 3),
++      strokeWidth: 1.5,
++      gridWidth: 0.5,
++      pointRadius: 1.5,
++      labelSize: 3,
++    },
+     material,
+     ornament: { kind: s.ornament, color: t.ornament, accent: t.onLamp },
+     motion: { settleMs: 220, breatheMs: 4200 },
+diff --git a/packages/ui/src/theme/contracts.ts b/packages/ui/src/theme/contracts.ts
+index 0d53df4f7..3c136e138 100644
+--- a/packages/ui/src/theme/contracts.ts
++++ b/packages/ui/src/theme/contracts.ts
+@@ -25,6 +25,48 @@ import type {
+   WorldLanguage,
+ } from './types';
+ 
++/** A measured axis. Null means no observation, not zero. */
++export interface RadarAxis {
++  id: string;
++  label: string;
++  min: number;
++  max: number;
++  value: number | null;
++  unit?: string;
++}
++
++/** One attributed observation; the kit does not merge perspectives or subjects. */
++export interface RadarObservation {
++  subject: { id: string; label: string };
++  measure: { id: string; label: string; version: string };
++  perspective: { id: string; label: string; kind: 'self' | 'observer' };
++  sourceLabel: string;
++  observedAt?: string;
++  synthetic: boolean;
++  stale: boolean;
++  /** Caller assertion; the chart cannot verify semantic comparability. */
++  plotPolicy?: 'declared-comparable' | 'values-only';
++  axes: readonly RadarAxis[];
++}
++
++export type RadarState =
++  | { kind: 'ready'; observation: RadarObservation }
++  | { kind: 'loading'; message?: string }
++  | { kind: 'empty' | 'unavailable' | 'denied' | 'error'; message: string };
++
++export interface RadarContract {
++  label: string;
++  state: RadarState;
++  onRetry?: () => void;
++  retryLabel?: string;
++}
++
++/** Static, decorative feedback scene. Surrounding content supplies the message. */
++export interface FeedbackSceneContract {
++  state: 'empty' | 'loading' | 'error' | 'offline' | 'success';
++  size?: number;
++}
++
+ export type {
+   BadgeTone,
+   ButtonSize,
+@@ -490,6 +532,18 @@ export interface SheetContract {
+   dismissable?: boolean;
+ }
+ 
++export interface DrawerContract {
++  open: boolean;
++  onClose: () => void;
++  title: string;
++  subtitle?: string;
++  side?: 'right' | 'left';
++  children?: ReactNode;
++  actions?: ReactNode;
++  footer?: ReactNode;
++  dismissable?: boolean;
++}
++
+ export interface ToastAction {
+   label: string;
+   onPress: () => void;
+@@ -1744,3 +1798,5 @@ export interface ThemeSwitcherContract {
+ 
+ 
+ 
++
++
+diff --git a/packages/ui/src/theme/css.ts b/packages/ui/src/theme/css.ts
+index 39b4f44fc..29aea1628 100644
+--- a/packages/ui/src/theme/css.ts
++++ b/packages/ui/src/theme/css.ts
+@@ -386,6 +386,15 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
+     v[`${q}-table-head`] = p.table.headerFill;
+     v[`${q}-gap`] = px(p.gap);
+   }
++  Object.assign(v, {
++    '--w-radar-grid': r.radar.grid,
++    '--w-radar-stroke': r.radar.stroke,
++    '--w-radar-point': r.radar.point,
++    '--w-radar-stroke-width': String(r.radar.strokeWidth),
++    '--w-radar-grid-width': String(r.radar.gridWidth),
++    '--w-radar-point-radius': px(r.radar.pointRadius),
++    '--w-radar-label-size': px(r.radar.labelSize),
++  });
+   return v;
+ }
+ 
+diff --git a/packages/ui/src/theme/kitCss.ts b/packages/ui/src/theme/kitCss.ts
+index 96b38eef6..83e703b1a 100644
+--- a/packages/ui/src/theme/kitCss.ts
++++ b/packages/ui/src/theme/kitCss.ts
+@@ -87,6 +87,18 @@ function chargeCss(): string {
+ const s = (k: number) => `calc(var(--s) * ${k})`;
+ 
+ const BASE_CSS = `
++.gd-radar{container-type:inline-size;padding:1rem;min-width:0;color:var(--w-ink)}
++.gd-radar-plot{display:block;width:100%;max-width:28rem;margin-inline:auto;overflow:visible}
++.gd-radar-grid{fill:none;stroke:var(--w-radar-grid);stroke-width:var(--w-radar-grid-width)}
++.gd-radar-value{stroke:var(--w-radar-stroke);stroke-width:var(--w-radar-stroke-width)}
++.gd-radar-area{fill:var(--w-radar-stroke);fill-opacity:.16;stroke:none}
++.gd-radar-point{fill:var(--w-radar-point);r:var(--w-radar-point-radius)}
++.gd-radar-number{fill:var(--w-ink);font-size:var(--w-radar-label-size);font-family:inherit}
++.gd-radar-table{width:100%;border-collapse:collapse;overflow-wrap:anywhere;font-family:var(--w-text-body-font);font-size:var(--w-text-body-size);line-height:var(--w-text-body-lh)}
++.gd-radar-table :is(th,td,caption){font-size:inherit;line-height:inherit}
++.gd-radar-table :is(th,td){padding:.5rem;text-align:start;border-bottom:1px solid var(--w-line)}
++.gd-radar-table caption{text-align:start;padding-block:.75rem}
++@container (max-width:22rem){.gd-radar-table :is(th,td){padding:.25rem}}
+ .gd-switch{appearance:none;border:0;margin:0;padding:0;cursor:pointer;position:relative;flex:none;width:48px;height:28px;border-radius:14px;background:var(--w-line);transition:background var(--w-settle);-webkit-tap-highlight-color:transparent}
+ .gd-switch[aria-checked="true"]{background:var(--w-toggle-on)}
+ .gd-switch-thumb{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--w-raised);box-shadow:0 1px 2px color-mix(in srgb, var(--w-ink) 22%, transparent);transition:transform var(--w-settle)}
+@@ -159,9 +171,24 @@ const BASE_CSS = `
+ .gd-sheet{margin:auto auto 0;width:100%;max-width:640px;max-height:90vh}
+ .gd-sheet .gd-overlay-panel{border-bottom-left-radius:0;border-bottom-right-radius:0;padding-bottom:calc(24px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto}
+ .gd-sheet-grabber{align-self:center;width:40px;height:4px;margin-bottom:4px;border-radius:2px;background:var(--w-line)}
+-@media (prefers-reduced-motion:no-preference){.gd-dialog[open]:not(.gd-sheet){animation:gd-overlay-in var(--w-settle) ease-out}.gd-sheet[open]{animation:gd-sheet-in 280ms cubic-bezier(.2,.8,.2,1)}}
++.gd-drawer{padding:0;margin:0 0 0 auto;border:0;background:transparent;color:var(--w-ink);width:min(var(--gd-drawer-width, 440px), 100vw);height:100vh;max-height:100vh;overflow:hidden;position:fixed;top:0;right:0;bottom:0;z-index:1050}
++.gd-drawer[data-side="left"]{margin:0 auto 0 0;right:auto;left:0}
++.gd-drawer .gd-overlay-panel{border-radius:0;height:100%;max-height:100%;box-sizing:border-box;border-left:1px solid var(--w-line);box-shadow:-12px 0 36px rgba(0,0,0,0.16)}
++.gd-drawer[data-side="left"] .gd-overlay-panel{border-left:0;border-right:1px solid var(--w-line);box-shadow:12px 0 36px rgba(0,0,0,0.16)}
++.gd-drawer-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--w-line)}
++.gd-drawer-title-group{display:flex;flex-direction:column;gap:2px}
++.gd-drawer-subtitle{font-size:var(--w-text-caption-size);color:var(--w-ink-soft);margin:0}
++.gd-drawer-footer{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding-top:12px;border-top:1px solid var(--w-line);margin-top:auto}
++@media (prefers-reduced-motion:no-preference){
++  .gd-dialog[open]:not(.gd-sheet):not(.gd-drawer){animation:gd-overlay-in var(--w-settle) ease-out}
++  .gd-sheet[open]{animation:gd-sheet-in 280ms cubic-bezier(.2,.8,.2,1)}
++  .gd-drawer[open]{animation:gd-drawer-in 260ms cubic-bezier(.16,1,.3,1)}
++  .gd-drawer[data-side="left"][open]{animation:gd-drawer-in-left 260ms cubic-bezier(.16,1,.3,1)}
++}
+ @keyframes gd-overlay-in{from{opacity:0;transform:translateY(8px) scale(.98)}}
+ @keyframes gd-sheet-in{from{transform:translateY(100%)}}
++@keyframes gd-drawer-in{from{transform:translateX(100%)}}
++@keyframes gd-drawer-in-left{from{transform:translateX(-100%)}}
+ .gd-toasts{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:1100;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+ .gd-toast-region{display:flex;flex-direction:column;align-items:center;gap:8px}
+ .gd-toast{pointer-events:auto;display:flex;align-items:center;gap:12px;width:100%;max-width:520px;padding:12px 16px;background:var(--w-surface-raised-bg);border-radius:var(--w-surface-raised-radius);box-shadow:var(--w-surface-raised-shadow);border-left:3px solid var(--w-line);color:var(--w-ink)}
+@@ -255,6 +282,9 @@ const BASE_CSS = `
+ .gd-state{display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 16px;text-align:center}
+ .gd-state>.gd-text{margin:0}
+ .gd-state-scene{position:relative;width:176px;height:131px}
++.gd-feedback-scene{position:relative;display:flex;align-items:center;justify-content:center;pointer-events:none;max-width:100%}
++.gd-feedback-path{position:absolute;inset:0;width:100%;height:100%}
++.gd-feedback-mascot{position:absolute;top:2.7%;width:42%;height:61%;overflow:visible}
+ .gd-list{margin:0;padding:0;list-style:none}
+ .gd-list-item{content-visibility:auto;contain-intrinsic-size:auto 56px}
+ .gd-list-item+.gd-list-item{border-top:1px solid var(--w-line)}
+diff --git a/packages/ui/src/theme/types.ts b/packages/ui/src/theme/types.ts
+index 4e3ed6b9f..177f7d2f8 100644
+--- a/packages/ui/src/theme/types.ts
++++ b/packages/ui/src/theme/types.ts
+@@ -520,6 +520,16 @@ export interface TimeRecipe {
+ /** An inline notice: a quiet well, an accent bar in its tone, plain words. */
+ export type NoticeRecipe = Record<BadgeTone, { fill: string; ink: string; accent: string }>;
+ 
++export interface RadarRecipe {
++  grid: string;
++  stroke: string;
++  point: string;
++  strokeWidth: number;
++  gridWidth: number;
++  pointRadius: number;
++  labelSize: number;
++}
++
+ export interface WorldRecipes {
+   text: Record<TextRole, TypeStyle>;
+   button: ButtonRecipe;
+@@ -539,6 +549,7 @@ export interface WorldRecipes {
+   message: MessageRecipe;
+   time: TimeRecipe;
+   notice: NoticeRecipe;
++  radar: RadarRecipe;
+   material: MaterialRecipe;
+   motion: { settleMs: number; breatheMs: number };
+ }

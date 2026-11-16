@@ -1,0 +1,158 @@
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4rem) 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  background: rgba(168, 80, 34, 0.08);
+  border: 1px solid rgba(168, 80, 34, 0.2);
+  color: var(--color-sanctuary-saffron, #a85022);
+  font-family: var(--font-sans, "Space Grotesk", sans-serif);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.mascotWrapper {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.mascotImage {
+  width: clamp(120px, 20vw, 180px);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.06));
+}
+
+.title {
+  font-family: var(--font-fraunces, "Fraunces", Georgia, serif);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--color-ink, #131e27);
+  margin: 0 0 0.75rem;
+}
+
+.tagline {
+  font-family: var(--font-serif, "Newsreader", serif);
+  font-size: clamp(1.125rem, 2vw, 1.35rem);
+  font-style: italic;
+  color: var(--color-sanctuary-saffron, #a85022);
+  margin: 0 0 1.25rem;
+}
+
+.description {
+  max-width: 58ch;
+  font-family: var(--font-serif, "Newsreader", serif);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--color-ink-soft, #453c35);
+  margin: 0 0 2rem;
+}
+
+.highlightsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 780px;
+  margin-bottom: 2.5rem;
+  text-align: left;
+}
+
+.highlightCard {
+  background: #ffffff;
+  border: 1px solid var(--gd-border-subtle, rgba(69, 60, 53, 0.12));
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.highlightIcon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.highlightTitle {
+  font-family: var(--font-sans, "Space Grotesk", sans-serif);
+  font-size: 0.9375rem;
+  font-weight: 650;
+  color: var(--color-ink, #131e27);
+  margin: 0 0 0.35rem;
+}
+
+.highlightDetail {
+  font-family: var(--font-serif, "Newsreader", serif);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-ink-soft, #5a5048);
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0 1.75rem;
+  border-radius: 9999px;
+  background: var(--color-ink, #131e27);
+  color: #ffffff;
+  font-family: var(--font-sans, "Space Grotesk", sans-serif);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(19, 30, 39, 0.15);
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.primaryButton:hover {
+  background: var(--color-ink-soft, #26342d);
+  transform: translateY(-1px);
+}
+
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0 1.5rem;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid var(--gd-border-subtle, rgba(69, 60, 53, 0.2));
+  color: var(--color-ink, #131e27);
+  font-family: var(--font-sans, "Space Grotesk", sans-serif);
+  font-size: 0.875rem;
+  font-weight: 550;
+  text-decoration: none;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.secondaryButton:hover {
+  background: rgba(69, 60, 53, 0.05);
+  border-color: var(--color-ink, #131e27);
+}
+

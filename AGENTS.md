@@ -10,6 +10,32 @@ tags: [AGENTS.md, quality, guardrails, architecture]
 
 # AGENTS.md - Agent Guardrails for Polymath Platform
 
+## Pstack activation for Codex
+
+Pstack v0.15.36 is enabled for this workspace. For substantive engineering work, read `.agents/skills/poteto-mode/SKILL.md` and follow its applicable playbook. The complete, unmodified upstream package is in `research/pstack/`; its pinned revision and file hashes are in `research/pstack.upstream.json`. Resolve bundled documentation, agents, assets and automations from that package, and sibling skills from `.agents/skills/`.
+
+- Invoke a pstack skill by reading its `SKILL.md` and following it; use the installed skill catalog when available. The default router is `poteto-mode`.
+- In Codex, translate Cursor `Task` to the available collaboration tools. Use a supported agent type and include the complete upstream persona from `research/pstack/agents/poteto-agent.md` or `comment-sicko.md` in the brief, together with the absolute installed `poteto-mode` path. Never pass unsupported Cursor tool fields or agent names. Respect the session concurrency limit and assign file ownership to editing workers.
+- Inherit the current model and reasoning settings unless the user explicitly selects another supported model. Do not pass Cursor model slugs to Codex or claim a same-model review is a multi-model panel.
+- Translate source search and shell actions to the available repository tools, and chat-history actions to the Codex thread tools. Keep a checklist in progress messages when no todo tool is available. Report a missing capability explicitly; a skipped step is not completed evidence.
+- Cursor Automations, cloud agents and Bugbot activation require their own supported runtime. Installing skills does not activate Benny, configure Slack, schedule work, merge changes or deploy. Preserve the repository's architectural boundaries, authorization requirements and Deletion Veto when applying upstream principles.
+
+Developer coordination pilot: `pnpm --filter @repo/platform-mcp coordination <request.json|->`
+and gateway tool `sovereign_coordination({request: ...})` share a strict schema and a local
+SQLite history. See [`packages/platform-mcp/docs/developer-coordination.md`](packages/platform-mcp/docs/developer-coordination.md).
+Use explicit affected layers and source files; status reports stale sources, unresolved
+decisions and missing checks. This pilot does not intercept all agent actions, approve
+product policy, or replace PJC, C4, capability conformance, CI or existing quality gates.
+
+Feature lifecycle: use `{"action":"lifecycle","request":...}` through that same CLI/MCP
+for durable classification, requirements/invariants, role task decomposition, reviewed
+handoffs and source reconsideration. Read
+[`packages/platform-mcp/docs/feature-lifecycle.md`](packages/platform-mcp/docs/feature-lifecycle.md).
+The host coordinator executes ready role packets with available agent tools; proposals
+must pass the stored output contracts and independent review. Missing checkers, authority
+and evidence remain explicit blockers. Do not treat `agent:pipeline` stage labels or
+available tools as proof of feature implementation.
+
 > **PRIME DIRECTIVE: WEB-FIRST & REPO-DOCS-FIRST FOR ALL MODERN ECOSYSTEM DECISIONS**  
 > Agent static training memory has a fixed cutoff and is blind to recent changes in Expo SDK 58, React Native 0.88+, Kotlin 2.x, Gradle 8.x, Skia v3, Effect v4, etc. **NEVER rely on internal memory or make guesses.** The model is a stateless reasoner (CPU), not a memory bank. Always inspect the physical substrate (source files, AST symbols, installed `node_modules` declarations) and perform live web searches (`search_web`) or registry queries.
 > 0. **The Cognitive Handshake (Active Reasoning Invariant)**: Passive reading decays. Before proposing code or diffs, the agent MUST output the 3-line Bounding Triad: (1) Surface & Mode, (2) Grounded Substrate (files/types inspected), (3) Active Seam & Constraints.

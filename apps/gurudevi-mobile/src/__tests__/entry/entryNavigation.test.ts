@@ -52,4 +52,21 @@ describe('entry navigation action', () => {
       }),
     ).toEqual({ consumePendingIntent: false, target: '/welcome' });
   });
+
+  it('clears stale pending intent when user makes an active voluntary navigation to a public sanctuary space (/pulse)', () => {
+    const pulseTarget = getAuthRouteTarget({
+      pathname: '/pulse',
+      bootstrapReady: true,
+      sessionMode: 'unauthenticated',
+      onboardingCompleted: false,
+      hasSession: false,
+    });
+    expect(
+      getEntryNavigationAction({
+        pathname: '/pulse',
+        pendingIntent,
+        routeTarget: pulseTarget,
+      }),
+    ).toEqual({ consumePendingIntent: false, clearStaleIntent: true, target: null });
+  });
 });

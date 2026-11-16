@@ -1,0 +1,79 @@
+{
+  "workId": "c05e60ef-c6c4-4835-8892-faa358a8ae1e",
+  "verdict": "inconclusive",
+  "findings": [
+    {
+      "confidence": "direct",
+      "claim": "The supplied hook configuration specifies a PreToolUse hook for Write|Edit that runs gate.mjs with --auto-ground, and a Stop hook that runs stop-gate.mjs.",
+      "sourceIds": [
+        "hook-config"
+      ]
+    },
+    {
+      "confidence": "supported",
+      "claim": "The gate source describes a deny/allow scanner and presents itself as intercepting tool calls across several hosts, including Codex; this establishes documented intent, not that this session registers or runs it.",
+      "sourceIds": [
+        "gate-description",
+        "gate-entry"
+      ]
+    },
+    {
+      "confidence": "inferred",
+      "claim": "The local controller was manually invoked and recorded ordered work stages. Its own guarantee is limited to state structure, evidence references, source freshness, and stage order; this is not an automatic hook interception or a completion check for Codex work.",
+      "sourceIds": [
+        "hook-config"
+      ]
+    },
+    {
+      "confidence": "unknown",
+      "claim": "Whether automatic grounding or completion checks run in this Codex session is unavailable from the supplied records and observable tools.",
+      "sourceIds": [
+        "hook-config",
+        "gate-description",
+        "gate-entry"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "subject": "hook-config.txt",
+      "object": "PreToolUse Write|Edit → gate.mjs --auto-ground and Stop → stop-gate.mjs",
+      "authoritySourceIds": [
+        "hook-config"
+      ],
+      "relation": "configures"
+    },
+    {
+      "subject": "gate-description",
+      "object": "Codex",
+      "authoritySourceIds": [
+        "gate-description"
+      ],
+      "relation": "describes intended host coverage including"
+    }
+  ],
+  "reviewRequired": [
+    "gate-description"
+  ],
+  "unresolved": [
+    "Codex-specific hook registration and invocation status are not supplied; the configured Stop target implementation is not included."
+  ],
+  "execution": {
+    "invalidatedSteps": [],
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": "tools/controller.mjs init/status/record was manually invoked; this is not a gate canary or evidence of automatic interception.",
+    "completedSteps": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "nextAction": "Obtain Codex-specific hook registration or runtime invocation evidence, and the stop-gate implementation, before relying on automatic enforcement."
+  },
+  "limitations": [
+    "The supplied hook configuration identifies Claude-style event names and commands but does not prove those hooks are active in Codex.",
+    "Only excerpts of gate.mjs were supplied; the full gate and stop-gate implementation were not available for inspection or execution.",
+    "The available local controller validates workflow records, not truthful interpretation or host-level interception.",
+    "No Codex hook-status or interception-observation tool was available in this task."
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "action": "create",
+  "id": "chat-specification-20261111",
+  "operationId": "create",
+  "expectedRevision": 0,
+  "goal": "Specify a complete sourced chat feature and test reviewed agent handoffs; no product implementation or policy admission",
+  "scope": "feature",
+  "actors": [
+    {
+      "id": "work_36",
+      "roles": [
+        "product"
+      ]
+    },
+    {
+      "id": "independent_verifier",
+      "roles": [
+        "ux",
+        "visual-motion",
+        "architecture",
+        "dependencies"
+      ]
+    },
+    {
+      "id": "root",
+      "roles": [
+        "implementation"
+      ]
+    },
+    {
+      "id": "work_35",
+      "roles": [
+        "verification"
+      ]
+    }
+  ],
+  "sourcePaths": [
+    "research/coordination-study/lifecycle/chat-specification-brief.md",
+    "AGENTS.md",
+    "docs/architecture/platform-map.md",
+    "docs/architecture/domain-design-method.md",
+    "packages/core/src/flows/pjc/ai.assistant.json",
+    "packages/core/src/flows/ai/aiAssistant.flow.ts",
+    "apps/gurudevi-mobile/app/a-i-assistant.tsx",
+    "packages/ai/src/screens/AIScreen.tsx",
+    "packages/ai/src/hooks/useAIAgent.ts",
+    "packages/ai/src/api/sanctuaryCloudProvider.ts",
+    "packages/ai/package.json",
+    "packages/schema/schema.zmodel",
+    "apps/sanctuary-api/src/modules/catalog.ts",
+    "docs/architecture/model/gurudevi.c4",
+    "pnpm-lock.yaml"
+  ],
+  "externalRefs": [
+    {
+      "system": "PJC",
+      "ref": "feature:ai.assistant"
+    },
+    {
+      "system": "C4",
+      "ref": "docs/architecture/model/gurudevi.c4"
+    },
+    {
+      "system": "API",
+      "ref": "apps/sanctuary-api/src/modules/catalog.ts"
+    }
+  ]
+}

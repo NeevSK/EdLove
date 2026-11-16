@@ -24,6 +24,45 @@ describe('Expo Router +native-intent Middleware', () => {
     expect(result).toBe('/auth/callback?code=pkce-verifier-123');
   });
 
+  it('admits explore.gurudevi.app universal links directly into internal routes and stashes pending intent', async () => {
+    const result = await redirectSystemPath({
+      path: 'https://explore.gurudevi.app/workspace',
+      initial: true,
+    });
+    expect(result).toBe('/workspace');
+
+    const pending = pendingIntentStore.getState().getPendingIntent();
+    expect(pending).toMatchObject({
+      targetPath: '/workspace',
+      intentKind: 'generic',
+      originalUrl: 'https://explore.gurudevi.app/workspace',
+    });
+  });
+
+  it('strips ad-tech attribution tracking from route path and preserves clean route params', async () => {
+    const result = await redirectSystemPath({
+      path: 'https://explore.gurudevi.app/workspace?tab=canvas&utm_source=meta&fbclid=AQD123',
+      initial: true,
+    });
+    // Ad-tech params stripped from navigation route path
+    expect(result).toBe('/workspace?tab=canvas');
+
+    const pending = pendingIntentStore.getState().getPendingIntent();
+    expect(pending?.targetPath).toBe('/workspace?tab=canvas');
+    expect(pending?.params).toEqual({
+      path: '/workspace?tab=canvas',
+      tab: 'canvas',
+    });
+  });
+
+  it('routes pulse intents directly to /pulse without pending intent gating', async () => {
+    const result = await redirectSystemPath({
+      path: 'gurudevi://pulse',
+      initial: false,
+    });
+    expect(result).toBe('/pulse');
+  });
+
   it('rejects retired classroom invite routes without creating pending work', async () => {
     const result = await redirectSystemPath({
       path: 'gurudevi://invite/classroom/TEACHER2026',

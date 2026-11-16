@@ -14,6 +14,18 @@ export const PUBLIC_GURUDEVI_HOST = 'gurudevi.app';
 export const SANCTUARY_GURUDEVI_HOST = 'sanctuary.gurudevi.app';
 export const EXPLORE_GURUDEVI_HOST = 'explore.gurudevi.app';
 
+export const ALLOWED_APPLICATION_HOSTS = new Set([
+  PUBLIC_GURUDEVI_HOST,
+  SANCTUARY_GURUDEVI_HOST,
+  EXPLORE_GURUDEVI_HOST,
+  'public.localhost',
+  'sanctuary.localhost',
+  'explore.localhost',
+  'localhost',
+  '127.0.0.1',
+  'platform.gurudevi.app',
+]);
+
 export type GurudeviHost = 'public' | 'sanctuary' | 'explore' | 'school' | 'other';
 export type HostRoutingDecision =
   | { kind: 'allow' }
@@ -45,6 +57,7 @@ const sanctuaryRoutePrefixes = [
   '/community',
   '/explore-intro',
   '/icon-lab',
+  '/intro',
   '/invitation-welcome',
   '/kit',
   '/library',
@@ -80,8 +93,46 @@ const sanctuaryRoutePrefixes = [
 const exploreAllowedPathPrefixes = [
   '/welcome',   // Landing / sign-in prompt (guest mode, no Supabase required)
   '/self',      // Demo self-reflection floor (uses localStorage only)
+  '/workspace', // Guest workspace floor (TEACHER capacity, mock data)
+  '/community', // Guest community floor (mock sandbox posts)
+  '/library',   // Guest library floor (curated resources)
+  '/atlas',     // Interactive world atlas
+  '/settings',  // Guest settings & preferences (localStorage)
+  '/notifications', // Guest notifications floor
+  '/profile',   // Guest explorer profile
+  '/intro',     // Interactive Tutti Walkthrough Tour
+  '/explore-intro', // Introduction redirect to /self
+  '/c',         // Public classroom invite landing
+  '/invitation-welcome', // Classroom invite welcome redirect
+  '/support',   // Public Support & Help Hub
   '/badge.svg', // School badge (public asset)
 ] as const;
+
+/**
+ * Registry of public marketing, legal, editorial, and informational pages
+ * hosted natively on gurudevi.app.
+ */
+export const publicRoutePrefixes = [
+  '/',
+  '/about',
+  '/authors',
+  '/delete-account',
+  '/faq',
+  '/guidelines',
+  '/intro',
+  '/journal',
+  '/privacy',
+  '/status',
+  '/support',
+  '/terms',
+  '/thuthimal',
+] as const;
+
+export function isPublicPath(pathname: string): boolean {
+  return publicRoutePrefixes.some(
+    (prefix) => pathname === prefix || (prefix !== '/' && pathname.startsWith(`${prefix}/`)),
+  );
+}
 
 const GURUDEVI_LK_HOSTS = new Set(['gurudevi.lk', 'www.gurudevi.lk']);
 
@@ -118,6 +169,53 @@ const RESERVED_SUBDOMAINS = new Set([
 
 function normalizeHostname(hostname: string): string {
   return hostname.trim().toLowerCase().replace(/:\d+$/, '').replace(/\.$/, '');
+}
+
+/**
+ * Validates and extracts the canonical public hostname according to RFC 7239 §5.3.
+ *
+ * In production reverse proxy topologies (Cloudflare -> Ingress -> Node), the internal
+ * ingress often mutates `Host` to internal cluster DNS (e.g. web.svc.local).
+ * If a valid X-Forwarded-Host or Forwarded header is present from the trusted edge,
+ * it is sanitized and validated strictly against the application host allowlist.
+ * Arbitrary/untrusted host headers fall back to the safe default (PUBLIC_GURUDEVI_HOST)
+ * to prevent Host Header Injection and cache poisoning.
+ */
+export function extractValidatedHost(
+  directHost: string | null,
+  forwardedHost: string | null,
+  fallbackUrlHost?: string | null,
+): string {
+  const direct = normalizeHostname(directHost ?? fallbackUrlHost ?? PUBLIC_GURUDEVI_HOST);
+
+  // If direct host is an untrusted third-party host (not an internal cluster mesh node,
+  // not localhost, and not a recognized gurudevi domain), do NOT allow X-Forwarded-Host to override it.
+  const isDirectInternalOrPlatform =
+    ALLOWED_APPLICATION_HOSTS.has(direct) ||
+    GURUDEVI_LK_HOSTS.has(direct) ||
+    extractSchoolSubdomain(direct) !== null ||
+    isLocalPreviewHost(direct) ||
+    direct.endsWith('.local') ||
+    direct.endsWith('.internal') ||
+    direct.includes('.svc.cluster.local');
+
+  if (isDirectInternalOrPlatform && forwardedHost) {
+    const rawCandidate = forwardedHost.split(',')[0]?.trim() ?? '';
+    const candidate = normalizeHostname(rawCandidate);
+    if (
+      ALLOWED_APPLICATION_HOSTS.has(candidate) ||
+      GURUDEVI_LK_HOSTS.has(candidate) ||
+      extractSchoolSubdomain(candidate) !== null ||
+      isLocalPreviewHost(candidate)
+    ) {
+      return candidate;
+    }
+    // If behind a trusted internal mesh proxy but the forwarded host is unapproved / spoofed,
+    // fail closed to the canonical public host rather than exposing internal cluster DNS.
+    return PUBLIC_GURUDEVI_HOST;
+  }
+
+  return direct || PUBLIC_GURUDEVI_HOST;
 }
 
 export function isLocalPreviewHost(hostname: string): boolean {
@@ -182,6 +280,7 @@ export function resolveHostRouting(
   }
 
   const normalized = normalizeHostname(hostname);
+  const normalizedPath = pathname.trim().toLowerCase().replace(/\/+$/, '') || '/';
 
   if (GURUDEVI_LK_HOSTS.has(normalized)) {
     return { kind: 'redirect', host: PUBLIC_GURUDEVI_HOST };
@@ -198,12 +297,16 @@ export function resolveHostRouting(
     if (method !== 'GET' && method !== 'HEAD') return { kind: 'not-found' };
 
     // Auth flows redirect to the real sanctuary host — explore itself has no auth.
-    if (pathname === '/sign-in' || pathname === '/sign-up' || pathname.startsWith('/auth')) {
+    if (
+      normalizedPath === '/sign-in' ||
+      normalizedPath === '/sign-up' ||
+      normalizedPath.startsWith('/auth')
+    ) {
       return { kind: 'redirect', host: SANCTUARY_GURUDEVI_HOST, pathname };
     }
 
     // R3: Root rewrite handled before allowlist check.
-    if (pathname === '/') {
+    if (normalizedPath === '/' || normalizedPath === '') {
       return { kind: 'rewrite', pathname: '/welcome' };
     }
 
@@ -214,13 +317,35 @@ export function resolveHostRouting(
       return { kind: 'allow' };
     }
 
-    // R3: Production allowlist gate (explore.gurudevi.app) — only explicitly approved paths are served.
-    // Everything else returns 404 to prevent session-carrying sanctuary routes from
-    // being accessible on the demo surface in production.
-    const isAllowed = hasRoutePrefix(pathname, exploreAllowedPathPrefixes);
-    if (!isAllowed) return { kind: 'not-found' };
+    // Channel 1 & 2: Production allowlist gate (explore.gurudevi.app) —
+    // explicitly approved guest showroom paths and explore-intended floors are admitted
+    // without premature 404 blocking.
+    const isAllowed = hasRoutePrefix(normalizedPath, exploreAllowedPathPrefixes);
+    if (isAllowed) return { kind: 'allow' };
 
-    return { kind: 'allow' };
+    // Channel 3 (The Single Gateway Rule): If a private staff/admin sanctuary route
+    // is requested on explore (e.g. /admin, /account-recovery, /verger-lab),
+    // redirect strictly to the Sanctuary Sign-In/Welcome Gateway with returnTo,
+    // rather than bouncing deep into private surfaces or showing an unhelpful 404.
+    // Note: /api endpoints are NOT redirected to welcome; they return not-found (RFC 7807 problem details).
+    if (isSanctuaryPath(normalizedPath) && !normalizedPath.startsWith('/api')) {
+      return {
+        kind: 'redirect',
+        host: SANCTUARY_GURUDEVI_HOST,
+        pathname: `/welcome?returnTo=${encodeURIComponent(pathname)}`,
+      };
+    }
+
+    // Non-discriminatory Public Content Treatment:
+    // If a public marketing, legal, editorial, or informational page is requested on explore
+    // (e.g. /about, /faq, /privacy, /terms, /journal), redirect to the public origin (gurudevi.app)
+    // with exact pathname preserved, exactly as sanctuary does. Zero discriminatory 404s.
+    if (isPublicPath(normalizedPath)) {
+      return { kind: 'redirect', host: PUBLIC_GURUDEVI_HOST, pathname };
+    }
+
+    // Channel 4: Unmapped or invalid routes return not-found (rewritten to /not-found at proxy)
+    return { kind: 'not-found' };
   }
 
   if (incomingHost === 'school') {
@@ -271,6 +396,11 @@ export function resolveHostRouting(
 
   if (pathname === '/support' || pathname.startsWith('/support/')) {
     if (method !== 'GET' && method !== 'HEAD') return { kind: 'not-found' };
+    return { kind: 'allow' };
+  }
+
+  // Universal accessibility: Tutti walkthrough tour (/intro) is valid on all surfaces
+  if (pathname === '/intro') {
     return { kind: 'allow' };
   }
 

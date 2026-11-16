@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "role": "knowledge-investigator",
+  "goal": "Map existing project knowledge, relationships, authority and integration seams for persistent AI development coordination without changing production behavior.",
+  "observedAt": "2026-11-11",
+  "revision": "186809430aa10a4ef4de0e78313dc38aa041d229",
+  "workingTree": "Contains pre-existing changes; references describe inspected working-tree files, not an assertion that every file matches HEAD.",
+  "evidenceLevel": "G0 static inspection plus execution of the read-only PJC structural checker; no application behavior, hooks or production services exercised.",
+  "sources": {
+    "pjcSchema": {"path": "packages/core/src/flows/pjc/hierarchy.ts", "line": 5},
+    "pjcHierarchy": {"path": "packages/core/src/flows/pjc/hierarchy.ts", "line": 98},
+    "pjcQuery": {"path": "packages/core/src/flows/pjc/hierarchyQuery.ts", "line": 4},
+    "pjcLoader": {"path": "packages/core/src/flows/pjc/catalogLoader.ts", "line": 10},
+    "pjcCheck": {"path": "scripts/pjc.ts", "line": 403},
+    "pjcFreshness": {"path": "scripts/pjc.ts", "line": 439},
+    "pjcGuide": {"path": "docs/architecture/product-journey-catalog.md", "line": 12},
+    "pjcOwner": {"path": "docs/architecture/product-journey-catalog.md", "line": 34},
+    "apiPjcNarrative": {"path": "packages/core/src/flows/pjc/api.foundation.json", "line": 4},
+    "apiPjcBusinessScope": {"path": "packages/core/src/flows/pjc/api.foundation.json", "line": 22},
+    "router": {"path": "apps/sanctuary-api/src/core/router.ts", "line": 13},
+    "capabilityCatalog": {"path": "apps/sanctuary-api/src/modules/catalog.ts", "line": 126},
+    "conformance": {"path": "apps/sanctuary-api/src/conformance/reconcile.ts", "line": 70},
+    "cardReader": {"path": "apps/sanctuary-api/src/conformance/cards.adapter.ts", "line": 31},
+    "docClaims": {"path": "apps/sanctuary-api/src/conformance/docTables.adapter.ts", "line": 32},
+    "evidenceReader": {"path": "apps/sanctuary-api/src/conformance/evidence.ts", "line": 9},
+    "consumerReader": {"path": "apps/sanctuary-api/src/conformance/consumers.adapter.ts", "line": 40},
+    "conformanceComposition": {"path": "apps/sanctuary-api/scripts/capability-conformance.ts", "line": 53},
+    "conformanceFreshness": {"path": "apps/sanctuary-api/scripts/capability-conformance.ts", "line": 43},
+    "scout": {"path": "packages/platform-mcp/src/services/ScoutService.ts", "line": 14},
+    "scoutFailure": {"path": "packages/platform-mcp/src/services/ScoutService.ts", "line": 118},
+    "discovery": {"path": "packages/platform-mcp/src/services/DiscoveryService.ts", "line": 266},
+    "domainMethod": {"path": "docs/architecture/domain-design-method.md", "line": 14},
+    "domainCard": {"path": "docs/architecture/domain-design-method.md", "line": 65},
+    "platformOwnership": {"path": "docs/architecture/platform-map.md", "line": 44},
+    "intro": {"path": "docs/Core/what-is-gurudevi.md", "line": 13},
+    "covenantExpansion": {"path": "docs/Core/gurudevi-soul-and-core-covenant.md", "line": 15},
+    "covenantPartialSupersession": {"path": "docs/Core/gurudevi-soul-and-core-covenant.md", "line": 208}
+  },
+  "entities": [
+    {"kind": "feature", "authority": "PJC owning module", "fields": ["stable ID", "title", "lifecycle.owner", "maturity", "priority"], "sources": ["pjcHierarchy", "pjcOwner"]},
+    {"kind": "intent", "authority": "PJC owning feature", "fields": ["actor", "outcome", "owned journeys", "shared journey references"], "sources": ["pjcHierarchy"]},
+    {"kind": "journey", "authority": "PJC owning intent", "fields": ["situation", "outcome", "development context", "steps", "transitions", "requirements", "bindings", "scenarios", "evidence"], "sources": ["pjcHierarchy"]},
+    {"kind": "requirement or observation", "authority": "Declared record and linked authority", "fields": ["statement", "origin", "links"], "sources": ["pjcSchema"]},
+    {"kind": "binding", "authority": "Underlying referenced implementation or technical authority", "fields": ["category", "reference", "route", "status", "verifiedRevision", "note"], "sources": ["pjcSchema"]},
+    {"kind": "capability", "authority": "Sanctuary API catalog for admitted API declaration", "fields": ["name", "module", "kind", "channels", "status", "requiredEvidence"], "sources": ["capabilityCatalog"]},
+    {"kind": "domain card", "authority": "Owner-confirmed card for domain meaning and admission", "fields": ["owner", "lifecycle", "commands", "queries", "rules"], "sources": ["domainCard", "cardReader"]},
+    {"kind": "test evidence", "authority": "Recorded test execution under explicit substitutions and limits", "fields": ["capability", "level", "passed", "test", "run", "at"], "sources": ["evidenceReader"]},
+    {"kind": "decision", "authority": "Scoped human decision and source record", "fields": ["Currently represented across prose documents rather than a first-class PJC decision entity"], "sources": ["pjcHierarchy", "domainCard"]}
+  ],
+  "relationships": [
+    {"from": "feature", "relation": "owns", "to": "intent", "classification": "declared", "sources": ["pjcHierarchy"]},
+    {"from": "intent", "relation": "owns or shares", "to": "journey", "classification": "declared", "sources": ["pjcHierarchy"]},
+    {"from": "journey", "relation": "owns or references", "to": "requirement and binding", "classification": "declared", "sources": ["pjcHierarchy", "pjcQuery"]},
+    {"from": "scenario", "relation": "follows ordered", "to": "transition", "classification": "declared", "sources": ["pjcQuery"]},
+    {"from": "PJC record", "relation": "links to", "to": "PJC record ID", "classification": "declared", "sources": ["pjcSchema"], "limit": "Generic links contain no typed relationship semantics such as expands or supersedes."},
+    {"from": "capability", "relation": "listed in", "to": "card commands or queries", "classification": "mechanically-extracted", "sources": ["cardReader", "conformance"]},
+    {"from": "document table", "relation": "claims status and capability membership", "to": "module", "classification": "mechanically-extracted", "sources": ["docClaims"]},
+    {"from": "client call expression", "relation": "consumes", "to": "capability name suffix", "classification": "mechanically-extracted", "sources": ["consumerReader"], "limit": "Supported static property-access call shape; not proof of reachable or authorized runtime use."},
+    {"from": "tagged Vitest assertion", "relation": "declares evidence for", "to": "capability", "classification": "mechanically-extracted", "sources": ["evidenceReader"], "limit": "Tag association does not independently establish that the assertion covers the capability's full behavior."},
+    {"from": "Covenant document", "relation": "expands", "to": "introduction document", "classification": "declared", "sources": ["intro", "covenantExpansion"]},
+    {"from": "Covenant pillar definitions", "relation": "supersedes overlapping definitions in", "to": "introduction and historical manifesto", "classification": "declared", "sources": ["covenantPartialSupersession"]},
+    {"from": "API implementation change", "relation": "requires reconsideration of", "to": "PJC narrative", "classification": "inferred", "sources": ["apiPjcNarrative", "router", "pjcGuide"]},
+    {"from": "owner user-origin claim", "relation": "was explicitly decided in", "to": "precise original chat message and scope", "classification": "unresolved", "sources": ["pjcSchema"], "limit": "Origin label and generic links alone do not encode the original external source and decision acceptance."}
+  ],
+  "findings": [
+    {"id": "K1", "confidence": "direct", "statement": "The introduction and Covenant support document-level expansion and scoped supersession of overlapping pillar definitions at the same time.", "sources": ["intro", "covenantExpansion", "covenantPartialSupersession"], "consequence": "An experiment must reject blanket retirement of the introduction but must not score every supersession statement as incorrect."},
+    {"id": "K2", "confidence": "direct", "statement": "The PJC feature description states an empty v1 contract, while the inspected router and catalog contain six foundation capabilities. Empty business capability scope is separately qualified in the PJC.", "sources": ["apiPjcNarrative", "apiPjcBusinessScope", "router", "capabilityCatalog"], "consequence": "Record a stale current-state claim without declaring the whole horizontal-first direction contradictory."},
+    {"id": "K3", "confidence": "direct", "statement": "PJC provenance records have origin and generic links but no first-class decision, external source locator, valid interval, supersession edge or execution-run entity.", "sources": ["pjcSchema", "pjcHierarchy"], "consequence": "A coordination design needs an explicit mapping for these concerns rather than treating existing origin labels as verified decision history."},
+    {"id": "K4", "confidence": "direct", "statement": "PJC check currently reports zero structural errors, 428 gaps and 113 bindings. Its revision freshness check compares the declared verifiedRevision with a caller-supplied revision.", "sources": ["pjcCheck", "pjcFreshness"], "consequence": "No semantic freshness guarantee follows from structural validity, and no content-sensitive invalidation is established by revision equality alone."},
+    {"id": "K5", "confidence": "direct", "statement": "API conformance joins capability declarations, parsed card lists, selected document tables, contract and router paths, tagged test records, consumers and channel runs. It does not read PJC.", "sources": ["conformance", "conformanceComposition"], "consequence": "A narrow reusable reconciler exists, but PJC narrative claims are outside its observed input boundary."},
+    {"id": "K6", "confidence": "direct", "statement": "The conformance script calculates changedAt from filesystem mtimes of broad module implementation files and compares those times with test startTime. Channel runs are supplied as an empty array.", "sources": ["conformanceFreshness", "conformanceComposition", "evidenceReader", "conformance"], "consequence": "Freshness is not commit or content provenance. A checkout or copy may change mtimes, and all declared open channels remain unproven by that input."},
+    {"id": "K7", "confidence": "direct", "statement": "Scout composes filename search, documentation search and lexical code matches, caps filename results at five, and catches discovery failures before potentially returning no traces.", "sources": ["scout", "scoutFailure"], "consequence": "No-results and unavailable-source states need separate typed reporting; this static code reading does not measure recall or actual installed-tool execution."},
+    {"id": "K8", "confidence": "supported", "statement": "The inspected discovery/scouting services expose lexical, structural and impact tools but no PJC-aware context assembly was found by the targeted source search.", "sources": ["discovery", "scout", "pjcQuery"], "consequence": "An adapter could compose existing readers and retain their authority and limitations; broader repository search is still required before claiming no such integration exists anywhere."},
+    {"id": "K9", "confidence": "direct", "statement": "The domain design method explicitly attributes its existence to an earlier API growing one ownerless contract per feature, with agents adding more.", "sources": ["domainMethod"], "consequence": "The historical rationale supports reusing domain ownership rather than deriving namespaces from screens or tasks. It is an author's account, not an independently measured causal result."}
+  ],
+  "history": [
+    {"commit": "9b6f8e8a87", "date": "2026-10-17", "observation": "Git blame places the active introduction/expanded Covenant wording in this commit; this study did not independently retrieve the original chat."},
+    {"commit": "308aa4f35f", "date": "2026-11-06", "observation": "Git blame attributes the empty-v1 PJC feature description to the mobile Arrive commit, which added the PJC catalog files in its observed diff."},
+    {"commit": "c7bf238aa", "date": "2026-11-08", "observation": "Introduces the inspected capability conformance implementation and tests."},
+    {"commit": "c8281d59c", "date": "2026-11-08", "observation": "Later sync capability work changes the API catalog; last-touch chronology does not alone establish product authority."}
+  ],
+  "integrationSeams": [
+    {"existing": "loadCatalogFile plus validateHierarchy plus inspectHierarchyJourney", "proposedUse": "Read existing PJC declarations and project journey-scoped context without duplicating the catalog.", "constraint": "Keep filesystem loading outside platform-neutral core exports; retain declaration-versus-evidence disclaimers."},
+    {"existing": "reconcile and its typed readers", "proposedUse": "Expose per-capability gaps as an evidence source for an engineering context packet.", "constraint": "Do not silently reinterpret card listing, policy unmeasured or channels unproven as accepted product intent or runtime correctness."},
+    {"existing": "DiscoveryService and ScoutService", "proposedUse": "Discover candidate files, code and architecture alongside explicit PJC links.", "constraint": "Return source coverage and execution failures separately; measure retrieval coverage before claiming completeness."},
+    {"existing": "domain cards and scoped governing documents", "proposedUse": "Link human authority and decision scope into change analysis.", "constraint": "Document freshness and timestamps cannot substitute for an explicit authority relationship."}
+  ],
+  "proposedInterfaceConstraints": {
+    "resolveContext": ["Accept stable PJC and capability identifiers or a proposed match from natural language.", "Return referenced source records, snapshot hashes, relationship classification, unknowns and per-source coverage.", "Preserve partial supersession and expansion as separate scoped relationships."],
+    "createOrResumeChange": ["Reference existing product authorities rather than create a second requirements ledger.", "Separate engineering procedure state from product journey state.", "Preserve source fingerprints and original observations across restart."],
+    "recordActionDecisionEvidence": ["Keep agent proposals distinct from accepted owner decisions.", "Record exact source locator, observed revision, scope and evidence limits.", "Do not reuse an API evidence level as a blanket verdict on project intent."],
+    "evaluateNextActions": ["Validate declared prerequisite artifacts and source freshness mechanically.", "Return blocked, partial, unavailable and unresolved states rather than successful empty results.", "Do not treat structural validation as semantic acceptance."],
+    "identifyReconsideration": ["Index reverse bindings to changed files and scoped decisions.", "Invalidate only dependent conclusions and evidence using explicit content fingerprints.", "Use review-required for arbitrary prose unless a precise machine-checkable claim exists."]
+  },
+  "sourceCoverage": [
+    {"category": "source control", "status": "searched", "detail": "Local git log, show --stat and blame for PJC, conformance, introduction/Covenant and discovery/scout; no remote PR discussions queried."},
+    {"category": "long-form documents", "status": "searched", "detail": "Repository PJC, product introduction/Covenant, domain method, authority and platform-map documents. No external document service queried."},
+    {"category": "issue tracker", "status": "not_searched", "detail": "No linked ticket identified in the inspected anchors; available connector presence is not proof relevant records exist."},
+    {"category": "chat", "status": "inherited_only", "detail": "Parent supplied prior chat observations. This delegate did not query chat history and does not independently attest those original conversations."},
+    {"category": "infrastructure observability", "status": "not_applicable_to_static_scope", "detail": "No claim about live service behavior is made."},
+    {"category": "error tracking", "status": "not_applicable_to_static_scope", "detail": "No live runtime defect was investigated."},
+    {"category": "product analytics", "status": "not_applicable_to_static_scope", "detail": "No product-outcome or usage claims made."}
+  ],
+  "commands": [
+    "Read persona, pstack mode, how, why and epistemics files.",
+    "Read PJC hierarchy.ts, hierarchyQuery.ts, catalogLoader.ts and guide; search report and trace functions in scripts/pjc.ts.",
+    "Read conformance reconcile/cards/docTables/evidence/consumers and composition script sections.",
+    "Read ScoutService.ts and selected DiscoveryService.ts sections; search PJC references in platform-mcp sources.",
+    "git log, git blame, git show --stat for named anchors.",
+    "pnpm exec tsx --tsconfig packages/core/tsconfig.json scripts/pjc.ts check --format json; summarized errors=0, gaps=428, bindings=113.",
+    "Targeted PJC search in package.json and .github/workflows returned no matches.",
+    "Two searches used nonexistent candidate conformance-script paths and one Windows wildcard path was invalid; corrected by rg --files and directory search before drawing findings."
+  ],
+  "limitations": [
+    "This is a scoped static investigation, not an exhaustive inventory of all product/project software or conversations.",
+    "No source recall or semantic interpretation accuracy was measured by this delegate.",
+    "No API conformance command was run because it writes production report artifacts; its composition and limitations were inspected statically.",
+    "PJC checker counts are observations from the current working tree, not counts of confirmed defects.",
+    "Full repository gates, application tests and production runtime behavior are outside this delegate's owned task."
+  ]
+}

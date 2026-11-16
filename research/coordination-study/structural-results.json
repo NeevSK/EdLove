@@ -1,0 +1,614 @@
+[
+  {
+    "trialId": "documents-X-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "documents-X-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "documents-Y-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "documents-Y-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "documents-Z-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "documents-Z-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "capabilities-X-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "capabilities-X-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "capabilities-Y-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "capabilities-Y-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "capabilities-Z-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "capabilities-Z-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "instructions-X-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "instructions-X-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "instructions-Y-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": false,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "not_verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "instructions-Y-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "instructions-Z-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "instructions-Z-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "hooks-X-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "hooks-X-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "hooks-Y-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "hooks-Y-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "hooks-Z-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "hooks-Z-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "resume-X-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "resume-X-2",
+    "checks": {
+      "matchingWorkId": false,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "not_verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "resume-Y-1",
+    "checks": {
+      "matchingWorkId": false,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "not_verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "resume-Y-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "resume-Z-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "resume-Z-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "authority-X-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "authority-X-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "authority-Y-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": false,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "not_verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "authority-Y-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": false,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "not_verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "authority-Z-1",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  },
+  {
+    "trialId": "authority-Z-2",
+    "checks": {
+      "matchingWorkId": true,
+      "verdict": true,
+      "findings": true,
+      "decisions": true,
+      "reviewRequired": true,
+      "unresolved": true,
+      "execution": true,
+      "limitations": true,
+      "toolBudget": true
+    },
+    "structuralStatus": "verified",
+    "semanticStatus": "requires_independent_review",
+    "caveat": "Structure and references do not prove correct interpretation or real tool execution."
+  }
+]

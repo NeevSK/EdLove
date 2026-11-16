@@ -1,0 +1,26 @@
+{
+ "kind":"architecture",
+ "components":[
+  {"id":"measure-owner","owner":"Existing relevant business domain and authorized channel; specific ownership and admission remain unresolved","reference":"docs/architecture/platform-map.md:44; apps/sanctuary-api/src/modules/catalog.ts"},
+  {"id":"feature-composition","owner":"Relevant domain or app composition; no production data adapter was added","reference":"research/coordination-study/lifecycle/radar/architecture-options.json"},
+  {"id":"radar-geometry","owner":"@repo/ui/components/shared presentation math; no fetching or scoring","reference":"packages/ui/src/components/shared/radarGeometry.ts"},
+  {"id":"radar-native","owner":"@repo/ui/components/native","reference":"packages/ui/src/components/native/Radar/Radar.tsx"},
+  {"id":"radar-web","owner":"@repo/ui/components/web","reference":"packages/ui/src/components/web/Radar/Radar.tsx"},
+  {"id":"radar-recipe","owner":"@repo/ui/theme","reference":"packages/ui/src/theme/contracts.ts; packages/ui/src/theme/build.ts; packages/ui/src/theme/types.ts"}
+ ],
+ "flows":[
+  {"from":"measure-owner","to":"feature-composition","operation":"Future authorized domain adapter supplies separate subject, measure/version, perspective, source, raw values, units, ranges and explicit unknowns","direction":"response","contractRef":"No admitted radar API established; packages/ui/src/theme/contracts.ts is presentation contract only","failure":"Loading, empty, denied, unavailable and error remain distinct; source/API authority remains unverified."},
+  {"from":"feature-composition","to":"radar-native","operation":"Pass one attributed observation and caller-owned comparability assertion","direction":"command","contractRef":"RadarContract and RadarObservation in packages/ui/src/theme/contracts.ts","failure":"Invalid geometry returns unavailable presentation; no fabricated values."},
+  {"from":"feature-composition","to":"radar-web","operation":"Pass one attributed observation and caller-owned comparability assertion","direction":"command","contractRef":"RadarContract and RadarObservation in packages/ui/src/theme/contracts.ts","failure":"Invalid geometry returns unavailable presentation; no fabricated values."},
+  {"from":"radar-native","to":"radar-geometry","operation":"Project only supplied raw axes into local geometry","direction":"query","contractRef":"projectRadar in packages/ui/src/components/shared/radarGeometry.ts","failure":"Unknown remains null; invalid ranges and values are rejected; no interpolation across missing axes."},
+  {"from":"radar-web","to":"radar-geometry","operation":"Project only supplied raw axes into local geometry","direction":"query","contractRef":"projectRadar in packages/ui/src/components/shared/radarGeometry.ts","failure":"Plot requires declared-comparable and three axes; assertion itself is not verified by the kit."}
+ ],
+ "data":[],
+ "boundaries":[
+  "Shared geometry is owned by UI because both owned platform renderers consume it. The earlier graphics candidate would create a package dependency cycle: packages/graphics/package.json declares @repo/ui, so adding @repo/graphics as a UI dependency creates UI -> graphics -> UI.",
+  "Existing graphics radarLayout substitutes sample attributes, and the legacy flat UI renderer imports frozen primitives; neither is reused as the new contract.",
+  "The kit performs no data fetch, persistence, identity authorization, observer permission, cross-subject join, scoring or owner approval. The raw value and unit remain attributed to their supplied measure and perspective; plotPolicy is a caller assertion, not semantic proof.",
+  "No current radar business capability is established in the inspected Sanctuary API catalog. Product ownership, source schemas, identity and consent, history, offline writes/sync, deletion, export, and cross-person visibility remain open and subject to the horizontal API foundation constraint.",
+  "This is a synthetic presentation prototype. Existing mobile profile placeholder, legacy paths, flows and their working behavior remain untouched. Independent device/browser accessibility and live domain evidence are separate obligations."
+ ]
+}

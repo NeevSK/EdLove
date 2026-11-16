@@ -1,0 +1,347 @@
+{
+  "scope": "Independent read-only verification of the coordination CLI/MCP integration and implementation claims. No production files changed.",
+  "verification": {
+    "command": "pnpm --filter @repo/platform-mcp exec vitest run src/coordination.test.ts src/coordinationTools.test.ts src/coordinationGateway.integration.test.ts",
+    "result": "passed",
+    "testFiles": 3,
+    "tests": 14,
+    "evidence": "Targeted Vitest run completed with exit code 0; all 14 tests passed."
+  },
+  "runtimeProbe": {
+    "command": "'{\"action\":\"inventory\"}' | node --import tsx packages/platform-mcp/src/cli/coordination.ts - --store <temporary SQLite path>",
+    "observedAt": "2026-11-11T12:27:35.211Z",
+    "k6": {
+      "availability": "available",
+      "version": "2.3.0"
+    },
+    "otherRelevantTools": {
+      "likec4": "1.60.0",
+      "syft": "1.55.0",
+      "gitleaks": "8.30.1",
+      "osv-scanner": "2.7.0",
+      "schemathesis": "4.33.1",
+      "spectral": "6.17.1",
+      "squawk": "2.72.0"
+    },
+    "interpretation": "The Nov 11 Claude transcript records the earlier canceled k6 installation, but the present inventory observes k6 2.3.0 available. Its later installation source is unknown from inspected history."
+  },
+  "claims": [
+    {
+      "id": "I1",
+      "status": "accepted",
+      "claim": "The coordination service is exposed as a platform MCP tool in GATEWAY mode, and the focused integration test launches both the actual CLI and MCP gateway against a shared temporary SQLite store.",
+      "evidence": [
+        "packages/platform-mcp/src/index.ts:622-678",
+        "packages/platform-mcp/src/coordinationGateway.integration.test.ts:13-43"
+      ],
+      "limit": "The integration test sets PLATFORM_MCP_SKIP_DOWNSTREAM and PLATFORM_MCP_SKIP_SKILL_SYNC. It proves local registration and persistence for this process setup, not automatic host hook invocation."
+    },
+    {
+      "id": "I2",
+      "status": "accepted",
+      "claim": "Source freshness is checked against current file hashes, and a changed or unavailable declared source blocks new actions and blocks readiness.",
+      "evidence": [
+        "packages/platform-mcp/src/coordination.ts:34-35",
+        "packages/platform-mcp/src/coordination.ts:43-52",
+        "packages/platform-mcp/src/coordination.ts:74-76",
+        "packages/platform-mcp/src/coordination.test.ts:36-45"
+      ],
+      "limit": "Only sources that the caller declared at create time are fingerprinted. The free-text scope is stored but not interpreted or enforced, and completeness of the caller's source set is not checked."
+    },
+    {
+      "id": "I3",
+      "status": "accepted",
+      "claim": "Action retries with the same action ID and byte-identical request are deduplicated; reuse with a changed payload is rejected. Interrupted checks remain pending and are not automatically rerun.",
+      "evidence": [
+        "packages/platform-mcp/src/coordination.ts:72-74",
+        "packages/platform-mcp/src/coordination.ts:85-89",
+        "packages/platform-mcp/src/coordination.test.ts:27-34",
+        "packages/platform-mcp/src/coordination.test.ts:47-55"
+      ],
+      "limit": "This does not provide authentication, tamper-proof persistence, or concurrency guarantees beyond the local SQLite transaction and busy timeout."
+    },
+    {
+      "id": "I4",
+      "status": "accepted",
+      "claim": "Unknown checks are rejected without command execution, and security-review is explicitly unavailable because no scoped scan adapter exists.",
+      "evidence": [
+        "packages/platform-mcp/src/coordinationTools.ts:78-97",
+        "packages/platform-mcp/src/coordinationTools.ts:252-261",
+        "packages/platform-mcp/src/coordinationTools.test.ts:52-59"
+      ],
+      "limit": "The check allowlist and declared impact mapping are local configuration; this does not establish that a selected check is sufficient for the actual change."
+    },
+    {
+      "id": "I5",
+      "status": "accepted",
+      "claim": "A caller cannot add a forged observed check result to a record request because the strict request schema rejects the extra result field; check results are produced by the allowlisted runner.",
+      "evidence": [
+        "packages/platform-mcp/src/coordination.ts:13-19",
+        "packages/platform-mcp/src/coordination.ts:90-105",
+        "packages/platform-mcp/src/coordinationGateway.integration.test.ts:37-39"
+      ],
+      "limit": "Callers can still enter arbitrary analysis/reconciliation notes and declare evidence paths. Those notes and declarations are not independently authenticated observations."
+    },
+    {
+      "id": "I6",
+      "status": "rejected",
+      "claim": "The integration proves automatic runtime hook capture or that a host agent cannot bypass the procedure.",
+      "evidence": [
+        "packages/platform-mcp/src/cli/coordination.ts:1-25",
+        "packages/platform-mcp/src/index.ts:622-678",
+        "packages/platform-mcp/src/coordinationGateway.integration.test.ts:13-43"
+      ],
+      "limit": "The examined implementation supplies an explicit CLI and MCP action. No hook capture or mandatory invocation path is exercised by these tests."
+    },
+    {
+      "id": "I7",
+      "status": "rejected",
+      "claim": "The system independently verifies the caller's declared scope and automatically selects every relevant impact/check.",
+      "evidence": [
+        "packages/platform-mcp/src/coordination.ts:11-17",
+        "packages/platform-mcp/src/coordination.ts:57-65"
+      ],
+      "limit": "Impacts are caller-supplied. Required checks are calculated from that declaration. Source `scope` and link statements are stored as supplied claims and are not semantic verification."
+    },
+    {
+      "id": "I8",
+      "status": "accepted_with_limit",
+      "claim": "Readiness is a local ready-for-review state after analysis, checks and reconciliation; it is not product-owner approval or proof of completion.",
+      "evidence": [
+        "packages/platform-mcp/src/coordination.ts:43-52",
+        "packages/platform-mcp/src/index.ts:622-624"
+      ],
+      "limit": "The state itself says local records are unauthenticated, tamperable, and not proof of product completion."
+    }
+  ],
+  "misuseCases": {
+    "staleSources": {
+      "result": "covered and passed in focused suite",
+      "test": "coordination.test.ts retains event history and blocks after source bytes change"
+    },
+    "idempotency": {
+      "result": "covered and passed in focused suite",
+      "test": "coordination.test.ts deduplicates same request and rejects changed payload under same action ID"
+    },
+    "unknownCheck": {
+      "result": "covered and passed in focused suite",
+      "test": "coordinationTools.test.ts confirms unknown check returns error without launching a command"
+    },
+    "forgedObservedResult": {
+      "result": "covered and passed in focused suite",
+      "test": "coordinationGateway.integration.test.ts sends an extra result field on record through MCP and expects isError"
+    }
+  },
+  "unverified": [
+    "No automatic runtime hook capture, mandatory agent invocation, or bypass prevention was tested.",
+    "No production gateway, downstream service, external API, or deployed storage was exercised.",
+    "No semantic check validates caller-declared impacts, completeness of source paths, free-text source scopes, or truth of analysis notes.",
+    "The procedure revision fingerprints the coordination core/store, check definitions, service/tool adapter, and lockfile. The reviewed code does not automatically hash every check target script; callers must include relevant files in their declared source set for those edits to stale the work.",
+    "Inventory version probes establish executable availability and reported versions only. They do not run the discovered tools' substantive scans."
+  ],
+  "filesReviewed": [
+    "packages/platform-mcp/src/coordination.ts",
+    "packages/platform-mcp/src/coordinationStore.ts",
+    "packages/platform-mcp/src/coordinationTools.ts",
+    "packages/platform-mcp/src/services/CoordinationService.ts",
+    "packages/platform-mcp/src/cli/coordination.ts",
+    "packages/platform-mcp/src/index.ts",
+    "packages/platform-mcp/src/coordination.test.ts",
+    "packages/platform-mcp/src/coordinationTools.test.ts",
+    "packages/platform-mcp/src/coordinationGateway.integration.test.ts"
+  ],
+  "finalUpdate": {
+    "reviewedAt": "2026-11-11T18:10:00+05:30",
+    "sourcesReviewed": [
+      "docs/architecture/2026-11-11-agent-coordination-study.md (Developer integration after the study)",
+      "packages/platform-mcp/docs/developer-coordination.md",
+      "research/coordination-study/decisions.tsv (latest integration rows)",
+      "research/coordination-study/integration-checks.json",
+      "research/coordination-study/integration-pilot-state.json",
+      "research/coordination-study/integration-gate-diagnostics.json",
+      "research/coordination-study/integration-anti-slop.json",
+      "reports/run-packages_platform-mcp-build-report.txt",
+      "reports/run-packages_platform-mcp-check-types-report.txt",
+      "reports/run-packages_platform-mcp-test.log",
+      "research/coordination-study/integration-validation.json",
+      "research/coordination-study/integration-check-types-final.log",
+      "research/coordination-study/integration-test-final.log",
+      "research/coordination-study/integration-build-final.log"
+    ],
+    "claims": [
+      {
+        "status": "accepted",
+        "claim": "The shared-store path was rerun against compiled CLI and compiled gateway entrypoints. The COORDINATION_TEST_COMPILED=1 route passed the gateway integration test (1 file, 1 test). The package test log separately records 51 passing tests across 10 files; this is distinct from the earlier independent 14-test suite.",
+        "evidence": [
+          "packages/platform-mcp/src/coordinationGateway.integration.test.ts:12-15",
+          "reports/run-packages_platform-mcp-test.log",
+          "Independent rerun: COORDINATION_TEST_COMPILED=1 pnpm --filter @repo/platform-mcp exec vitest run src/coordinationGateway.integration.test.ts, exit 0, 1 test passed."
+        ]
+      },
+      {
+        "status": "accepted",
+        "claim": "The package build command completed successfully with zero reported findings.",
+        "evidence": [
+          "reports/run-packages_platform-mcp-build-report.txt"
+        ]
+      },
+      {
+        "status": "rejected_with_correction",
+        "claim": "A broad statement that package build and typecheck both completed successfully is not supported by the captured reports. Build passed, but the separate `pnpm exec tsc --build --noEmit` check-types report failed with 8 errors in `src/pipeline/nodes/groundingNode.ts` and `src/pipeline/tools/sovereignTools.ts`.",
+        "evidence": [
+          "reports/run-packages_platform-mcp-check-types-report.txt",
+          "reports/run-packages_platform-mcp-check-types.log"
+        ],
+        "limit": "The listed errors are in the concurrent pipeline paths, not in the coordination files; this review does not establish causality or ownership."
+      },
+      {
+        "status": "accepted",
+        "claim": "The exported pilot state is not stale and remains blocked because API composition failed and explicit follow-ups remain unresolved.",
+        "evidence": [
+          "research/coordination-study/integration-pilot-state.json"
+        ],
+        "details": {
+          "staleSources": [],
+          "procedureChanged": false,
+          "missingChecks": [
+            "api-composition"
+          ],
+          "unresolvedCount": 2,
+          "readiness": "blocked"
+        }
+      },
+      {
+        "status": "accepted",
+        "claim": "Six of seven pilot adapter checks exited 0; API composition exited 1 with legacy-source findings. Passing API conformance means its configured gap ceiling was not exceeded, not that there are no gaps. Migration lint found no changed migrations and therefore supplies no SQL runtime evidence.",
+        "evidence": [
+          "research/coordination-study/integration-checks.json",
+          "docs/architecture/2026-11-11-agent-coordination-study.md (Current check results and integration gaps)"
+        ]
+      },
+      {
+        "status": "accepted_with_snapshot_limit",
+        "claim": "The broader anti-slop run exited 1 with 19 errors and 1,442 warnings in its captured working-tree snapshot. The integration-specific diagnostic subset had zero errors and seven warnings in that snapshot. Later scoped Biome formatting and unused-export corrections are reported, while the function-length warning remains.",
+        "evidence": [
+          "research/coordination-study/integration-anti-slop.json",
+          "research/coordination-study/integration-gate-diagnostics.json",
+          "docs/architecture/2026-11-11-agent-coordination-study.md (Current check results and integration gaps)"
+        ],
+        "limit": "No post-correction whole-tree anti-slop rerun is included here; do not present the old snapshot as current status."
+      },
+      {
+        "status": "accepted",
+        "claim": "The source/compiled entrypoint distinction is deliberate. The compiled package CLI is used with a compiled gateway session; mixing source and compiled forms changes procedure identity and blocks the shared run.",
+        "evidence": [
+          "packages/platform-mcp/docs/developer-coordination.md (Build first and compiled/source entrypoints)",
+          "packages/platform-mcp/src/coordinationGateway.integration.test.ts:12-15",
+          "docs/architecture/2026-11-11-agent-coordination-study.md (Implemented boundary)"
+        ]
+      },
+      {
+        "status": "rejected",
+        "claim": "The coordination pilot automatically captures or enforces authoring hooks, authenticates decisions, proves caller-declared scope completeness, or establishes production readiness.",
+        "evidence": [
+          "packages/platform-mcp/docs/developer-coordination.md (Local developer coordination; Recover context; Record a bounded change; Retry, resume and failure)",
+          "docs/architecture/2026-11-11-agent-coordination-study.md (Implemented boundary and Current check results and integration gaps)"
+        ],
+        "limit": "No actual hook capture was performed; the tool is explicit CLI/MCP invocation and a local editable SQLite store."
+      },
+      {
+        "status": "accepted_with_limit",
+        "claim": "The local pilot record preserves the API composition blocker and follow-up actions; it is an execution receipt, not approval to waive the blocker or claim complete workflow coverage.",
+        "evidence": [
+          "research/coordination-study/integration-pilot-state.json",
+          "research/coordination-study/decisions.tsv (latest integration rows)"
+        ]
+      },
+      {
+        "status": "accepted",
+        "claim": "The latest G0 package typecheck failed with eight errors in concurrent pipeline files. The earlier package build success and 51-test pass are historical snapshots and do not certify the latest whole-package state.",
+        "evidence": [
+          "research/coordination-study/integration-validation.json",
+          "research/coordination-study/integration-check-types-final.log",
+          "docs/architecture/2026-11-11-agent-coordination-study.md (late workspace change)"
+        ],
+        "limit": "No attempt was made to fix or retest the concurrently edited pipeline workstream."
+      },
+      {
+        "status": "accepted",
+        "claim": "The final report edit changed a source pinned by the local pilot. A fresh read-only compiled CLI status shows the pilot still has four recorded events but is blocked and now marks the report as stale.",
+        "evidence": [
+          "research/coordination-study/integration-validation.json",
+          "Compiled CLI status command against .agents/state/coordination.sqlite, read-only result: eventCount 4; readiness blocked; staleSources includes docs/architecture/2026-11-11-agent-coordination-study.md; missingChecks includes api-composition."
+        ],
+        "limit": "The exported integration-pilot-state.json predates the last report edit and consequently shows the earlier no-stale-sources snapshot; the fresh status is the current projection."
+      }
+    ],
+    "attentionFlags": [
+      "No actual Codex or Claude hook capture, automatic interception, mandatory invocation, or bypass-prevention test exists.",
+      "Caller-declared impacts, free-text source scope and source completeness are not semantically validated; stored source hashes cover only the explicitly declared set, not dependency closure.",
+      "The live pilot remains blocked by `api-composition` and unresolved security/runtime adapter plus authenticated responsibility/decision follow-ups. Do not mark it ready-for-review.",
+      "Whole-tree anti-slop remains non-green in the recorded snapshot. Later formatting and unused-type corrections do not resolve the remaining function-length warning, nor do they replace a fresh whole-tree run.",
+      "Package build passed. The separate package check-types command failed with eight pipeline-file errors; preserve this distinction.",
+      "The newly generated `research/coordination-study/integration-delta.diff` is not incorporated into these findings; its final regeneration and review remain with the coordinating agent.",
+      "Latest G0 package check-types result is exit 1 with eight errors in concurrent pipeline files; the earlier successful build and G1 test logs are historical, not proof of latest whole-package health. No concurrent files were changed or chased.",
+      "The final report edit invalidated its pinned pilot source. Fresh status preserves four events and reports the report file stale; exported integration-pilot-state.json is an earlier snapshot."
+    ],
+    "testResultSeparation": {
+      "earlierIndependentFocusedSuite": {
+        "testFiles": 3,
+        "tests": 14,
+        "result": "passed",
+        "note": "Previous independent run; do not conflate with the later package suite."
+      },
+      "laterPackageSuite": {
+        "testFiles": 10,
+        "tests": 51,
+        "result": "passed",
+        "evidence": "reports/run-packages_platform-mcp-test.log"
+      },
+      "compiledEntryPointRerun": {
+        "testFiles": 1,
+        "tests": 1,
+        "result": "passed",
+        "env": "COORDINATION_TEST_COMPILED=1",
+        "evidence": "Independent rerun during this review."
+      }
+    },
+    "updatedBy": "Independent read-only final review. Only integration-verification.json was modified.",
+    "validation": {
+      "packageBuild": {
+        "exitCode": 0,
+        "classification": "earlier snapshot; not latest package-state guarantee",
+        "evidence": "research/coordination-study/integration-build-final.log"
+      },
+      "packageTypes": {
+        "exitCode": 1,
+        "errors": 8,
+        "classification": "latest G0 result",
+        "evidence": "research/coordination-study/integration-check-types-final.log"
+      },
+      "packageTests": {
+        "exitCode": 0,
+        "testFiles": 10,
+        "tests": 51,
+        "classification": "historical G1 run predating latest concurrent pipeline changes",
+        "evidence": "research/coordination-study/integration-test-final.log"
+      },
+      "compiledGatewayRerun": {
+        "exitCode": 0,
+        "tests": 1,
+        "command": "COORDINATION_TEST_COMPILED=1 pnpm --filter @repo/platform-mcp exec vitest run src/coordinationGateway.integration.test.ts"
+      },
+      "pilotCurrentStatus": {
+        "readiness": "blocked",
+        "completedEvents": 4,
+        "staleSources": [
+          "docs/architecture/2026-11-11-agent-coordination-study.md"
+        ],
+        "missingChecks": [
+          "api-composition"
+        ],
+        "procedureChanged": false,
+        "observedBy": "Compiled CLI status read against .agents/state/coordination.sqlite"
+      }
+    }
+  }
+}

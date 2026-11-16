@@ -1,0 +1,23 @@
+{
+  "unresolved": [
+    "Codex-specific hook registration and invocation status are not supplied; the configured Stop target implementation is not included."
+  ],
+  "stage": "reconciliation",
+  "evidence": [
+    {
+      "sha256": "1ff9e8153e210ad0df65d39e171bf4451c15bf764e2d9f7437db233cf88ce36f",
+      "sourceId": "hook-config"
+    },
+    {
+      "sha256": "8be0a0bb6386bf2caf3e1eaeb868f5d94de5241b1816143bc9f2a2adaea83db7",
+      "sourceId": "gate-description"
+    },
+    {
+      "sha256": "6d7d8a471ad22c2a5722074fca09ee11045a2be8978bc4bc630e12492e867f42",
+      "sourceId": "gate-entry"
+    }
+  ],
+  "id": "reconciliation-1",
+  "kind": "record",
+  "summary": "Reconciled claims to the frozen records: hook-config establishes configured PreToolUse Write|Edit and Stop commands in a Claude settings file; gate-description documents intended gate behavior and claims broad host support; gate-entry shows gate implementation paths for scanner fallback and diagnostics. None demonstrates actual registration or invocation in this Codex session. Result remains inconclusive for automatic grounding/completion enforcement."
+}

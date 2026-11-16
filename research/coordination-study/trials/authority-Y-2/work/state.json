@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "workId": "1b04216b-3773-4e32-a4e2-4b9f948c19d7",
+  "events": [
+    {
+      "kind": "record",
+      "summary": "Recovered intent: assess authority for private-journal sharing; two competing proposals have no owner acceptance; governance reserves disclosure policy to human product owner.",
+      "evidence": [
+        {
+          "sourceId": "proposal-a",
+          "sha256": "abc2b4bd1a09473efcc2665139fee183922d2ecf9b86198238bf6d03970c255a"
+        },
+        {
+          "sourceId": "proposal-b",
+          "sha256": "b83e9232c562edb838779e4820f1e604766f6c0b1cfe8ca16d3d270d808ceba1"
+        },
+        {
+          "sourceId": "governance",
+          "sha256": "d1934199ef2568b93af942f784391fe54d2fee8ee285def4f0bfb39cc7d2fca5"
+        }
+      ],
+      "unresolved": [],
+      "id": "01-context",
+      "stage": "context"
+    },
+    {
+      "kind": "record",
+      "summary": "Historical and current proposals both remain proposals; neither author can approve their own suggestion. Existing record does not authorize implementation.",
+      "evidence": [
+        {
+          "sourceId": "proposal-a",
+          "sha256": "abc2b4bd1a09473efcc2665139fee183922d2ecf9b86198238bf6d03970c255a"
+        },
+        {
+          "sourceId": "proposal-b",
+          "sha256": "b83e9232c562edb838779e4820f1e604766f6c0b1cfe8ca16d3d270d808ceba1"
+        },
+        {
+          "sourceId": "governance",
+          "sha256": "d1934199ef2568b93af942f784391fe54d2fee8ee285def4f0bfb39cc7d2fca5"
+        }
+      ],
+      "unresolved": [
+        "Human product owner must decide whether any journal disclosure is allowed and under what initiating authority/scope."
+      ],
+      "id": "02-analysis",
+      "stage": "analysis"
+    },
+    {
+      "kind": "record",
+      "summary": "No implementation or runtime evidence is present in supplied sources; implementation state cannot be verified, so runtime hook status is unavailable.",
+      "evidence": [
+        {
+          "sourceId": "proposal-a",
+          "sha256": "abc2b4bd1a09473efcc2665139fee183922d2ecf9b86198238bf6d03970c255a"
+        },
+        {
+          "sourceId": "proposal-b",
+          "sha256": "b83e9232c562edb838779e4820f1e604766f6c0b1cfe8ca16d3d270d808ceba1"
+        },
+        {
+          "sourceId": "governance",
+          "sha256": "d1934199ef2568b93af942f784391fe54d2fee8ee285def4f0bfb39cc7d2fca5"
+        }
+      ],
+      "unresolved": [
+        "Implementation evidence and runtime hook state are unavailable from this frozen record."
+      ],
+      "id": "03-verification",
+      "stage": "verification"
+    },
+    {
+      "kind": "record",
+      "summary": "Reconciled: retain both proposals as unapproved alternatives; governance is controlling authority; defer implementation pending product-owner policy decision.",
+      "evidence": [
+        {
+          "sourceId": "proposal-a",
+          "sha256": "abc2b4bd1a09473efcc2665139fee183922d2ecf9b86198238bf6d03970c255a"
+        },
+        {
+          "sourceId": "proposal-b",
+          "sha256": "b83e9232c562edb838779e4820f1e604766f6c0b1cfe8ca16d3d270d808ceba1"
+        },
+        {
+          "sourceId": "governance",
+          "sha256": "d1934199ef2568b93af942f784391fe54d2fee8ee285def4f0bfb39cc7d2fca5"
+        }
+      ],
+      "unresolved": [
+        "Product owner must select disclosure policy and any boundaries before implementation is authorized."
+      ],
+      "id": "04-reconciliation",
+      "stage": "reconciliation"
+    }
+  ]
+}

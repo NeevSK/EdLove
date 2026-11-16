@@ -9,7 +9,7 @@ import {
 import { leverActivation } from './activation';
 import { DEFAULT_VERGER_CONFIG } from './config';
 import { qualityCost } from './quality';
-import type { CapacityFacts, VergerConfig, VergerSnapshot, LeverSpec } from './types';
+import type { CapacityFacts, VergerConfig, VergerSnapshot, LeverSpec, ThermalLevel, MemoryLevel } from './types';
 
 /**
  * The outcome ledger: loop 2's eyes on loop 1. It watches published snapshots, of any policy,
@@ -375,4 +375,129 @@ export function verdictLine(record: MoveRecord, sessionStartAt: number): string 
   const seconds = Math.max(0, Math.round((at - sessionStartAt) / 100) / 10);
   const accounts = Object.keys(record.accounts).sort().join(',') || '-';
   return [seconds, 'judged', record.lever, record.verdict, accounts].join('|');
+}
+
+/**
+ * EVSI (Expected Value of Sample Information) level for telemetry filtering.
+ * 'low-evsi': Nominal session with 0 dropped rungs, 0 flapping, 0 failed relief steps.
+ *             Suppressible on metered networks to save user data and battery.
+ * 'high-evsi': Unexpected jank, failed relief, flapping, or recovery ladder activations.
+ *              Must transmit for diagnostic visibility.
+ */
+export type EvsiLevel = 'low-evsi' | 'high-evsi';
+
+export interface EvsiSessionFacts {
+  /** Dropped rungs in recovery ladder (e.g. step down to a higher rung number). */
+  readonly droppedRungs?: number;
+  /** Flapping incidents (e.g. repeated lowering after expansion, or withdrawn moves). */
+  readonly flappingIncidents?: number;
+  /** Steps where compression failed to relieve target strain within the judge window. */
+  readonly failedReliefSteps?: number;
+  /** Unexpected jank encountered (e.g. stressed frames or missed deadlines). */
+  readonly unexpectedJank?: boolean;
+  /** Recovery ladder activations (e.g. rung changes or failures). */
+  readonly recoveryLadderActivations?: number;
+  /** Worst thermal status seen; nominal/unknown is nominal. */
+  readonly worstThermal?: ThermalLevel;
+  /** Worst memory trim level seen; normal/unknown is nominal. */
+  readonly worstMemory?: MemoryLevel;
+  /** Whether CPU contention was unresolvable. */
+  readonly contentionExhausted?: boolean;
+}
+
+/**
+ * Evaluates Expected Value of Sample Information (EVSI) for a session or outcome.
+ *
+ * If a session had 0 dropped rungs, 0 flapping incidents, 0 failed relief steps,
+ * and stayed nominal, marks it as 'low-evsi'.
+ * If a session had unexpected jank, failed relief, flapping, or recovery ladder activations,
+ * marks it as 'high-evsi'.
+ */
+export function evaluateEvsi(
+  input:
+    | EvsiSessionFacts
+    | OutcomeSummary
+    | {
+        readonly stressedMs?: number;
+        readonly worstThermal?: ThermalLevel;
+        readonly worstMemory?: MemoryLevel;
+        readonly contentionExhausted?: boolean;
+      },
+  extra?: EvsiSessionFacts,
+): EvsiLevel {
+  let droppedRungs = extra?.droppedRungs ?? 0;
+  let flappingIncidents = extra?.flappingIncidents ?? 0;
+  let failedReliefSteps = extra?.failedReliefSteps ?? 0;
+  let unexpectedJank = extra?.unexpectedJank ?? false;
+  let recoveryLadderActivations = extra?.recoveryLadderActivations ?? 0;
+  let worstThermal = extra?.worstThermal;
+  let worstMemory = extra?.worstMemory;
+  let contentionExhausted = extra?.contentionExhausted ?? false;
+
+  if ('levers' in input && typeof input.levers === 'object' && input.levers !== null) {
+    for (const outcomes of Object.values(input.levers)) {
+      failedReliefSteps += outcomes.notRelieved;
+      flappingIncidents += outcomes.withdrawn;
+    }
+  }
+
+  if ('stressedMs' in input && typeof input.stressedMs === 'number') {
+    if (input.stressedMs > 0) unexpectedJank = true;
+    if (input.contentionExhausted) contentionExhausted = true;
+    if (input.worstThermal && !worstThermal) worstThermal = input.worstThermal;
+    if (input.worstMemory && !worstMemory) worstMemory = input.worstMemory;
+  }
+
+  if ('droppedRungs' in input && typeof input.droppedRungs === 'number') {
+    droppedRungs += input.droppedRungs;
+  }
+  if ('flappingIncidents' in input && typeof input.flappingIncidents === 'number') {
+    flappingIncidents += input.flappingIncidents;
+  }
+  if ('failedReliefSteps' in input && typeof input.failedReliefSteps === 'number') {
+    failedReliefSteps += input.failedReliefSteps;
+  }
+  if ('unexpectedJank' in input && typeof input.unexpectedJank === 'boolean') {
+    unexpectedJank ||= input.unexpectedJank;
+  }
+  if ('recoveryLadderActivations' in input && typeof input.recoveryLadderActivations === 'number') {
+    recoveryLadderActivations += input.recoveryLadderActivations;
+  }
+  if ('worstThermal' in input && input.worstThermal && !worstThermal) {
+    worstThermal = input.worstThermal;
+  }
+  if ('worstMemory' in input && input.worstMemory && !worstMemory) {
+    worstMemory = input.worstMemory;
+  }
+  if ('contentionExhausted' in input && typeof input.contentionExhausted === 'boolean') {
+    contentionExhausted ||= input.contentionExhausted;
+  }
+
+  const isThermalNominal = !worstThermal || worstThermal === 'nominal' || worstThermal === 'unknown';
+  const isMemoryNominal = !worstMemory || worstMemory === 'normal' || worstMemory === 'unknown';
+
+  if (
+    droppedRungs > 0 ||
+    flappingIncidents > 0 ||
+    failedReliefSteps > 0 ||
+    unexpectedJank ||
+    recoveryLadderActivations > 0 ||
+    contentionExhausted ||
+    !isThermalNominal ||
+    !isMemoryNominal
+  ) {
+    return 'high-evsi';
+  }
+
+  return 'low-evsi';
+}
+
+/**
+ * Evaluates whether telemetry should be transmitted given EVSI value and network metered state.
+ * 'high-evsi': must always transmit (even on metered networks).
+ * 'low-evsi': suppressible on metered networks to save data/battery.
+ */
+export function shouldTransmitTelemetry(evsi: EvsiLevel, isMetered: boolean = false): boolean {
+  if (evsi === 'high-evsi') return true;
+  return !isMetered;
 }

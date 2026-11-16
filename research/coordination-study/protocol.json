@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "createdAt": "2026-11-11T09:10:35.698Z",
+  "goal": "Compare incremental procedural support and executable coordination against the existing activated project setup.",
+  "revision": "186809430aa10a4ef4de0e78313dc38aa041d229",
+  "design": {
+    "cases": 6,
+    "conditions": 3,
+    "repeats": 2,
+    "totalFreshContexts": 36,
+    "maxConcurrentSubagents": 3,
+    "maxToolActionsPerTrial": 20,
+    "infrastructureRetries": 1,
+    "model": "inherit-parent",
+    "reasoningEffort": "inherit-parent; effective setting not exposed",
+    "seed": null
+  },
+  "controls": [
+    "Same frozen task and source evidence per case across conditions.",
+    "Same available model and tool permissions; no explicit model overrides.",
+    "Fresh subagent using fork_turns none for each trial.",
+    "Candidates receive neutral working directory and condition labels, not evaluator oracle or aggregate results.",
+    "Common repository instructions already activate pstack, so baseline is not a no-pstack control."
+  ],
+  "recording": {
+    "rawFinal": "Preserve each final response without editing.",
+    "toolActions": "Audit candidate workspace read/write commands from available transcripts or explicit call records; do not rely exclusively on candidate self-report.",
+    "tokens": null,
+    "cost": null,
+    "latency": "Record observed timestamps only; no performance superiority claim.",
+    "sourceIntegrity": "SHA256 of fixture extracts, exact working-tree paths and revision metadata."
+  },
+  "evaluation": {
+    "structural": "Schema validity, resolving source references and required output fields.",
+    "semantic": "Source-grounded independent review; structured assertions and keyword checks cannot prove meaning.",
+    "enforcement": "Actual subprocess assertions for prerequisites, stale source hashes, duplicate action IDs, restart, transition ordering and evidence presence.",
+    "verdicts": [
+      "supported",
+      "failed",
+      "inconclusive"
+    ],
+    "promotion": "No production adoption based solely on these small hand-selected cases."
+  },
+  "constraints": [
+    "No production file edits, gate weakening, deployments, merges or external messages.",
+    "Prototype persistence and evaluation artifacts only.",
+    "A retry does not erase failed attempts.",
+    "No native-hook guarantee inferred from documentation or configuration existence."
+  ],
+  "plannedArtifacts": [
+    "knowledge-findings.json",
+    "procedure-findings.json",
+    "experiment/",
+    "trials/",
+    "decisions.tsv",
+    "source-coverage.json",
+    "verification.json",
+    "../../docs/architecture/2026-11-11-agent-coordination-study.md"
+  ]
+}

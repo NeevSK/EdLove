@@ -1,0 +1,66 @@
+{
+  "workId": "539191be-6e57-4925-bd35-337898a2b739",
+  "request": "Prepare the sharing behavior for private journals. Determine whether the current record authorizes implementation and identify the next material decision, without inventing product policy.",
+  "sources": [
+    {
+      "id": "proposal-a",
+      "file": "sources/proposal-a.txt",
+      "sha256": "abc2b4bd1a09473efcc2665139fee183922d2ecf9b86198238bf6d03970c255a",
+      "origin": "synthetic fixture"
+    },
+    {
+      "id": "proposal-b",
+      "file": "sources/proposal-b.txt",
+      "sha256": "b83e9232c562edb838779e4820f1e604766f6c0b1cfe8ca16d3d270d808ceba1",
+      "origin": "synthetic fixture"
+    },
+    {
+      "id": "governance",
+      "file": "sources/governance.txt",
+      "sha256": "d1934199ef2568b93af942f784391fe54d2fee8ee285def4f0bfb39cc7d2fca5",
+      "origin": "synthetic fixture"
+    }
+  ],
+  "procedure": "Use the supplied project context and available tools to answer the request. Return your result in the required JSON shape.",
+  "outputShape": {
+    "workId": "Copy the workId from work.json",
+    "verdict": "resolved | needs_decision | inconclusive",
+    "findings": [
+      {
+        "claim": "Your conclusion",
+        "sourceIds": [
+          "source ID"
+        ],
+        "confidence": "direct | supported | inferred | unknown"
+      }
+    ],
+    "decisions": [
+      {
+        "relation": "Relationship you establish",
+        "subject": "Entity",
+        "object": "Entity",
+        "authoritySourceIds": [
+          "source ID"
+        ]
+      }
+    ],
+    "reviewRequired": [
+      "Source IDs that need reconsideration"
+    ],
+    "unresolved": [
+      "Material unresolved questions"
+    ],
+    "execution": {
+      "runtimeHookStatus": "observed | configured_only | unavailable | not_applicable",
+      "canaryEvidence": "Path or null",
+      "completedSteps": [],
+      "invalidatedSteps": [],
+      "nextAction": "Next concrete action"
+    },
+    "limitations": [
+      "Limits on this conclusion"
+    ]
+  },
+  "toolActionLimit": 20,
+  "instructions": "Work only with these frozen sources and the provided local tools. Do not read neighboring work folders, manifests, evaluator material or the original repository. Do not modify sources. Write only local state/action files if needed, and return JSON. Null resource measurements are preferable to invented measurements."
+}

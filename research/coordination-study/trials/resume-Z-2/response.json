@@ -1,0 +1,69 @@
+{
+  "workId": "6b59bad1-1d94-4c3f-9bdf-331a7dce6554",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "The accepted account identifier remains immutable at revision stable-1; the completed identity inspection is unaffected and can be inherited.",
+      "sourceIds": [
+        "stable-source",
+        "handoff"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The previous access-1 authority analysis is stale. Under access-2, possessing an invitation does not grant school authority; server-confirmed membership is required.",
+      "sourceIds": [
+        "changed-source",
+        "handoff"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "Verification had not started and no deployed changes were made before interruption.",
+      "sourceIds": [
+        "handoff"
+      ],
+      "confidence": "direct"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "remains_immutable_at_revision",
+      "subject": "accepted account identifier",
+      "object": "stable-1",
+      "authoritySourceIds": [
+        "stable-source"
+      ]
+    },
+    {
+      "relation": "school_authority_requires",
+      "subject": "school access",
+      "object": "server-confirmed membership",
+      "authoritySourceIds": [
+        "changed-source"
+      ]
+    }
+  ],
+  "reviewRequired": [
+    "changed-source"
+  ],
+  "unresolved": [],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidatedSteps": [
+      "analysis (prior access-1 conclusion)"
+    ],
+    "nextAction": "Resume the interrupted implementation using access-2: ensure school access is granted only after server-confirmed membership, then verify the resulting behavior in the target runtime."
+  },
+  "limitations": [
+    "Only the supplied synthetic fixture sources were available; the original repository, runtime, and deployment state were not inspected.",
+    "The handoff reports the prior revisions and completion status, but does not include the prior persisted controller state or access-1 source bytes. The controller sequence here records the preserved unaffected context and fresh analysis against current sources; it does not mechanically rebase the missing prior state."
+  ]
+}

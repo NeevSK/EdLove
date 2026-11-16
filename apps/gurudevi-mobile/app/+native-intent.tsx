@@ -1,4 +1,5 @@
 import { classifyRouteIntent, pendingIntentStore } from '@repo/core/logic';
+import { deserializeLink } from '@repo/core/routing';
 
 /**
  * Expo Router Native Intent Middleware (+native-intent.tsx)
@@ -8,6 +9,7 @@ import { classifyRouteIntent, pendingIntentStore } from '@repo/core/logic';
  *
  * Security:
  * - Sanitizes hostile payloads (path traversal, control chars, overlong URLs)
+ * - Normalizes via RFC 3986 linkCodec, separating route params from ad-tech telemetry
  * - Preserves unauthenticated intents in pendingIntentStore with 15-min TTL
  * - Retired invitation and QR intents fail closed without creating pending work
  */
@@ -19,6 +21,7 @@ export async function redirectSystemPath({
   initial: boolean;
 }): Promise<string> {
   try {
+    const envelope = deserializeLink(path);
     const intent = classifyRouteIntent(path);
 
     switch (intent.kind) {
@@ -29,7 +32,20 @@ export async function redirectSystemPath({
       }
 
       case 'internalRoute': {
-        const targetPath = intent.path;
+        // Derive clean sanitized route path without ad-tech telemetry params
+        let targetPath = intent.path;
+        let routeParams: Record<string, string> = { path: targetPath };
+
+        if (envelope) {
+          const searchParams = new URLSearchParams(envelope.routeParams);
+          const queryString = searchParams.toString();
+          targetPath = queryString ? `${envelope.path}?${queryString}` : envelope.path;
+          routeParams = {
+            path: targetPath,
+            ...envelope.routeParams,
+          };
+        }
+
         if (targetPath.startsWith('/pulse')) {
           // Immediately awaken the Somatic Sanctuary Space without gating
           try {
@@ -46,7 +62,7 @@ export async function redirectSystemPath({
         pendingIntentStore.getState().setPendingIntent({
           targetPath,
           intentKind: 'generic',
-          params: { path: targetPath },
+          params: routeParams,
           originalUrl: intent.url,
         });
         return targetPath;

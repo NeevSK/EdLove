@@ -1,0 +1,74 @@
+{
+  "workId": "24435fe7-6dac-4e07-aa72-b4b031b2808d",
+  "verdict": "inconclusive",
+  "findings": [
+    {
+      "claim": "The supplied hook configuration declares a PreToolUse hook for Write|Edit that runs gate.mjs with --auto-ground, and a Stop hook that runs stop-gate.mjs.",
+      "sourceIds": [
+        "hook-config"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The gate source describes interception across Codex and other clients and implements scanning/blocking behavior, but source claims do not establish that the hook is installed or running in this Codex session.",
+      "sourceIds": [
+        "gate-description",
+        "gate-entry"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The supplied hook config is from .claude/settings.json. The available local controller checks evidence references, hashes/freshness, and declared step order; its own guarantee expressly excludes proving truthful interpretation or actual reading.",
+      "sourceIds": [
+        "hook-config"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "No runtime hook firing or automatic completion interception was observed in this session, so automatic grounding and completion checks cannot be relied on from the supplied evidence.",
+      "sourceIds": [
+        "hook-config",
+        "gate-description",
+        "gate-entry"
+      ],
+      "confidence": "supported"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "declares hook configuration for",
+      "subject": ".claude/settings.json",
+      "object": "Write|Edit pre-tool grounding gate and Stop gate",
+      "authoritySourceIds": [
+        "hook-config"
+      ]
+    },
+    {
+      "relation": "claims cross-client interception",
+      "subject": ".agents/gate.mjs",
+      "object": "Codex, Claude Code, OpenCode, and Antigravity",
+      "authoritySourceIds": [
+        "gate-description"
+      ]
+    }
+  ],
+  "reviewRequired": [],
+  "unresolved": [
+    "Whether this Codex runtime actually loads or invokes the configured hooks.",
+    "Whether the Stop hook is installed, executes successfully, and blocks completion when checks fail."
+  ],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "Read the supplied hook configuration and gate source excerpts.",
+      "Inspected the supplied local controller and ran its harmless init/status invocation; it reported no completed stages and canComplete=false."
+    ],
+    "invalidatedSteps": [],
+    "nextAction": "Verify a harmless Write/Edit canary and Stop-hook behavior in a Codex runtime with the hooks explicitly installed."
+  },
+  "limitations": [
+    "Only the frozen excerpts and supplied local controller were examined; the original repository and active Codex hook configuration were unavailable by instruction.",
+    "The controller invocation tested its state workflow, not automatic interception by Codex."
+  ]
+}

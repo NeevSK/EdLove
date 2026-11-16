@@ -9,11 +9,7 @@ function decodeBase64(value: string): Uint8Array {
   return Uint8Array.from(binary, (character) => character.charCodeAt(0));
 }
 
-/**
- * Verifies the cryptographic signature of the PowerSync synced PermissionSnapshot.
- * Shared across local evaluators and react permission stores.
- */
-export async function verifySnapshotSignature(snapshot: {
+export interface SnapshotSignatureInput {
   userId: string;
   activeBondId: string;
   activeEntityId: string;
@@ -25,8 +21,30 @@ export async function verifySnapshotSignature(snapshot: {
   permissions: string;
   temporalHints: string | null;
   signature: string;
-}): Promise<boolean> {
+}
+
+/**
+ * Pure, side-effect-free cryptographic signature verification helper.
+ *
+ * Verifies the Ed25519 signature of a PowerSync synced PermissionSnapshot
+ * against an explicitly provided public key.
+ *
+ * Side-effect-free: Performs zero ambient environment lookups, zero disk I/O, and zero mutations.
+ * Dependency-explicit: Requires the signing public key to be passed explicitly.
+ */
+export async function verifySnapshotCryptographicSignature(
+  snapshot: SnapshotSignatureInput,
+  publicKey: string,
+): Promise<boolean> {
   try {
+    if (
+      !publicKey ||
+      typeof publicKey !== 'string' ||
+      !snapshot?.signature?.startsWith('ed25519:')
+    ) {
+      return false;
+    }
+
     // 1. Reconstruct the exact JSON payload generated on the server (preserving order of keys)
     const payload = {
       generatedAt: snapshot.generatedAt,
@@ -41,13 +59,7 @@ export async function verifySnapshotSignature(snapshot: {
       temporalHints: snapshot.temporalHints ? JSON.parse(snapshot.temporalHints) : {},
     };
 
-    const publicKey =
-      process.env.EXPO_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY ||
-      process.env.NEXT_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY;
-    if (!publicKey || !snapshot.signature.startsWith('ed25519:')) return false;
-
-    // 2. Verify with a public key shipped in the client. The private key never
-    // leaves the server/operator environment.
+    // 2. Verify with explicit public key. The private key never leaves the server/operator environment.
     const enc = new TextEncoder();
     const messageData = enc.encode(JSON.stringify(payload));
     const signatureBytes = decodeBase64(snapshot.signature.slice('ed25519:'.length));
@@ -78,13 +90,17 @@ export async function verifySnapshotSignature(snapshot: {
       typeof payload.temporalHints !== 'object' ||
       Array.isArray(payload.temporalHints) ||
       Object.keys(payload.temporalHints).length !== 0
-    )
+    ) {
       return false;
+    }
+
     const resourceNames = Object.keys(payload.permissions);
     if (
       resourceNames.some((name) => !(AUTHORIZATION_RESOURCES as readonly string[]).includes(name))
-    )
+    ) {
       return false;
+    }
+
     const permissions: Record<string, Record<string, boolean>> = {};
     for (const resource of AUTHORIZATION_RESOURCES) {
       if (!Object.hasOwn(payload.permissions, resource)) continue;
@@ -96,19 +112,22 @@ export async function verifySnapshotSignature(snapshot: {
             !(AUTHORIZATION_ACTIONS as readonly string[]).includes(name) ||
             typeof actions[name] !== 'boolean',
         )
-      )
+      ) {
         return false;
+      }
       permissions[resource] = {};
       for (const action of AUTHORIZATION_ACTIONS) {
         if (Object.hasOwn(actions, action)) permissions[resource][action] = actions[action];
       }
     }
+
     const recovered = {
       ...payload,
       generatedAt: new Date(payload.generatedAt).toISOString(),
       expiresAt: new Date(payload.expiresAt).toISOString(),
       permissions,
     };
+
     return await crypto.subtle.verify(
       { name: 'Ed25519' },
       importedKey,
@@ -119,4 +138,25 @@ export async function verifySnapshotSignature(snapshot: {
     console.error('[Signature] Signature verification system error:', err);
     return false;
   }
+}
+
+/**
+ * Verifies the cryptographic signature of the PowerSync synced PermissionSnapshot.
+ * Shared across local evaluators and react permission stores.
+ * Delegates to the pure verifySnapshotCryptographicSignature helper.
+ */
+export async function verifySnapshotSignature(
+  snapshot: SnapshotSignatureInput,
+  explicitPublicKey?: string,
+): Promise<boolean> {
+  const publicKey =
+    explicitPublicKey ??
+    process.env.EXPO_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY ??
+    process.env.NEXT_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY;
+
+  if (!publicKey) {
+    return false;
+  }
+
+  return verifySnapshotCryptographicSignature(snapshot, publicKey);
 }

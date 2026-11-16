@@ -1,0 +1,57 @@
+{
+  "workId": "1b9f37f2-a627-453b-af2f-183be781a839",
+  "verdict": "inconclusive",
+  "findings": [
+    {
+      "claim": "The completed identity inspection can be inherited because stable-source remains at revision stable-1 and its hash matches the handoff hash.",
+      "sourceIds": ["stable-source", "handoff"],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The prior access-1 conclusion that invitation possession grants school access must be discarded; changed-source now states that invitation possession never grants school authority and server-confirmed membership is required.",
+      "sourceIds": ["changed-source", "handoff"],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The current source establishes the authority rule but does not establish that any particular user has server-confirmed membership or that a runtime check is operating.",
+      "sourceIds": ["changed-source", "handoff"],
+      "confidence": "supported"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "is immutable",
+      "subject": "accepted account identifier",
+      "object": "identity record",
+      "authoritySourceIds": ["stable-source"]
+    },
+    {
+      "relation": "is insufficient to grant school authority",
+      "subject": "invitation possession",
+      "object": "school access",
+      "authoritySourceIds": ["changed-source"]
+    },
+    {
+      "relation": "is required for school authority",
+      "subject": "server-confirmed membership",
+      "object": "school access",
+      "authoritySourceIds": ["changed-source"]
+    }
+  ],
+  "reviewRequired": ["changed-source"],
+  "unresolved": [
+    "Whether the relevant user has server-confirmed membership.",
+    "Whether the runtime enforces the current membership requirement."
+  ],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": ["context", "analysis"],
+    "invalidatedSteps": ["analysis"],
+    "nextAction": "Verify membership enforcement against runtime evidence, then reconcile any affected authority conclusions."
+  },
+  "limitations": [
+    "Only the supplied frozen synthetic sources and local controller were available; no runtime membership result or canary evidence was supplied.",
+    "The controller validates source hashes, evidence references and stage order, but does not prove the truth of interpretations or runtime behavior."
+  ]
+}

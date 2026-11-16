@@ -1,0 +1,28 @@
+{
+  "amendments": [
+    {
+      "observedAt": "2026-11-11T10:09:54.856Z",
+      "authority": "User instruction: reuse subagents wherever possible",
+      "effect": "Reuse investigators and later review helpers where compatible; retain fresh contexts for controlled trial repetitions to avoid carryover.",
+      "limits": "Fresh-context isolation remains a property of the approved experiment."
+    },
+    {
+      "observedAt": "2026-11-11T10:09:54.856Z",
+      "authority": "User instruction: use Luna or Terra where sufficient instead of Sol every time",
+      "effect": "Documents and capabilities remain matched Sol groups; instructions, hooks, resume and authority use Luna for all conditions/repeats. Use Terra for synthesis and independent verification.",
+      "analysis": "Report within-case comparisons and model strata. No pooled estimate of a model-independent effect.",
+      "modelSettings": "Effective model and effort are recovered from scoped transcripts, not assumed."
+    },
+    {
+      "observedAt": "2026-11-11T10:09:54.856Z",
+      "authority": "Coordinator correction following local bypass checks",
+      "effect": "Preserve controller.frozen.mjs exactly as prepared for trials. Evaluate controller.mjs hardening separately; do not apply hardened claims to frozen trial runs.",
+      "hardening": [
+        "Canonical nested payload comparison for duplicate action IDs.",
+        "Source-set membership change invalidation.",
+        "Accumulate unresolved declarations so later empty stages cannot silently clear them."
+      ],
+      "limits": "Still no authenticated decisions, trusted persistence, concurrency control or semantic proof."
+    }
+  ]
+}

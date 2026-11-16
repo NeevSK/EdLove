@@ -1,0 +1,61 @@
+{
+  "action": "create",
+  "id": "coordination-foundation-20261111",
+  "goal": "Integrate sourced developer coordination and existing checks; retain unresolved rollout and coverage gaps",
+  "impacts": [
+    "product",
+    "architecture",
+    "integration"
+  ],
+  "sources": [
+    {
+      "path": "AGENTS.md",
+      "scope": "Explicit coordination pilot source; not a complete dependency closure"
+    },
+    {
+      "path": "docs/architecture/2026-11-11-agent-coordination-study.md",
+      "scope": "Explicit coordination pilot source; not a complete dependency closure"
+    },
+    {
+      "path": "packages/platform-mcp/docs/developer-coordination.md",
+      "scope": "Explicit coordination pilot source; not a complete dependency closure"
+    },
+    {
+      "path": "packages/platform-mcp/src/coordination.ts",
+      "scope": "Explicit coordination pilot source; not a complete dependency closure"
+    },
+    {
+      "path": "packages/platform-mcp/src/coordinationStore.ts",
+      "scope": "Explicit coordination pilot source; not a complete dependency closure"
+    },
+    {
+      "path": "packages/platform-mcp/src/coordinationTools.ts",
+      "scope": "Explicit coordination pilot source; not a complete dependency closure"
+    },
+    {
+      "path": "packages/platform-mcp/src/services/CoordinationService.ts",
+      "scope": "Explicit coordination pilot source; not a complete dependency closure"
+    },
+    {
+      "path": "docs/architecture/model/gurudevi.c4",
+      "scope": "Explicit coordination pilot source; not a complete dependency closure"
+    },
+    {
+      "path": "packages/core/src/flows/pjc/catalog.v2.json",
+      "scope": "Explicit coordination pilot source; not a complete dependency closure"
+    },
+    {
+      "path": "apps/sanctuary-api/src/modules/catalog.ts",
+      "scope": "Explicit coordination pilot source; not a complete dependency closure"
+    }
+  ],
+  "links": [
+    {
+      "subject": "developer-coordination-pilot",
+      "predicate": "uses-existing-reader",
+      "object": "PJC journey projection",
+      "sourcePath": "packages/platform-mcp/docs/developer-coordination.md",
+      "classification": "declared"
+    }
+  ]
+}

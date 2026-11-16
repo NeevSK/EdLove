@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "review": "independent shared Radar and feedback scene review",
+  "scope": "Read-only review of shared contracts and geometry, native and web Radar/FeedbackScene/States, world recipes and CSS, galleries, exports and name lists. No product files changed.",
+  "decision": "Suitable for a synthetic, read-only shared UI slice. No live-data or authorization claim is established. Native and web behavior tests pass at G1 after correcting hidden-scene queries. Browser and device evidence remain absent.",
+  "claims": [
+    {
+      "status": "supported",
+      "claim": "The gallery keeps measure selection independent from perspective selection. It uses explicitly synthetic records and does not merge, average, rank, or compose them.",
+      "evidence": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/radar/RadarGalleryClient.tsx",
+        "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx",
+        "apps/gurudevi-web/tests/unit/kit/radar.test.tsx"
+      ]
+    },
+    {
+      "status": "supported",
+      "claim": "Ready observations retain measure identity/version, subject, perspective kind and label, source, timestamp presence, synthetic/stale flags, per-axis ranges and units. Null remains Not recorded, not zero. Invalid numeric values are rejected without rendering their record details.",
+      "evidence": [
+        "packages/ui/src/theme/contracts.ts:RadarObservation",
+        "packages/ui/src/components/shared/radarGeometry.ts:projectRadar",
+        "packages/ui/src/components/native/Radar/Radar.tsx",
+        "packages/ui/src/components/web/Radar/Radar.tsx",
+        "packages/ui/src/components/shared/__tests__/radarGeometry.test.ts"
+      ]
+    },
+    {
+      "status": "supported",
+      "claim": "Loading delegates to the world loading sign. Empty, denied and unavailable have distinct copy; errors use the error state with optional explicit retry. Non-ready states do not render observation details. Decorative SVG is hidden from assistive technology while the web table and native value text expose the readings.",
+      "evidence": [
+        "packages/ui/src/components/native/Radar/Radar.tsx",
+        "packages/ui/src/components/web/Radar/Radar.tsx",
+        "packages/ui/src/components/native/States/States.tsx",
+        "packages/ui/src/components/web/States/States.tsx",
+        "apps/gurudevi-web/tests/unit/kit/radar.test.tsx",
+        "packages/ui/src/components/native/__tests__/radar.test.tsx"
+      ]
+    },
+    {
+      "status": "supported-with-limit",
+      "claim": "FeedbackScene now shares the fallback SVG geometry, state presentation, world colors, and perch across native and web. It is a static decorative firefly glow/path fallback, not approved Tutii character artwork. The existing FireflyFeedbackScene uses the Mascot system and optional artwork, which this new shared kit scene does not invoke.",
+      "evidence": [
+        "packages/ui/src/components/shared/feedbackScene.ts",
+        "packages/ui/src/components/native/FeedbackScene/FeedbackScene.tsx",
+        "packages/ui/src/components/web/FeedbackScene/FeedbackScene.tsx",
+        "packages/ui/src/components/FireflyFeedbackScene.tsx"
+      ]
+    },
+    {
+      "status": "supported",
+      "claim": "Radar and FeedbackScene are exported from both owned component barrels and present in both SHARED export-name lists.",
+      "evidence": [
+        "packages/ui/src/components/native/index.ts",
+        "packages/ui/src/components/web/index.ts",
+        "packages/ui/src/components/native/__tests__/inspector.test.tsx:SHARED",
+        "apps/gurudevi-web/tests/unit/kit/webKitNames.test.tsx:SHARED"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "status": "platform parity gap",
+      "finding": "For complete comparable observations, native draws a filled polygon from polygonPoints while web draws only the connecting edge lines. Both use the same shared projection and accessible value presentation, but the main chart silhouette and visual weight differ by platform.",
+      "evidence": [
+        "packages/ui/src/components/native/Radar/Radar.tsx:projection.polygonPoints",
+        "packages/ui/src/components/web/Radar/Radar.tsx:projection.edges",
+        "packages/ui/src/components/shared/radarGeometry.ts:polygonPoints"
+      ],
+      "recommendation": "If cross-platform visual parity is part of this shared experience, render the complete polygon in the web component using the existing world radar recipe. Keep both chart renderers gated by the same plot policy."
+    },
+    {
+      "severity": "high-before-real-data",
+      "status": "authority and measure validation remain outside the kit",
+      "finding": "declared-comparable is a caller assertion. The kit cannot verify that the measure owner has declared the axes comparable, nor can it establish source provenance, subject authorization, or access policy. A real adapter must enforce those rules before constructing ready state.",
+      "evidence": [
+        "packages/ui/src/theme/contracts.ts:RadarObservation.plotPolicy",
+        "packages/ui/src/components/shared/radarGeometry.ts:plot",
+        "research/coordination-study/lifecycle/radar/product-review.json"
+      ],
+      "recommendation": "Keep the current scope synthetic until an already admitted caller supplies a measure-owned comparability declaration and enforces its existing read authority."
+    }
+  ],
+  "verification": {
+    "evidenceLevel": "G1 only",
+    "commands": [
+      {
+        "command": "pnpm --filter @repo/ui exec vitest run --config vitest.config.mts src/components/native/__tests__/radar.test.tsx src/components/shared/__tests__/radarGeometry.test.ts src/components/shared/__tests__/feedbackScene.test.ts",
+        "result": "passed: 3 files, 16 tests; mock native engine on iOS. This is unit evidence, not device evidence."
+      },
+      {
+        "command": "pnpm --filter gurudevi-web exec vitest run tests/unit/kit/radar.test.tsx tests/unit/kit/webKitNames.test.tsx",
+        "result": "passed: 2 files, 11 tests; jsdom unit tests, not browser layout evidence."
+      }
+    ],
+    "not_verified": [
+      "G4 browser rendering, responsive layout, keyboard use, or screen-reader behavior",
+      "G5 native device rendering, VoiceOver/TalkBack behavior, or reduced-motion behavior on device",
+      "Live personal data, caller authorization, source authenticity, or production integration"
+    ]
+  },
+  "commentReview": {
+    "method": "Read-only Comment Sicko review using the required persona. No code edits were authorized in this review scope.",
+    "filesChanged": [],
+    "deletions": 0,
+    "openFlags": [
+      {
+        "target": "packages/ui/src/components/shared/radarGeometry.ts:28 projectRadar",
+        "flag": "MUST KILL",
+        "reason": "The comment describes a legacy graphics layout rather than current projection behavior."
+      },
+      {
+        "target": "packages/ui/src/components/shared/feedbackScene.ts:28 presentations",
+        "flag": "MUST KILL",
+        "reason": "The state-meaning reference does not explain behavior beyond the self-evident mapping."
+      }
+    ],
+    "kept": [
+      "FEEDBACK_SCENE_GEOMETRY comment records that the fallback is not approved artwork.",
+      "Public Radar, EmptyState and ErrorState behavior documentation."
+    ],
+    "suppressionsFound": false
+  }
+}

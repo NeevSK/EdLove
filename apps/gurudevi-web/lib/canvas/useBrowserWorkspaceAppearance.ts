@@ -131,6 +131,8 @@ export function useBrowserWorkspaceAppearance({
     accountId === 'guest-explorer' ||
     accountId === 'explore-guest' ||
     accountId === 'explore' ||
+    accountId === 'dev-sanctuary' ||
+    accountId.startsWith('dev-') ||
     workspaceId === 'explore';
   const shouldSyncRemotely = enableRemoteSync && !isExplore;
   const initialFallback =

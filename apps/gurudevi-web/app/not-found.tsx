@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { BackButton } from './components/BackButton';
 
 export const metadata = {
   title: 'Page Not Found | Gurudevi',
@@ -77,8 +78,8 @@ export default function NotFound() {
             marginBottom: '2rem',
           }}
         >
-          This threshold does not lead to a known sanctuary floor or classroom room. You can return
-          to the Guest House or explore freely.
+          This threshold does not lead to a known sanctuary floor or classroom room. You can step
+          back to your previous page or return to Welcome.
         </p>
         <div
           style={{
@@ -88,8 +89,9 @@ export default function NotFound() {
             flexWrap: 'wrap',
           }}
         >
-          <Link
-            href="/welcome"
+          <BackButton
+            fallbackHref="/welcome"
+            label="← Go Back"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -102,14 +104,13 @@ export default function NotFound() {
               fontFamily: 'var(--font-sans, "Space Grotesk", sans-serif)',
               fontSize: '0.875rem',
               fontWeight: 600,
-              textDecoration: 'none',
+              cursor: 'pointer',
+              border: 'none',
               boxShadow: '0 2px 0 rgba(0, 0, 0, 0.2)',
             }}
-          >
-            Return to Guest House
-          </Link>
-          <a
-            href="https://explore.gurudevi.app"
+          />
+          <Link
+            href="/welcome"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -126,8 +127,8 @@ export default function NotFound() {
               textDecoration: 'none',
             }}
           >
-            Guest House Museum ↗
-          </a>
+            Return to Welcome
+          </Link>
         </div>
       </div>
     </main>

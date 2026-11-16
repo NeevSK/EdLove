@@ -1,0 +1,17 @@
+{
+  "evidence": [
+    {
+      "sourceId": "older-workflow",
+      "sha256": "fd4804ba7e52adb9daa8debca167ce3d035dde642c6ccbc330c9aeeef5f7a9e0"
+    },
+    {
+      "sourceId": "platform-rules",
+      "sha256": "da4d33bd15d81b461da20b2027eda8769a3c0e5baaae02aacd1919b8925995b9"
+    }
+  ],
+  "kind": "record",
+  "stage": "reconciliation",
+  "summary": "Use v1 capability contract and paired UI components; endpoint and exact field behavior remain unverified in supplied evidence.",
+  "id": "1700901d-d663-4641-abe4-36719dc8d87a",
+  "unresolved": []
+}

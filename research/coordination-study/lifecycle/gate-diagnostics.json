@@ -1,0 +1,264 @@
+{
+  "summary": {
+    "errors": 48,
+    "warnings": 1482,
+    "fixable": 656,
+    "files": 4200,
+    "elapsed": "32.4s"
+  },
+  "own": [
+    {
+      "filePath": "packages/platform-mcp/src/services/CoordinationService.ts",
+      "engine": "code-quality",
+      "rule": "knip/exports",
+      "severity": "warning",
+      "message": "Unused export: executeCoordinationRequest",
+      "help": "",
+      "line": 66,
+      "column": 17,
+      "category": "Dead Code",
+      "fixable": true,
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused exports are public-surface cleanup and can be noisy in libraries."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/lifecycle/model.ts",
+      "engine": "code-quality",
+      "rule": "knip/exports",
+      "severity": "warning",
+      "message": "Unused export: roleSchema",
+      "help": "",
+      "line": 5,
+      "column": 14,
+      "category": "Dead Code",
+      "fixable": true,
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused exports are public-surface cleanup and can be noisy in libraries."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/lifecycle/model.ts",
+      "engine": "code-quality",
+      "rule": "knip/exports",
+      "severity": "warning",
+      "message": "Unused export: artifactKindSchema",
+      "help": "",
+      "line": 14,
+      "column": 14,
+      "category": "Dead Code",
+      "fixable": true,
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused exports are public-surface cleanup and can be noisy in libraries."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/lifecycle/model.ts",
+      "engine": "code-quality",
+      "rule": "knip/exports",
+      "severity": "warning",
+      "message": "Unused export: refSchema",
+      "help": "",
+      "line": 29,
+      "column": 14,
+      "category": "Dead Code",
+      "fixable": true,
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused exports are public-surface cleanup and can be noisy in libraries."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/lifecycle/model.ts",
+      "engine": "code-quality",
+      "rule": "knip/exports",
+      "severity": "warning",
+      "message": "Unused export: contentSchema",
+      "help": "",
+      "line": 55,
+      "column": 14,
+      "category": "Dead Code",
+      "fixable": true,
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused exports are public-surface cleanup and can be noisy in libraries."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/lifecycle/fixtures.ts",
+      "engine": "code-quality",
+      "rule": "knip/exports",
+      "severity": "warning",
+      "message": "Unused export: experienceArtifact",
+      "help": "",
+      "line": 166,
+      "column": 17,
+      "category": "Dead Code",
+      "fixable": true,
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused exports are public-surface cleanup and can be noisy in libraries."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/lifecycle/fixtures.ts",
+      "engine": "code-quality",
+      "rule": "knip/types",
+      "severity": "warning",
+      "message": "Unused type: LifecycleMutationInput",
+      "help": "",
+      "line": 20,
+      "column": 13,
+      "category": "Dead Code",
+      "fixable": true,
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused exported types are low-risk cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/lifecycle/runtime.ts",
+      "engine": "code-quality",
+      "rule": "knip/types",
+      "severity": "warning",
+      "message": "Unused type: LifecycleResponse",
+      "help": "",
+      "line": 367,
+      "column": 13,
+      "category": "Dead Code",
+      "fixable": true,
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused exported types are low-risk cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/lifecycle/evaluate.ts",
+      "engine": "code-quality",
+      "rule": "complexity/file-too-large",
+      "severity": "warning",
+      "message": "File too large (limit: 400, flagged above 441 lines)",
+      "help": "Consider splitting this file into smaller modules",
+      "line": 0,
+      "column": 0,
+      "category": "Complexity",
+      "fixable": false,
+      "detail": "824 lines",
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "style",
+        "multiplier": 0.5,
+        "cap": 8,
+        "rationale": "Large files are reviewability pressure, but size alone is not a confirmed defect."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/lifecycle/runtime.ts",
+      "engine": "code-quality",
+      "rule": "complexity/function-too-long",
+      "severity": "warning",
+      "message": "Function too long (limit: 80, flagged above 88 lines)",
+      "help": "Consider breaking this function into smaller pieces",
+      "line": 89,
+      "column": 0,
+      "category": "Complexity",
+      "fixable": false,
+      "detail": "executeLifecycleRequest · 277 lines",
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "style",
+        "multiplier": 0.5,
+        "cap": 8,
+        "rationale": "Long functions are maintainability pressure, but length alone is not a confirmed defect."
+      },
+      "forceFixable": false
+    }
+  ],
+  "ownErrors": []
+}

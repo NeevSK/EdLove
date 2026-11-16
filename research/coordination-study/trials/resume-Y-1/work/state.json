@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "workId": "b6016ce6-4636-4424-8506-f5d38bfe083c",
+  "events": [
+    {
+      "id": "context-1",
+      "kind": "record",
+      "stage": "context",
+      "summary": "Recovered the request and handoff: preserve unaffected identity inspection; revisit authority analysis because the cited access source revision changed; verification and reconciliation were not started; no deployed changes were reported.",
+      "evidence": [
+        {
+          "sourceId": "stable-source",
+          "sha256": "4b79c412eb2ff7c1a12afc0c4f1381a645afb1bec52b8e818ecc682fccfa5b0e"
+        },
+        {
+          "sourceId": "handoff",
+          "sha256": "ef404bd64b752e8221890a8ab4bcc512f09216aa6abe7ad9784d0a8f102fd7b7"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "analysis-1",
+      "kind": "record",
+      "stage": "analysis",
+      "summary": "Retained immutable account identity from stable-source; replaced the stale access-1 conclusion with current access-2: invitation possession grants no school authority, and server-confirmed membership is required.",
+      "evidence": [
+        {
+          "sourceId": "stable-source",
+          "sha256": "4b79c412eb2ff7c1a12afc0c4f1381a645afb1bec52b8e818ecc682fccfa5b0e"
+        },
+        {
+          "sourceId": "changed-source",
+          "sha256": "9d7849cd6e56d152e343bd4e053369adb3d594ce874485097a9b8b086dd6a40b"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "verification-1",
+      "kind": "record",
+      "stage": "verification",
+      "summary": "Inspected implementation evidence in the handoff: verification had not started and no deployed changes were made. No runtime behavior or canary is evidenced.",
+      "evidence": [
+        {
+          "sourceId": "handoff",
+          "sha256": "ef404bd64b752e8221890a8ab4bcc512f09216aa6abe7ad9784d0a8f102fd7b7"
+        },
+        {
+          "sourceId": "changed-source",
+          "sha256": "9d7849cd6e56d152e343bd4e053369adb3d594ce874485097a9b8b086dd6a40b"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "reconciliation-1",
+      "kind": "record",
+      "stage": "reconciliation",
+      "summary": "Reconciled the record by keeping the stable identity conclusion, invalidating/replacing the old access-1 authority conclusion, and retaining the no-deployment/no-verification status.",
+      "evidence": [
+        {
+          "sourceId": "stable-source",
+          "sha256": "4b79c412eb2ff7c1a12afc0c4f1381a645afb1bec52b8e818ecc682fccfa5b0e"
+        },
+        {
+          "sourceId": "changed-source",
+          "sha256": "9d7849cd6e56d152e343bd4e053369adb3d594ce874485097a9b8b086dd6a40b"
+        },
+        {
+          "sourceId": "handoff",
+          "sha256": "ef404bd64b752e8221890a8ab4bcc512f09216aa6abe7ad9784d0a8f102fd7b7"
+        }
+      ],
+      "unresolved": []
+    }
+  ]
+}

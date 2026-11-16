@@ -1,0 +1,113 @@
+{
+  "phase": 1,
+  "role": "independent engineering judgment",
+  "scope": "Study report, cited knowledge and procedure findings, controller and evaluator scripts; no trial manifest or trial outputs inspected.",
+  "observations": [
+    {
+      "classification": "direct",
+      "evidence": "docs/Core/gurudevi-soul-and-core-covenant.md:208 and knowledge-findings.json",
+      "finding": "The Covenant states scoped supersession of overlapping pillar definitions; it does not by itself establish wholesale retirement of the introduction."
+    },
+    {
+      "classification": "direct",
+      "evidence": "apps/sanctuary-api/scripts/capability-conformance.ts:48 and packages/platform-mcp/src/services/ScoutService.ts:118",
+      "finding": "The conformance implementation reads filesystem mtimes and Scout catches discovery failures; these substantiate the report's bounded claims, not runtime correctness or discovery recall."
+    },
+    {
+      "classification": "direct",
+      "evidence": "research/coordination-study/experiment/runner.mjs:84 and audit.mjs:10,19",
+      "finding": "Current prepare copies controller.mjs, while audit requires controller.frozen.mjs. The two files differ. A newly prepared experiment therefore uses the hardened version and fails the frozen integrity criterion. Existing prepared trial integrity requires separate evidence.",
+      "status": "resolved_for_new_preparations",
+      "resolution": "Runner was corrected after this observation. Independent fresh preparation matched the frozen controller; historical trial copies are independently listed in artifact-audit.json."
+    },
+    {
+      "classification": "direct",
+      "evidence": "research/coordination-study/experiment/runner.mjs:95-113",
+      "finding": "The structural evaluator allows empty authoritySourceIds and does not validate confidence values, execution fields or factual entailment. Missing tool counts yield inconclusive. Structural validity cannot establish semantic accuracy or actual controller use."
+    },
+    {
+      "classification": "direct",
+      "evidence": "research/coordination-study/experiment/controller.mjs:13-23,35-58,61-83",
+      "finding": "Evidence checks validate hashes of declared sources, not whether a source was read, whether every relevant source was cited, or whether a summary follows from it. File persistence has no concurrent-writer protection, and local file owners can rewrite coherent history. These are prototype limits, not evidence of production guarantees."
+    },
+    {
+      "classification": "direct",
+      "evidence": "research/coordination-study/local-verification.json and canary-reproduction.json",
+      "finding": "Recorded tests distinguish frozen 10/13 from hardened 13/13 and record nine synthetic subprocess canaries. Those artifacts do not establish automatic interception in this Codex session. Canaries were inspected but not rerun because their runner writes another agent's artifact."
+    },
+    {
+      "classification": "direct",
+      "evidence": "experiment/runner.mjs prepare and score on fresh temporary directory",
+      "finding": "After the runner fix, one independently prepared controller matched the frozen SHA-256 BB6F2C392F5DA949142BE98B1CB13D575AB881FEC27A0062C16FF2BE968E3DC6. Scoring the fresh 36 unrun cases returned 36 inconclusive and no invented results. This does not validate all historical trial copies."
+    },
+    {
+      "classification": "direct",
+      "evidence": "trial output execution fields for resume cases, after semantic-review.json was saved",
+      "finding": "All six preserve the prior identity inspection and invalidate old authority analysis in their reported findings or execution. Entries 05, 06, 24 and 31 report verification and reconciliation stages completed while describing review activity; the handoff says actual verification and reconciliation had not started. Those stage labels should not be presented as evidence that the interrupted work was verified or reconciled. The next actions in 05, 24 and 31 mention verification but do not explicitly mention reconciliation."
+    }
+  ],
+  "tests": [
+    {
+      "command": "node --test research/coordination-study/experiment/controller.test.mjs",
+      "exitCode": 0,
+      "result": "Hardened controller passed 13 of 13 tests on independent rerun."
+    },
+    {
+      "command": "node experiment/runner.mjs prepare <fresh temporary directory>; compare first prepared controller SHA-256 with controller.frozen.mjs; node experiment/runner.mjs score <fresh temporary directory>",
+      "exitCode": 0,
+      "result": "Prepared controller matched frozen; all 36 unrun outputs scored inconclusive."
+    }
+  ],
+  "limits": [
+    "No trial manifest or trial outputs were inspected in phase 1.",
+    "Only selected citations were independently checked; this is not a complete citation audit.",
+    "No claim of production readiness, semantic correctness, automatic hook invocation, concurrent-writer safety, model-independent effects or measured discovery recall follows from these checks.",
+    "Independent review is an engineering judgment, not deterministic proof."
+  ],
+  "status": "final_report_review_completed",
+  "finalReportReview": {
+    "reviewerModel": "Terra, as assigned by coordinator; exact runtime model identifier and effort not independently inspected",
+    "scope": "Revised report, comparison, semantic-review, artifact audit, controller-run-status, decision trail and protocol amendments. Selected records were inspected, not an exhaustive transcript audit.",
+    "checks": [
+      {
+        "claim": "31 structural passes and 31 supported semantic judgments",
+        "result": "consistent",
+        "evidence": "comparison.json reports 31 structural passes; semantic-review.json has 31 supported and 5 partial. Report explicitly distinguishes their response sets."
+      },
+      {
+        "claim": "Frozen and hardened controller results",
+        "result": "consistent",
+        "evidence": "local-verification.json records frozen 10/13 and hardened 13/13. Report separates them and limits claims to G1 local checks."
+      },
+      {
+        "claim": "Current-session automatic hooks",
+        "result": "appropriately unknown",
+        "evidence": "Report distinguishes manually invoked canaries from observed automatic interception and does not claim Codex lacks hooks."
+      },
+      {
+        "claim": "Resume stage completions",
+        "result": "appropriately qualified",
+        "evidence": "Report says review stage declarations do not prove underlying work verification or actual rebase, consistent with inspected resume outputs and synthetic handoff."
+      },
+      {
+        "claim": "Model or treatment advantage",
+        "result": "appropriately limited",
+        "evidence": "Report stratifies by case and model, states two repetitions and partial blinding, and declines a model-independent treatment or general reasoning advantage."
+      },
+      {
+        "claim": "Decision trail",
+        "result": "no material contradiction found in sampled records",
+        "evidence": "Protocol amendments document model grouping, fresh contexts and frozen/hardened separation; comparison and semantic-review support the recorded counts. Scoped evidence was sampled, not a full independently timed chronology."
+      },
+      {
+        "claim": "Fresh preparation defect",
+        "result": "resolved",
+        "evidence": "Runner fix independently checked against frozen hash; fresh unrun scoring produced 36 inconclusive. Historical post-run audit reports intact source and controller hashes; two outputValid false values correspond to wrong work IDs, not hash failures."
+      }
+    ],
+    "flags": [
+      "The reviewer did not rerun every trial transcript or canary and did not independently validate every decision timestamp.",
+      "Semantic judgments cover main answers; execution fields and peripheral assertions require separate interpretation."
+    ]
+  }
+}

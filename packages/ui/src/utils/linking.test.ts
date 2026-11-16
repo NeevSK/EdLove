@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { isAllowedExternalUri } from './linking';
+import {
+  clearStoredExternalOpenPreference,
+  getStoredExternalOpenPreference,
+  isAllowedExternalUri,
+  setStoredExternalOpenPreference,
+} from './linking';
 
 describe('external URI policy', () => {
   it.each([
@@ -25,5 +30,18 @@ describe('external URI policy', () => {
     'not a URI',
   ])('rejects unsafe or malformed URI: %s', (uri) => {
     expect(isAllowedExternalUri(uri)).toBe(false);
+  });
+
+  describe('external open preference memory caching', () => {
+    it('sets and retrieves cached preference synchronously without disk drift', async () => {
+      await clearStoredExternalOpenPreference();
+      expect(await getStoredExternalOpenPreference()).toBeUndefined();
+
+      await setStoredExternalOpenPreference('new_tab');
+      expect(await getStoredExternalOpenPreference()).toBe('new_tab');
+
+      await clearStoredExternalOpenPreference();
+      expect(await getStoredExternalOpenPreference()).toBeUndefined();
+    });
   });
 });

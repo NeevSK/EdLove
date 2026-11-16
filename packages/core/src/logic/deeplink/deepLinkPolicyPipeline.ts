@@ -8,7 +8,12 @@ export const MAX_DEEP_LINK_LENGTH = 8192;
 const FORBIDDEN_URL_PATTERN = /[<>'";\0\r\n]|%00/i;
 
 const PLATFORM_HOST = new URL(GURUDEVI_PLATFORM_URL).hostname;
-export const ALLOWED_WEB_HOSTS = new Set([PLATFORM_HOST, 'gurudevi.app', 'sanctuary.gurudevi.app']);
+export const ALLOWED_WEB_HOSTS = new Set([
+  PLATFORM_HOST,
+  'gurudevi.app',
+  'sanctuary.gurudevi.app',
+  'explore.gurudevi.app',
+]);
 export const ALLOWED_NATIVE_HOSTS = new Set([
   'auth',
   'qr',
@@ -23,6 +28,9 @@ export const ALLOWED_NATIVE_HOSTS = new Set([
   'settings',
   'onboarding',
   'pulse',
+  'intro',
+  'welcome',
+  'atlas',
 ]);
 export const ALLOWED_WEB_PATH_PREFIXES = [
   '/auth/callback',
@@ -39,6 +47,9 @@ export const ALLOWED_WEB_PATH_PREFIXES = [
   '/notifications',
   '/settings',
   '/onboarding',
+  '/intro',
+  '/welcome',
+  '/atlas',
 ];
 
 /**

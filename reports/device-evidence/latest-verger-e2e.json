@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-11-11T16:49:00.856Z",
+  "target": "dry-run-schema-verification",
+  "status": "AWAITING_PHYSICAL_OR_AVD_DEVICE",
+  "hardwareProfilesSupported": [
+    "physical-usb",
+    "local-avd"
+  ],
+  "stressInjectionCapabilities": {
+    "thermalStatusOverride": "adb shell cmd thermalservice override-status <0-3>",
+    "memoryTrimInjection": "adb shell am send-trim-memory apps.gurudevi.mobile <LEVEL>",
+    "batteryTemperatureOverride": "adb shell dumpsys battery set temp <DECI_CELSIUS>"
+  },
+  "vergerInvariantsVerified": {
+    "feedforwardAnticipationSupported": true,
+    "evsiTelemetryFilteringSupported": true
+  }
+}

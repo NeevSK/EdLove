@@ -1,0 +1,21 @@
+{
+  "id": "analysis-1",
+  "kind": "record",
+  "unresolved": [],
+  "evidence": [
+    {
+      "sourceId": "intro",
+      "sha256": "a621766affdfd35df6c8054cb0529c99783ea39549660d55b9eb7cd3b2a0995d"
+    },
+    {
+      "sourceId": "covenant",
+      "sha256": "b25d935c9b55818fea4f7a69730db26d0d160182f6d5d681b5fd40aaf0438ed0"
+    },
+    {
+      "sourceId": "covenant-scope",
+      "sha256": "3b0f4b93f0f0602907972082067538d9bbe9e613b973b979b7271eb36065809b"
+    }
+  ],
+  "stage": "analysis",
+  "summary": "Entry sequence is introduction then Covenant. Covenant governs expanded product and architecture decisions; its supersession explicitly concerns overlapping pillar definitions, not the entire introduction. Preserve both active roles and mark or annotate the introduction pillar section as a summary subordinate to Covenant. Scope alone does not authorize retiring the whole older manifesto or narrower supporting references."
+}

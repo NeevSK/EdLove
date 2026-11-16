@@ -1,0 +1,75 @@
+{
+  "workId": "5fc6361a-03c0-4efb-9047-33f6215f4e45",
+  "verdict": "inconclusive",
+  "findings": [
+    {
+      "claim": "The supplied configuration declares a PreToolUse hook for Write|Edit that invokes gate.mjs with --auto-ground, and a Stop hook that invokes stop-gate.mjs.",
+      "sourceIds": [
+        "hook-config"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The gate source describes itself as intercepting tool calls across Claude Code, Codex, OpenCode, and Antigravity, and the shown code implements scanning and blocking branches. This source excerpt alone does not prove that Codex registered or invoked it in this session.",
+      "sourceIds": [
+        "gate-description",
+        "gate-entry"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "A manual invocation of the supplied controller verified all three frozen source hashes and returned nextAction=context, canComplete=false, with no completed or invalidated workflow stages. This is evidence of a manual check only, not automatic interception or completion validation by Codex.",
+      "sourceIds": [
+        "hook-config",
+        "gate-description",
+        "gate-entry"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "Whether automatic grounding and completion checks actually ran in this Codex session is not established by the supplied records or local controller invocation.",
+      "sourceIds": [
+        "hook-config",
+        "gate-description",
+        "gate-entry"
+      ],
+      "confidence": "unknown"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "declares a PreToolUse Write|Edit hook invoking",
+      "subject": ".claude/settings.json hook configuration",
+      "object": ".agents/gate.mjs --auto-ground",
+      "authoritySourceIds": [
+        "hook-config"
+      ]
+    },
+    {
+      "relation": "claims cross-tool interception including Codex",
+      "subject": ".agents/gate.mjs source header",
+      "object": "Codex tool calls",
+      "authoritySourceIds": [
+        "gate-description"
+      ]
+    }
+  ],
+  "reviewRequired": [],
+  "unresolved": [
+    "Was the gate registered with and invoked by the active Codex runtime for any tool call in this session?",
+    "Does this Codex session have an automatic Stop/completion hook, and did it run?",
+    "The supplied gate-entry excerpt does not include its full entrypoint or prove runtime integration; the referenced stop-gate implementation was not supplied."
+  ],
+  "execution": {
+    "runtimeHookStatus": "configured_only",
+    "canaryEvidence": null,
+    "completedSteps": [],
+    "invalidatedSteps": [],
+    "nextAction": "Obtain Codex runtime hook-registration and invocation evidence, including completion-hook evidence, then reassess automatic coverage."
+  },
+  "limitations": [
+    "Only the frozen supplied records and local controller were inspected; no original repository or Codex runtime hook telemetry was available.",
+    "Controller output verifies source hashes and stage mechanics only. Its own stated guarantees exclude truthful interpretation, actual reading, authorization identity, and resistance to direct local state edits.",
+    "No gate canary was run because the supplied excerpt is incomplete and a manually launched gate would not establish automatic interception."
+  ]
+}

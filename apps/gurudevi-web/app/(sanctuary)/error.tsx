@@ -86,8 +86,8 @@ export default function SanctuaryError({
             marginBottom: '2rem',
           }}
         >
-          An unexpected interruption occurred while preparing this room. You can retry or return to
-          the Guest House.
+          An unexpected interruption occurred while preparing this room. You can retry, step back
+          to your previous page, or return to Welcome.
         </p>
         <div
           style={{
@@ -119,8 +119,15 @@ export default function SanctuaryError({
           >
             Retry Floor
           </button>
-          <Link
-            href="/welcome"
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.history.length > 1) {
+                window.history.back();
+              } else {
+                window.location.href = '/welcome';
+              }
+            }}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -134,13 +141,13 @@ export default function SanctuaryError({
               fontFamily: 'var(--font-sans, "Space Grotesk", sans-serif)',
               fontSize: '0.875rem',
               fontWeight: 600,
-              textDecoration: 'none',
+              cursor: 'pointer',
             }}
           >
-            Guest House
-          </Link>
-          <a
-            href={resolveSurfaceUrl('explore', '/')}
+            ← Go Back
+          </button>
+          <Link
+            href="/welcome"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -157,8 +164,8 @@ export default function SanctuaryError({
               textDecoration: 'none',
             }}
           >
-            Guest House Museum ↗
-          </a>
+            Return to Welcome
+          </Link>
         </div>
       </div>
     </main>

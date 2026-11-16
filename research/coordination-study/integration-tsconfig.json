@@ -1,0 +1,16 @@
+{
+  "extends": "../../packages/platform-mcp/tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "C:\\x\\packages\\platform-mcp\\src\\coordination.ts",
+    "C:\\x\\packages\\platform-mcp\\src\\coordinationStore.ts",
+    "C:\\x\\packages\\platform-mcp\\src\\coordinationTools.ts",
+    "C:\\x\\packages\\platform-mcp\\src\\coordination.test.ts",
+    "C:\\x\\packages\\platform-mcp\\src\\coordinationTools.test.ts",
+    "C:\\x\\packages\\platform-mcp\\src\\coordinationGateway.integration.test.ts",
+    "C:\\x\\packages\\platform-mcp\\src\\services\\CoordinationService.ts",
+    "C:\\x\\packages\\platform-mcp\\src\\cli\\coordination.ts"
+  ]
+}

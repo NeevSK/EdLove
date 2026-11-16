@@ -11,7 +11,11 @@
       "supportsTablet": true,
       "bundleIdentifier": "app.gurudevi.sanctuary",
       "buildNumber": "1",
-      "associatedDomains": ["applinks:sanctuary.gurudevi.app", "applinks:gurudevi.app"],
+      "associatedDomains": [
+        "applinks:sanctuary.gurudevi.app",
+        "applinks:gurudevi.app",
+        "applinks:explore.gurudevi.app"
+      ],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSMicrophoneUsageDescription": "Gurudevi Sanctuary requires microphone access to record reflective audio journal entries.",
@@ -112,6 +116,31 @@
             {
               "scheme": "https",
               "host": "gurudevi.app",
+              "pathPrefix": "/auth/callback"
+            },
+            {
+              "scheme": "https",
+              "host": "explore.gurudevi.app",
+              "pathPrefix": "/self"
+            },
+            {
+              "scheme": "https",
+              "host": "explore.gurudevi.app",
+              "pathPrefix": "/workspace"
+            },
+            {
+              "scheme": "https",
+              "host": "explore.gurudevi.app",
+              "pathPrefix": "/intro"
+            },
+            {
+              "scheme": "https",
+              "host": "explore.gurudevi.app",
+              "pathPrefix": "/c"
+            },
+            {
+              "scheme": "https",
+              "host": "explore.gurudevi.app",
               "pathPrefix": "/auth/callback"
             }
           ],

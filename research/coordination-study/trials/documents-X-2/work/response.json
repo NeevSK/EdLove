@@ -1,0 +1,77 @@
+{
+  "workId": "a6d7b55e-5027-4959-b212-917ae0700343",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "The entry path is What Is Gurudevi? for the short human introduction, followed by Gurudevi Soul & Core Covenant for expanded governing commitments and implementation boundaries. Both documents explicitly describe this sequence.",
+      "sourceIds": ["intro", "covenant"],
+      "confidence": "direct"
+    },
+    {
+      "claim": "Both documents are marked active. The Covenant supersedes the introduction's overlapping pillar definitions, not the introduction as a whole. Its explicit instruction to begin with the introduction preserves that document's useful orientation role.",
+      "sourceIds": ["intro", "covenant", "covenant-scope"],
+      "confidence": "supported"
+    },
+    {
+      "claim": "No whole-document retirement, archive, or superseded status is warranted for the introduction or Covenant. Keep both active; any clarification should distinguish the introduction's summary role from the Covenant's authority over overlapping pillar definitions.",
+      "sourceIds": ["intro", "covenant", "covenant-scope"],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The Covenant also supersedes overlapping pillar definitions in the named 2026-10-10 manifesto and architecture covenant. This scoped statement alone does not establish that the entire manifesto should be retired or that its lifecycle metadata needs changing.",
+      "sourceIds": ["covenant-scope"],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The Covenant defines intended product and architectural commitments; it explicitly does not establish that every described capability is shipped.",
+      "sourceIds": ["covenant"],
+      "confidence": "direct"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "is the reader entry point before",
+      "subject": "What Is Gurudevi? — A Short Introduction",
+      "object": "Gurudevi Soul & Core Covenant",
+      "authoritySourceIds": ["intro", "covenant"]
+    },
+    {
+      "relation": "supersedes overlapping pillar definitions in",
+      "subject": "Gurudevi Soul & Core Covenant",
+      "object": "What Is Gurudevi? — A Short Introduction",
+      "authoritySourceIds": ["covenant-scope"]
+    },
+    {
+      "relation": "supersedes overlapping pillar definitions in",
+      "subject": "Gurudevi Soul & Core Covenant",
+      "object": "2026-10-10-gurudevi-core-ecosystem-manifesto-and-architecture-covenant.md",
+      "authoritySourceIds": ["covenant-scope"]
+    },
+    {
+      "relation": "remain active with complementary introductory and governing purposes",
+      "subject": "What Is Gurudevi? — A Short Introduction",
+      "object": "Gurudevi Soul & Core Covenant",
+      "authoritySourceIds": ["intro", "covenant", "covenant-scope"]
+    }
+  ],
+  "reviewRequired": [],
+  "unresolved": [
+    "The named manifesto was not supplied, so its complete lifecycle disposition cannot be determined. Only the Covenant's scoped supersession of its overlapping pillar definitions is established."
+  ],
+  "execution": {
+    "runtimeHookStatus": "not_applicable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "Read work.json and all three supplied frozen excerpts.",
+      "Compared active metadata, reciprocal entry-path instructions, and scoped supersession language.",
+      "Established the reading sequence and preserved both documents' distinct purposes.",
+      "Saved the requested JSON response without modifying source documents."
+    ],
+    "invalidatedSteps": [],
+    "nextAction": "Use the introduction as the documentation entry link and label the Covenant as governing expanded commitments. Preserve both active statuses; inspect the complete manifesto before proposing any lifecycle change to it."
+  },
+  "limitations": [
+    "Conclusions are limited to the three supplied excerpts; the full documents, documentation navigation, and referenced supporting documents were not inspected.",
+    "No repository edits, runtime checks, canary execution, or resource measurements were performed."
+  ]
+}

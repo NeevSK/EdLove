@@ -34,14 +34,19 @@ const mocks = vi.hoisted(() => {
   const authStore = (selector: (state: typeof authState) => unknown) => selector(authState);
   authStore.getState = () => authState;
 
+  const scopeState = {
+    snapshot: null as
+      | null
+      | { principalId: string; activePerspective: { kind: string }; activeBond: null; availableBonds: [] },
+  };
+  const scopeStore = (selector: (state: typeof scopeState) => unknown) => selector(scopeState);
+  scopeStore.getState = () => scopeState;
+
   return {
     authState,
     authStore,
-    scopeState: {
-      snapshot: null as
-        | null
-        | { principalId: string; activePerspective: { kind: string }; activeBond: null; availableBonds: [] },
-    },
+    scopeState,
+    scopeStore,
     tenantState: { schoolType: null },
     featureState: { flags: {} },
     cedarState: {
@@ -61,8 +66,7 @@ const mocks = vi.hoisted(() => {
 vi.mock('@repo/core/store/useAuthStore', () => ({ useAuthStore: mocks.authStore }));
 vi.mock('@repo/core/store/scopeSession', () => ({
   PERSONAL_SCOPE_PERSPECTIVE: { id: 'personal', kind: 'personal', displayName: 'Personal Sanctuary' },
-  useScopeSessionStore: (selector: (state: typeof mocks.scopeState) => unknown) =>
-    selector(mocks.scopeState),
+  useScopeSessionStore: mocks.scopeStore,
 }));
 vi.mock('@repo/core/store/useTenantStore', () => ({
   useTenantStore: (selector: (state: typeof mocks.tenantState) => unknown) =>

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import toolsMetaModelData from '../architecture/toolsMetaModelData.json';
 
 // --- Types ---
@@ -23,6 +24,7 @@ interface SeamStage {
 }
 
 export function ArchitectureLabClient() {
+  const visualCapabilities = useVisualCapabilities();
   const [activeTab, setActiveTab] = useState<StudioTab>('seam-sim');
 
   // ==========================================

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import type { AnticipateIntent } from '@repo/verger-core';
 import { useVerger } from './vergerStore';
 
 /**
@@ -19,3 +20,21 @@ export function useScreenAnnouncement(name: string | null, transitionMs?: number
     );
   }, [verger, name, transitionMs]);
 }
+
+/**
+ * Proactively announces deterministic load bursts or heavy entries to Verger (feedforward anticipation),
+ * stepping down ornamental levers before frame drops occur.
+ */
+export function useAnticipate(intent: AnticipateIntent | null, durationMs = 400): void {
+  const verger = useVerger();
+  useEffect(() => {
+    if (!verger || intent === null) return;
+    verger.dispatch({
+      type: 'anticipate',
+      at: performance.now(),
+      intent,
+      durationMs,
+    });
+  }, [verger, intent, durationMs]);
+}
+

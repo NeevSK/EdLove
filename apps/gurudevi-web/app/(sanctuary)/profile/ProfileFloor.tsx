@@ -335,7 +335,13 @@ export function ProfileFloor({
     e.preventDefault();
     setIsSaving(true);
 
-    if (isExplore) {
+    const isLocalMode =
+      isExplore ||
+      accountId === 'dev-sanctuary' ||
+      accountId.startsWith('dev-') ||
+      accountId === 'guest-explorer';
+
+    if (isLocalMode) {
       try {
         const payload = {
           name: profileName,
@@ -355,7 +361,7 @@ export function ProfileFloor({
       }
       setIsSaving(false);
       setIsEditing(false);
-      triggerNotice('Guest sandbox profile saved successfully!');
+      triggerNotice('Profile saved locally in dev/sample mode!');
       return;
     }
 

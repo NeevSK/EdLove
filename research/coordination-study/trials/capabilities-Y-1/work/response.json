@@ -1,0 +1,79 @@
+{
+  "workId": "f4eede81-cfc4-40de-8f1f-792ba797beb7",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "The supplied router implements six foundation procedures: identity.session, identity.scopes, identity.entry and identity.syncCredentials are queries; identity.createInitialBond and authority.refreshSnapshot are commands. The capability catalog marks all six admitted for the app channel with session assurance and required G2 evidence.",
+      "sourceIds": ["router", "capabilities"],
+      "confidence": "direct"
+    },
+    {
+      "claim": "All shown handlers require both identity and platform context. Security operations receive the caller's signal or a five-second timeout. syncCredentials reports SERVICE_UNAVAILABLE if its issuer is absent. These source-level mechanisms do not establish deployed execution or complete authorization coverage.",
+      "sourceIds": ["router"],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The literal empty-v1-contract description reflects the earlier reset checkpoint and is no longer an accurate description of the supplied router. Its narrower empty-business-contract statement remains consistent with the shown foundation-only procedures. The governing policy's two-read-only-identity-procedures description is also superseded by the six shown procedures, including two commands.",
+      "sourceIds": ["catalog-description", "router", "capabilities", "foundation-policy"],
+      "confidence": "supported"
+    },
+    {
+      "claim": "Foundation admission does not authorize implementing business procedures. Governing policy explicitly resumes horizontal engineering while deferring business admission, feature migrations and unresolved product-policy choices. Current implementation evidence changes the foundation inventory, not that scope decision.",
+      "sourceIds": ["foundation-policy", "catalog-description", "router", "capabilities"],
+      "confidence": "supported"
+    },
+    {
+      "claim": "G2 is a declared evidence requirement, not supplied proof of passing G2. The capability comment explicitly leaves owner confirmation of this bar pending. The historical catalog reports partial verification and separately lists hosted identity, deployment, R1, provider handlers, retention, reconciliation, feature admission and offline paths as outstanding; their present completion cannot be established here.",
+      "sourceIds": ["capabilities", "catalog-description"],
+      "confidence": "supported"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "supersedes the literal current-state inventory in",
+      "subject": "The six implemented and catalog-admitted foundation procedures",
+      "object": "The empty-v1-contract and two-read-only-identity-procedures descriptions",
+      "authoritySourceIds": ["router", "capabilities", "catalog-description", "foundation-policy"]
+    },
+    {
+      "relation": "remains the governing scope constraint for",
+      "subject": "Horizontal foundation first; business admission deferred",
+      "object": "Resumed API work and interpretation of current foundation admission",
+      "authoritySourceIds": ["foundation-policy", "catalog-description"]
+    },
+    {
+      "relation": "declares required evidence without demonstrating satisfaction of",
+      "subject": "The admitted foundation capability manifest",
+      "object": "G2 verification and owner confirmation of the evidence bar",
+      "authoritySourceIds": ["capabilities"]
+    }
+  ],
+  "reviewRequired": ["catalog-description", "foundation-policy", "capabilities"],
+  "unresolved": [
+    "Has the owner confirmed G2 as the minimum evidence bar for admitted foundation capabilities?",
+    "What current test and runtime evidence demonstrates G2 for each of the six procedures?",
+    "What is the current status of the catalog's historical open questions, including hosted identity, production database grants, deployment, R1, retention, reconciliation and offline rebuild work?",
+    "No supplied authority grants business admission or resolves capability-specific product policies."
+  ],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "Recovered horizontal-first intent and scope decisions from the supplied policy and catalog excerpt.",
+      "Inspected the supplied router and capability manifest and reconciled the six procedure names, kinds, channel and assurance declarations.",
+      "Separated historical reset descriptions from the supplied current implementation inventory.",
+      "Recorded consequential interpretation decisions and the records requiring review without modifying frozen sources."
+    ],
+    "invalidatedSteps": [
+      "Using an empty v1 contract or two read-only identity procedures as the current inventory.",
+      "Treating admission or required G2 labels as successful runtime verification.",
+      "Inferring business implementation authorization from foundation progress."
+    ],
+    "nextAction": "Review catalog-description and foundation-policy to replace stale current-state inventories while retaining reset history and horizontal-only scope; obtain owner confirmation of the G2 bar and inspect per-capability evidence before advancing foundation acceptance. Keep business admission deferred."
+  },
+  "limitations": [
+    "Only the four frozen excerpts were available; the imported contract, security implementations, full module inventory, tests, conformance reports and deployment were not inspected.",
+    "No runtime hook, canary or live verification evidence was supplied or executed.",
+    "Record reconciliation is proposed for review; frozen source records were not edited."
+  ]
+}

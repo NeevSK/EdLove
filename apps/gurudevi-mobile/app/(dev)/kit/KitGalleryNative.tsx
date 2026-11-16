@@ -326,6 +326,31 @@ export function KitGalleryNative() {
               </nativeKit.Stack>
             </nativeKit.Surface>
 
+            {/* Synthetic example only; no live person or domain data is connected. */}
+            <nativeKit.Stack gap="between">
+              <nativeKit.Text kind="title">Radar · synthetic example</nativeKit.Text>
+              <nativeKit.Radar
+                label="Example measure"
+                state={{
+                  kind: 'ready',
+                  observation: {
+                    subject: { id: 'gallery-example', label: 'Example person' },
+                    measure: { id: 'example-measure', label: 'Example measure', version: 'fixture-1' },
+                    perspective: { id: 'self-example', label: 'Self example', kind: 'self' },
+                      plotPolicy: 'declared-comparable',
+                    sourceLabel: 'Development gallery fixture',
+                    synthetic: true,
+                    stale: false,
+                    axes: [
+                      { id: 'example-a', label: 'Example A', min: 0, max: 10, value: 7, unit: 'points' },
+                      { id: 'example-b', label: 'Example B', min: 0, max: 10, value: 4, unit: 'points' },
+                      { id: 'example-c', label: 'Example C', min: 0, max: 10, value: null, unit: 'points' },
+                    ],
+                  },
+                }}
+              />
+            </nativeKit.Stack>
+
             {/* Adversarial Virtualization Stress Benchmark */}
             <View
               style={{

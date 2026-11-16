@@ -386,6 +386,15 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
     v[`${q}-table-head`] = p.table.headerFill;
     v[`${q}-gap`] = px(p.gap);
   }
+  Object.assign(v, {
+    '--w-radar-grid': r.radar.grid,
+    '--w-radar-stroke': r.radar.stroke,
+    '--w-radar-point': r.radar.point,
+    '--w-radar-stroke-width': String(r.radar.strokeWidth),
+    '--w-radar-grid-width': String(r.radar.gridWidth),
+    '--w-radar-point-radius': px(r.radar.pointRadius),
+    '--w-radar-label-size': px(r.radar.labelSize),
+  });
   return v;
 }
 

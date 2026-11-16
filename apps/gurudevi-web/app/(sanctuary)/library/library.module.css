@@ -529,6 +529,12 @@
 .categoryPill:hover {
   border-color: var(--lotus);
   color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.categoryPill:active {
+  transform: translateY(0) scale(0.95);
+  transition-duration: 70ms;
 }
 
 .categoryPill[data-active="true"] {
@@ -756,6 +762,40 @@
 
 .heroSection {
   margin-bottom: 1.5rem;
+}
+
+.desksNavStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 1rem 0 1.5rem;
+  align-items: center;
+}
+
+.deskPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--paper-light) 85%, var(--line));
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.deskPill:hover {
+  background: color-mix(in srgb, var(--lotus) 15%, var(--paper-light));
+  border-color: var(--lotus);
+  transform: translateY(-1px);
+}
+
+.deskPill:active {
+  transform: translateY(0) scale(0.95);
+  transition-duration: 70ms;
 }
 
 

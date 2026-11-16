@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 
 /** Pieces both sets must have; the native suite checks the same list. */
 const SHARED = [
+  'Radar',
+  'FeedbackScene',
   'ActionFab',
   'AudioRecord',
   'AppHeader',

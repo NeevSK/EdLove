@@ -1,0 +1,263 @@
+{
+  "reviewer": "independent reused reviewer",
+  "method": "Semantic judgment against blinded labels and supplied extracts. Criteria were formalized after early outputs; response content can leak methodology. Structural validation and execution claims assessed separately.",
+  "rows": [
+    {
+      "label": "entry-01",
+      "caseId": "hooks",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "hook-config:1-15; gate-description:1-16; gate-entry:950-981"
+    },
+    {
+      "label": "entry-02",
+      "caseId": "resume",
+      "verdict": "partial",
+      "assessment": "Main inheritance and invalidation are supported, but the claim that a handoff hash matches is unsupported: handoff and stable-source contain a revision, not a handoff hash.",
+      "source": "stable-source and handoff synthetic records; changed-source synthetic owner clarification"
+    },
+    {
+      "label": "entry-03",
+      "caseId": "hooks",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "hook-config:1-15; gate-description:1-16; gate-entry:950-981"
+    },
+    {
+      "label": "entry-04",
+      "caseId": "capabilities",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "catalog-description:4,22; router:13-100; capabilities:115-205; foundation-policy:1-45"
+    },
+    {
+      "label": "entry-05",
+      "caseId": "resume",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "stable-source and handoff synthetic records; changed-source synthetic owner clarification"
+    },
+    {
+      "label": "entry-06",
+      "caseId": "resume",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "stable-source and handoff synthetic records; changed-source synthetic owner clarification"
+    },
+    {
+      "label": "entry-07",
+      "caseId": "hooks",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "hook-config:1-15; gate-description:1-16; gate-entry:950-981"
+    },
+    {
+      "label": "entry-08",
+      "caseId": "hooks",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "hook-config:1-15; gate-description:1-16; gate-entry:950-981"
+    },
+    {
+      "label": "entry-09",
+      "caseId": "authority",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "proposal-a, proposal-b and governance synthetic records"
+    },
+    {
+      "label": "entry-10",
+      "caseId": "instructions",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "older-workflow:1-100; platform-rules:53-69,73-96,119-141,152-161"
+    },
+    {
+      "label": "entry-11",
+      "caseId": "authority",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "proposal-a, proposal-b and governance synthetic records"
+    },
+    {
+      "label": "entry-12",
+      "caseId": "capabilities",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "catalog-description:4,22; router:13-100; capabilities:115-205; foundation-policy:1-45"
+    },
+    {
+      "label": "entry-13",
+      "caseId": "documents",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "intro:13; covenant:15; covenant-scope:208-211"
+    },
+    {
+      "label": "entry-14",
+      "caseId": "authority",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "proposal-a, proposal-b and governance synthetic records"
+    },
+    {
+      "label": "entry-15",
+      "caseId": "documents",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "intro:13; covenant:15; covenant-scope:208-211"
+    },
+    {
+      "label": "entry-16",
+      "caseId": "instructions",
+      "verdict": "partial",
+      "assessment": "The main UI and API direction is supported, but packages/ui and packages/core placement and the approval gate are described as conflicting or superseded without establishing a conflict. Compare older-workflow with platform-rules lines 53-62, 119-141.",
+      "source": "older-workflow:1-100; platform-rules:53-69,73-96,119-141,152-161"
+    },
+    {
+      "label": "entry-17",
+      "caseId": "instructions",
+      "verdict": "partial",
+      "assessment": "The main API and component boundaries are supported, but package placement is classified as conflicting without sufficient basis. It also omits the world-recipe styling boundary in platform-rules lines 65-69.",
+      "source": "older-workflow:1-100; platform-rules:53-69,73-96,119-141,152-161"
+    },
+    {
+      "label": "entry-18",
+      "caseId": "instructions",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "older-workflow:1-100; platform-rules:53-69,73-96,119-141,152-161"
+    },
+    {
+      "label": "entry-19",
+      "caseId": "documents",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "intro:13; covenant:15; covenant-scope:208-211"
+    },
+    {
+      "label": "entry-20",
+      "caseId": "capabilities",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "catalog-description:4,22; router:13-100; capabilities:115-205; foundation-policy:1-45"
+    },
+    {
+      "label": "entry-21",
+      "caseId": "authority",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "proposal-a, proposal-b and governance synthetic records"
+    },
+    {
+      "label": "entry-22",
+      "caseId": "capabilities",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "catalog-description:4,22; router:13-100; capabilities:115-205; foundation-policy:1-45"
+    },
+    {
+      "label": "entry-23",
+      "caseId": "authority",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "proposal-a, proposal-b and governance synthetic records"
+    },
+    {
+      "label": "entry-24",
+      "caseId": "resume",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "stable-source and handoff synthetic records; changed-source synthetic owner clarification"
+    },
+    {
+      "label": "entry-25",
+      "caseId": "authority",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "proposal-a, proposal-b and governance synthetic records"
+    },
+    {
+      "label": "entry-26",
+      "caseId": "instructions",
+      "verdict": "partial",
+      "assessment": "The main API and component directions are supported, but classifying all old package placement, motion, blur and 2GB constraints as conflicts is overbroad; absence from platform-rules lines 53-69 does not establish contradiction.",
+      "source": "older-workflow:1-100; platform-rules:53-69,73-96,119-141,152-161"
+    },
+    {
+      "label": "entry-27",
+      "caseId": "capabilities",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "catalog-description:4,22; router:13-100; capabilities:115-205; foundation-policy:1-45"
+    },
+    {
+      "label": "entry-28",
+      "caseId": "documents",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "intro:13; covenant:15; covenant-scope:208-211"
+    },
+    {
+      "label": "entry-29",
+      "caseId": "hooks",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "hook-config:1-15; gate-description:1-16; gate-entry:950-981"
+    },
+    {
+      "label": "entry-30",
+      "caseId": "documents",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "intro:13; covenant:15; covenant-scope:208-211"
+    },
+    {
+      "label": "entry-31",
+      "caseId": "resume",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "stable-source and handoff synthetic records; changed-source synthetic owner clarification"
+    },
+    {
+      "label": "entry-32",
+      "caseId": "documents",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "intro:13; covenant:15; covenant-scope:208-211"
+    },
+    {
+      "label": "entry-33",
+      "caseId": "hooks",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "hook-config:1-15; gate-description:1-16; gate-entry:950-981"
+    },
+    {
+      "label": "entry-34",
+      "caseId": "capabilities",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "catalog-description:4,22; router:13-100; capabilities:115-205; foundation-policy:1-45"
+    },
+    {
+      "label": "entry-35",
+      "caseId": "resume",
+      "verdict": "partial",
+      "assessment": "Main inheritance and invalidation are supported, but the claim that a stable-source hash matches the handoff packet is unsupported: handoff and stable-source state a revision, not a handoff hash.",
+      "source": "stable-source and handoff synthetic records; changed-source synthetic owner clarification"
+    },
+    {
+      "label": "entry-36",
+      "caseId": "instructions",
+      "verdict": "supported",
+      "assessment": "The principal requested conclusion is consistent with the cited packet and respects its stated authority or evidence limits.",
+      "source": "older-workflow:1-100; platform-rules:53-69,73-96,119-141,152-161"
+    }
+  ],
+  "limits": [
+    "The review material omits the execution object, so sequence and next-action completeness cannot be independently assessed from this packet alone.",
+    "A supported verdict assesses the main answer rather than independently validating every peripheral claim or actual tool invocation.",
+    "Semantic judgments are not deterministic proof and criteria were not preregistered blind causal inference."
+  ]
+}

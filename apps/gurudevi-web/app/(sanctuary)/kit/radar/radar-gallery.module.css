@@ -1,0 +1,19 @@
+.page {
+  display: grid;
+  gap: 1rem;
+  max-width: 56rem;
+  margin-inline: auto;
+  padding: 1rem;
+  min-width: 0;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.controls legend {
+  margin-block-end: 0.5rem;
+}

@@ -7,7 +7,7 @@ export { INPUT_DELAY_DURATION_THRESHOLD_MS, observeInputDelay } from './inputDel
 export { observeEventLoopLag, observeJsHeap } from './jsSamplers';
 export { useVergerLab } from './lab';
 export { observeLongTasks } from './longTasks';
-export { useScreenAnnouncement } from './screenAnnouncement';
+export { useAnticipate, useScreenAnnouncement } from './screenAnnouncement';
 export { useScrollPresence } from './scrollPresence';
 export {
   bindVerger,

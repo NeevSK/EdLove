@@ -520,6 +520,16 @@ export interface TimeRecipe {
 /** An inline notice: a quiet well, an accent bar in its tone, plain words. */
 export type NoticeRecipe = Record<BadgeTone, { fill: string; ink: string; accent: string }>;
 
+export interface RadarRecipe {
+  grid: string;
+  stroke: string;
+  point: string;
+  strokeWidth: number;
+  gridWidth: number;
+  pointRadius: number;
+  labelSize: number;
+}
+
 export interface WorldRecipes {
   text: Record<TextRole, TypeStyle>;
   button: ButtonRecipe;
@@ -539,6 +549,7 @@ export interface WorldRecipes {
   message: MessageRecipe;
   time: TimeRecipe;
   notice: NoticeRecipe;
+  radar: RadarRecipe;
   material: MaterialRecipe;
   motion: { settleMs: number; breatheMs: number };
 }

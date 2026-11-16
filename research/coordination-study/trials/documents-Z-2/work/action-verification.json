@@ -1,0 +1,21 @@
+{
+  "id": "verification-1",
+  "unresolved": [],
+  "evidence": [
+    {
+      "sha256": "a621766affdfd35df6c8054cb0529c99783ea39549660d55b9eb7cd3b2a0995d",
+      "sourceId": "intro"
+    },
+    {
+      "sha256": "b25d935c9b55818fea4f7a69730db26d0d160182f6d5d681b5fd40aaf0438ed0",
+      "sourceId": "covenant"
+    },
+    {
+      "sha256": "3b0f4b93f0f0602907972082067538d9bbe9e613b973b979b7271eb36065809b",
+      "sourceId": "covenant-scope"
+    }
+  ],
+  "kind": "record",
+  "stage": "verification",
+  "summary": "Checked conclusions against intro lines 3,13,18, Covenant lines 3,15,21-25, and scope lines 208-217. Reciprocal reading order and active statuses agree. Scope says overlapping pillar definitions, not whole documents. No supplied evidence establishes shipped features, the full older manifesto, an index entry, or a repository lifecycle policy. Controller outputs show fresh source hashes and ordered records; this is structural verification only."
+}

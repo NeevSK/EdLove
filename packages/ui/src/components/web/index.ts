@@ -51,6 +51,7 @@ export { Carousel, type CarouselProps } from './Carousel/Carousel';
 export { Checkbox, type CheckboxProps } from './Checkbox/Checkbox';
 export { Chip, type ChipProps, Chips, type ChipsProps } from './Chip/Chip';
 export { Dialog, type DialogProps } from './Dialog/Dialog';
+export { Drawer, type DrawerProps } from './Drawer/Drawer';
 export { Group, type GroupProps } from './Group/Group';
 export { Icon, type IconProps } from './Icon/Icon';
 export { IconButton, type IconButtonProps } from './IconButton/IconButton';
@@ -172,3 +173,5 @@ export {
   type ScrollAreaProps,
 } from './ScrollArea/ScrollArea';
 
+export { Radar, type RadarProps } from './Radar/Radar';
+export { FeedbackScene, type FeedbackSceneProps } from './FeedbackScene/FeedbackScene';

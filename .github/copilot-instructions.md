@@ -4994,12 +4994,19 @@ Use this skill when modifying offline data storage, schema definitions, sync rul
 
 ## 1. Monorepo Stack Specifications
 
-Our PowerSync setup utilizes a unified TypeScript client layer wrapping platform-native engines:
-*   **Reactivity Client**: `@powersync/react-native@1.35.3` and `@powersync/react@1.10.0`
-*   **Web Engine**: `@powersync/web@1.38.3` + WebAssembly (WASQLite) + OPFS (Origin Private File System)
-*   **Native Engine**: `@powersync/op-sqlite@0.9.9` (compiled C++ SQLite wrapper) with SQLCipher encryption
-*   **ORM**: Drizzle ORM (`@powersync/drizzle-driver@0.7.3` via `wrapPowerSyncWithDrizzle`)
+Our PowerSync setup utilizes a unified TypeScript client layer wrapping platform-native engines.
+Versions live in the `POWERSYNC_DATA_ENGINE` cohort in `scripts/lib/dependency-cohorts.mjs`, never
+here (an earlier copy of this list went stale by a major version).
+*   **Reactivity Client**: `@powersync/react-native` and `@powersync/react`
+*   **Web Engine**: `@powersync/web` + WebAssembly (WASQLite) + OPFS (Origin Private File System)
+*   **Native Engine**: op-sqlite (compiled C++ SQLite wrapper) with SQLCipher encryption
+*   **ORM**: Drizzle ORM (`@powersync/drizzle-driver` via `wrapPowerSyncWithDrizzle`)
 *   **Boundary**: Package `@repo/core` (`packages/core/src/adapters/powersync`) exports the database singleton and bootstrap procedures.
+*   **Connector**: `createV1SyncConnector` (`v1Connector.adapter.ts`): credentials from the v1
+    capability `identity.syncCredentials`; synced writes stay queued until a domain capability
+    accepts them.
+*   **CLI**: `pnpm dlx powersync@<version>` with `--directory powersync`. Cloud instance
+    "Development"; owner login required for Cloud commands; default scope is `sync-config.yaml` only.
 
 ---
 

@@ -1,0 +1,59 @@
+{
+  "id": "chat-analysis",
+  "scope": "Sourced feature analysis for the AI assistant chat slice; proposal only",
+  "authorId": "work_36",
+  "sourcePaths": [
+    "research/coordination-study/lifecycle/chat-specification-brief.md",
+    "AGENTS.md",
+    "docs/architecture/platform-map.md",
+    "docs/architecture/domain-design-method.md",
+    "packages/core/src/flows/pjc/ai.assistant.json",
+    "packages/core/src/flows/ai/aiAssistant.flow.ts",
+    "apps/gurudevi-mobile/app/a-i-assistant.tsx",
+    "packages/ai/src/screens/AIScreen.tsx",
+    "packages/ai/src/hooks/useAIAgent.ts",
+    "packages/ai/src/api/sanctuaryCloudProvider.ts",
+    "packages/ai/package.json",
+    "packages/schema/schema.zmodel",
+    "apps/sanctuary-api/src/modules/catalog.ts",
+    "docs/architecture/model/gurudevi.c4",
+    "pnpm-lock.yaml"
+  ],
+  "dependsOn": [],
+  "content": {
+    "kind": "analysis",
+    "requestKind": "feature",
+    "dimensions": {
+      "ux": {"applicability":"applies","reason":"AIScreen describes Chat and Agent modes, composer, history and proposal cards, but the mobile route renders UnbuiltPlace; route realization is part of the feature seam.","sources":["packages/ai/src/screens/AIScreen.tsx","apps/gurudevi-mobile/app/a-i-assistant.tsx","packages/core/src/flows/ai/aiAssistant.flow.ts"]},
+      "screens": {"applicability":"applies","reason":"The package screen defines message list, composer, privacy/history controls, context banner, artifact and proposal dialogs; the actual mounted route is currently a placeholder.","sources":["packages/ai/src/screens/AIScreen.tsx","apps/gurudevi-mobile/app/a-i-assistant.tsx"]},
+      "state": {"applicability":"applies","reason":"The screen and hook maintain chat/agent tab, privacy mode, stream status, active run, history, proposal, attachments and thread state; the relation between UI and persistence is not proven.","sources":["packages/ai/src/screens/AIScreen.tsx","packages/ai/src/hooks/useAIAgent.ts"]},
+      "errors": {"applicability":"applies","reason":"The provider converts request failure to fallback stream text and a failed event; thread, quota and mission calls often return null or empty on failure, so visible errors and retry behavior need a contract.","sources":["packages/ai/src/api/sanctuaryCloudProvider.ts","packages/ai/src/hooks/useAIAgent.ts"]},
+      "feedback": {"applicability":"applies","reason":"The screen wires haptic feedback for send, selection, errors and success, plus busy/stream states and tool-call cards; end-to-end event behavior is unverified.","sources":["packages/ai/src/screens/AIScreen.tsx"]},
+      "motion": {"applicability":"applies","reason":"Navigation, dialogs, drawer and streaming have transitions, but no sourced motion specification; the future role handoff needs motion, reduced-motion and cancellation requirements.","sources":["packages/ai/src/screens/AIScreen.tsx","research/coordination-study/lifecycle/chat-specification-brief.md"]},
+      "accessibility": {"applicability":"applies","reason":"Controls and message list have labels, but this source pass does not establish screen-reader behavior, focus movement, keyboard coverage or reduced-motion compliance.","sources":["packages/ai/src/screens/AIScreen.tsx"]},
+      "data": {"applicability":"applies","reason":"The hook composes role, class, gap, memory and domain context; PJC declares reflection exclusion, but actual sanitization and privacy behavior need scoped evidence.","sources":["packages/ai/src/hooks/useAIAgent.ts","packages/core/src/flows/pjc/ai.assistant.json"]},
+      "api": {"applicability":"applies","reason":"The hook uses /api/ai/chat and /api/ai/threads while SanctuaryCloudProvider targets /api/v1/ai/chat; the inspected API catalog does not establish an admitted AI capability.","sources":["packages/ai/src/hooks/useAIAgent.ts","packages/ai/src/api/sanctuaryCloudProvider.ts","apps/sanctuary-api/src/modules/catalog.ts","AGENTS.md"]},
+      "database": {"applicability":"applies","reason":"AiMessage models thread, user, privacy mode and expiry, but runtime writes, expiry enforcement, ownership and sync paths were not demonstrated.","sources":["packages/schema/schema.zmodel","packages/ai/src/hooks/useAIAgent.ts","packages/core/src/flows/pjc/ai.assistant.json"]},
+      "dependencies": {"applicability":"applies","reason":"The AI package declares TanStack AI dependencies and the lockfile resolves them; upstream compatibility/latest status was not researched and remains unknown.","sources":["packages/ai/package.json","pnpm-lock.yaml"]},
+      "security": {"applicability":"applies","reason":"The hook sends an auth token and BYOK key in request context and composes class/memory context; PJC names review and reflection-exclusion requirements, but no complete security/data-flow proof was inspected.","sources":["packages/ai/src/hooks/useAIAgent.ts","packages/core/src/flows/pjc/ai.assistant.json","packages/schema/schema.zmodel","AGENTS.md"]},
+      "offline": {"applicability":"applies","reason":"The flow specifies an offline fallback and the provider emits a local-storage reassurance on errors, but draft persistence and offline recovery were not confirmed.","sources":["packages/core/src/flows/ai/aiAssistant.flow.ts","packages/ai/src/api/sanctuaryCloudProvider.ts","packages/ai/src/hooks/useAIAgent.ts"]},
+      "reuse": {"applicability":"applies","reason":"AIScreen composes owned native UI components; platform rules require corresponding owned web/native contracts and prohibit ad hoc production UI.","sources":["packages/ai/src/screens/AIScreen.tsx","AGENTS.md","docs/architecture/platform-map.md"]}
+    },
+    "reuse": [
+      "Reuse the owned native UI components already used by AIScreen; if web is in scope, use the owned web component contracts.",
+      "Preserve the existing route; it currently renders UnbuiltPlace and must not be described as a working chat screen.",
+      "Resolve the API capability and channel against the API catalog and /api/v1 contract before wiring a new procedure."
+    ],
+    "openQuestions": [
+      "Which requester decision admits an AI capability in the Sanctuary API catalog, and what resolves the observed /api/ai versus /api/v1/ai path mismatch?",
+      "Does Incognito mean no persistence at client, local database, sync and remote layers? PJC labels this user-origin, but implementation evidence and policy admission are absent.",
+      "What are saved and temporary retention, expiry, deletion, export and thread ownership rules? AiMessage has privacy_mode and expires_at, but enforcement was not inspected.",
+      "What context is allowed for each actor and entry? PJC excludes private reflections while the hook composes memories, gaps, role and domain envelope; an allowlist and tests are needed.",
+      "Is the requested slice text chat only, or does it include attachments, citations, tool calls, artifacts, history and autonomous missions? PJC is broader than the brief.",
+      "How should unauthenticated, expired-token, quota, timeout, malformed stream, offline and partial-stream states recover without losing drafts or implying success?",
+      "Which web and native route/screen are in the first admitted slice? FlowDAG lists /ai, the mobile route is a placeholder, and AIScreen is a separate package component.",
+      "What tests prove route reachability, stream behavior, access isolation, retention/expiry and offline recovery? No such test evidence was inspected in this bounded pass.",
+      "Which dependency versions and compatibility matrix are approved? Manifest and lockfile establish declared/resolved versions only; upstream status is unknown."
+    ]
+  }
+}

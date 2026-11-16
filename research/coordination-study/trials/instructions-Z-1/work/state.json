@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "workId": "7863d878-7ac2-4035-bfac-beca65b181ed",
+  "events": [
+    {
+      "id": "ctx-1",
+      "kind": "record",
+      "stage": "context",
+      "summary": "Read the frozen older workflow and platform rules; recorded their supplied hashes and the task scope of a shared API-calling UI field.",
+      "evidence": [
+        {
+          "sourceId": "older-workflow",
+          "sha256": "fd4804ba7e52adb9daa8debca167ce3d035dde642c6ccbc330c9aeeef5f7a9e0"
+        },
+        {
+          "sourceId": "platform-rules",
+          "sha256": "da4d33bd15d81b461da20b2027eda8769a3c0e5baaae02aacd1919b8925995b9"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "analysis-1",
+      "kind": "record",
+      "stage": "analysis",
+      "summary": "Applicable direction is a shared owned UI component in @repo/ui/components/native and /web, with matching props; route API work through the declared Sanctuary API and oRPC v2 /api/v1, with capabilities/subdomain design before adding a procedure. Older workflow's tRPC, Supabase migration/source-of-truth, Zustand, packages/ui/core, and specific implementation sequence conflict with the current platform vocabulary and boundaries. Its mandatory user approval of a plan before code is an extra gate absent from the newer rules and merits explicit reconsideration, not silent enforcement or deletion.",
+      "evidence": [
+        {
+          "sourceId": "older-workflow",
+          "sha256": "fd4804ba7e52adb9daa8debca167ce3d035dde642c6ccbc330c9aeeef5f7a9e0"
+        },
+        {
+          "sourceId": "platform-rules",
+          "sha256": "da4d33bd15d81b461da20b2027eda8769a3c0e5baaae02aacd1919b8925995b9"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "verify-1",
+      "kind": "record",
+      "stage": "verification",
+      "summary": "Cross-checked API/UI guidance within the frozen records only: old workflow specifies tRPC/Supabase/Zustand and packages/ui/core, while platform rules specify Sanctuary API oRPC v2 at /api/v1, no new direct database calls, and owned native/web UI packages. The sources do not identify a concrete capability, field behavior, platform target, API procedure, or current component contract, so implementation-level specifics remain unverified.",
+      "evidence": [
+        {
+          "sourceId": "older-workflow",
+          "sha256": "fd4804ba7e52adb9daa8debca167ce3d035dde642c6ccbc330c9aeeef5f7a9e0"
+        },
+        {
+          "sourceId": "platform-rules",
+          "sha256": "da4d33bd15d81b461da20b2027eda8769a3c0e5baaae02aacd1919b8925995b9"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "reconcile-1",
+      "kind": "record",
+      "stage": "reconciliation",
+      "summary": "Reconciled the two records by treating the active, newer platform rules as controlling the API and UI architecture, while flagging the older workflow for updating and human reconsideration before implementation. No repository or live dependency inspection was available in this bounded review.",
+      "evidence": [
+        {
+          "sourceId": "older-workflow",
+          "sha256": "fd4804ba7e52adb9daa8debca167ce3d035dde642c6ccbc330c9aeeef5f7a9e0"
+        },
+        {
+          "sourceId": "platform-rules",
+          "sha256": "da4d33bd15d81b461da20b2027eda8769a3c0e5baaae02aacd1919b8925995b9"
+        }
+      ],
+      "unresolved": []
+    }
+  ]
+}

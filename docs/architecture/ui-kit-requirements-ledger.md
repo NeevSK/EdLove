@@ -99,3 +99,5 @@ These were weighed and left out, so they don't come back without a reason:
 
 - Security: `apps/sanctuary-api/src/ai/routes.ts` lets the request choose its role. Not UI work; it needs a fix decision.
 - Which world first gets `grain` > 0 and `response: 'vivid'`. This is a taste call, best made in the gallery.
+
+Radar/FeedbackScene prototype (2026-11-16): owned native and web ports exist with shared contracts. The chart is values-only by default; explicit caller comparability assertion permits plotting. Synthetic galleries and G1 checks do not complete B15 chart admission. Final browser/device verification and real domain integration remain open. See [the coordination pilot](2026-11-11-agent-coordination-study.md#radar-pilot-and-shared-feedback-integration--2026-11-16).

@@ -304,3 +304,10 @@ export function configHash(config: VergerConfig): string {
   }
   return (hash >>> 0).toString(16).padStart(8, '0');
 }
+
+export {
+  evaluateEvsi,
+  shouldTransmitTelemetry,
+  type EvsiLevel,
+  type EvsiSessionFacts,
+} from './outcomes';

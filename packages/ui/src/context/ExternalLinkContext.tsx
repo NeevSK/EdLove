@@ -13,6 +13,7 @@ import { Box, Pressable as GSPressable, HStack, Text, VStack } from '@repo/ui/pr
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import {
   clearStoredExternalOpenPreference,
+  getStoredExternalOpenPreference,
   type ExternalLinkTrustLevel,
   type ExternalOpenMethod,
   registerExternalLinkRuntime,
@@ -149,6 +150,9 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
   const [rememberChoice, setRememberChoice] = useState(true);
 
   useEffect(() => {
+    // Prewarm preference cache to eliminate async storage delay on click
+    void getStoredExternalOpenPreference();
+
     registerExternalLinkRuntime({
       promptForChoice: (request) => {
         setSelectedMethod(request.currentPreference ?? request.defaultMethod);

@@ -1,0 +1,93 @@
+{
+  "workId": "d64ae56f-5075-4136-b9d9-0ee4a9a02d27",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "For API calls, the current record directs clients through typed oRPC v2 commands/queries on /api/v1, prohibits new imports from the frozen pre-v1 @repo/core/api/* surface, and freezes new direct database, RPC, and realtime call sites until the v1 API covers them.",
+      "sourceIds": [
+        "platform-rules"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "A shared field belongs in the owned UI kit for both platforms: @repo/ui/components/web for DOM and @repo/ui/components/native for RN, with the same props. Its styling should use world recipes; web CSS modules handle layout and var(--w-*) colors.",
+      "sourceIds": [
+        "platform-rules"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The older workflow's tRPC/Supabase/Zustand stack and prescribed palette and animation rules are inconsistent with the current API, UI-kit, and world-recipe guidance and should be reconsidered before implementation.",
+      "sourceIds": [
+        "older-workflow",
+        "platform-rules"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The older workflow requires user approval of a pre-compilation plan before implementation, while the current supplied rules prescribe exploration, a minimal additive seam, then implementation and verification, without that blanket approval gate. This process requirement should be reconsidered against current project policy.",
+      "sourceIds": [
+        "older-workflow",
+        "platform-rules"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "No evidence in the frozen records establishes whether the workspace runtime hook is installed or observed, or provides a canary artifact.",
+      "sourceIds": [
+        "older-workflow",
+        "platform-rules"
+      ],
+      "confidence": "unknown"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "API client uses",
+      "subject": "shared field API integration",
+      "object": "typed oRPC v2 procedure on /api/v1",
+      "authoritySourceIds": [
+        "platform-rules"
+      ]
+    },
+    {
+      "relation": "shared field UI is implemented in",
+      "subject": "shared field",
+      "object": "@repo/ui/components/web and @repo/ui/components/native with matching props",
+      "authoritySourceIds": [
+        "platform-rules"
+      ]
+    },
+    {
+      "relation": "field styling follows",
+      "subject": "shared field",
+      "object": "world recipes and platform-specific layout rules",
+      "authoritySourceIds": [
+        "platform-rules"
+      ]
+    }
+  ],
+  "reviewRequired": [
+    "older-workflow"
+  ],
+  "unresolved": [
+    "The specific API capability, owning domain/subdomain, procedure contract, and field behavior are not identified in the supplied records; inspect platform map, domain design guidance, capability catalog, and existing UI/API substrate before designing it.",
+    "Whether this field is specifically web, native, or both is not stated, though the supplied rules require parity for reusable shared UI.",
+    "The supplied sources alone cannot establish whether an approved plan is required by any newer policy outside these records."
+  ],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "Read both frozen source files",
+      "Verified both source SHA-256 hashes against work.json",
+      "Compared API, shared UI, styling, and planning guidance"
+    ],
+    "invalidatedSteps": [],
+    "nextAction": "Before implementation, inspect the applicable platform/domain and API capability records plus the existing native and web UI field implementations; confirm the API procedure and required platform targets."
+  },
+  "limitations": [
+    "Assessment is limited to the two frozen sources; original repository, manifests, installed packages, runtime hooks, and external sources were not inspected.",
+    "No implementation or repository verification was performed."
+  ]
+}

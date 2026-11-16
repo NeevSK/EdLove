@@ -1,3 +1,4 @@
+import { isOnDeviceSelfCapability } from '@repo/core/logic/permissions/baselineCapabilities';
 import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
 import {
   CITIZENSHIP,
@@ -195,6 +196,10 @@ export function useSanctuaryFeature(
         return true;
       }
 
+      if (isOnDeviceSelfCapability(a, s as string)) {
+        return true;
+      }
+
       return false;
     },
     [context.userId, getDecision],
@@ -224,8 +229,11 @@ export function useSanctuaryFeature(
       ? getDecision(subject, action)
       : 'no_decision';
 
-    const req: FeatureRequirement = requirement ?? {
+    const req: FeatureRequirement = {
+      action,
+      subject,
       citizenshipRequired: CITIZENSHIP.THIRD_CLASS,
+      ...requirement,
     };
     const flagKey = req.flagKey ?? `${subject}.${action}`;
     const flagActive = resolveFeatureFlagValue(flags, flagKey);

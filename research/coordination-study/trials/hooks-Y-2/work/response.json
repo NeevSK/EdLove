@@ -1,0 +1,76 @@
+{
+  "workId": "3279882d-0d66-41a8-a80c-7cd510b94d48",
+  "verdict": "inconclusive",
+  "findings": [
+    {
+      "claim": "The supplied hook configuration registers a PreToolUse command for Write|Edit that invokes gate.mjs with --auto-ground, and a Stop command invoking stop-gate.mjs.",
+      "sourceIds": [
+        "hook-config"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The supplied gate description implements a script-level auto-ground option and advertises allow/deny behavior; this is evidence of intended manual/script behavior, not proof that the current Codex session intercepts tool calls.",
+      "sourceIds": [
+        "gate-description"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The shown gate entry dynamically attempts to load an RN-Terrain scanner and falls back to a local scanner path; it can block on detected findings. This describes runtime behavior if the script is invoked.",
+      "sourceIds": [
+        "gate-entry"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "No automatic grounding or completion interception was observed in the available Codex session tools. The supplied records do not prove that these Claude-configured hooks are active in this Codex runtime.",
+      "sourceIds": [
+        "hook-config",
+        "gate-description",
+        "gate-entry"
+      ],
+      "confidence": "supported"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "configures",
+      "subject": "Claude Code PreToolUse Write|Edit hook",
+      "object": "node .agents/gate.mjs --auto-ground",
+      "authoritySourceIds": [
+        "hook-config"
+      ]
+    },
+    {
+      "relation": "configures",
+      "subject": "Claude Code Stop hook",
+      "object": "node .agents/stop-gate.mjs",
+      "authoritySourceIds": [
+        "hook-config"
+      ]
+    }
+  ],
+  "reviewRequired": [],
+  "unresolved": [
+    "Does this Codex runtime support and load these hook configurations?",
+    "Is there an installed runtime integration that invokes the gate automatically on edits and at turn completion?",
+    "Does stop-gate.mjs exist and execute successfully in the active runtime?"
+  ],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "Read the supplied frozen hook configuration and gate excerpts.",
+      "Inspected the available session tool surface for grounding, interception, or completion-hook controls; none were exposed.",
+      "Distinguished configured script behavior from observed runtime interception."
+    ],
+    "invalidatedSteps": [],
+    "nextAction": "Use a supported Codex hook integration, if available, to register the grounding and stop gates, then capture a harmless edit canary and completion canary showing automatic invocation and outcome."
+  },
+  "limitations": [
+    "Only the supplied frozen excerpts and current tool surface were examined.",
+    "No script was run: the handoff includes excerpts rather than the original script/runtime, and running a standalone invocation would not prove automatic interception.",
+    "The available tools inventory cannot rule out host-side mechanisms that are not exposed to this session."
+  ]
+}

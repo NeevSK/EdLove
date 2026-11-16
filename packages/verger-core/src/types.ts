@@ -272,8 +272,22 @@ export type VergerEvent = SensedAt &
    * reports the budget as `data-budget`; the reducer itself only hears it. Heard with network.
    */
   | { readonly type: 'data-usage'; readonly at: number; readonly totalBytes: number }
+  /**
+   * Feedforward intent & anticipation (P5/P8 follow-up): explicit proactive signal from the app
+   * before heavy work starts (heavy navigation, sync burst, canvas mount), so ornamental and deferrable
+   * levers step down proactively without waiting for 750ms of sustained frame stress.
+   */
+  | {
+      readonly type: 'anticipate';
+      readonly at: number;
+      readonly intent: AnticipateIntent;
+      readonly durationMs: number;
+    }
   | { readonly type: 'tick'; readonly at: number }
   );
+
+/** The workload or transition intent the application expects to begin shortly. */
+export type AnticipateIntent = 'heavy-navigation' | 'burst-sync' | 'canvas-mount';
 
 /** Unity-style indexer action, extended with verger's reasons. */
 export type IndexerAction = 'fast-decrease' | 'decrease' | 'stale' | 'increase';

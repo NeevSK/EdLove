@@ -89,7 +89,7 @@ export default function RootError({
           }}
         >
           Something interrupted this sanctuary threshold. Your private work remains safe. You can
-          attempt to restore this view, or return to the Guest House.
+          attempt to restore this view, step back to where you came from, or return to Welcome.
         </p>
         <div
           style={{
@@ -121,8 +121,15 @@ export default function RootError({
           >
             Try Again
           </button>
-          <Link
-            href="/welcome"
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.history.length > 1) {
+                window.history.back();
+              } else {
+                window.location.href = '/welcome';
+              }
+            }}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -136,13 +143,13 @@ export default function RootError({
               fontFamily: 'var(--font-sans, "Space Grotesk", sans-serif)',
               fontSize: '0.875rem',
               fontWeight: 600,
-              textDecoration: 'none',
+              cursor: 'pointer',
             }}
           >
-            Return to Guest House
-          </Link>
-          <a
-            href="https://explore.gurudevi.app"
+            ← Go Back
+          </button>
+          <Link
+            href="/welcome"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -159,8 +166,8 @@ export default function RootError({
               textDecoration: 'none',
             }}
           >
-            Guest House Museum ↗
-          </a>
+            Return to Welcome
+          </Link>
         </div>
       </div>
     </main>

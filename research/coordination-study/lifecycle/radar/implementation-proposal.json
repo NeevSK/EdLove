@@ -1,0 +1,179 @@
+{
+  "authorId": "root",
+  "dependsOn": [
+    {
+      "version": 1,
+      "id": "radar-analysis"
+    },
+    {
+      "version": 1,
+      "id": "radar-requirement"
+    },
+    {
+      "version": 1,
+      "id": "radar-invariant"
+    },
+    {
+      "version": 1,
+      "id": "radar-scenario"
+    },
+    {
+      "version": 1,
+      "id": "radar-presentation-analysis"
+    }
+  ],
+  "id": "radar-presentation-implementation",
+  "content": {
+    "limitations": [
+      "Current feature-behavior checker adapter is absent; focused G1 observations and a bounded earlier browser preview do not prove production behavior.",
+      "Native device rendering, screen reader and real runtime are unverified. Latest browser recheck timed out.",
+      "Per-measure admission, permissions, authoritative provenance, history, missing-value reasons, editing and offline behavior remain unresolved.",
+      "Whole UI and web typechecks have unrelated baseline failures; world color ratchet fails globally.",
+      "declared-comparable is an unverified caller assertion; defaults show values without a polygon."
+    ],
+    "files": [
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "research/coordination-study/lifecycle/radar/feedback-request.md",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/theme/contracts.ts",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/theme/types.ts",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/theme/build.ts",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/theme/css.ts",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/theme/kitCss.ts",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/components/shared/radarGeometry.ts",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/components/shared/feedbackScene.ts",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/components/shared/__tests__/radarGeometry.test.ts",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/components/shared/__tests__/feedbackScene.test.ts",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/components/native/Radar/Radar.tsx",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/components/native/FeedbackScene/FeedbackScene.tsx",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/components/native/States/States.tsx",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/components/native/__tests__/radar.test.tsx",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/components/web/Radar/Radar.tsx",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/components/web/FeedbackScene/FeedbackScene.tsx",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "packages/ui/src/components/web/States/States.tsx",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "apps/gurudevi-web/app/(sanctuary)/kit/radar/page.tsx",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "apps/gurudevi-web/app/(sanctuary)/kit/radar/RadarGalleryClient.tsx",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "apps/gurudevi-web/app/(sanctuary)/kit/radar/radar-gallery.module.css",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "apps/gurudevi-web/tests/unit/kit/radar.test.tsx",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      },
+      {
+        "change": "Shared attributed read-only radar and synthetic gallery, or reused world-shaped feedback with static existing Tutii fallback. No live personal-data route or backend admitted.",
+        "path": "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx",
+        "evidenceRef": "research/coordination-study/lifecycle/radar/feedback-review.json"
+      }
+    ],
+    "kind": "implementation"
+  },
+  "scope": "Synthetic development presentation only; shared world-shaped feedback on both kit ports",
+  "sourcePaths": [
+    "research/coordination-study/lifecycle/radar/feedback-request.md",
+    "packages/ui/src/theme/contracts.ts",
+    "packages/ui/src/theme/types.ts",
+    "packages/ui/src/theme/build.ts",
+    "packages/ui/src/theme/css.ts",
+    "packages/ui/src/theme/kitCss.ts",
+    "packages/ui/src/components/shared/radarGeometry.ts",
+    "packages/ui/src/components/shared/feedbackScene.ts",
+    "packages/ui/src/components/shared/__tests__/radarGeometry.test.ts",
+    "packages/ui/src/components/shared/__tests__/feedbackScene.test.ts",
+    "packages/ui/src/components/native/Radar/Radar.tsx",
+    "packages/ui/src/components/native/FeedbackScene/FeedbackScene.tsx",
+    "packages/ui/src/components/native/States/States.tsx",
+    "packages/ui/src/components/native/__tests__/radar.test.tsx",
+    "packages/ui/src/components/native/index.ts",
+    "packages/ui/src/components/web/Radar/Radar.tsx",
+    "packages/ui/src/components/web/FeedbackScene/FeedbackScene.tsx",
+    "packages/ui/src/components/web/States/States.tsx",
+    "packages/ui/src/components/web/index.ts",
+    "apps/gurudevi-web/app/(sanctuary)/kit/radar/page.tsx",
+    "apps/gurudevi-web/app/(sanctuary)/kit/radar/RadarGalleryClient.tsx",
+    "apps/gurudevi-web/app/(sanctuary)/kit/radar/radar-gallery.module.css",
+    "apps/gurudevi-web/tests/unit/kit/radar.test.tsx",
+    "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx",
+    "packages/ui/src/components/native/Waiting/Waiting.tsx",
+    "packages/ui/src/components/web/Waiting/Waiting.tsx",
+    "packages/ui/src/theme/perches.ts",
+    "packages/ui/assets/mascot/manifest.json"
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "workId": "d7d07ebf-3c59-4223-bddb-8e4e749e0482",
+  "verdict": "inconclusive",
+  "findings": [
+    {
+      "claim": "The supplied hook configuration declares a PreToolUse hook for Write|Edit that runs gate.mjs with --auto-ground, and a Stop hook that runs stop-gate.mjs.",
+      "sourceIds": [
+        "hook-config"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The gate source describes intended interception and allow/deny behavior, but that description does not establish that Codex loads it in this session.",
+      "sourceIds": [
+        "gate-description",
+        "gate-entry"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The only invocation observed was a manual invocation of the provided local controller; no automatic gate interception or completion check was observed.",
+      "sourceIds": [
+        "hook-config"
+      ],
+      "confidence": "direct"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "declares PreToolUse Write|Edit hook command",
+      "subject": ".claude/settings.json configuration",
+      "object": "node .agents/gate.mjs \"$FILE_PATH\" --auto-ground",
+      "authoritySourceIds": [
+        "hook-config"
+      ]
+    },
+    {
+      "relation": "declares Stop hook command",
+      "subject": ".claude/settings.json configuration",
+      "object": "node .agents/stop-gate.mjs",
+      "authoritySourceIds": [
+        "hook-config"
+      ]
+    }
+  ],
+  "reviewRequired": [
+    "gate-description"
+  ],
+  "unresolved": [
+    "Whether Codex loads or invokes these hooks in this session.",
+    "Whether stop-gate.mjs performs effective completion checks.",
+    "The full gate executable and runtime hook diagnostics were not supplied, so no gate canary could be run.",
+    "The controller status has nextAction=resolve_authority and canComplete=false while unresolved items remain; its supported stages provide no additional authority-resolution action.",
+    "The cross-tool interception statement in the gate source is a source claim, not observed runtime evidence."
+  ],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidatedSteps": [],
+    "nextAction": "Check Codex runtime hook registration and invocation logs, then inspect and exercise the stop gate before relying on automatic checks."
+  },
+  "limitations": [
+    "Only the frozen excerpts and provided controller were available; no original repository, active Codex hook registry, or runtime diagnostics were inspected.",
+    "Controller status validates evidence hashes and stage order but explicitly does not prove actual reading, truthful interpretation, authorization identity, or runtime behavior.",
+    "Manual controller execution is not evidence of automatic interception."
+  ]
+}

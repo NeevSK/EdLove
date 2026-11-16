@@ -1,0 +1,79 @@
+{
+  "workId": "74ef28b5-6af2-4b54-994e-0399ea184e7f",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "The intended entry path is What Is Gurudevi? followed by Gurudevi Soul & Core Covenant. Both documents explicitly describe this sequence and link to each other.",
+      "sourceIds": ["intro", "covenant"],
+      "confidence": "direct"
+    },
+    {
+      "claim": "Keep both documents active: the introduction supplies a short human orientation, while the Covenant supplies the expanded governing definition for product decisions, integrations, agentic capability and implementation boundaries. Their supplied active statuses are consistent with these complementary purposes.",
+      "sourceIds": ["intro", "covenant"],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The Covenant supersedes only the overlapping pillar definitions in the introduction and the named earlier manifesto. This scoped authority statement does not retire either document in its entirety or justify archiving the introduction.",
+      "sourceIds": ["covenant-scope", "intro", "covenant"],
+      "confidence": "supported"
+    },
+    {
+      "claim": "No whole-document lifecycle transition is established as necessary by these excerpts. To reconcile the authority record, make the introduction's pillar section explicitly subordinate to the Covenant and ensure lifecycle or index records represent scoped supersession separately from document status. Whether such clarification already exists outside the excerpts is unknown.",
+      "sourceIds": ["intro", "covenant", "covenant-scope"],
+      "confidence": "inferred"
+    },
+    {
+      "claim": "The introduction is dated 2026-10-10 and the Covenant 2026-10-11, but dates alone do not establish implementation progress. The Covenant explicitly says its described capabilities are not all necessarily shipped; no implementation evidence was supplied.",
+      "sourceIds": ["intro", "covenant"],
+      "confidence": "direct"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "entry_path_continues_to",
+      "subject": "docs/Core/what-is-gurudevi.md",
+      "object": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "authoritySourceIds": ["intro", "covenant"]
+    },
+    {
+      "relation": "supersedes_overlapping_pillar_definitions_only",
+      "subject": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "object": "docs/Core/what-is-gurudevi.md",
+      "authoritySourceIds": ["covenant-scope"]
+    },
+    {
+      "relation": "supersedes_overlapping_pillar_definitions_only",
+      "subject": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "object": "docs/decisions/2026-10-10-gurudevi-core-ecosystem-manifesto-and-architecture-covenant.md",
+      "authoritySourceIds": ["covenant-scope"]
+    },
+    {
+      "relation": "retains_active_short_introduction_role_alongside",
+      "subject": "docs/Core/what-is-gurudevi.md",
+      "object": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "authoritySourceIds": ["intro", "covenant", "covenant-scope"]
+    }
+  ],
+  "reviewRequired": ["intro", "covenant-scope"],
+  "unresolved": [
+    "The earlier manifesto's content and status were not supplied; its broader lifecycle cannot be determined from a scoped supersession reference.",
+    "Documentation indexes, lifecycle ledgers, the rest of both documents and implementation sources were not supplied. Their consistency and shipped capability state remain unverified."
+  ],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "Read the work request and all three supplied frozen source excerpts.",
+      "Recovered the explicit reciprocal entry path, active document roles and scoped supersession decision.",
+      "Distinguished the documented governing vision from unverified implementation state.",
+      "Recorded source-backed relationships and identified the affected authority clarification for follow-up."
+    ],
+    "invalidatedSteps": [],
+    "nextAction": "Review the complete introduction and existing documentation index or lifecycle ledger; if needed, add an explicit Covenant authority note beside the introductory pillars and record scoped supersession while retaining both active documents. Inspect the earlier manifesto before proposing any whole-document status change."
+  },
+  "limitations": [
+    "Only the supplied excerpts were inspected; original repository access and external calls were prohibited.",
+    "No source documents or repository records were modified. Reconciliation is expressed in the decisions and next action, not claimed as an applied edit.",
+    "No implementation, runtime hook or canary evidence was available."
+  ]
+}

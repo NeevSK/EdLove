@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Acceptance preparation for the newly authorized persistent engineering lifecycle. This matrix is a verification contract, not evidence that implementation exists or passes.",
+  "sourceDesigns": [
+    {
+      "id": "terra-design",
+      "path": "research/coordination-study/integration-design-terra.md",
+      "relevantSections": ["Data and behavior", "Placement and concurrent writers", "LangGraph comparison", "Acceptance"],
+      "designConstraints": [
+        "Strict typed procedure and event shapes, stable IDs, immutable source identities, explicit dependency/evidence links.",
+        "Canonical retry identity, stale-dependent blocking, independent prefix preservation, explicit reconsideration/rebase, transactional concurrency semantics.",
+        "No caller-forged observed result; tool adapter records actual results and interrupted execution stays unknown.",
+        "Do not use a graph engine as authority, evidence, invalidation or idempotency by itself."
+      ]
+    },
+    {
+      "id": "luna-design",
+      "path": "research/coordination-study/integration-design-luna.md",
+      "relevantSections": ["Smallest useful interface", "Procedure prerequisites and outcomes", "Tool availability and check coverage", "Why not a generic workflow engine", "Boundary and verification limits"],
+      "designConstraints": [
+        "Start with an allowlisted procedure registry and bounded context projection rather than premature generic workflow machinery.",
+        "Keep availability, invocation, success, coverage and semantic review as distinct states.",
+        "Keep product authorities separate; explicit links do not infer semantic alignment or owner approval.",
+        "Do not claim restart, concurrency or interception without corresponding runtime evidence."
+      ]
+    }
+  ],
+  "currentGoal": {
+    "statement": "Implement and verify a trustworthy engineering lifecycle across technical layers, vertical integrations and cross-cutting concerns, including agent role classification, decomposition, typed work/results, context retrieval, source and decision history, handoffs, retries, review and recovery.",
+    "authority": "Task request from coordinator; this file formalizes acceptance checks only.",
+    "implementationAssignments": {"modelAndEvaluation":"Terra", "persistenceAndStore":"Luna", "runtimeIntegration":"Root; currently not ready"}
+  },
+  "acceptanceMatrix": [
+    {
+      "id": "LC-01",
+      "area": "lifecycle and role classification",
+      "test": "Exercise task intake across feature implementation, investigation, maintenance, plan refinement, integration and runtime verification. For each, classify stage, mode, impact layers, cross-cutting concerns, authority requirements, risk and required evidence; decompose work by real dependency seams and assign coordinator, investigator, implementer, verifier or human decision-owner responsibilities.",
+      "expected": "The typed plan records the rationale and coverage for each applicable facet. It identifies dependencies, ownership, acceptance evidence, order and handoff. It does not assign product decisions or review approval to an agent lacking that authority.",
+      "bypassAttempts": ["Omit an affected layer from declared impacts.", "Collapse multiple concerns into one generic task with no dependency edge.", "Assign implementation and independent verification to the same role without declaring the conflict.", "Mark a human decision as agent-owned."],
+      "evidenceClass": "mixed",
+      "structuralEvidence": "Schema and deterministic checks can establish required fields, explicit owners, dependency edges and authority-role constraints.",
+      "semanticEvidence": "Independent Terra evaluation must judge whether the chosen classification, decomposition and role assignments cover the actual requested work rather than merely filling fields."
+    },
+    {
+      "id": "LC-02",
+      "area": "orthogonal typed lifecycle outputs",
+      "test": "Project work items and any lifecycle screens over independent axes for phase/status, evidence level and provenance, source freshness, tool availability/invocation/result, unresolved authority, and recoverability. Include multiple outputs/screens and transition histories.",
+      "expected": "Each axis is represented separately. A failed check, unavailable tool, stale source, unresolved decision and incomplete review remain distinguishable. The UI does not flatten them into a single green/done label. If there is no lifecycle UI, serialized outputs still meet the same typed contract and screen-specific claims remain not applicable.",
+      "bypassAttempts": ["Render available as succeeded.", "Treat zero findings as proof of full coverage.", "Promote a pending/interrupted event to pass.", "Hide stale or unresolved status behind a successful unrelated check."],
+      "evidenceClass": "structural plus behavior",
+      "structuralEvidence": "Discriminated result schemas and projection invariants.",
+      "semanticEvidence": "Human review checks whether labels communicate the limitations and do not imply more assurance than the recorded evidence."
+    },
+    {
+      "id": "LC-03",
+      "area": "transitions, errors and recovery",
+      "test": "Drive valid and invalid transitions, unavailable commands, timeouts, scanner failures, interrupted writes, restart/reopen, duplicate calls, failed checks, later successful retries, and reconciliation after new work.",
+      "expected": "Invalid transitions are rejected with stable, actionable errors. Failure and unknown outcomes persist. Resume retains valid work; no interruption becomes success and no failed side effect is silently repeated. Reconciliation is invalidated by later work.",
+      "bypassAttempts": ["Submit reconciliation before prerequisites.", "Retry the same action ID with changed payload.", "Retry a pending action to silently rerun a possibly side-effecting command.", "Restart between intent and result and claim pass.", "Add analysis/check after reconciliation without requiring a new reconciliation."],
+      "evidenceClass": "behavioral",
+      "structuralEvidence": "Deterministic transition and persistence assertions.",
+      "semanticEvidence": "Review that recovery guidance matches each command's actual retry contract; exactly-once execution must not be claimed without proof."
+    },
+    {
+      "id": "LC-04",
+      "area": "requirements, invariants and historical retrieval",
+      "test": "Record an owner decision, requirement, invariant, implementation binding and evidence relationship with source identity, version/digest, scope, classification and validity/supersession history. Retrieve context for a later task after an invariant or source changes.",
+      "expected": "Original requirement and invariant history remains retrievable. Current, superseded, stale, inferred, declared and unresolved claims remain distinguishable. Retrieval shows exact cited sources and does not turn similar names or graph proximity into semantic authority.",
+      "bypassAttempts": ["Delete or overwrite a prior decision when a new one arrives.", "Treat a generic link as a supersession decision.", "Return an empty successful projection after an upstream reader fails.", "Present an inference as an approved requirement.", "Omit valid intervals/revisions when asserting which decision is current."],
+      "evidenceClass": "mixed",
+      "structuralEvidence": "History and relationship queries return stable source IDs, revision/digest, temporal status and explicit unknown/unavailable states.",
+      "semanticEvidence": "Terra reviews whether retrieved history answers the task without losing competing or partially superseded constraints."
+    },
+    {
+      "id": "LC-05",
+      "area": "role handoff and upstream grounding",
+      "test": "Hand a task from investigator to implementer and then independent reviewer. Include a changed upstream package/dependency artifact with exact version, release channel/source, affected dependency/caller review and superseded findings.",
+      "expected": "Handoff preserves task intent, accepted decisions, open questions, source hashes, exact upstream versions/references, files/edges to review, checks already run and limits. A version change invalidates affected downstream work and requests re-grounding against current installed types/source and upstream release evidence.",
+      "bypassAttempts": ["Use an unpinned 'latest' value.", "Carry a review forward after its upstream digest changes.", "Claim a dependency review without listing peers/callers or source reference.", "Let the implementer self-approve as independent reviewer."],
+      "evidenceClass": "mixed",
+      "structuralEvidence": "Handoff object validates required fields, artifact lineage and reviewer/author distinction.",
+      "semanticEvidence": "Independent reviewer verifies that the selected upstream material and affected seam set are actually relevant and adequate."
+    },
+    {
+      "id": "LC-06",
+      "area": "transitive staleness and independent branches",
+      "test": "Construct two branches of evidence with shared and independent source dependencies. Change content and membership of one upstream artifact, then exercise status and review projection.",
+      "expected": "Every transitively dependent artifact, check, plan decision and review becomes stale. Unaffected branch results remain preserved and usable. Unknown dependency scope blocks affected readiness conservatively rather than silently preserving a pass. Historical records remain intact.",
+      "bypassAttempts": ["Change bytes while preserving a path/name.", "Add/remove a source while keeping all existing paths unchanged.", "Modify procedure/checker implementation without touching declared work sources.", "Change only one branch and either stale every unrelated branch or keep a dependent result green."],
+      "evidenceClass": "behavioral plus structural",
+      "structuralEvidence": "Dependency graph and invalidation projection are mechanically checked for content and set-membership changes.",
+      "semanticEvidence": "Review confirms declared dependency edges match the real evidence-production path; hashes alone cannot discover omitted dependencies."
+    },
+    {
+      "id": "LC-07",
+      "area": "plan refinement preserves obligations",
+      "test": "Refine and re-decompose an approved plan after discovering new work, then compare original obligations and accepted decisions with the refined plan.",
+      "expected": "Refinement can add, split, reorder with justification, or supersede tasks through an explicit reviewed relation. It cannot erase required security, privacy, authority, migration, device, integration, accessibility or other applicable acceptance obligations without an authorized recorded decision.",
+      "bypassAttempts": ["Remove a failed or expensive check from the plan.", "Mark an unresolved owner decision resolved through plan editing.", "Drop a prior obligation because a new task does not mention it.", "Treat changing the plan version as resetting all blockers."],
+      "evidenceClass": "mixed",
+      "structuralEvidence": "Diff/lineage check detects deleted obligations and requires an explicit supersession/waiver record with authority.",
+      "semanticEvidence": "Human or delegated independent reviewer judges applicability and whether a proposed supersession preserves intent."
+    },
+    {
+      "id": "LC-08",
+      "area": "missing tools and checker gaps",
+      "test": "Run inventory and a planned check with the tool missing, unavailable, timed out, unsupported input, or absent adapter. Also record a manual fallback and its evidence.",
+      "expected": "Availability, invocation, success, coverage and manual fallback are different states. Unavailable or missing-checker remains visible and blocks claims that require the missing evidence. Manual evidence carries provenance and limitations; it does not impersonate a machine pass.",
+      "bypassAttempts": ["Treat missing executable as pass/empty output.", "Run a different checker under the expected check ID.", "Let a manual note satisfy an automated requirement without an explicit approved substitution.", "Report inventory presence as actual scan execution."],
+      "evidenceClass": "behavioral",
+      "structuralEvidence": "Inject missing binary, timeout and adapter error and assert distinct persisted statuses.",
+      "semanticEvidence": "Review whether a manual alternative genuinely covers the obligation and state the residual gap."
+    },
+    {
+      "id": "LC-09",
+      "area": "forged machine pass and trust boundary",
+      "test": "Submit a fabricated pass/result, altered stdout/exit code, fake timestamp, forged role, copied receipt, and a direct local-store edit. Verify which attacks the local process can reject and which require authenticated external trust.",
+      "expected": "Clients cannot inject observed result fields into a strict record shape; actual check outcomes originate at the fixed runner and persist with invocation identity and input/procedure/source digests. The report explicitly states that a local owner-writable store and self-asserted roles do not provide authentication, tamper resistance or authorization security.",
+      "bypassAttempts": ["Add result/status/finishedAt fields to a record request.", "Reuse another role's name in a caller field.", "Edit SQLite after recording a pass.", "Replay an old receipt against changed source/procedure digests."],
+      "evidenceClass": "behavior plus explicit security limitation",
+      "structuralEvidence": "Strict schemas reject extra observed fields and replay checks compare full identity/fingerprints.",
+      "semanticEvidence": "Security reviewer separates local integrity controls from authenticated identity, authorization and tamper-evident audit requirements. No claim of auth security from role strings."
+    },
+    {
+      "id": "LC-10",
+      "area": "CAS, idempotency and restart",
+      "test": "Run concurrent writers against the same expected store revision and action identity; repeat identical and conflicting requests; terminate between intent and result; restart the process and inspect the persisted record.",
+      "expected": "Compare-and-swap/version preconditions prevent lost updates, identical retries converge on one durable record, conflicting payloads fail, distinct concurrent events serialize without overwrite, and a crash remains pending/unknown. Restart projection yields the same event history and blocker state.",
+      "bypassAttempts": ["Concurrent same-version writes that both report success while one disappears.", "Duplicate action ID with reordered/canonically equivalent keys handled inconsistently.", "Timeout after invocation followed by blind rerun.", "Restart into a new/empty store without warning."],
+      "evidenceClass": "behavioral",
+      "structuralEvidence": "Multi-process race tests, persistent-store reopen, expected-revision conflict and event-count assertions.",
+      "semanticEvidence": "Review which operations are safe to retry and whether each event outcome truthfully describes external side effects."
+    },
+    {
+      "id": "LC-11",
+      "area": "LangGraph orchestration claims",
+      "test": "If lifecycle orchestration uses LangGraph, run the actual declared graph nodes against an isolated durable checkpointer and invoke at least one real allowlisted repository check through the approved node/adapter. Inspect saved graph state, emitted receipt and resumed execution after a process restart.",
+      "expected": "Every node has observable input/output and declared source/prerequisite dependencies. Graph checkpoint state agrees with the authoritative lifecycle event store; an actual checker result is linked to its command, input and source revisions. Restart resumes from persisted state without inventing a pass or skipping a required node. If LangGraph is not used, mark this requirement not applicable and provide equivalent real-node execution evidence rather than claiming graph support.",
+      "bypassAttempts": ["Stub a node to return passed without calling its check.", "Use an in-memory checkpointer and call it restart-persistent.", "Set the graph terminal state to complete while receipts are pending/stale.", "Pass an embedded example reducer as if it were a live check.", "Call a tool by name without inspecting its result or exit status."],
+      "evidenceClass": "runtime behavioral",
+      "structuralEvidence": "Graph topology and checkpoint serialization can be inspected but cannot establish that checks ran.",
+      "semanticEvidence": "Reviewer traces one graph run and verifies node/action/result linkage and limitations; root runtime readiness is currently not established."
+    }
+  ],
+  "semanticReviewProtocol": {
+    "owner": "Terra performs the actual model/evaluation review; independent from storage implementation by Luna.",
+    "reviewCases": [
+      "At least one end-to-end feature spanning database, API, web/native client, test, deployment/runtime and one cross-cutting concern.",
+      "A user-facing output/state transition with multiple axes, an error and a recovery path.",
+      "A changed requirement or upstream version that requires plan refinement while retaining compatible prior obligations.",
+      "A role handoff where a verifier must challenge a plausible but unsupported implementation claim."
+    ],
+    "reporting": "Separate schema/transition pass rates from reviewer judgments about decomposition completeness, requirement retrieval, role fit and evidence sufficiency. Preserve disagreements and unknowns; do not turn agreement into proof."
+  },
+  "runtimeReadiness": {
+    "status": "not_ready",
+    "requiredBefore_runtime_claims": [
+      "The implementation is available at a reviewable revision and the actual CLI/MCP/graph entrypoints are identified.",
+      "The integration owner identifies isolated targets, test data and approved read-only check IDs.",
+      "A compiled/current runtime and persistent checkpoint/store can be exercised without using production credentials or services.",
+      "The final review captures exact commands, raw outputs, source fingerprints and the working-tree delta."
+    ],
+    "currentLimit": "This artifact defines acceptance only. It records no lifecycle implementation result, semantic evaluation, runtime hook capture, authenticated role proof or production readiness."
+  },
+  "designChoiceNotPredecided": [
+    "This matrix does not choose a general workflow engine, graph topology, database, role authorization scheme or product acceptance policy. It defines the behaviors any selected implementation must demonstrate.",
+    "CAS/idempotency and historical receipts are requirements to verify; local SQLite or LangGraph checkpoints alone do not satisfy trust, authorization or multi-host semantics."
+  ]
+}

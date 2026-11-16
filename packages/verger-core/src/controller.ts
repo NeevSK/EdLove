@@ -290,5 +290,11 @@ export function isValidEvent(event: VergerEvent): boolean {
       event.name.length > 0 &&
       (event.transitionMs === undefined || (finite(event.transitionMs) && event.transitionMs >= 0))
     );
+  if (event.type === 'anticipate')
+    return (
+      ['heavy-navigation', 'burst-sync', 'canvas-mount'].includes(event.intent) &&
+      finite(event.durationMs) &&
+      event.durationMs >= 0
+    );
   return true;
 }

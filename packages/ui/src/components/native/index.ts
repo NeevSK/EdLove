@@ -29,6 +29,7 @@ export {
   type MessageListProps,
 } from './Agent/Message';
 export { Disclosure, type DisclosureProps } from './Basics/Disclosure';
+export { FeedbackScene, type FeedbackSceneProps } from './FeedbackScene/FeedbackScene';
 export { Notice, type NoticeProps } from './Basics/Notice';
 export { NumberStepper, type NumberStepperProps } from './Basics/NumberStepper';
 export { SearchField, type SearchFieldProps } from './Basics/SearchField';
@@ -130,6 +131,7 @@ export {
   Progress,
   type ProgressProps,
 } from './Status/Status';
+export { Radar, type RadarProps } from './Radar/Radar';
 export { Surface, type SurfaceProps } from './Surface/Surface';
 export { LivingGround, type LivingGroundProps } from './LivingGround/LivingGround';
 export { SwipeRow, type SwipeRowProps } from './SwipeRow/SwipeRow';

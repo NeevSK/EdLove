@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
+  ViewTransition,
   type DragEvent,
   type ReactNode,
   useCallback,
@@ -452,7 +453,7 @@ export function SanctuaryShell({
       <LayeredDeckHeader
         scrollTargetId="sanctuary-main"
         headerSlot={
-          <header className={styles.header}>
+          <header className={styles.header} style={{ viewTransitionName: 'sanctuary-header' }}>
             <div className={styles.wordmarkArea}>
               <button
                 aria-expanded={!menuIsCollapsed}
@@ -620,7 +621,7 @@ export function SanctuaryShell({
       />
 
       <div className={styles.body}>
-        <aside className={styles.rail} aria-label="Menu">
+        <aside className={styles.rail} aria-label="Menu" style={{ viewTransitionName: 'sanctuary-rail' }}>
           <nav>
             <ul className={styles.navList}>
               {primaryItems.map((item) => (
@@ -765,13 +766,17 @@ export function SanctuaryShell({
                   {quickAccessNotice}
                 </p>
               ) : null}
-              <WorkbenchScopeProvider scope={workspaceUsageScope}>{children}</WorkbenchScopeProvider>
+              <WorkbenchScopeProvider scope={workspaceUsageScope}>
+                <ViewTransition default="none" enter="floor-enter" exit="floor-exit">
+                  {children}
+                </ViewTransition>
+              </WorkbenchScopeProvider>
             </div>
           </ScrollArea>
         </main>
       </div>
 
-      <div className={styles.fabDock}>
+      <div className={styles.fabDock} style={{ viewTransitionName: 'sanctuary-fab' }}>
         <ActionFab
           label="Tutii Companion & Subtasks"
           icon={TutiiFabIcon}

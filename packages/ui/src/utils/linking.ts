@@ -83,26 +83,41 @@ export function getRecommendedExternalOpenMethod(): ExternalOpenMethod {
   return getPlatform() === 'web' ? 'new_tab' : 'in_app_browser';
 }
 
+let cachedPreference: ExternalOpenMethod | undefined | null = null;
+
 export async function getStoredExternalOpenPreference(): Promise<ExternalOpenMethod | undefined> {
-  const val = await coreRuntime.storage.getItem(getPlatformKey());
-  return val as ExternalOpenMethod | undefined;
+  if (cachedPreference !== null) return cachedPreference;
+  if (!coreRuntime.isRegistered()) return undefined;
+  try {
+    const val = await coreRuntime.storage.getItem(getPlatformKey());
+    cachedPreference = val as ExternalOpenMethod | undefined;
+    return cachedPreference;
+  } catch {
+    return undefined;
+  }
 }
 
 export async function setStoredExternalOpenPreference(method: ExternalOpenMethod) {
+  cachedPreference = method;
+  if (!coreRuntime.isRegistered()) return;
   await coreRuntime.storage.setItem(getPlatformKey(), method);
 }
 
 export async function clearStoredExternalOpenPreference() {
+  cachedPreference = undefined;
+  if (!coreRuntime.isRegistered()) return;
   await coreRuntime.storage.removeItem(getPlatformKey());
   await coreRuntime.storage.removeItem(getOverrideKey());
 }
 
 async function getOverrideCount() {
+  if (!coreRuntime.isRegistered()) return 0;
   const val = await coreRuntime.storage.getItem(getOverrideKey());
   return val ? parseInt(val, 10) : 0;
 }
 
 async function incrementOverrideCount() {
+  if (!coreRuntime.isRegistered()) return;
   const count = await getOverrideCount();
   await coreRuntime.storage.setItem(getOverrideKey(), String(count + 1));
 }
@@ -200,15 +215,26 @@ async function openExternalURLInternal(
   const resolution = await resolveOpenMethod(url, options, forcePrompt);
   if (!resolution) return false;
 
-  const previousPreference = await getStoredExternalOpenPreference();
+  // Immediate WebKit Window Claim:
+  // On Web, dispatch window navigation immediately in the same microtask tick
+  // to prevent WebKit / Safari popup suppression caused by asynchronous storage awaits.
+  const openPromise = executeExternalOpen(url, resolution.method);
 
-  if (resolution.persistPreference) {
-    await setStoredExternalOpenPreference(resolution.method);
-  } else if (previousPreference && previousPreference !== resolution.method) {
-    await incrementOverrideCount();
-  }
+  // Background preference persistence (does not gate or delay window dispatch)
+  void (async () => {
+    try {
+      const previousPreference = await getStoredExternalOpenPreference();
+      if (resolution.persistPreference) {
+        await setStoredExternalOpenPreference(resolution.method);
+      } else if (previousPreference && previousPreference !== resolution.method) {
+        await incrementOverrideCount();
+      }
+    } catch (err) {
+      console.warn('[linking] Failed to persist link preference:', err);
+    }
+  })();
 
-  await executeExternalOpen(url, resolution.method);
+  await openPromise;
   return true;
 }
 

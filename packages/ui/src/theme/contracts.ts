@@ -25,6 +25,48 @@ import type {
   WorldLanguage,
 } from './types';
 
+/** A measured axis. Null means no observation, not zero. */
+export interface RadarAxis {
+  id: string;
+  label: string;
+  min: number;
+  max: number;
+  value: number | null;
+  unit?: string;
+}
+
+/** One attributed observation; the kit does not merge perspectives or subjects. */
+export interface RadarObservation {
+  subject: { id: string; label: string };
+  measure: { id: string; label: string; version: string };
+  perspective: { id: string; label: string; kind: 'self' | 'observer' };
+  sourceLabel: string;
+  observedAt?: string;
+  synthetic: boolean;
+  stale: boolean;
+  /** Caller assertion; the chart cannot verify semantic comparability. */
+  plotPolicy?: 'declared-comparable' | 'values-only';
+  axes: readonly RadarAxis[];
+}
+
+export type RadarState =
+  | { kind: 'ready'; observation: RadarObservation }
+  | { kind: 'loading'; message?: string }
+  | { kind: 'empty' | 'unavailable' | 'denied' | 'error'; message: string };
+
+export interface RadarContract {
+  label: string;
+  state: RadarState;
+  onRetry?: () => void;
+  retryLabel?: string;
+}
+
+/** Static, decorative feedback scene. Surrounding content supplies the message. */
+export interface FeedbackSceneContract {
+  state: 'empty' | 'loading' | 'error' | 'offline' | 'success';
+  size?: number;
+}
+
 export type {
   BadgeTone,
   ButtonSize,
@@ -487,6 +529,18 @@ export interface SheetContract {
   /** The sheet's name; shown as its heading. */
   title: string;
   children?: ReactNode;
+  dismissable?: boolean;
+}
+
+export interface DrawerContract {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  subtitle?: string;
+  side?: 'right' | 'left';
+  children?: ReactNode;
+  actions?: ReactNode;
+  footer?: ReactNode;
   dismissable?: boolean;
 }
 
@@ -1741,6 +1795,8 @@ export interface ThemeSwitcherContract {
   /** Container width threshold in px for 'auto' degradation. Default: 420. */
   threshold?: number;
 }
+
+
 
 
 

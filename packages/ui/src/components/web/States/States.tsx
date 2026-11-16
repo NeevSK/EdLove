@@ -1,12 +1,12 @@
 import type { EmptyStateContract, ErrorStateContract } from '../../../theme/contracts';
 import { Button } from '../Button/Button';
 import { cx } from '../cx';
-import { Perch } from '../Perch/Perch';
+import { FeedbackScene } from '../FeedbackScene/FeedbackScene';
 
-function Scene() {
+function Scene({ state }: { state: 'empty' | 'error' }) {
   return (
     <div className="gd-state-scene" aria-hidden="true">
-      <Perch />
+      <FeedbackScene state={state} size={176} />
     </div>
   );
 }
@@ -19,7 +19,7 @@ export interface EmptyStateProps extends EmptyStateContract {
 export function EmptyState({ title, message, action, className }: EmptyStateProps) {
   return (
     <section className={cx('gd-state', className)}>
-      <Scene />
+      <Scene state="empty" />
       <h2 className="gd-text" data-kind="title">
         {title}
       </h2>
@@ -41,7 +41,7 @@ export interface ErrorStateProps extends ErrorStateContract {
 export function ErrorState({ title, message, retry, className }: ErrorStateProps) {
   return (
     <section role="alert" className={cx('gd-state', className)}>
-      <Scene />
+      <Scene state="error" />
       <h2 className="gd-text" data-kind="title">
         {title}
       </h2>

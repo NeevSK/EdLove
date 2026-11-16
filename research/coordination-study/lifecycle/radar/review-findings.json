@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "reviewId": "multidimensional-radar-20261111:product-v1",
+  "disposition": "bounded-handoff-accepted; not product admission or production approval",
+  "observedLifecycle": {
+    "revision": 11,
+    "productTask": "submitted",
+    "readiness": "blocked",
+    "blockers": 32,
+    "staleArtifacts": [],
+    "sources": 26,
+    "pjc": {
+      "state": "finished",
+      "exitCode": 0,
+      "errors": 0,
+      "gaps": 428,
+      "interpretation": "Process/structural result only; not complete coverage or product readiness."
+    }
+  },
+  "confirmedProductConstraints": [
+    "A shared experience preserves distinct measure definitions, axes, units/ranges, identity/version and domain context.",
+    "Self and observer perspectives remain separately attributed; no merging, averaging, ranking, inferred comparability or universal radar axes.",
+    "Missing, unavailable, denied and stale values remain distinct from zero and from measured data.",
+    "Read-only presentation consumes data only from an already admitted and authorized caller. No new API, direct database path, read authority, write, sharing grant or intervention is admitted.",
+    "Synthetic fixtures remain explicitly labeled and cannot be presented as a real person's values.",
+    "Existing Self, Classroom, Profile and measure records remain in place; any shared UI is additive and must follow owned native/web boundaries."
+  ],
+  "implementationGaps": [
+    {
+      "id": "radar-geometry-ignores-values",
+      "severity": "blocking-before-chart-use",
+      "finding": "RadarChart and SpiderChart in RadarSpiderChart.tsx compute each point at the same outer radius and do not scale by point.value or maxValue. The separate radarLayout scales values but supplies fixed sample data when attributes are absent; that fallback must never be mistaken for live data.",
+      "evidence": [
+        "packages/graphics/src/charts/RadarSpiderChart.tsx:21-35",
+        "packages/graphics/src/charts/RadarSpiderChart.tsx:160-177",
+        "packages/graphics/src/layouts/radarLayout.ts:20-53"
+      ],
+      "firstSlicePrecondition": "Repair and verify value-to-radius geometry for minimum, intermediate and maximum values against the measure's own scale; test axis count and zero/absent behavior. Keep sample fallback explicit synthetic or remove it from the live-data path."
+    },
+    {
+      "id": "existing-shared-chart-is-not-a-measure-contract",
+      "severity": "blocking-before-reuse",
+      "finding": "InteractiveRadarChart accepts only key, label and numeric 0-100 value; it does not encode measure identity/version, units/range, perspective/provenance, timestamp, missingness or per-axis unavailable states. `editable` changes marker size while `onChange` is unused. It imports legacy @repo/ui/primitives and Theme plus React Native/SVG, so it is not evidence of an approved web/native owned component contract.",
+      "evidence": [
+        "packages/ui/src/components/InteractiveRadarChart.tsx:8-31",
+        "packages/ui/src/components/InteractiveRadarChart.tsx:35-116",
+        "AGENTS.md",
+        "docs/architecture/platform-map.md"
+      ],
+      "firstSlicePrecondition": "Architecture must select the platform-neutral geometry/data contract and owned native/web presentation boundary. Do not wire existing numeric props as if they represented all measure domains."
+    },
+    {
+      "id": "no-single-live-admitted-radar-source",
+      "severity": "blocking-before-real-data",
+      "finding": "The inspected catalog does not admit a radar capability. The studentPotential client and historical migration are legacy scaffolding; separate growth, teacher-insight and student-potential stores have different authorship, persistence, time and access behavior. No end-to-end live shared radar data path was established.",
+      "evidence": [
+        "apps/sanctuary-api/src/modules/catalog.ts",
+        "packages/core/src/api/studentPotential.ts",
+        "packages/core/src/api/studentPotential.contract.ts",
+        "apps/gurudevi-mobile/supabase/migrations/20260315000001_student_potential_analysis.sql",
+        "research/coordination-study/lifecycle/radar/intent-findings.json"
+      ],
+      "firstSlicePrecondition": "Choose one existing domain measure and host surface; use an already admitted caller contract or use clearly synthetic data. Do not add an endpoint/direct DB path or claim live support without API admission."
+    },
+    {
+      "id": "person-and-perspective-authority-is-domain-specific",
+      "severity": "blocking-before-other-person-data",
+      "finding": "Teacher-to-learner access, self-view, private growth, selected sharing and teacher wellbeing signals have different rules. The request authorizes a shared presentation direction, not cross-person visibility, data contribution, editing or a universal access policy.",
+      "evidence": [
+        "packages/core/src/flows/pjc/classroom.teaching_loop.json",
+        "packages/core/src/flows/pjc/self.learner_growth.json",
+        "packages/core/src/logic/schemas/teacher-insights.schema.ts",
+        "apps/gurudevi-mobile/docs/Core/GROWTH_MODEL.md",
+        "docs/architecture/authority-model.md",
+        "docs/architecture/data-governance-and-records.md"
+      ],
+      "firstSlicePrecondition": "Require the host caller to enforce the existing relationship and read scope; reveal no values on denied results. Obtain domain-owner decisions before adding any new subject access, sharing or editing path."
+    },
+    {
+      "id": "static-vitality-values-are-not-observations",
+      "severity": "blocking-before-live-claim",
+      "finding": "TeacherVitalityCard contains fixed literal values and bounded usage research did not find a role screen mounting it. It is not evidence of a live or computed measure.",
+      "evidence": [
+        "packages/self/src/components/TeacherVitalityCard.tsx:29-40",
+        "packages/self/src/screens/self/TeacherSelfView.tsx:108-147",
+        "research/coordination-study/lifecycle/radar/intent-findings.json"
+      ],
+      "firstSlicePrecondition": "Treat these values as sample-only and label them synthetic if used in a fixture; do not attribute them to a real person."
+    }
+  ],
+  "minimalFirstSlicePreconditions": [
+    "Select one existing measure/domain and one hosting route/platform for the first integrated slice; do not decide universal axes or a composite score.",
+    "Receive a typed measure payload with explicit measure ID/version, axis ID/order/labels, own scale/units/range, per-axis measured-or-missing state, source/perspective attribution, subject scope and observation time/freshness where available.",
+    "When metadata or axis/value support is absent, disclose unavailable/unsupported state or use an explicitly approved textual equivalent; never guess a scale or silently omit a dimension.",
+    "Use an admitted read caller and its existing authorization context. Until one exists, limit execution to synthetic fixtures.",
+    "Test value-to-radius behavior, distinct measure/perspective rendering, unknown/missing versus zero, denied/empty/stale/error states, no writes, synthetic labeling and a textual accessible equivalent.",
+    "Choose the platform-neutral core and separate owned native/web components before adding a cross-platform production screen; retain existing routes and surfaces."
+  ],
+  "unprovenClaims": [
+    "No psychometric validity, cross-domain comparability, trends, trajectory, or representative measure set is established.",
+    "No live route, current API capability, database/RLS deployment, offline freshness, cross-person authorization, device accessibility or production geometry behavior was tested.",
+    "The teacher-profile stress/relational-capacity idea is exploratory and not an approved production measure.",
+    "Local actor roles and an accepted handoff do not authenticate identity, grant access or authorize policy."
+  ],
+  "unresolvedDecisions": [
+    "First measure/domain, entry point, platform, and live source.",
+    "Per-domain axis/value metadata and behavior for unsupported dimensions, incompatible units, history and stale values.",
+    "Cross-person visibility/relationship scope, consent, sharing/revocation, retention, export and any write authority.",
+    "Motion and feedback that do not imply measured change between unrelated constructs."
+  ]
+}

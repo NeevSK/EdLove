@@ -1,0 +1,24 @@
+{
+  "stage": "reconciliation",
+  "summary": "Conclusion: configured hook record plus implementation claim do not prove automatic execution in this Codex session. Keep automatic hook status configured_only and no gate canary evidence.",
+  "kind": "record",
+  "unresolved": [
+    "Does this Codex runtime register and execute the described PreToolUse and Stop hooks? No session hook inventory or observed interception evidence was supplied.",
+    "Is stop-gate.mjs available and active in this session? Its implementation and runtime status were not supplied."
+  ],
+  "evidence": [
+    {
+      "sourceId": "hook-config",
+      "sha256": "1ff9e8153e210ad0df65d39e171bf4451c15bf764e2d9f7437db233cf88ce36f"
+    },
+    {
+      "sourceId": "gate-description",
+      "sha256": "8be0a0bb6386bf2caf3e1eaeb868f5d94de5241b1816143bc9f2a2adaea83db7"
+    },
+    {
+      "sourceId": "gate-entry",
+      "sha256": "6d7d8a471ad22c2a5722074fca09ee11045a2be8978bc4bc630e12492e867f42"
+    }
+  ],
+  "id": "review-reconciliation"
+}

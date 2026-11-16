@@ -1,0 +1,69 @@
+{
+  "workId": "45b0f01f-b4cf-43d2-a749-adaf0b2d8458",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "The account identifier remains immutable; the stable source hash matches the handoff packet, so the completed identity inspection is unaffected and can be inherited.",
+      "sourceIds": [
+        "stable-source",
+        "handoff"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The prior authority analysis relied on changed-source revision access-1 and is invalidated. The current owner clarification says invitation possession alone never grants school authority; server-confirmed membership is required.",
+      "sourceIds": [
+        "changed-source",
+        "handoff"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "Verification and reconciliation were not started, and the handoff reports no deployed changes.",
+      "sourceIds": [
+        "handoff"
+      ],
+      "confidence": "direct"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "requires server-confirmed membership for school authority",
+      "subject": "school access",
+      "object": "server-confirmed membership",
+      "authoritySourceIds": [
+        "changed-source"
+      ]
+    },
+    {
+      "relation": "does not grant school authority by itself",
+      "subject": "invitation possession",
+      "object": "school access",
+      "authoritySourceIds": [
+        "changed-source"
+      ]
+    }
+  ],
+  "reviewRequired": [
+    "changed-source",
+    "handoff"
+  ],
+  "unresolved": [
+    "No runtime or canary evidence establishes that the implementation enforces server-confirmed membership before granting school access."
+  ],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "identity inspection inherited from stable-source revision stable-1",
+      "authority analysis reconsidered using current changed-source revision access-2"
+    ],
+    "invalidatedSteps": [
+      "authority analysis based on changed-source revision access-1"
+    ],
+    "nextAction": "Verify the access path against the current rule that school authority requires server-confirmed membership, then reconcile the implementation and record evidence."
+  },
+  "limitations": [
+    "Conclusions are limited to the supplied synthetic sources and handoff; no implementation, runtime hook, or deployed system was available for inspection."
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "review": "independent prototype review",
+  "scope": "Read-only review of shared geometry, native and web Radar components, theme recipes, galleries, and focused tests. No production files changed.",
+  "decision": "Suitable for a bounded synthetic UI handoff; not ready to present real observations until axis comparability and caller authority are explicit.",
+  "claims": [
+    {
+      "status": "accepted",
+      "claim": "Measure and perspective selection are separate and the UI does not average them or combine multiple observations into one chart.",
+      "evidence": ["apps/gurudevi-web/app/(sanctuary)/kit/radar/RadarGalleryClient.tsx", "packages/ui/src/theme/contracts.ts:RadarObservation", "packages/ui/src/components/shared/radarGeometry.ts:projectRadar"]
+    },
+    {
+      "status": "accepted",
+      "claim": "Null is retained as missing rather than converted to zero; incomplete observations do not produce a closed polygon, and fewer than three axes do not produce a chart.",
+      "evidence": ["packages/ui/src/theme/contracts.ts:RadarAxis", "packages/ui/src/components/shared/radarGeometry.ts:54-65", "packages/ui/src/components/shared/__tests__/radarGeometry.test.ts"]
+    },
+    {
+      "status": "accepted",
+      "claim": "Web and native provide readable values and ranges outside the chart; access-denied and other non-ready states do not render observation details. Synthetic fixtures are labeled, and the web gallery is production guarded.",
+      "evidence": ["packages/ui/src/components/native/Radar/Radar.tsx", "packages/ui/src/components/web/Radar/Radar.tsx", "apps/gurudevi-web/app/(sanctuary)/kit/radar/RadarGalleryClient.tsx", "apps/gurudevi-web/app/(sanctuary)/kit/radar/page.tsx", "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx", "apps/gurudevi-web/tests/unit/kit/radar.test.tsx"]
+    },
+    {
+      "status": "accepted",
+      "claim": "The shared geometry is platform-neutral and color/stroke choices come from world radar recipes; component placement follows native/web package boundaries.",
+      "evidence": ["packages/ui/src/components/shared/radarGeometry.ts", "packages/ui/src/theme/types.ts:RadarRecipe", "packages/ui/src/theme/build.ts:718-727", "packages/ui/src/theme/css.ts:390-396", "packages/ui/src/theme/kitCss.ts:92-95"]
+    },
+    {
+      "status": "limited",
+      "claim": "Accessible equivalents are present in unit-rendered markup, but this review does not establish screen-reader behavior, browser layout, or native device rendering.",
+      "evidence": ["packages/ui/src/components/native/Radar/Radar.tsx", "packages/ui/src/components/web/Radar/Radar.tsx", "apps/gurudevi-web/tests/unit/kit/radar.test.tsx:14"]
+    }
+  ],
+  "findings": [
+    {
+      "severity": "high",
+      "status": "block real-data admission",
+      "finding": "Geometry independently maps each axis from its own min/max onto the same 0..1 radial distance, then draws a polygon when all axes have values. The contract permits each axis to have a different unit, and neither geometry nor adapters require compatible units or an explicitly comparable measure. A chart can therefore visually compare incompatible quantities despite preserving their individual ranges in the table.",
+      "evidence": ["packages/ui/src/theme/contracts.ts:RadarAxis", "packages/ui/src/components/shared/radarGeometry.ts:54-65", "packages/ui/src/components/shared/__tests__/radarGeometry.test.ts:8-19"],
+      "recommended_resolution": "Require a measure-owned plot/comparability policy before drawing a normalized shape, or render only the value/range table when axis scales are not declared comparable. Keep distinct measures and perspectives isolated."
+    },
+    {
+      "severity": "medium",
+      "status": "contract gap",
+      "finding": "A ready observation with an empty axes array passes validation and returns ready with plot=false. Components then show metadata and an empty value table instead of the explicit empty state. Missing values are also represented by a single null, so the component cannot distinguish not collected, unavailable, or intentionally withheld per axis.",
+      "evidence": ["packages/ui/src/theme/contracts.ts:RadarAxis and RadarState", "packages/ui/src/components/shared/radarGeometry.ts:29-65", "packages/ui/src/components/native/Radar/Radar.tsx:51-155", "packages/ui/src/components/web/Radar/Radar.tsx:13-45"]
+    },
+    {
+      "severity": "medium",
+      "status": "platform parity gap",
+      "finding": "Web displays perspective.kind (self/observer) alongside its label; native displays the perspective label only. A caller can use a vague label, leaving the explicit attribution kind absent on native.",
+      "evidence": ["packages/ui/src/components/web/Radar/Radar.tsx", "packages/ui/src/components/native/Radar/Radar.tsx"]
+    },
+    {
+      "severity": "medium",
+      "status": "authority limit",
+      "finding": "The UI accepts caller-supplied subject and source metadata and does not establish authorization, provenance, or data isolation. Denied-state rendering is tested, but access control must be enforced by the host data adapter before constructing ready state.",
+      "evidence": ["packages/ui/src/theme/contracts.ts:RadarObservation and RadarState", "packages/ui/src/components/native/Radar/Radar.tsx", "packages/ui/src/components/web/Radar/Radar.tsx"]
+    },
+    {
+      "severity": "low",
+      "status": "test classification",
+      "finding": "The native test passed with the general mock-engine config. vitest.native.config.mts has an explicit include list of five different tests, so Radar is not in the native real-runtime lane. The mobile gallery source provides a synthetic fixture only; no device run was performed here.",
+      "evidence": ["packages/ui/vitest.config.mts:test.include", "packages/ui/vitest.native.config.mts:test.include", "packages/ui/src/components/native/__tests__/radar.test.tsx", "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx"]
+    }
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "pnpm exec vitest run --config vitest.config.mts src/components/shared/__tests__/radarGeometry.test.ts src/components/native/__tests__/radar.test.tsx",
+        "working_directory": "packages/ui",
+        "result": "passed: 2 files, 11 tests; vitest-native engine mock, iOS platform"
+      },
+      {
+        "command": "pnpm exec vitest run tests/unit/kit/radar.test.tsx",
+        "working_directory": "apps/gurudevi-web",
+        "result": "passed: 1 file, 9 tests; DOM unit tests, explicitly labeled no browser layout evidence"
+      }
+    ],
+    "not_verified": ["Real device or browser rendering", "Screen-reader behavior", "Live person data, authorization, or data-source provenance", "Production admission or product-policy approval"]
+  }
+}

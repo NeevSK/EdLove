@@ -1,0 +1,3 @@
+Trial_ID,Condition,Evolution_Step,Target_Component,Gate_Types,Gate_Parity,Gate_UnitTests,Behavioral_Acceptance,Duration_Seconds,False_Alarms,Escaped_Defects,Human_Interventions,Governance_Drift_Ratio,Status
+T0-BASE,BASELINE,E0,localEvaluator.native,PASS,PASS,PASS,PASS,2.5,0,0,0,0.0,VERIFIED_BASELINE
+T1-PRE-E1,Condition_B,E1_Refactor_Check,localEvaluator.native,PASS,FAIL,PASS,PASS,2.3,1,0,0,0.5,OBSERVED_FALSE_ALARM_ON_STRING_GREP

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "chat-requirement",
+    "scope": "Proposed cross-platform chat feature contract",
+    "authorId": "work_36",
+    "sourcePaths": ["research/coordination-study/lifecycle/chat-specification-brief.md","AGENTS.md","docs/architecture/platform-map.md","docs/architecture/domain-design-method.md","packages/core/src/flows/pjc/ai.assistant.json","packages/core/src/flows/ai/aiAssistant.flow.ts","apps/gurudevi-mobile/app/a-i-assistant.tsx","packages/ai/src/screens/AIScreen.tsx","packages/ai/src/hooks/useAIAgent.ts","packages/ai/src/api/sanctuaryCloudProvider.ts","packages/ai/package.json","packages/schema/schema.zmodel","apps/sanctuary-api/src/modules/catalog.ts","docs/architecture/model/gurudevi.c4","pnpm-lock.yaml"],
+    "dependsOn": [{"id":"chat-analysis","version":1}],
+    "content": {
+      "kind":"requirement",
+      "statement":"Specify and, only after the required channel and product decisions are admitted, provide an accessible AI chat journey that informs the user from route entry through message submission, streaming, completion or recoverable failure. Identify current and target route, UI, API, data and dependency seams. Keep agent mission writes behind explicit user review.",
+      "classification":"functional",
+      "acceptance":[
+        "Map each declared entry to a mounted screen or state that it is unavailable; do not represent the current mobile placeholder as a working chat screen.",
+        "Define screens and loading, ready, composing, streaming, completed, failed, offline and unauthenticated states with guards, feedback and draft-preserving recovery.",
+        "Use only an admitted /api/v1 capability; resolve the observed /api/ai/chat and /api/v1/ai/chat divergence before claiming integration.",
+        "Specify identity ownership, privacy mode, retention, expiry, deletion and sync for any stored thread or message, with unresolved policy decisions explicit.",
+        "Name allowed context by actor and entry; exclude private reflections unless separately authorized policy changes that boundary.",
+        "Keep agent proposals as drafts until a human reviews them; do not apply unreviewed agent actions to domain records.",
+        "Future implementation evidence covers route reachability, stream success/failure, retries, privacy/access boundaries and offline/draft recovery; tool presence alone is not proof."
+      ],
+      "origin":"proposal",
+      "authorityRefs":[],
+      "unresolved":[
+        "This proposal does not admit a production API capability or product policy.",
+        "Resolve Incognito and temporary-session persistence/retention across client, sync and server.",
+        "Resolve supported actors, multimodal attachments, agent missions and web/native scope.",
+        "Resolve the active endpoint and error/retry semantics with the API owner."
+      ]
+    }
+  },
+  {
+    "id":"chat-invariant",
+    "scope":"Privacy, authority and evidence invariant for proposed chat",
+    "authorId":"work_36",
+    "sourcePaths":["research/coordination-study/lifecycle/chat-specification-brief.md","AGENTS.md","docs/architecture/platform-map.md","docs/architecture/domain-design-method.md","packages/core/src/flows/pjc/ai.assistant.json","packages/core/src/flows/ai/aiAssistant.flow.ts","apps/gurudevi-mobile/app/a-i-assistant.tsx","packages/ai/src/screens/AIScreen.tsx","packages/ai/src/hooks/useAIAgent.ts","packages/ai/src/api/sanctuaryCloudProvider.ts","packages/ai/package.json","packages/schema/schema.zmodel","apps/sanctuary-api/src/modules/catalog.ts","docs/architecture/model/gurudevi.c4","pnpm-lock.yaml"],
+    "dependsOn":[{"id":"chat-analysis","version":1}],
+    "content":{
+      "kind":"invariant",
+      "statement":"A chat journey may claim privacy, persistence, context exclusion, stream success or agent-write protection only when the claim is tied to its owning client, API and storage behavior and has scoped evidence; agent-generated domain mutations remain unapplied until explicit human review.",
+      "scope":["Entry route and client state","Request context and API channel","Local, sync and remote message storage","Agent proposal and domain mutation boundary"],
+      "violations":["Incognito is described as zero-persistence while any client, sync or remote layer stores the conversation.","Private reflections or unauthorized context are sent to a model.","A failed or partial stream is displayed as complete.","An agent proposal writes domain data before user review.","An unadmitted endpoint or direct database path is described as the authorized integration."],
+      "verification":"For each claim, inspect and test the route-to-storage/API path for the selected mode and actor. Preserve scoped tool receipts and results, and leave missing semantic proof unresolved."
+    }
+  },
+  {
+    "id":"chat-scenario",
+    "scope":"Primary chat request and recoverable failure",
+    "authorId":"work_36",
+    "sourcePaths":["research/coordination-study/lifecycle/chat-specification-brief.md","AGENTS.md","docs/architecture/platform-map.md","docs/architecture/domain-design-method.md","packages/core/src/flows/pjc/ai.assistant.json","packages/core/src/flows/ai/aiAssistant.flow.ts","apps/gurudevi-mobile/app/a-i-assistant.tsx","packages/ai/src/screens/AIScreen.tsx","packages/ai/src/hooks/useAIAgent.ts","packages/ai/src/api/sanctuaryCloudProvider.ts","packages/ai/package.json","packages/schema/schema.zmodel","apps/sanctuary-api/src/modules/catalog.ts","docs/architecture/model/gurudevi.c4","pnpm-lock.yaml"],
+    "dependsOn":[{"id":"chat-analysis","version":1}],
+    "content":{
+      "kind":"scenario",
+      "preconditions":["A future chat capability and owning API route have been admitted.","The user is authenticated for saved history, or policy defines the selected temporary/incognito mode.","The selected entry reaches a mounted screen; otherwise the current placeholder is shown and no chat request is implied."],
+      "actions":["The user opens the assistant from an approved entry point.","The user selects or confirms a privacy mode and sees its persistence meaning.","The user enters and submits a message.","The interface shows submission and streaming progress while preserving the pending message.","The provider returns a complete response or fails/loses connection mid-stream.","The user retries or leaves; the interface preserves the draft and reports whether the response completed."],
+      "expected":["A complete response is associated with the intended thread and only authorized context is sent.","Timeout, offline, auth failure or partial stream produces a recoverable state and is not labeled a completed answer.","Retry does not silently duplicate a message or discard the draft.","The selected persistence mode is honored across client, sync and remote layers as established by admitted policy and evidence; until then the requirement remains unresolved.","No agent-originated domain write occurs without explicit human review."]
+    }
+  }
+]

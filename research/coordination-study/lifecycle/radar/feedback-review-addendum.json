@@ -1,0 +1,16 @@
+{
+  "lifecycleRevision": 48,
+  "findings": [
+    "feature-behavior checker-gap prevents acceptance.",
+    "The web complete polygon parity finding was fixed and independently rerun: 2files11G1checks.",
+    "Earlier native/shared independent rerun:3files16checks; coordinator final expandedrun:5files34checks.",
+    "No current G4/G5 or live-data authority proof."
+  ],
+  "verdict": "return",
+  "observedAt": "2026-11-16T04:43:05.1048977Z",
+  "coordinatorDisposition": [
+    "Retain the shared geometry provenance comment: the legacy sample fallback explains why it cannot be reused safely.",
+    "Retain the feedback state-source comment: it records lineage of the shared mapping, rather than asserting new product policy."
+  ],
+  "reviewer": "radar_review"
+}

@@ -1,0 +1,91 @@
+{
+  "observedAt": "2026-11-16T04:42:36.0993526Z",
+  "scopeLimits": [
+    "No production-data admission, authorization or assessment semantics proof.",
+    "UX/architecture/dependency drafts exist but not accepted role handoffs.",
+    "Static Tutii fallback; artwork manifest still awaiting master approval.",
+    "Local SQLite actors and source hashes are not authentication, tamper-resistance or complete impact discovery."
+  ],
+  "scope": "Shared synthetic radar presentation and reused world-shaped feedback",
+  "review": "feedback-review.json",
+  "lifecycle": {
+    "revision": 48,
+    "missingCheck": "feature-behavior",
+    "feature": "blocked",
+    "unassessedSources": 0,
+    "prototype": "returned",
+    "id": "multidimensional-radar-20261111"
+  },
+  "checks": [
+    {
+      "limits": "Native renderer, SVG and animation engine mocked; not G5",
+      "level": "G1",
+      "result": "passed",
+      "tests": 34,
+      "files": 5,
+      "command": "pnpm --filter @repo/ui exec vitest run shared geometry, feedback, native radar, inspector and world.states --config vitest.config.mts",
+      "log": "shared-native-tests-verified.log"
+    },
+    {
+      "limits": "jsdom; not browser layout",
+      "level": "G1",
+      "result": "passed",
+      "tests": 11,
+      "files": 2,
+      "command": "pnpm --filter gurudevi-web exec vitest run tests/unit/kit/radar.test.tsx tests/unit/kit/webKitNames.test.tsx",
+      "log": "web-tests-verified.log"
+    },
+    {
+      "log": "mobile-typecheck-resumed.log",
+      "level": "G0",
+      "result": "passed",
+      "command": "pnpm --filter gurudevi-mobile check-types"
+    },
+    {
+      "limits": "Missing VisualCapabilities exports in architecture-lab and school pages; no radar diagnostics",
+      "level": "G0",
+      "result": "failed",
+      "findings": 2,
+      "command": "pnpm --filter gurudevi-web check-types",
+      "log": "web-typecheck-resumed.log"
+    },
+    {
+      "limits": "Existing missing legacy exports/modules; no radar/feedback diagnostics",
+      "level": "G0",
+      "result": "failed",
+      "findings": 7,
+      "command": "pnpm --filter @repo/ui check-types",
+      "log": "ui-typecheck-resumed.log"
+    },
+    {
+      "log": "ui-boundaries-final.log",
+      "level": "static-boundary",
+      "result": "passed",
+      "command": "pnpm check:ui-boundaries"
+    },
+    {
+      "log": "world-final.log",
+      "level": "static-world",
+      "result": "failed",
+      "command": "pnpm check:world",
+      "limits": "4300 raw hex colors vs baseline4152; new radar/feedback files use world paints"
+    },
+    {
+      "log": "anti-slop-resumed.log",
+      "level": "static-quality",
+      "result": "failed",
+      "command": "pnpm check:anti-slop",
+      "limits": "CNG passed; native-slop blocks include modified native dev gallery and workspace files. HEAD gallery already contained three ScrollViews and two map calls; later chained checks did not run. No exception or ratchet change."
+    },
+    {
+      "level": "G4",
+      "result": "inconclusive-current",
+      "limits": "Earlier browser preview loading/empty/retry/world/360px observed, historical screenshot retained. Resumed CUA attempts timed out; no final visual signoff."
+    },
+    {
+      "level": "G5",
+      "result": "not-run",
+      "limits": "No real native device or assistive-technology run"
+    }
+  ]
+}

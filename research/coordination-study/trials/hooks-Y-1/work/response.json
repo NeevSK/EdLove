@@ -1,0 +1,92 @@
+{
+  "workId": "33ab8e00-7c2e-4b10-9a8c-7c2660660204",
+  "verdict": "inconclusive",
+  "findings": [
+    {
+      "confidence": "direct",
+      "sourceIds": [
+        "hook-config"
+      ],
+      "claim": "The supplied Claude settings declare a PreToolUse Write|Edit hook that runs gate.mjs with --auto-ground and a Stop hook that runs stop-gate.mjs."
+    },
+    {
+      "confidence": "direct",
+      "sourceIds": [
+        "gate-description",
+        "gate-entry"
+      ],
+      "claim": "The gate source describes itself as intercepting tool calls across Claude Code, Codex, OpenCode, and Antigravity, and the supplied entry excerpt contains scanner/fallback and audit code; this is implementation text and a stated capability, not evidence of active interception in this session."
+    },
+    {
+      "confidence": "supported",
+      "sourceIds": [
+        "hook-config",
+        "gate-description",
+        "gate-entry"
+      ],
+      "claim": "This Codex session cannot be confirmed to automatically ground tool writes or enforce completion checks from the supplied records."
+    },
+    {
+      "confidence": "inferred",
+      "sourceIds": [
+        "hook-config",
+        "gate-description",
+        "gate-entry"
+      ],
+      "claim": "The supplied controller was invoked manually to initialize, hash-check, and record the four review stages; that invocation does not establish runtime hook execution."
+    }
+  ],
+  "decisions": [
+    {
+      "authoritySourceIds": [
+        "hook-config"
+      ],
+      "object": "PreToolUse Write|Edit automatic grounding hook",
+      "relation": "declares",
+      "subject": "Claude settings"
+    },
+    {
+      "authoritySourceIds": [
+        "gate-description"
+      ],
+      "object": "Codex tool-call interception",
+      "relation": "claims cross-client interception",
+      "subject": "gate.mjs"
+    },
+    {
+      "authoritySourceIds": [
+        "hook-config",
+        "gate-description",
+        "gate-entry"
+      ],
+      "object": "active hook registration in this Codex session",
+      "relation": "does not establish",
+      "subject": "provided evidence"
+    }
+  ],
+  "reviewRequired": [
+    "hook-config",
+    "gate-description"
+  ],
+  "unresolved": [
+    "Does this Codex runtime register and execute the described PreToolUse and Stop hooks? No session hook inventory or observed interception evidence was supplied.",
+    "Is stop-gate.mjs available and active in this session? Its implementation and runtime status were not supplied."
+  ],
+  "execution": {
+    "nextAction": "Obtain authoritative Codex session hook inventory or a harmless observed interception test, then reconcile the runtime status.",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "runtimeHookStatus": "configured_only",
+    "invalidatedSteps": []
+  },
+  "limitations": [
+    "Only the three frozen excerpts and supplied local controller were inspected; no original repository, live Codex hook registry, stop-gate implementation, or hook event log was available.",
+    "The controller validates source hashes and declared stage order but does not prove truthful interpretation or actual reading, and it can be bypassed by direct local file edits.",
+    "No gate script was executed; the manual controller invocation is not a canary for automatic interception."
+  ]
+}

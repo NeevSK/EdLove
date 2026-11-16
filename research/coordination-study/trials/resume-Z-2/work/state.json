@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "workId": "6b59bad1-1d94-4c3f-9bdf-331a7dce6554",
+  "events": [
+    {
+      "id": "context-1",
+      "kind": "record",
+      "stage": "context",
+      "summary": "Preserved the completed identity inspection because stable-source remains at stable-1; the handoff says no deployed changes were made.",
+      "evidence": [
+        {
+          "sourceId": "stable-source",
+          "sha256": "4b79c412eb2ff7c1a12afc0c4f1381a645afb1bec52b8e818ecc682fccfa5b0e"
+        },
+        {
+          "sourceId": "handoff",
+          "sha256": "ef404bd64b752e8221890a8ab4bcc512f09216aa6abe7ad9784d0a8f102fd7b7"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "analysis-1",
+      "kind": "record",
+      "stage": "analysis",
+      "summary": "Reconsidered authority using changed-source access-2. Invitation possession does not grant school authority; server-confirmed membership is required. The prior access-1 authority conclusion is invalidated.",
+      "evidence": [
+        {
+          "sourceId": "changed-source",
+          "sha256": "9d7849cd6e56d152e343bd4e053369adb3d594ce874485097a9b8b086dd6a40b"
+        },
+        {
+          "sourceId": "handoff",
+          "sha256": "ef404bd64b752e8221890a8ab4bcc512f09216aa6abe7ad9784d0a8f102fd7b7"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "verification-1",
+      "kind": "record",
+      "stage": "verification",
+      "summary": "The supplied handoff confirms verification was not started and no deployed changes were made. No runtime hook or canary evidence is supplied, so implementation verification is unavailable.",
+      "evidence": [
+        {
+          "sourceId": "handoff",
+          "sha256": "ef404bd64b752e8221890a8ab4bcc512f09216aa6abe7ad9784d0a8f102fd7b7"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "reconciliation-1",
+      "kind": "record",
+      "stage": "reconciliation",
+      "summary": "Retain identity inspection based on stable-source stable-1. Discard the prior access-1 authority conclusion; proceed using access-2 requiring server-confirmed membership. No implementation changes have been made.",
+      "evidence": [
+        {
+          "sourceId": "stable-source",
+          "sha256": "4b79c412eb2ff7c1a12afc0c4f1381a645afb1bec52b8e818ecc682fccfa5b0e"
+        },
+        {
+          "sourceId": "changed-source",
+          "sha256": "9d7849cd6e56d152e343bd4e053369adb3d594ce874485097a9b8b086dd6a40b"
+        },
+        {
+          "sourceId": "handoff",
+          "sha256": "ef404bd64b752e8221890a8ab4bcc512f09216aa6abe7ad9784d0a8f102fd7b7"
+        }
+      ],
+      "unresolved": []
+    }
+  ]
+}

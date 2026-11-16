@@ -1,13 +1,8 @@
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { UnbuiltPlace } from '@/components/navigation/UnbuiltPlace';
+import { LibraryFloor } from '@/components/library/LibraryFloor';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
 export default function LibraryPlace() {
-  return (
-    <UnbuiltPlace
-      title="The Library is being rebuilt"
-      message="Books and resources will come back here."
-    />
-  );
+  return <LibraryFloor />;
 }

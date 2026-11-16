@@ -1,0 +1,18 @@
+{
+  "action": "review",
+  "id": "chat-specification-20261111",
+  "taskId": "product",
+  "actorId": "work_35",
+  "outcome": "accept",
+  "findings": [
+    "Bounded handoff accepted for a non-binding UX proposal. The requirement, invariant and scenario are all explicitly proposal-scoped, cite the same analysis version, and preserve unresolved API admission, endpoint divergence, privacy/retention, context, platform scope and recovery decisions.",
+    "Keep the current mobile route marked as a placeholder; do not claim the chat screen or any route-to-API behavior works. The UX handoff may specify alternatives, states and transitions, but must not decide web/native scope or imply policy approval.",
+    "The PJC command exited 0 with 0 errors and 428 gaps. This is structural command evidence only, not evidence of complete coverage or readiness; retain the raw result and address relevant gaps through subsequent review. Lifecycle readiness remains blocked.",
+    "The scenario and invariant appropriately make persistence, privacy, allowed context, stream failure and agent-write behavior conditional on scoped evidence and explicit decisions. Do not convert these proposed acceptance criteria into claims about current behavior."
+  ],
+  "refs": [
+    { "id": "chat-requirement", "version": 1 },
+    { "id": "chat-invariant", "version": 1 },
+    { "id": "chat-scenario", "version": 1 }
+  ]
+}

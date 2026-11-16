@@ -1,0 +1,306 @@
+{
+  "id": "radar-experience",
+  "scope": "Proposed shared read-only experience for distinct radar measures and attributed perspectives; production routes, data and authority remain unadmitted",
+  "authorId": "work_36",
+  "sourcePaths": [
+    "research/coordination-study/lifecycle/radar/owner-request.md",
+    "research/coordination-study/lifecycle/radar/analysis-proposal.json",
+    "research/coordination-study/lifecycle/radar/product-proposals.json",
+    "research/coordination-study/lifecycle/radar/product-review.json",
+    "AGENTS.md",
+    "docs/architecture/platform-map.md",
+    "docs/architecture/authority-model.md",
+    "docs/architecture/data-governance-and-records.md",
+    "apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md",
+    "packages/core/src/flows/classroom/teacherStudentRadarAttunement.flow.ts",
+    "packages/core/src/flows/classroom/studentProfileSoulView.flow.ts",
+    "packages/core/src/flows/pjc/classroom.teaching_loop.json",
+    "packages/core/src/flows/pjc/self.learner_growth.json",
+    "packages/core/src/api/studentPotential.ts",
+    "packages/core/src/api/studentPotential.contract.ts",
+    "packages/ui/src/theme/contracts.ts",
+    "packages/ui/src/components/shared/radarGeometry.ts",
+    "packages/ui/src/components/native/Radar/Radar.tsx",
+    "packages/ui/src/components/native/__tests__/radar.test.tsx",
+    "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx",
+    "packages/ui/src/components/web/Radar/Radar.tsx",
+    "packages/ui/src/theme/kitCss.ts",
+    "apps/gurudevi-web/app/(sanctuary)/kit/radar/page.tsx",
+    "apps/gurudevi-web/app/(sanctuary)/kit/radar/RadarGalleryClient.tsx",
+    "apps/gurudevi-web/app/(sanctuary)/kit/radar/radar-gallery.module.css"
+  ],
+  "dependsOn": [
+    { "id": "radar-analysis", "version": 1 },
+    { "id": "radar-requirement", "version": 1 },
+    { "id": "radar-invariant", "version": 1 },
+    { "id": "radar-scenario", "version": 1 }
+  ],
+  "content": {
+    "kind": "experience",
+    "screens": [
+      {
+        "id": "radar-host",
+        "route": "Production route not assigned. Compose the view from an existing authorized domain host after API and authority admission. The web /kit/radar and native (dev)/kit gallery are development examples only.",
+        "states": [
+          "Loading: announce that the supplied observation is loading without exposing prior or unadmitted observation metadata.",
+          "Ready: identify subject, measure name and version, perspective, source and observation time when supplied; show the domain's own axes, declared range and units.",
+          "Plot eligibility: default to values-only. Draw radial geometry only when the caller's source explicitly sets declared-comparable for that same measure version; the declaration does not authorize comparisons with other measures or perspectives.",
+          "Partial: list each missing axis as Not recorded; preserve distinct numeric zero; do not close or interpolate a polygon across missing values.",
+          "Empty: explain that no observation was supplied; do not imply an observation exists with a score of zero.",
+          "Denied: show only the source's access message or a neutral denial message; do not render subject, measure or value metadata carried alongside denial.",
+          "Unavailable: explain that this measure or source is unavailable without substituting another domain's measure.",
+          "Error: explain the read failure and offer retry only when the caller supplies a retry action.",
+          "Stale: label a source-designated old observation and its supplied observation time; do not imply it is current.",
+          "Invalid contract: show an unavailable explanation and no values when supplied axes or metadata cannot be plotted safely.",
+          "Offline: if no admitted snapshot is supplied, show source unavailable. A cached snapshot may appear only if a future source contract explicitly supplies its authority, time and stale status."
+        ]
+      },
+      {
+        "id": "radar-observation-choice",
+        "route": "Proposed selector inside the host surface only if an admitted source supplies multiple observations. No production history route or observation-list API is established.",
+        "states": [
+          "Not implemented in the galleries: the web historical control only toggles a synthetic stale flag; it does not select a stored historical observation.",
+          "When supplied by an admitted source, distinguish observations by their own measure version, attributed perspective, source and time.",
+          "If there is no admitted history, say so and return to the host view; do not manufacture a timeline, retention period or supersession rule."
+        ]
+      }
+    ],
+    "stateAxes": [
+      {
+        "id": "subject-perspective",
+        "states": [
+          "self: the user's own observation, if the host supplies it",
+          "observer: a separately attributed perspective, shown only after the host supplies an already authorized read result",
+          "unresolved: no general person search, relationship rule, consent model or cross-person visibility grant is defined"
+        ]
+      },
+      {
+        "id": "measure",
+        "states": [
+          "unselected",
+          "one selected domain measure with its own identity, version, axes, units and range",
+          "unavailable or not supplied",
+          "measures remain distinct; no universal dimension set, normalization, averaging, ranking or aggregate"
+        ]
+      },
+      {
+        "id": "observation",
+        "states": [
+          "current or historical only when supplied by the source",
+          "partial values, with per-axis missingness retained",
+          "stale only when the source marks it stale",
+          "history selection, ordering, retention, supersession and comparison policy remain unimplemented and unresolved"
+        ]
+      },
+      {
+        "id": "plot-eligibility",
+        "states": [
+          "values-only by default, retaining the accessible axis/value/range list",
+          "declared-comparable within this one measure version, allowing geometry for that measure only",
+          "no inference of comparability across measures, perspectives, subjects or versions"
+        ]
+      },
+      {
+        "id": "read-result",
+        "states": [
+          "loading",
+          "ready",
+          "partial ready",
+          "empty",
+          "denied",
+          "unavailable",
+          "error",
+          "offline without an admitted snapshot"
+        ]
+      },
+      {
+        "id": "example-source",
+        "states": [
+          "synthetic development fixture, visibly identified as example data",
+          "live source not wired by this proposal",
+          "never present synthetic values as a person's record"
+        ]
+      }
+    ],
+    "transitions": [
+      {
+        "id": "enter-self",
+        "screenId": "radar-host",
+        "from": "Existing self-growth or another admitted host",
+        "to": "Loading self observation, then the truthful read-result state",
+        "event": "The user opens the radar from their own host surface.",
+        "guard": "The host supplies an admitted self read contract. This proposal does not select a measure or create a new direct API or database path.",
+        "effects": [
+          "Keep the host's identity and context.",
+          "Load only the selected domain measure and source-provided observation.",
+          "Keep values read-only and preserve the source's units, version, provenance and history semantics."
+        ],
+        "feedback": "Show a named loading state, then the measure, perspective, source/time, values and any missing or stale state in words.",
+        "recovery": "On empty, denied, unavailable or error, explain the outcome and preserve the way back to the host. Retry only for a retryable error with a caller-provided action.",
+        "motionRef": "radar-state-change"
+      },
+      {
+        "id": "enter-observer",
+        "screenId": "radar-host",
+        "from": "Existing host with an already admitted observer read",
+        "to": "Loading observer-attributed observation, then the truthful read-result state",
+        "event": "The user opens an observation about another person from an existing host.",
+        "guard": "The caller has already established read authority and supplies the permitted result. The shared view does not search for people, decide permissions or grant visibility.",
+        "effects": [
+          "Attribute the observer perspective and source clearly.",
+          "Do not expose metadata or values if the result is denied.",
+          "Do not edit, share or persist the observation."
+        ],
+        "feedback": "Identify the supplied subject and observer perspective only in the admitted ready result; use plain-language denial when access is not admitted.",
+        "recovery": "Return to the caller's host when access is denied or the source is unavailable. No permission-request path is defined.",
+        "motionRef": "radar-state-change"
+      },
+      {
+        "id": "choose-measure",
+        "screenId": "radar-host",
+        "from": "One available measure selected",
+        "to": "A different source-supplied measure selected",
+        "event": "The user chooses another measure offered by the host.",
+        "guard": "The host exposes only measures admitted for the current subject and caller. Each measure supplies its own definition and range.",
+        "effects": [
+          "Replace the current observation with that measure's own observation.",
+          "Do not retain the previous measure's axes or interpolate between the two constructs.",
+          "Render only a text/value view unless this measure version explicitly declares its axes comparable for its own plot.",
+          "If no matching observation exists, show the measure's empty or unavailable state explicitly."
+        ],
+        "feedback": "Announce the newly selected measure and version; keep its perspective label visible.",
+        "recovery": "If selection fails, retain no misleading prior value as if it belonged to the new measure; report unavailable or error.",
+        "motionRef": "radar-state-change"
+      },
+      {
+        "id": "choose-perspective",
+        "screenId": "radar-host",
+        "from": "A source-supplied perspective selected",
+        "to": "Another separately attributed perspective selected",
+        "event": "The user selects another perspective the host already supplies.",
+        "guard": "The available options and authority come from the admitted source. Self and observer are not interchangeable and are never merged.",
+        "effects": [
+          "Display only the newly selected perspective's observation.",
+          "Preserve its source and time attribution.",
+          "Do not average, overlay, rank or imply comparability across perspectives."
+        ],
+        "feedback": "Announce the selected perspective by its supplied label and kind.",
+        "recovery": "If the perspective is denied, unavailable or has no observation, show that result without retaining another perspective's values under its label.",
+        "motionRef": "radar-state-change"
+      },
+      {
+        "id": "choose-observation",
+        "screenId": "radar-observation-choice",
+        "from": "Radar host with source-supplied observation choices",
+        "to": "One source-supplied observation rendered in the radar host",
+        "event": "The user chooses an observation from an available history list.",
+        "guard": "This transition is future-only until an admitted history source and its temporal, retention and authorization rules exist.",
+        "effects": [
+          "Carry the selected record's measure version, perspective, provenance and timestamp intact.",
+          "Mark source-designated stale observations as stale.",
+          "Do not compare historical values across changed axes or versions by default."
+        ],
+        "feedback": "Show the selected observation time and source when supplied.",
+        "recovery": "If history is not supplied or loading fails, explain that history is unavailable and return to the current host state without inventing records.",
+        "motionRef": "radar-state-change"
+      },
+      {
+        "id": "retry-read",
+        "screenId": "radar-host",
+        "from": "Retryable error",
+        "to": "Loading, then the source's actual read result",
+        "event": "The user activates the named retry control supplied by the host.",
+        "guard": "A retry action exists and the error is retryable. Denied, empty and unavailable states do not acquire a retry action by default.",
+        "effects": [
+          "Retry the same read through the caller's admitted path.",
+          "Do not alter data or authorization state.",
+          "Do not show prior values unless the source returns an explicitly attributed stale snapshot."
+        ],
+        "feedback": "Announce loading and then the actual result; do not announce success before data arrives.",
+        "recovery": "Keep an actionable error message if the retry fails; allow the user to return to the host.",
+        "motionRef": "radar-state-change"
+      },
+      {
+        "id": "exit-radar",
+        "screenId": "radar-host",
+        "from": "Any radar host state",
+        "to": "The caller's previous host context",
+        "event": "The user uses the host's back or close navigation.",
+        "guard": "Navigation is owned by the existing host; this component does not introduce a new route.",
+        "effects": [
+          "Leave source data unchanged.",
+          "Do not save filters or viewing history unless a future product decision explicitly defines it."
+        ],
+        "feedback": "Use the host's existing navigation affordance and label.",
+        "recovery": "If host navigation is unavailable, keep the current read-only content stable.",
+        "motionRef": "radar-state-change"
+      }
+    ],
+    "journeys": [
+      {
+        "id": "self-observation-journey",
+        "actor": "A user viewing their own source-supplied measure from an existing self host.",
+        "entryTransition": "enter-self",
+        "transitionIds": ["enter-self", "choose-measure", "choose-perspective", "choose-observation", "retry-read", "exit-radar"],
+        "outcome": "The user reads one measure at a time with its own scale, provenance, observation time, missing/stale status and accessible text equivalent. History, measure selection data and production route remain unimplemented until separately admitted."
+      },
+      {
+        "id": "permitted-observer-journey",
+        "actor": "A user opening an already authorized, caller-supplied observer perspective about another person.",
+        "entryTransition": "enter-observer",
+        "transitionIds": ["enter-observer", "choose-measure", "choose-perspective", "choose-observation", "retry-read", "exit-radar"],
+        "outcome": "The user sees only a source-admitted observation, explicitly attributed to its perspective. The shared view creates no person search, access grant, edit, contribution, aggregate or ranking."
+      },
+      {
+        "id": "unavailable-source-journey",
+        "actor": "A user whose selected measure is loading, empty, denied, unavailable, partial, stale, offline or failed.",
+        "entryTransition": "enter-self",
+        "transitionIds": ["enter-self", "retry-read", "exit-radar"],
+        "outcome": "Each source outcome is stated plainly. Missing values do not become zero, denied metadata is not rendered, stale data is labeled, and failed reads offer retry only when the caller supplies a valid retry action."
+      }
+    ],
+    "motionRequirements": [
+      {
+        "id": "radar-state-change",
+        "trigger": "Measure, perspective, observation, or read state changes.",
+        "reducedMotion": "Render the new state immediately; no motion is required. If later visual polish adds transitions, reduced-motion settings must remove them.",
+        "cancellation": "Do not animate/interpolate polygon vertices between measures, perspective changes, versions or observations. There is no animation to cancel in this proposal."
+      }
+    ],
+    "accessibility": [
+      "Expose a named radar section and use the host's semantic heading order. Keep all selectors as separately labeled controls with selected state and keyboard operation on web.",
+      "Treat SVG geometry and decorative axis labels as hidden from assistive technology; provide a real text/table equivalent listing each axis, value or Not recorded state, declared range and unit.",
+      "A values-only measure remains complete and usable without a chart. Plot eligibility must be explicit for that measure version; it never implies comparability with a different measure or perspective.",
+      "Include subject, measure/version, attributed perspective, source, observation time, synthetic-example label and stale status in readable text when the admitted state supplies them.",
+      "Keep zero distinct from missing, and do not use color or geometry alone to communicate meaning. Label empty, denied, unavailable, loading, partial and error states in words.",
+      "On native, keep retry as a named button, loading as a named busy progress state, and the values individually readable without requiring chart gestures. On web, keep native fieldset/legend selectors keyboard reachable and the values in a semantic table.",
+      "Do not expose any observation metadata in denied or non-ready states, including unexpected extra data carried in a state object."
+    ],
+    "combinations": [
+      {
+        "when": [{ "axisId": "read-result", "state": "denied" }, { "axisId": "observation", "state": "stale" }],
+        "must": ["Render the denial message only; do not reveal stale subject, measure, source, timestamp or values."]
+      },
+      {
+        "when": [{ "axisId": "read-result", "state": "partial ready" }],
+        "must": ["List every axis and its declared range/unit.", "Show missing as Not recorded and preserve a numeric zero as zero.", "Do not bridge missing observations with polygon interpolation."]
+      },
+      {
+        "when": [{ "axisId": "measure", "state": "one selected domain measure" }, { "axisId": "subject-perspective", "state": "observer" }],
+        "must": ["Only the caller-admitted observer result is visible.", "Do not imply the measure's permission or perspective can be reused for another person or measure."]
+      },
+      {
+        "when": [{ "axisId": "plot-eligibility", "state": "values-only by default" }],
+        "must": ["Render the accessible axis/value/range view without radar geometry.", "Do not guess comparability from the axis count, labels or numeric range."]
+      },
+      {
+        "when": [{ "axisId": "read-result", "state": "offline without an admitted snapshot" }],
+        "must": ["Explain that the source is unavailable.", "Do not imply cached data, stale values or offline contribution is available."]
+      },
+      {
+        "when": [{ "axisId": "example-source", "state": "synthetic development fixture" }],
+        "must": ["Keep Example data/synthetic wording visible.", "Do not represent the fixture as an actual person's record or a universal measure."]
+      }
+    ]
+  }
+}

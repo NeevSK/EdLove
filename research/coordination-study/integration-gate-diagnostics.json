@@ -1,0 +1,2790 @@
+{
+  "summary": {
+    "errors": 19,
+    "warnings": 1442,
+    "fixable": 640,
+    "files": 4182,
+    "elapsed": "43.3s"
+  },
+  "integrationFindings": [
+    {
+      "filePath": "packages/platform-mcp/src/cli/coordination.ts",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/coordination.ts",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/coordinationStore.ts",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/coordinationTools.ts",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/services/CoordinationService.ts",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/experiment/audit.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/experiment/canaries.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/experiment/collect.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/experiment/controller.frozen.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/experiment/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/experiment/make-review.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/experiment/runner.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/experiment/summarize.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/experiment/verify-local.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/authority-X-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/authority-X-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/authority-Y-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/authority-Y-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/authority-Z-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/authority-Z-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/capabilities-X-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/capabilities-X-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/capabilities-Y-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/capabilities-Y-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/capabilities-Z-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/capabilities-Z-2/work/record-work.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/capabilities-Z-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/documents-X-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/documents-X-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/documents-Y-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/documents-Y-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/documents-Z-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/documents-Z-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/hooks-X-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/hooks-X-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/hooks-Y-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/hooks-Y-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/hooks-Z-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/hooks-Z-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/instructions-X-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/instructions-X-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/instructions-Y-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/instructions-Y-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/instructions-Z-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/instructions-Z-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/resume-X-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/resume-X-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/resume-Y-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/resume-Y-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/resume-Z-1/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/trials/resume-Z-2/work/tools/controller.mjs",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/experiment/collect.mjs",
+      "engine": "lint",
+      "rule": "eslint/no-empty",
+      "severity": "warning",
+      "message": "Unexpected empty block statements",
+      "help": "Remove this block or add a comment inside it",
+      "line": 37,
+      "column": 92,
+      "category": "Lint",
+      "fixable": false,
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "style",
+        "multiplier": 0.5,
+        "cap": 8,
+        "rationale": "Empty blocks can be intentional placeholders but should be reviewed."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/experiment/make-review.mjs",
+      "engine": "lint",
+      "rule": "eslint/no-unused-vars",
+      "severity": "warning",
+      "message": "Variable 'workId' is declared but never used. Unused variables should start with a '_'.",
+      "help": "Consider removing this declaration.",
+      "line": 16,
+      "column": 11,
+      "category": "Lint",
+      "fixable": false,
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused variables are mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/experiment/make-review.mjs",
+      "engine": "lint",
+      "rule": "eslint/no-unused-vars",
+      "severity": "warning",
+      "message": "Variable 'execution' is declared but never used. Unused variables should start with a '_'.",
+      "help": "Consider removing this declaration.",
+      "line": 16,
+      "column": 19,
+      "category": "Lint",
+      "fixable": false,
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused variables are mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/experiment/summarize.mjs",
+      "engine": "lint",
+      "rule": "unicorn/no-useless-spread",
+      "severity": "warning",
+      "message": "Using a spread operator here creates a new array unnecessarily.",
+      "help": "`for…of` can iterate over iterable, it's unnecessary to convert to an array.",
+      "line": 15,
+      "column": 23,
+      "category": "Lint",
+      "fixable": false,
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "maintainability",
+        "multiplier": 0.75,
+        "cap": 24,
+        "rationale": "Useless spreads add noise and allocation."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "research/coordination-study/experiment/audit.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/experiment/canaries.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/experiment/collect.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/experiment/controller.frozen.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/experiment/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/experiment/controller.test.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/experiment/make-review.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/experiment/runner.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/experiment/summarize.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/experiment/verify-local.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/capabilities-Z-2/work/record-work.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/authority-X-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/authority-X-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/authority-Y-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/authority-Y-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/authority-Z-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/authority-Z-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/capabilities-X-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/capabilities-X-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/capabilities-Y-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/capabilities-Y-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/capabilities-Z-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/capabilities-Z-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/documents-X-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/documents-X-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/documents-Y-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/documents-Z-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/documents-Y-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/documents-Z-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/hooks-X-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/hooks-X-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/hooks-Y-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/hooks-Y-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/hooks-Z-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/hooks-Z-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/instructions-X-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/instructions-X-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/instructions-Y-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/instructions-Y-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/instructions-Z-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/instructions-Z-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/resume-X-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/resume-X-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/resume-Y-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/resume-Z-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/resume-Y-2/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "research/coordination-study/trials/resume-Z-1/work/tools/controller.mjs",
+      "engine": "code-quality",
+      "rule": "knip/files",
+      "severity": "warning",
+      "message": "Unused file",
+      "help": "This file is not imported by any other file in the project.",
+      "line": 0,
+      "column": 0,
+      "category": "Dead Code",
+      "fixable": false,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused files are cleanup work and can repeat heavily in stale repos."
+      },
+      "forceFixable": true
+    },
+    {
+      "filePath": "packages/platform-mcp/src/coordinationTools.ts",
+      "engine": "code-quality",
+      "rule": "knip/types",
+      "severity": "warning",
+      "message": "Unused type: CheckImpact",
+      "help": "",
+      "line": 6,
+      "column": 13,
+      "category": "Dead Code",
+      "fixable": true,
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused exported types are low-risk cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/coordinationTools.ts",
+      "engine": "code-quality",
+      "rule": "complexity/function-too-long",
+      "severity": "warning",
+      "message": "Function too long (limit: 80, flagged above 88 lines)",
+      "help": "Consider breaking this function into smaller pieces",
+      "line": 173,
+      "column": 0,
+      "category": "Complexity",
+      "fixable": false,
+      "detail": "listCoordinationTools · 90 lines",
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "style",
+        "multiplier": 0.5,
+        "cap": 8,
+        "rationale": "Long functions are maintainability pressure, but length alone is not a confirmed defect."
+      },
+      "forceFixable": false
+    }
+  ],
+  "pilotFindings": [
+    {
+      "filePath": "packages/platform-mcp/src/cli/coordination.ts",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/coordination.ts",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/coordinationStore.ts",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/coordinationTools.ts",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/services/CoordinationService.ts",
+      "engine": "format",
+      "rule": "formatting",
+      "severity": "warning",
+      "message": "File is not formatted correctly",
+      "help": "Run `aislop fix` to auto-format",
+      "line": 0,
+      "column": 0,
+      "category": "Format",
+      "fixable": true,
+      "changeContext": "unknown",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 12,
+        "rationale": "Formatter output is mechanical cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/coordinationTools.ts",
+      "engine": "code-quality",
+      "rule": "knip/types",
+      "severity": "warning",
+      "message": "Unused type: CheckImpact",
+      "help": "",
+      "line": 6,
+      "column": 13,
+      "category": "Dead Code",
+      "fixable": true,
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "mechanical",
+        "multiplier": 0.5,
+        "cap": 16,
+        "rationale": "Unused exported types are low-risk cleanup."
+      },
+      "forceFixable": false
+    },
+    {
+      "filePath": "packages/platform-mcp/src/coordinationTools.ts",
+      "engine": "code-quality",
+      "rule": "complexity/function-too-long",
+      "severity": "warning",
+      "message": "Function too long (limit: 80, flagged above 88 lines)",
+      "help": "Consider breaking this function into smaller pieces",
+      "line": 173,
+      "column": 0,
+      "category": "Complexity",
+      "fixable": false,
+      "detail": "listCoordinationTools · 90 lines",
+      "changeContext": "changed-line",
+      "assessment": {
+        "kind": "style-policy",
+        "confidence": "medium",
+        "label": "style/policy"
+      },
+      "scoreImpact": {
+        "tier": "style",
+        "multiplier": 0.5,
+        "cap": 8,
+        "rationale": "Long functions are maintainability pressure, but length alone is not a confirmed defect."
+      },
+      "forceFixable": false
+    }
+  ]
+}

@@ -1,0 +1,425 @@
+{
+  "id": "chat-experience",
+  "scope": "Proposed chat experience and recovery contract; current mobile route is a placeholder; admission and product policies remain unresolved",
+  "authorId": "independent_verifier",
+  "sourcePaths": [
+    "research/coordination-study/lifecycle/chat-specification-brief.md",
+    "packages/core/src/flows/pjc/ai.assistant.json",
+    "packages/core/src/flows/ai/aiAssistant.flow.ts",
+    "apps/gurudevi-mobile/app/a-i-assistant.tsx",
+    "packages/ai/src/screens/AIScreen.tsx",
+    "packages/ai/src/hooks/useAIAgent.ts",
+    "packages/ai/src/api/sanctuaryCloudProvider.ts"
+  ],
+  "dependsOn": [
+    {
+      "id": "chat-analysis",
+      "version": 2
+    },
+    {
+      "id": "chat-requirement",
+      "version": 2
+    },
+    {
+      "id": "chat-invariant",
+      "version": 2
+    },
+    {
+      "id": "chat-scenario",
+      "version": 2
+    }
+  ],
+  "content": {
+    "kind": "experience",
+    "screens": [
+      {
+        "id": "current-mobile-placeholder",
+        "route": "apps/gurudevi-mobile/app/a-i-assistant.tsx (existing placeholder; not a working chat entry)",
+        "states": [
+          "unavailable"
+        ]
+      },
+      {
+        "id": "proposed-chat",
+        "route": "Proposed admitted chat entry; exact mobile/web route and channel remain undecided",
+        "states": [
+          "loading",
+          "unauthenticated",
+          "ready",
+          "composing",
+          "submitting",
+          "streaming",
+          "complete",
+          "partial",
+          "failed",
+          "offline",
+          "review-proposal"
+        ]
+      }
+    ],
+    "stateAxes": [
+      {
+        "id": "network",
+        "states": [
+          "online",
+          "offline",
+          "unknown"
+        ]
+      },
+      {
+        "id": "session",
+        "states": [
+          "authenticated",
+          "expired",
+          "unauthenticated",
+          "unknown"
+        ]
+      },
+      {
+        "id": "composer",
+        "states": [
+          "empty",
+          "draft",
+          "pending",
+          "retained"
+        ]
+      },
+      {
+        "id": "request",
+        "states": [
+          "idle",
+          "submitting",
+          "streaming",
+          "complete",
+          "partial",
+          "failed"
+        ]
+      },
+      {
+        "id": "mode",
+        "states": [
+          "unselected",
+          "saved-proposed",
+          "temporary-proposed",
+          "policy-unresolved"
+        ]
+      },
+      {
+        "id": "agent-proposal",
+        "states": [
+          "none",
+          "draft",
+          "review-required",
+          "reviewed"
+        ]
+      }
+    ],
+    "transitions": [
+      {
+        "id": "entry",
+        "screenId": "proposed-chat",
+        "from": "loading",
+        "to": "unauthenticated",
+        "event": "Session unavailable or expired",
+        "guard": "Session is absent, expired, or cannot be verified",
+        "effects": [
+          "Keep unsent text in memory while the screen remains open; durable draft storage remains undecided"
+        ],
+        "feedback": "Explain that sign-in or access verification is needed; do not imply a chat request succeeded.",
+        "recovery": "Offer sign-in or return; preserve draft where possible.",
+        "motionRef": "none"
+      },
+      {
+        "id": "admit",
+        "screenId": "proposed-chat",
+        "from": "loading",
+        "to": "ready",
+        "event": "Entry and session checked",
+        "guard": "Only after the intended channel and capability are admitted and required session checks succeed",
+        "effects": [
+          "Show policy-approved mode choices without inventing retention guarantees"
+        ],
+        "feedback": "Show a ready composer and any known mode explanation.",
+        "recovery": "If admission or policy is unavailable, show the existing unavailable state instead of starting chat.",
+        "motionRef": "none"
+      },
+      {
+        "id": "compose",
+        "screenId": "proposed-chat",
+        "from": "ready",
+        "to": "composing",
+        "event": "Type a message",
+        "guard": "Input is editable and within admitted limits",
+        "effects": [
+          "Maintain a local in-screen draft; avoid claiming durable storage"
+        ],
+        "feedback": "Expose draft and send availability.",
+        "recovery": "Keep the draft editable on validation failure.",
+        "motionRef": "none"
+      },
+      {
+        "id": "send",
+        "screenId": "proposed-chat",
+        "from": "composing",
+        "to": "submitting",
+        "event": "Submit message",
+        "guard": "Online, session valid, policy/channel admitted and nonempty valid draft",
+        "effects": [
+          "Associate request with intended thread using the admitted contract; retain pending input until outcome is known"
+        ],
+        "feedback": "Announce sending and provide an accessible progress indication.",
+        "recovery": "On uncertain outcome, preserve input and avoid automatic duplicate send.",
+        "motionRef": "send-progress"
+      },
+      {
+        "id": "stream",
+        "screenId": "proposed-chat",
+        "from": "submitting",
+        "to": "streaming",
+        "event": "First valid response event",
+        "guard": "Response belongs to current request and stream contract validates it",
+        "effects": [
+          "Append partial content while marking it incomplete"
+        ],
+        "feedback": "Announce that a response is in progress without reading each token aloud.",
+        "recovery": "Stop or interruption must retain an incomplete label.",
+        "motionRef": "stream-progress"
+      },
+      {
+        "id": "complete",
+        "screenId": "proposed-chat",
+        "from": "streaming",
+        "to": "complete",
+        "event": "Validated completion event",
+        "guard": "A complete response for this request has been observed",
+        "effects": [
+          "Associate response with the intended thread only under admitted ownership and persistence rules"
+        ],
+        "feedback": "Mark the response complete and move focus only on explicit user action.",
+        "recovery": "If completion cannot be confirmed, use partial rather than complete.",
+        "motionRef": "none"
+      },
+      {
+        "id": "interrupt",
+        "screenId": "proposed-chat",
+        "from": "streaming",
+        "to": "partial",
+        "event": "Connection loss, malformed stream, timeout or user stop",
+        "guard": "Completion event has not been verified",
+        "effects": [
+          "Keep received content visibly partial and preserve the pending input"
+        ],
+        "feedback": "Explain that the response did not complete; distinguish a user stop from a failure.",
+        "recovery": "Offer retry only after resolving duplicate/outcome uncertainty; do not silently resend.",
+        "motionRef": "none"
+      },
+      {
+        "id": "send-fail",
+        "screenId": "proposed-chat",
+        "from": "submitting",
+        "to": "failed",
+        "event": "Request rejected or times out",
+        "guard": "No verified successful completion",
+        "effects": [
+          "Keep the draft and known request status"
+        ],
+        "feedback": "Show an actionable error without substituting fallback text as a successful answer.",
+        "recovery": "Offer retry when safe, edit draft, or return; leave unknown submission outcome explicit.",
+        "motionRef": "none"
+      },
+      {
+        "id": "offline",
+        "screenId": "proposed-chat",
+        "from": "composing",
+        "to": "offline",
+        "event": "Connectivity lost",
+        "guard": "Connectivity is known unavailable",
+        "effects": [
+          "Keep draft in current screen memory; no queued or durable delivery promise"
+        ],
+        "feedback": "State that sending is unavailable.",
+        "recovery": "Allow editing and offer a retry after reconnect; persistence across exit remains an open decision.",
+        "motionRef": "none"
+      },
+      {
+        "id": "reconnect",
+        "screenId": "proposed-chat",
+        "from": "offline",
+        "to": "composing",
+        "event": "Connectivity restored",
+        "guard": "Network available and user resumes",
+        "effects": [
+          "Restore the existing in-screen draft without automatically sending"
+        ],
+        "feedback": "Indicate connectivity is restored.",
+        "recovery": "If the draft could not be restored, say so and do not claim recovery.",
+        "motionRef": "none"
+      },
+      {
+        "id": "retry",
+        "screenId": "proposed-chat",
+        "from": "failed",
+        "to": "composing",
+        "event": "Choose edit or retry",
+        "guard": "User initiates; duplicate outcome has been checked or is explicitly unresolved",
+        "effects": [
+          "Return the preserved draft for review before any new send"
+        ],
+        "feedback": "Explain whether another request will be sent.",
+        "recovery": "If duplicate safety cannot be established, keep the draft and seek resolution.",
+        "motionRef": "none"
+      },
+      {
+        "id": "review",
+        "screenId": "proposed-chat",
+        "from": "complete",
+        "to": "review-proposal",
+        "event": "Open an agent proposal",
+        "guard": "Proposal feature is admitted and a draft proposal exists",
+        "effects": [
+          "Display proposed action without executing domain writes"
+        ],
+        "feedback": "Label the action as a draft requiring human review.",
+        "recovery": "Dismiss without applying; a separate authorized review path is required.",
+        "motionRef": "review-surface"
+      }
+    ],
+    "journeys": [
+      {
+        "id": "entry-and-answer",
+        "actor": "An admitted authenticated user or user in a separately authorized temporary mode",
+        "entryTransition": "admit",
+        "transitionIds": [
+          "admit",
+          "compose",
+          "send",
+          "stream",
+          "complete"
+        ],
+        "outcome": "A validated response is complete; ownership and persistence remain governed by admitted policy."
+      },
+      {
+        "id": "recover-partial",
+        "actor": "User whose stream stops before completion",
+        "entryTransition": "interrupt",
+        "transitionIds": [
+          "interrupt"
+        ],
+        "outcome": "Partial output remains visibly incomplete with a user-controlled recovery path."
+      },
+      {
+        "id": "recover-offline",
+        "actor": "User composing when network is lost",
+        "entryTransition": "offline",
+        "transitionIds": [
+          "offline",
+          "reconnect",
+          "send"
+        ],
+        "outcome": "The in-screen draft is available for explicit review and send after recovery; no durable persistence is promised."
+      },
+      {
+        "id": "review-agent-draft",
+        "actor": "User reviewing an admitted proposal",
+        "entryTransition": "review",
+        "transitionIds": [
+          "review"
+        ],
+        "outcome": "A draft proposal is visible without an unreviewed domain mutation."
+      }
+    ],
+    "motionRequirements": [
+      {
+        "id": "send-progress",
+        "trigger": "A user-initiated send enters pending state; visuals convey progress without being the sole status channel.",
+        "reducedMotion": "Use a static status or restrained non-repeating indicator and preserve accessible status text.",
+        "cancellation": "Stop or failure ends progress and returns focus control to the user without implying completion."
+      },
+      {
+        "id": "stream-progress",
+        "trigger": "A validated response begins streaming; mark incomplete content as it arrives.",
+        "reducedMotion": "Use stable text updates and no unnecessary movement.",
+        "cancellation": "On stop or stream failure, end progress and retain an incomplete label."
+      },
+      {
+        "id": "review-surface",
+        "trigger": "User opens the proposal review surface.",
+        "reducedMotion": "Present immediately or with a minimal non-spatial change.",
+        "cancellation": "Dismiss returns to prior context without applying the proposal."
+      }
+    ],
+    "accessibility": [
+      "Every control has a meaningful accessible name, visible focus and keyboard or equivalent native access.",
+      "Announce request status and errors without announcing every streamed token; preserve a logical reading order.",
+      "When an error or review surface appears, provide an accessible announcement and predictable focus return; do not force focus during streaming.",
+      "Honor reduced-motion settings and make status distinguishable without color or animation alone.",
+      "Long responses and draft text remain readable at supported text scales and assistive technology settings; behavior requires device verification."
+    ],
+    "combinations": [
+      {
+        "when": [
+          {
+            "axisId": "network",
+            "state": "offline"
+          },
+          {
+            "axisId": "composer",
+            "state": "draft"
+          }
+        ],
+        "must": [
+          "Disable network submission and retain the visible draft while the screen remains open.",
+          "Do not promise durable or queued storage until policy and implementation are verified."
+        ]
+      },
+      {
+        "when": [
+          {
+            "axisId": "request",
+            "state": "partial"
+          },
+          {
+            "axisId": "session",
+            "state": "expired"
+          }
+        ],
+        "must": [
+          "Label the answer incomplete and retain draft context.",
+          "Ask for session recovery before any explicit retry; do not replay automatically."
+        ]
+      },
+      {
+        "when": [
+          {
+            "axisId": "mode",
+            "state": "policy-unresolved"
+          },
+          {
+            "axisId": "composer",
+            "state": "draft"
+          }
+        ],
+        "must": [
+          "Do not claim a storage, deletion or privacy guarantee.",
+          "Keep the draft in the current screen only and explain that durable retention is undecided."
+        ]
+      },
+      {
+        "when": [
+          {
+            "axisId": "agent-proposal",
+            "state": "review-required"
+          },
+          {
+            "axisId": "network",
+            "state": "online"
+          }
+        ],
+        "must": [
+          "Keep the proposal as a draft; connectivity does not authorize a domain write.",
+          "Require a separate explicit human review path before any admitted action."
+        ]
+      }
+    ]
+  }
+}

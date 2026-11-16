@@ -140,7 +140,12 @@ export function EntryShell() {
                                       <GuestConversionBoundary />
                                       <PasswordRecoveryBoundary />
                                       <SessionRouteGate appServices={<AuthenticatedAppServices />}>
-                                        <Stack screenOptions={{ headerShown: false }}>
+                                        <Stack
+                                          screenOptions={{
+                                            headerShown: false,
+                                            animation: 'slide_from_right',
+                                          }}
+                                        >
                                           <Stack.Screen name="index" />
                                           <Stack.Screen name="welcome" />
                                           <Stack.Screen name="auth" />
@@ -152,7 +157,10 @@ export function EntryShell() {
                                           <Stack.Screen name="(tabs)" />
                                           <Stack.Screen
                                             name="(modal)"
-                                            options={{ presentation: 'modal' }}
+                                            options={{
+                                              presentation: 'modal',
+                                              animation: 'slide_from_bottom',
+                                            }}
                                           />
                                         </Stack>
                                       </SessionRouteGate>

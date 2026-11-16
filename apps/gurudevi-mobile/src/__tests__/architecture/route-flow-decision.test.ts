@@ -36,4 +36,18 @@ describe('route flow decisions', () => {
       }),
     ).toMatchObject({ decision: 'onboarding', redirectTo: '/onboarding' });
   });
+
+  it('allows unauthenticated users directly on public routes without redirecting to welcome', () => {
+    for (const pathname of ['/pulse', '/qr', '/intro', '/welcome']) {
+      expect(
+        getAuthRouteTarget({
+          pathname,
+          bootstrapReady: true,
+          sessionMode: 'unauthenticated',
+          onboardingCompleted: false,
+          hasSession: false,
+        }),
+      ).toMatchObject({ decision: 'public', redirectTo: null });
+    }
+  });
 });

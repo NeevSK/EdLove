@@ -1,0 +1,122 @@
+{
+  "featureIntent": "Discover the existing meanings and unresolved seams behind a multidimensional radar of oneself or another person. This record does not define a score model or authorize collection, sharing, intervention, or comparison.",
+  "findings": [
+    {
+      "id": "radar-meaning-is-not-singular",
+      "classification": "observed",
+      "finding": "The repository uses at least four different multidimensional-person concepts. Student potential is a teacher-authored, classroom-scoped five-value profile. Personal growth uses five 'qualities of aliveness' and four nature paths. A teacher vitality card has a third five-axis model. The teacher-profile research note proposes two interacting axes, stress and relational capacity. These constructs have different subjects, meanings, sources, and purposes; the records do not establish that they are one shared radar.",
+      "evidence": [
+        {"source":"packages/core/src/logic/schemas/teacher-insights.schema.ts","locator":"112-143","quote":"cognitive_flow, emotional_resonance, social_weaving, creative_spark, practical_mastery"},
+        {"source":"apps/gurudevi-mobile/supabase/migrations/20260315000001_student_potential_analysis.sql","locator":"10-25","quote":"Potential Dimensions (0-100 scale)"},
+        {"source":"packages/core/src/types/Growth.ts","locator":"40-46","quote":"Growth Dimensions — the five qualities of aliveness."},
+        {"source":"packages/self/src/components/TeacherVitalityCard.tsx","locator":"29-40","quote":"5 Canonical Teacher Vitality Dimensions"},
+        {"source":"docs/research/edu-audit/teacher-holistic-profile-idea.md","locator":"37-41","quote":"stress and relational capacity are not opposites on a single axis"}
+      ]
+    },
+    {
+      "id": "own-view-versus-observer-view",
+      "classification": "observed",
+      "finding": "Self-view and viewing another person are distinct journeys already present in declarations. The teacher journey targets an authorized learner in a classroom and says to expose aggregate pedagogical metrics, not journal text. The student journey describes viewing the learner's own radar, passions, and silver linings. The teacher self screen instead composes personal mood, journal, pulse, and growth content; the current student self screen composes journal, mood, and StudentPulse. Do not infer that the teacher-authored student analysis is the same thing as a person's self-authored view.",
+      "evidence": [
+        {"source":"packages/core/src/flows/pjc/classroom.teaching_loop.json","locator":"149-178","quote":"Authenticated account has authorized teaching relationship with the student."},
+        {"source":"packages/core/src/flows/pjc/classroom.teaching_loop.json","locator":"171-174","quote":"Private reflective journal text is never disclosed to teachers"},
+        {"source":"packages/core/src/flows/classroom/studentProfileSoulView.flow.ts","locator":"3-8","quote":"When reflecting on my academic journey, I want to view my holistic growth radar"},
+        {"source":"packages/self/src/screens/self/TeacherSelfView.tsx","locator":"64-90,110-147","quote":"TeacherPulse; MoodSection; JournalSection"},
+        {"source":"packages/self/src/screens/self/StudentSelfView.tsx","locator":"26-45","quote":"JournalSection; MoodSection; StudentPulse"}
+      ]
+    },
+    {
+      "id": "declared-versus-implemented",
+      "classification": "observed",
+      "finding": "The teacher PJC calls ClassroomHolisticInsights implemented and gives its binding a mobile 'implemented' status, but the referenced component file is absent in the inspected package path and the classroom UI inventory labels it Pending. A separate student-potential schema, API contract, adapter surface, and migration do exist. TeacherVitalityCard renders fixed literal values and the bounded usage search found only its barrel export, not a role screen mounting it. Thus there is evidence of data/API scaffolding and proposed/display scaffolding, but no evidence here of one working end-to-end shared radar or a computed scoring mechanism.",
+      "evidence": [
+        {"source":"packages/core/src/flows/pjc/classroom.teaching_loop.json","locator":"163-178,220-227","quote":"ClassroomHolisticInsights displays student radar and wellbeing cards."},
+        {"source":"packages/classroom/doc/ui-inventory.md","locator":"35-51","quote":"ClassroomHolisticInsights.tsx Pending"},
+        {"source":"apps/gurudevi-mobile/supabase/migrations/20260315000001_student_potential_analysis.sql","locator":"4-25,72-108","quote":"one analysis per teacher per student in a classroom (can be updated over time)"},
+        {"source":"packages/self/src/components/TeacherVitalityCard.tsx","locator":"29-40","quote":"value: 85 ... value: 88 ... value: 80"},
+        {"source":"packages/self/src/screens/self/TeacherSelfView.tsx","locator":"1-30,108-147","quote":"TeacherSelfView composition omits TeacherVitalityCard"}
+      ]
+    },
+    {
+      "id": "authority-and-privacy-are-contextual",
+      "classification": "observed",
+      "finding": "Privacy statements differ by data and audience. The growth model calls the Living Journey private to the user and gives teachers Lotus+Banyan while students get River+Crystal. The teacher PJC permits only aggregate student radar vectors to be shown to teachers. An Oct 2026 sanctuary covenant says teacher biometric, sleep, and mindful-minute signals never leave-device and are invisible to administrators. By contrast, the Mar 2026 student-potential migration grants teachers management of their own analysis, grants school-leadership reads using a role check, and permits students to read their own rows with a comment that sharing is 'default always visible for now'. The newer teacher-insight schema adds private/shared-selected/shared-role/official states and lifecycle event snapshots, but this pass does not establish all those newer rules are wired to the legacy table. These statements cannot be collapsed into one access policy.",
+      "evidence": [
+        {"source":"apps/gurudevi-mobile/docs/Core/GROWTH_MODEL.md","locator":"1341-1385","quote":"Private — visible only to the user; never visible to colleagues or the principal"},
+        {"source":"docs/architecture/2026-10-24-the-sanctuary-covenant-education-and-wellbeing.md","locator":"63-67","quote":"Biometric signals, sleep quality, and mindful minutes NEVER leave the device."},
+        {"source":"apps/gurudevi-mobile/supabase/migrations/20260315000001_student_potential_analysis.sql","locator":"28-56","quote":"Students can view their own analyses"},
+        {"source":"packages/core/src/logic/schemas/teacher-insights.schema.ts","locator":"3-8,20-38","quote":"private; shared_selected; shared_role; official"},
+        {"source":"apps/gurudevi-mobile/supabase/migrations/20260328193000_teacher_insight_lifecycle.sql","locator":"5-22,34-64","quote":"snapshot; occurred_at; recorded_at; effective_from; effective_to"}
+      ]
+    },
+    {
+      "id": "temporality-and-supersession",
+      "classification": "observed",
+      "finding": "Historical semantics are incomplete and vary by model. Student potential has one unique row per student/teacher/classroom; upsert replaces the five dimensions and updates updated_at. A separate teacher-insight event model supports snapshots and occurred/recorded/effective times, but the inspected migration only creates that event table and its read policy; it does not establish that student-potential upserts emit those snapshots. Personal GrowthEvent is user-scoped and timestamped by dimension/type/metadata, alongside a mutable UserGrowthState of counters and stages. A 2026 wellbeing audit says the counters are incremented rather than recomputed and found no relative-baseline, decay, or rollup logic in the functions it inspected. Therefore do not assume current values are trends, comparable snapshots, or a longitudinal trajectory.",
+      "evidence": [
+        {"source":"apps/gurudevi-mobile/supabase/migrations/20260315000001_student_potential_analysis.sql","locator":"21-25,86-104","quote":"UNIQUE(student_id, teacher_id, classroom_id)"},
+        {"source":"apps/gurudevi-mobile/supabase/migrations/20260328193000_teacher_insight_lifecycle.sql","locator":"5-29","quote":"snapshot jsonb; occurred_at; recorded_at; effective_from; effective_to"},
+        {"source":"packages/schema/schema.zmodel","locator":"1615-1650","quote":"GrowthEvent ... dimension ... event_type ... event_metadata ... created_at"},
+        {"source":"docs/files/specialized/09-wellbeing-self-domain-audit.md","locator":"37-43","quote":"zero decay weighting, zero relative-baseline window functions, zero ... rollups"},
+        {"source":"packages/core/src/api/studentPotential.contract.ts","locator":"8-53","quote":"Get the current teacher analysis for a student in a classroom"}
+      ]
+    },
+    {
+      "id": "history-is-not-a-single-superseding-line",
+      "classification": "observed",
+      "finding": "The documentation explicitly contains correction and scope notes, so recency alone is not a safe precedence rule. The 14 profile exploration's claim that growth metaphors were stacked was later called speculative and corrected in 20 after reading the real composed TeacherSelfView; 20 says named sections/progressive disclosure are the observed structure. The 24 profile full-arc document carries forward the relative-to-self recommendation but labels live-update versus historical behavior unresolved. Separately, the Sep 2026 teacher holistic-profile note is a research idea, not a literature claim, and the later literature review labels the holistic-profile evidence Tier 1 with no Sri Lankan empirical test. These records add distinct scope or correction; they do not define a single universal radar.",
+      "evidence": [
+        {"source":"docs/files/specialized/14-profile-domain-exploration.md","locator":"47-51","quote":"the growth-metaphor-stacking claim ... was inferred from ... a file listing"},
+        {"source":"docs/files/specialized/20-self-tab-ui-operationalization.md","locator":"11-24","quote":"That earlier finding was speculative ... Now verified"},
+        {"source":"docs/files/specialized/24-profile-tab-full-arc.md","locator":"29-35,49-54","quote":"whether ... content is live-updating or purely historical"},
+        {"source":"docs/research/edu-audit/teacher-holistic-profile-idea.md","locator":"11-14,111-127","quote":"not a literature review or a claim document"},
+        {"source":"docs/research/edu-audit/teacher-holistic-profile-litreview.md","locator":"263-286","quote":"Current maximum for the holistic profile idea as a whole: Tier 1"}
+      ]
+    },
+    {
+      "id": "personal-growth-philosophy",
+      "classification": "observed",
+      "finding": "The personal growth model frames the whole person's paths as narrative and private, not as a numeric score dashboard, with role-specific path visibility and personal-best rather than peer ranking in its historical text. The teacher-profile research idea separately insists stress and relational capacity are interacting but orthogonal, and that structural working conditions remain alongside them. It explicitly warns against warm language hiding institutional conditions. These are important conceptual constraints, but they are not evidence that the current static or teacher-student fields are psychometrically validated or comparable.",
+      "evidence": [
+        {"source":"apps/gurudevi-mobile/docs/Core/GROWTH_MODEL.md","locator":"1341-1385","quote":"not as a score dashboard, but as a living visualization"},
+        {"source":"apps/gurudevi-mobile/docs/Core/GROWTH_MODEL.md","locator":"1219-1221,1273-1288","quote":"The lotus does not race other lotuses."},
+        {"source":"docs/research/edu-audit/teacher-holistic-profile-idea.md","locator":"37-41,111-118","quote":"structural conditions ... stay in the profile"},
+        {"source":"docs/edlove/Core/01-philosophy.md","locator":"20-38,86-92","quote":"education is care work"}
+      ]
+    },
+    {
+      "id": "profile-is-an-adjacent-meaning",
+      "classification": "observed",
+      "finding": "The specialized Profile documents discuss role-adaptive profile-completion percentage, achievements, public/social profile, and multiple domain histories. They recommend relative-to-self wording for completion/growth rather than percentile ranking. This is a profile identity/completeness and history surface, not evidence for the content or scoring of a wellbeing/potential radar. The same-person history may be distributed across domains; one canonical timeline is only a UI proposal in that document.",
+      "evidence": [
+        {"source":"docs/files/specialized/14-profile-domain-exploration.md","locator":"15-19","quote":"profile-completion scoring ... role-adaptive via Capacity"},
+        {"source":"docs/files/specialized/14-profile-domain-exploration.md","locator":"41,51-59","quote":"your profile has grown since you joined"},
+        {"source":"docs/files/specialized/24-profile-tab-full-arc.md","locator":"15-27,31-35","quote":"having a profile is role-agnostic"}
+      ]
+    },
+    {
+      "id": "generic-radar-word-is-a-false-friend",
+      "classification": "observed",
+      "finding": "The historical VETERAN_RADAR file is an engineering production-readiness checklist about connectivity, loading, assets, error handling, state persistence, deep links, haptics and data saver. It is unrelated to a person-centered multidimensional radar and should not be treated as an earlier product definition.",
+      "evidence": [
+        {"source":"apps/gurudevi-mobile/docs/current_progress/hmmm/VETERAN_RADAR.md","locator":"19-36,40-90","quote":"High-Priority 'Radar' Checklist"}
+      ]
+    }
+  ],
+  "unresolvedProductDecisions": [
+    "Is the new feature intended to unify the student self-view, observer view, teacher's own profile, and other roles, or to provide one shared renderer for distinct domain-owned measures? Existing sources support distinct constructs but do not resolve this product framing.",
+    "Which constructs and dimension names are authoritative for each target person and purpose? Current lists differ across student potential, personal aliveness, teacher vitality, and teacher stress/relational research.",
+    "Who supplies each dimension value: self-report, teacher observation, operational signal, validated instrument, or a combination? The records do not establish a common provenance or confidence model.",
+    "Which actors may view, contribute, share, revoke, export, or correct each profile in each active school/bond context? Legacy SQL, newer lifecycle types, PJC, and privacy philosophy do not fully agree.",
+    "How will a person's age, guardian relationship, school, classroom, multiple teacher relationships, and role switching affect access and interpretation? The sources name several actors and contexts but do not settle this feature's authority rules.",
+    "Are values current snapshots, historical observations, periodically aggregated measures, or personal trajectories? Existing row-upsert, event snapshot, growth log and mutable counters have different temporal behavior.",
+    "Can a later observation supersede a prior one, and how are corrections, provenance, effective dates, confidence, missing values, and disagreement between observers represented?",
+    "What language, comparison, thresholds, interventions, or alerts are acceptable? PJC asks about sensitivity thresholds; the teacher research asks for repeated measures and contextual conditions; no validated threshold is supplied.",
+    "What evidence establishes a live UI, API authorization, storage behavior, and measurement validity? PJC labels a missing component implemented; a different migration and API scaffold exist; static values are also present."
+  ],
+  "scopeNotes": [
+    "The survey inspected the specified profile/self/classroom files, related architecture and research documents, PJC records, and bounded code/schema/migration paths. It did not evaluate all profile screens or all histories.",
+    "The literature-review document itself caps the holistic teacher-profile claim at Tier 1 and says Sri Lankan empirical validation is absent from its reviewed corpus; this is not a psychometric review of every radar construct.",
+    "The absence of the PJC-referenced ClassroomHolisticInsights source file is an observed repository-path mismatch, not proof that no similar UI exists elsewhere."
+  ]
+}

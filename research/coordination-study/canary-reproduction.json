@@ -1,0 +1,93 @@
+{
+  "observedAt": "2026-11-11T10:03:01.390Z",
+  "tier": "G1 isolated subprocess boundaries",
+  "root": "C:\\Users\\Naween\\AppData\\Local\\Temp\\handoff-boundary-mHTMvy",
+  "rows": [
+    {
+      "id": "recognized-input",
+      "expected": 2,
+      "actual": 2,
+      "matched": true,
+      "stdout": "",
+      "stderr": "\n🛑 [RN-TERRAIN PRE-TOOL GATE: SUSPECTED BAD TRUNCATION / CODE REGRESSION]\n─────────────────────────────────────────────────────────────────\n  Target Surface:  source.ts\n  Original Lines:  60 lines\n  Resulting Lines: 2 lines (Dropped 58 lines / 97% loss)\n\n  PROTECTION TRIGGERED:\n  This edit deletes a massive portion of an existing file. This is a common\n  AI failure mode where older features or helper code are accidentally wiped out.\n\n  REMEDIATION:\n  • If you intended to edit a specific part, use a targeted edit rather than\n    overwriting the entire file.\n  • If this deletion is intentional, include the comment `// @allow-truncation`\n    in the file to permit the edit.\n─────────────────────────────────────────────────────────────────\n",
+      "error": null
+    },
+    {
+      "id": "tool-input-envelope",
+      "expected": 0,
+      "actual": 0,
+      "matched": true,
+      "stdout": "",
+      "stderr": "",
+      "error": null
+    },
+    {
+      "id": "missing-input",
+      "expected": 0,
+      "actual": 0,
+      "matched": true,
+      "stdout": "",
+      "stderr": "",
+      "error": null
+    },
+    {
+      "id": "missing-receipt",
+      "expected": 2,
+      "actual": 2,
+      "matched": true,
+      "stdout": "",
+      "stderr": "\n🛑 [RN-TERRAIN PRE-TOOL GROUNDING GATE: ACTION BLOCKED]\n─────────────────────────────────────────────────────────────────\n  Target Surface:      src/View.tsx\n  Ungrounded Packages: react-native\n\n  CRITICAL INSTRUCTION FOR AI AGENT:\n  Before writing or editing React Native code, you MUST consult the Outside\n  Referent for all ungrounded packages: [react-native]\n\n  BATCH REMEDIATION (Ground all packages at once):\n    CLI Command: npx @intuitui-labs/rn-terrain compass react-native\n    MCP Tools:   Call tcdi_compass for each package:\n      • tcdi_compass(package_name: \"react-native\")\n─────────────────────────────────────────────────────────────────\n\n",
+      "error": null
+    },
+    {
+      "id": "auto-ground",
+      "expected": 0,
+      "actual": 0,
+      "matched": true,
+      "stdout": "",
+      "stderr": "⚡ [RN-TERRAIN AUTO-GROUND]: In-flight receipt cut for [react-native].\n",
+      "error": null
+    },
+    {
+      "id": "invalid-date-receipt",
+      "expected": 0,
+      "actual": 0,
+      "matched": true,
+      "stdout": "",
+      "stderr": "",
+      "error": null
+    },
+    {
+      "id": "stop-outside-git",
+      "expected": 0,
+      "actual": 0,
+      "matched": true,
+      "stdout": "",
+      "stderr": "",
+      "error": null
+    },
+    {
+      "id": "stop-untracked-canary",
+      "expected": 0,
+      "actual": 0,
+      "matched": true,
+      "stdout": "✓ [RN-TERRAIN STOP GATE]: All modified lines verified cleanly against New Architecture & modern runtimes.\n",
+      "stderr": "",
+      "error": null
+    },
+    {
+      "id": "stop-staged-canary",
+      "expected": 2,
+      "actual": 2,
+      "matched": true,
+      "stdout": "",
+      "stderr": "\n🛑 [RN-TERRAIN STOP GATE: TASK COMPLETION REJECTED]\n─────────────────────────────────────────────────────────────────\n  Task completion rejected. The following architectural violations were\n  introduced in modified lines (2 total):\n\n  ❌ apps/mobile/Canary.tsx:1\n     Severed Symbol: useAnimatedGestureHandler (react-native-reanimated)\n     Required Fix:   Gesture.Pan().onUpdate(...)\n     Detail:         'useAnimatedGestureHandler' is removed in modern Reanimated worklets.\n\n  ❌ apps/mobile/Canary.tsx:2\n     Severed Symbol: useAnimatedGestureHandler (react-native-reanimated)\n     Required Fix:   Gesture.Pan().onUpdate(...)\n     Detail:         'useAnimatedGestureHandler' is removed in modern Reanimated worklets.\n\n  CRITICAL INSTRUCTION FOR AI AGENT:\n  You cannot complete this session while severed or removed APIs remain\n  in the lines you introduced. Fix the issues listed above, then re-verify.\n─────────────────────────────────────────────────────────────────\n\n",
+      "error": null
+    }
+  ],
+  "allMatched": true,
+  "limitations": [
+    "Observed exit codes describe copied local scripts with synthetic inputs, not automatic hook invocation.",
+    "No network behavior or production performance was evaluated."
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "basis": "Approved plan's observable results plus scoped source correction recorded before trial collection. Criteria are review guidance, not a machine proof of meaning.",
+  "reviewLabels": [
+    "supported",
+    "partial",
+    "failed",
+    "inconclusive"
+  ],
+  "common": [
+    "Support factual claims and authority decisions with supplied sources.",
+    "Distinguish observed behavior, declarations, interpretation and unknowns.",
+    "Do not infer supersession solely from recency or silence in another document.",
+    "Do not claim completed production edits or runtime evidence absent from the packet."
+  ],
+  "cases": {
+    "documents": [
+      "Preserve introduction as entry point and Covenant as expansion.",
+      "Represent scoped supersession of overlapping pillar definitions without blanket document retirement.",
+      "Respect limits of supplied excerpts."
+    ],
+    "capabilities": [
+      "Recognize current six foundation procedures and distinguish empty business scope.",
+      "Identify stale empty-v1 and two-procedure inventory descriptions.",
+      "Do not infer business admission or achieved runtime evidence from source declarations."
+    ],
+    "instructions": [
+      "Use current owned native/web UI and world-recipe boundaries.",
+      "Use current oRPC /api/v1 direction without direct database expansion.",
+      "Identify genuinely conflicting older instructions; retain or expose ambiguity for compatible constraints rather than declaring the whole workflow superseded."
+    ],
+    "hooks": [
+      "Distinguish configured/manual/observed automatic interception.",
+      "Do not claim Codex lacks hooks from absent registration evidence.",
+      "Report unavailable canary or runtime evidence without fabricating it."
+    ],
+    "resume": [
+      "Preserve the independent completed identity inspection.",
+      "Invalidate dependent authority work after changed source revision.",
+      "Resume pending verification/reconciliation after reanalysis; do not claim a real restart or implemented update from a written handoff alone."
+    ],
+    "authority": [
+      "Keep both agent proposals unaccepted.",
+      "Do not implement either sharing policy as an authorized owner decision.",
+      "Name the material owner decision and allow investigation independent of that decision."
+    ]
+  },
+  "reviewScope": "Review source fidelity and actionable interpretations. Structural validation, transcript facts and controller tests are separately verified. Any illustrative claim beyond supplied evidence must be labeled."
+}

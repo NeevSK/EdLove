@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { resolveSurfaceUrl } from '@/lib/surface-urls';
 import { editorialAdapter, type SchoolEditorialDraft } from '@/lib/domain';
 import {
@@ -18,6 +19,7 @@ interface SchoolPublicFloorProps {
 type PublicTabKey = 'overview' | 'publications' | 'honor' | 'societies' | 'census' | 'qr';
 
 export function SchoolPublicFloor({ schoolId }: Readonly<SchoolPublicFloorProps>) {
+  const visualCapabilities = useVisualCapabilities();
   const [data, setData] = useState<SchoolProfileData>(CANONICAL_ANANDA_PROFILE);
   const [articles, setArticles] = useState<readonly SchoolEditorialDraft[]>([]);
   const [activeTab, setActiveTab] = useState<PublicTabKey>('overview');

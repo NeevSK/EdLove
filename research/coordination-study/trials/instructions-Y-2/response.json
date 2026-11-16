@@ -1,0 +1,86 @@
+{
+  "workId": "dd646dc4-123f-412c-a1fb-74003d2fc2c5",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "For a new shared field, the current UI destination is @repo/ui/components/native and @repo/ui/components/web, with matching names and props; the web field must be DOM-native and the native field must remain within the native boundary.",
+      "sourceIds": [
+        "platform-rules"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The reusable field should present UI while API behavior belongs in the established domain/API client seam. For a new API capability, use Sanctuary API's oRPC v2 /api/v1 command or query, declared in the capability catalog with its subdomain card and contract; clients must not add direct database paths or import the frozen pre-v1 @repo/core/api surface.",
+      "sourceIds": [
+        "platform-rules"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The older workflow's tRPC, Zustand source-of-truth, packages/ui/packages/core placement, fixed palette, and unconditional plan-approval gate conflict with or are superseded by the current platform rules. Current records specify oRPC v2, distinguish @repo/core and @repo/ui boundaries, route UI colors through world recipes, and define the current API architecture.",
+      "sourceIds": [
+        "older-workflow",
+        "platform-rules"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "No source code, installed declarations, capability catalog, runtime hook, or canary evidence was provided or inspected in this bounded task, so exact API capability, file paths, runtime status, and implementation compatibility remain unverified.",
+      "sourceIds": [
+        "older-workflow",
+        "platform-rules"
+      ],
+      "confidence": "direct"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "governs_shared_ui_placement_and_contract",
+      "subject": "platform-rules",
+      "object": "new shared field in @repo/ui/components/native and @repo/ui/components/web with matching names and props",
+      "authoritySourceIds": [
+        "platform-rules"
+      ]
+    },
+    {
+      "relation": "governs_new_api_capability_conventions",
+      "subject": "platform-rules",
+      "object": "Sanctuary API oRPC v2 on /api/v1, catalog/card/contract, no new client direct database paths",
+      "authoritySourceIds": [
+        "platform-rules"
+      ]
+    },
+    {
+      "relation": "historical_guidance_requires_reconciliation",
+      "subject": "older-workflow",
+      "object": "tRPC, Zustand source of truth, legacy package placement and approval-gated planning instructions",
+      "authoritySourceIds": [
+        "older-workflow",
+        "platform-rules"
+      ]
+    }
+  ],
+  "reviewRequired": [
+    "older-workflow"
+  ],
+  "unresolved": [
+    "Which existing /api/v1 capability should the field invoke, or whether a new capability is required.",
+    "Whether the field is required on both native and web surfaces and the precise matching prop contract.",
+    "Which established @repo/core hook/client should connect the field interaction to the API, since implementation evidence was not supplied."
+  ],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "Read the provided frozen workflow and platform-rules records.",
+      "Compared historical UI, API, state, and approval guidance with current platform conventions.",
+      "Recorded applicable conventions, conflicts, and remaining implementation questions."
+    ],
+    "invalidatedSteps": [],
+    "nextAction": "Review or retire the older-workflow record, then inspect the existing capability, API client, and native/web field contracts before specifying implementation paths."
+  },
+  "limitations": [
+    "Assessment uses only the two supplied text records; no repository or runtime evidence was available by instruction.",
+    "The current rules identify the architecture but do not establish which specific capability or client hook this requested field needs."
+  ]
+}

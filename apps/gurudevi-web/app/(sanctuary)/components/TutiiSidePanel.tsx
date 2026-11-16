@@ -7,6 +7,7 @@ import {
   ApprovalCard,
   Chip,
   Composer,
+  Drawer,
   IconButton,
   MessageBubble,
   PrivacyState,
@@ -63,19 +64,6 @@ export function TutiiSidePanel({
   // Durable chat synchronized with community Tutii DM
   const { messages, sendMessage } = useCommunityChat('dm-tutii', displayName);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Close on Escape key
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
@@ -257,40 +245,23 @@ export function TutiiSidePanel({
     router.push(prefix ? `${prefix}/community?pillar=messages&dm=tutii` : '/community?pillar=messages&dm=tutii');
   }, [navigationPrefix, onClose, router]);
 
-  if (!isOpen) return null;
-
   return (
-    <>
-      <div className={styles.backdrop} onClick={onClose} aria-hidden="true" />
-      <aside
-        className={styles.panel}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Tutii Companion Side Panel"
-      >
-        {/* Header */}
-        <header className={styles.header}>
-          <div className={styles.titleArea}>
-            <div className={styles.lampGlyph}>
-              <Sparkles size={18} color="currentColor" aria-hidden />
-            </div>
-            <div className={styles.titleMeta}>
-              <h2 className={styles.title}>Tutii Companion</h2>
-              <span className={styles.contextTag}>{floorName}</span>
-            </div>
-          </div>
-          <div className={styles.headerActions}>
-            <IconButton
-              icon={ExternalLink}
-              label="Open full screen in Community DM"
-              onClick={handlePopOut}
-            />
-            <IconButton icon={X} label="Close side panel (Esc)" onClick={onClose} />
-          </div>
-        </header>
-
-        {/* Tab Switcher */}
-        <div className={styles.navTabs}>
+    <Drawer
+      open={isOpen}
+      onClose={onClose}
+      title="Tutii Companion"
+      subtitle={floorName}
+      side="right"
+      actions={
+        <IconButton
+          icon={ExternalLink}
+          label="Open full screen in Community DM"
+          onClick={handlePopOut}
+        />
+      }
+    >
+      {/* Tab Switcher */}
+      <div className={styles.navTabs}>
           <SegmentedControl<PanelTab>
             label="Tutii View"
             value={activeTab}
@@ -462,7 +433,6 @@ export function TutiiSidePanel({
             </ScrollArea>
           )}
         </div>
-      </aside>
-    </>
+      </Drawer>
   );
 }

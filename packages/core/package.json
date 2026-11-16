@@ -104,6 +104,16 @@
       "import": "./src/logic/utils/*.ts",
       "default": "./src/logic/utils/*.ts"
     },
+    "./routing": {
+      "types": "./src/routing/index.ts",
+      "import": "./src/routing/index.ts",
+      "default": "./src/routing/index.ts"
+    },
+    "./routing/*": {
+      "types": "./src/routing/*.ts",
+      "import": "./src/routing/*.ts",
+      "default": "./src/routing/*.ts"
+    },
     "./routing/routeManifest": {
       "types": "./src/routing/routeManifest.ts",
       "import": "./src/routing/routeManifest.ts",

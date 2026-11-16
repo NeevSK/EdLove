@@ -1,0 +1,21 @@
+{
+  "id": "analysis-1",
+  "unresolved": [],
+  "evidence": [
+    {
+      "sha256": "a621766affdfd35df6c8054cb0529c99783ea39549660d55b9eb7cd3b2a0995d",
+      "sourceId": "intro"
+    },
+    {
+      "sha256": "b25d935c9b55818fea4f7a69730db26d0d160182f6d5d681b5fd40aaf0438ed0",
+      "sourceId": "covenant"
+    },
+    {
+      "sha256": "3b0f4b93f0f0602907972082067538d9bbe9e613b973b979b7271eb36065809b",
+      "sourceId": "covenant-scope"
+    }
+  ],
+  "kind": "record",
+  "stage": "analysis",
+  "summary": "The documents are complementary: intro orients humans; Covenant governs expanded product and architectural choices. Superseding overlapping pillar definitions does not retire the intro or every part of the named older manifesto. Preserve both active documents and reciprocal links; clarify authority at the overlap if readers need it. No whole-document lifecycle transition is supported by the excerpts."
+}

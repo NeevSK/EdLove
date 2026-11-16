@@ -1,0 +1,3980 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-11-11T17:29:17.929Z",
+  "routeCount": 102,
+  "unregulatedSinkCount": 0,
+  "routes": {
+    "/": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 109,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat"
+        ],
+        "virtualization": [
+          "FlatList"
+        ],
+        "governed": [
+          "Skeleton",
+          "useVisualCapabilities",
+          "Waiting",
+          "useVergerSnapshot",
+          "WorkspaceWallpaper",
+          "WaitingSign"
+        ],
+        "unvirtualizedLoops": 4,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 446,
+        "totalLines": 13550
+      },
+      "leversBound": 6,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/index.tsx",
+        "apps/gurudevi-web/app/(marketing)/page.tsx"
+      ]
+    },
+    "/a-i-assistant": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient",
+          "Skia",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "FlatList",
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "Skeleton",
+          "WaitingSign",
+          "Waiting",
+          "useVisualCapabilities",
+          "useVergerSnapshot",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 30,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1433,
+        "totalLines": 26235
+      },
+      "leversBound": 6,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/a-i-assistant.tsx"
+      ]
+    },
+    "/about": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 30,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 1,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 35,
+        "totalLines": 6651
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(marketing)/about/page.tsx"
+      ]
+    },
+    "/account-recovery": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Three",
+          "LinearGradient",
+          "@shopify/react-native-skia",
+          "particle",
+          "Skia",
+          "runtimeShader"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "withSpring",
+          "GestureDetector",
+          "withRepeat",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "FlatList",
+          "SovereignVirtualList",
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "WorkspaceWallpaper",
+          "Skeleton",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "useVisualCapabilities",
+          "Waiting",
+          "WaitingSign",
+          "LotusPetalFAB",
+          "useVergerSnapshot"
+        ],
+        "unvirtualizedLoops": 28,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 2373,
+        "totalLines": 87506
+      },
+      "leversBound": 9,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/account-recovery.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/account-recovery/page.tsx"
+      ]
+    },
+    "/admin/analytics": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "particle",
+          "Three",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton",
+          "useVergerSnapshot"
+        ],
+        "unvirtualizedLoops": 43,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1907,
+        "totalLines": 44313
+      },
+      "leversBound": 8,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/page.tsx"
+      ]
+    },
+    "/admin/documents": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "particle",
+          "Three",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton",
+          "useVergerSnapshot"
+        ],
+        "unvirtualizedLoops": 43,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1892,
+        "totalLines": 44367
+      },
+      "leversBound": 8,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/page.tsx"
+      ]
+    },
+    "/admin/forms/builder": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1743,
+        "totalLines": 39315
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/page.tsx"
+      ]
+    },
+    "/admin/founder": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "particle",
+          "Three",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton",
+          "useVergerSnapshot"
+        ],
+        "unvirtualizedLoops": 45,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 2104,
+        "totalLines": 60221
+      },
+      "leversBound": 8,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/founder/page.tsx"
+      ]
+    },
+    "/admin/principal": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 90,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "particle",
+          "Three",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "useVergerSnapshot"
+        ],
+        "unvirtualizedLoops": 43,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1951,
+        "totalLines": 39941
+      },
+      "leversBound": 4,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/principal/page.tsx"
+      ]
+    },
+    "/agent-lab": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1677,
+        "totalLines": 33285
+      },
+      "leversBound": 3,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/agent-lab/page.tsx"
+      ]
+    },
+    "/architecture": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 120,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Three",
+          "LinearGradient"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "useVisualCapabilities"
+        ],
+        "unvirtualizedLoops": 60,
+        "unselectedStores": 1,
+        "complexity": true,
+        "totalJsxTags": 3462,
+        "totalLines": 60093
+      },
+      "leversBound": 4,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture/page.tsx"
+      ]
+    },
+    "/architecture-lab": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 90,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "particle",
+          "runtimeShader"
+        ],
+        "motion": [],
+        "virtualization": [
+          "FlashList"
+        ],
+        "governed": [
+          "useVisualCapabilities",
+          "useVergerSnapshot",
+          "WorkspaceWallpaper",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "useVerger",
+          "useLeverLevel"
+        ],
+        "unvirtualizedLoops": 2,
+        "unselectedStores": 2,
+        "complexity": true,
+        "totalJsxTags": 305,
+        "totalLines": 7651
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture-lab/page.tsx"
+      ]
+    },
+    "/atlas": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 109,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat"
+        ],
+        "virtualization": [
+          "FlatList"
+        ],
+        "governed": [
+          "Skeleton",
+          "useVisualCapabilities",
+          "Waiting",
+          "useVergerSnapshot",
+          "WorkspaceWallpaper",
+          "WaitingSign"
+        ],
+        "unvirtualizedLoops": 6,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 643,
+        "totalLines": 17045
+      },
+      "leversBound": 6,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/atlas.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/atlas/page.tsx"
+      ]
+    },
+    "/auth": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "particle",
+          "LinearGradient",
+          "Three",
+          "Skia"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "SovereignVirtualList",
+          "FlatList",
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "Skeleton",
+          "useVisualCapabilities",
+          "Waiting",
+          "WaitingSign",
+          "useVergerSnapshot",
+          "WorkspaceWallpaper",
+          "useVerger",
+          "useLeverLevel"
+        ],
+        "unvirtualizedLoops": 56,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 3378,
+        "totalLines": 85059
+      },
+      "leversBound": 10,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/auth.tsx"
+      ]
+    },
+    "/auth/callback": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "particle",
+          "LinearGradient"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "SovereignVirtualList",
+          "FlatList",
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "Skeleton",
+          "useVisualCapabilities",
+          "Waiting",
+          "useVergerSnapshot",
+          "WaitingSign",
+          "WorkspaceWallpaper",
+          "useVerger",
+          "useLeverLevel"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 2554,
+        "totalLines": 50070
+      },
+      "leversBound": 10,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/auth/callback.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/auth/callback/page.tsx"
+      ]
+    },
+    "/authors/[id]": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 30,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 1,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 24,
+        "totalLines": 343
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(marketing)/(editorial)/authors/[id]/page.tsx"
+      ]
+    },
+    "/c/[code]": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 0,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 0,
+        "unselectedStores": 0,
+        "complexity": false,
+        "totalJsxTags": 10,
+        "totalLines": 165
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/c/[code]/page.tsx"
+      ]
+    },
+    "/community": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient",
+          "Skia",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "FlatList",
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "Skeleton",
+          "WaitingSign",
+          "Waiting",
+          "useVisualCapabilities",
+          "useVergerSnapshot",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 30,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1433,
+        "totalLines": 26234
+      },
+      "leversBound": 6,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/community/index.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/page.tsx"
+      ]
+    },
+    "/community/announcements": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 41,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1767,
+        "totalLines": 38930
+      },
+      "leversBound": 3,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/community/announcements/page.tsx"
+      ]
+    },
+    "/community/chat/[groupId]": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1711,
+        "totalLines": 43409
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/community/chat/[groupId]/page.tsx"
+      ]
+    },
+    "/community/dm/[userId]": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1688,
+        "totalLines": 37902
+      },
+      "leversBound": 3,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/community/dm/[userId]/page.tsx"
+      ]
+    },
+    "/community/forest": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1697,
+        "totalLines": 38983
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/community/forest/page.tsx"
+      ]
+    },
+    "/create-form": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 109,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat"
+        ],
+        "virtualization": [
+          "FlashList",
+          "FlatList",
+          "LegendList"
+        ],
+        "governed": [
+          "Skeleton",
+          "WorkspaceWallpaper",
+          "WaitingSign",
+          "Waiting",
+          "useVisualCapabilities",
+          "useVergerSnapshot"
+        ],
+        "unvirtualizedLoops": 32,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 2012,
+        "totalLines": 38080
+      },
+      "leversBound": 6,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(modal)/create-form.tsx"
+      ]
+    },
+    "/delete-account": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 10,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 0,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 72,
+        "totalLines": 6702
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(marketing)/(legal)/delete-account/page.tsx"
+      ]
+    },
+    "/explore-intro": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 10,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 0,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 0,
+        "totalLines": 564
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/explore-intro/page.tsx"
+      ]
+    },
+    "/faq": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 30,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 1,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 28,
+        "totalLines": 6622
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(marketing)/(info)/faq/page.tsx"
+      ]
+    },
+    "/form-builder": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 109,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat"
+        ],
+        "virtualization": [
+          "FlashList",
+          "FlatList",
+          "LegendList"
+        ],
+        "governed": [
+          "Skeleton",
+          "WorkspaceWallpaper",
+          "WaitingSign",
+          "Waiting",
+          "useVisualCapabilities",
+          "useVergerSnapshot"
+        ],
+        "unvirtualizedLoops": 32,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 2012,
+        "totalLines": 38080
+      },
+      "leversBound": 6,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/form-builder.tsx"
+      ]
+    },
+    "/guidelines": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 10,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 0,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 53,
+        "totalLines": 6672
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(marketing)/(legal)/guidelines/page.tsx"
+      ]
+    },
+    "/icon-lab": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1694,
+        "totalLines": 33354
+      },
+      "leversBound": 3,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/icon-lab.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/icon-lab/page.tsx"
+      ]
+    },
+    "/intro": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 30,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 1,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 108,
+        "totalLines": 940
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(marketing)/intro/page.tsx"
+      ]
+    },
+    "/invitation-welcome": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 0,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 0,
+        "unselectedStores": 0,
+        "complexity": false,
+        "totalJsxTags": 0,
+        "totalLines": 26
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/invitation-welcome/page.tsx"
+      ]
+    },
+    "/journal": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 30,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 1,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 23,
+        "totalLines": 6539
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(marketing)/(editorial)/journal/page.tsx"
+      ]
+    },
+    "/journal/[slug]": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 30,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 3,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 34,
+        "totalLines": 6773
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(marketing)/(editorial)/journal/[slug]/page.tsx"
+      ]
+    },
+    "/kit": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Skia",
+          "Canvas",
+          "LinearGradient",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "useVisualCapabilities",
+          "useVergerSnapshot"
+        ],
+        "unvirtualizedLoops": 28,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1136,
+        "totalLines": 19534
+      },
+      "leversBound": 4,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(dev)/kit/index.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/page.tsx"
+      ]
+    },
+    "/kit/KitGalleryNative": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Skia",
+          "Canvas",
+          "LinearGradient",
+          "particle",
+          "runtimeShader"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "useVisualCapabilities",
+          "useVergerSnapshot",
+          "WorkspaceWallpaper",
+          "SkiaGlowAura",
+          "LotusPetalFAB"
+        ],
+        "unvirtualizedLoops": 29,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1156,
+        "totalLines": 21712
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx"
+      ]
+    },
+    "/kit/components": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 85,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia",
+          "particle"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting"
+        ],
+        "unvirtualizedLoops": 32,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1346,
+        "totalLines": 21462
+      },
+      "leversBound": 2,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/page.tsx"
+      ]
+    },
+    "/kit/components/temporal-horizon": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 85,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia",
+          "particle"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting"
+        ],
+        "unvirtualizedLoops": 31,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1371,
+        "totalLines": 21481
+      },
+      "leversBound": 2,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/temporal-horizon/page.tsx"
+      ]
+    },
+    "/kit/floor-redesign": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Three"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting"
+        ],
+        "unvirtualizedLoops": 28,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1541,
+        "totalLines": 15981
+      },
+      "leversBound": 2,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/floor-redesign/page.tsx"
+      ]
+    },
+    "/kit/self": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting"
+        ],
+        "unvirtualizedLoops": 29,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1359,
+        "totalLines": 17169
+      },
+      "leversBound": 2,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/self/page.tsx"
+      ]
+    },
+    "/library": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient",
+          "Skia",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "FlatList",
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "Skeleton",
+          "WaitingSign",
+          "Waiting",
+          "useVisualCapabilities",
+          "useVergerSnapshot",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 31,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1462,
+        "totalLines": 26564
+      },
+      "leversBound": 6,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/library/index.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/library/page.tsx"
+      ]
+    },
+    "/library/collections/[id]": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1782,
+        "totalLines": 42239
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/library/collections/[id]/page.tsx"
+      ]
+    },
+    "/library/contribute": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 39,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1811,
+        "totalLines": 42173
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/library/contribute/page.tsx"
+      ]
+    },
+    "/library/curator": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1786,
+        "totalLines": 42905
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/library/curator/page.tsx"
+      ]
+    },
+    "/library/map": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1811,
+        "totalLines": 45821
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/library/map/page.tsx"
+      ]
+    },
+    "/library/reader/[bookId]": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1818,
+        "totalLines": 46175
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/page.tsx"
+      ]
+    },
+    "/library/review": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 0,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 0,
+        "unselectedStores": 0,
+        "complexity": false,
+        "totalJsxTags": 0,
+        "totalLines": 6
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/library/review/page.tsx"
+      ]
+    },
+    "/library/tools": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1752,
+        "totalLines": 39485
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/library/tools/page.tsx"
+      ]
+    },
+    "/library/video/[videoId]": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1817,
+        "totalLines": 46124
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/library/video/[videoId]/page.tsx"
+      ]
+    },
+    "/notifications": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient",
+          "@shopify/react-native-skia",
+          "Three"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat"
+        ],
+        "virtualization": [
+          "FlatList",
+          "FlashList",
+          "LegendList"
+        ],
+        "governed": [
+          "Skeleton",
+          "SkiaGlowAura",
+          "useVisualCapabilities",
+          "Waiting",
+          "useVergerSnapshot",
+          "WorkspaceWallpaper",
+          "WaitingSign"
+        ],
+        "unvirtualizedLoops": 45,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 2755,
+        "totalLines": 62560
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/notifications.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/notifications/page.tsx"
+      ]
+    },
+    "/onboarding": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient",
+          "Skia",
+          "particle",
+          "@shopify/react-native-skia",
+          "runtimeShader",
+          "Three"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "FlatList",
+          "LegendList",
+          "FlashList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WorkspaceWallpaper",
+          "WaitingSign",
+          "Waiting",
+          "Skeleton",
+          "useVisualCapabilities",
+          "useVergerSnapshot",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB"
+        ],
+        "unvirtualizedLoops": 39,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 2358,
+        "totalLines": 70390
+      },
+      "leversBound": 9,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/onboarding.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/onboarding/page.tsx"
+      ]
+    },
+    "/privacy": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 10,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 0,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 74,
+        "totalLines": 6720
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(marketing)/(legal)/privacy/page.tsx"
+      ]
+    },
+    "/profile": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient",
+          "Skia",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "FlatList",
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "Skeleton",
+          "WaitingSign",
+          "Waiting",
+          "useVisualCapabilities",
+          "useVergerSnapshot",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 30,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1433,
+        "totalLines": 26234
+      },
+      "leversBound": 6,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/profile/index.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/profile/page.tsx"
+      ]
+    },
+    "/profile/security": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1742,
+        "totalLines": 40127
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/profile/security/page.tsx"
+      ]
+    },
+    "/public-form/[slug]": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "particle",
+          "LinearGradient"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "SovereignVirtualList",
+          "FlatList",
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "Skeleton",
+          "useVisualCapabilities",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "useVergerSnapshot",
+          "WaitingSign",
+          "useVerger",
+          "useLeverLevel"
+        ],
+        "unvirtualizedLoops": 44,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 3036,
+        "totalLines": 56218
+      },
+      "leversBound": 10,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/public-form/[slug].tsx"
+      ]
+    },
+    "/pulse": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "particle",
+          "LinearGradient"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "SovereignVirtualList",
+          "FlatList",
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "Skeleton",
+          "useVisualCapabilities",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "useVergerSnapshot",
+          "WaitingSign",
+          "useVerger",
+          "useLeverLevel"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 2632,
+        "totalLines": 55623
+      },
+      "leversBound": 10,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/pulse.tsx"
+      ]
+    },
+    "/recovery": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "SovereignVirtualList",
+          "WorkspaceWallpaper",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 28,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1240,
+        "totalLines": 26512
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/recovery/page.tsx"
+      ]
+    },
+    "/reset-password": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "SovereignVirtualList",
+          "WorkspaceWallpaper",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 29,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1302,
+        "totalLines": 23317
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/reset-password/page.tsx"
+      ]
+    },
+    "/school/[id]": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 85,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "particle",
+          "runtimeShader",
+          "Canvas"
+        ],
+        "motion": [],
+        "virtualization": [
+          "FlashList"
+        ],
+        "governed": [
+          "useVisualCapabilities",
+          "useVergerSnapshot",
+          "WorkspaceWallpaper",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "useVerger",
+          "useLeverLevel"
+        ],
+        "unvirtualizedLoops": 5,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 406,
+        "totalLines": 10936
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/school/[id]/page.tsx"
+      ]
+    },
+    "/school/[id]/articles/[slug]": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 41,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1775,
+        "totalLines": 39851
+      },
+      "leversBound": 3,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/school/[id]/articles/[slug]/page.tsx"
+      ]
+    },
+    "/self": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "particle",
+          "Skia",
+          "LinearGradient",
+          "@shopify/react-native-skia"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "withSpring",
+          "withRepeat",
+          "GestureDetector",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "FlatList",
+          "SovereignVirtualList",
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Skeleton",
+          "Waiting",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "WorkspaceWallpaper",
+          "useVisualCapabilities",
+          "useVergerSnapshot"
+        ],
+        "unvirtualizedLoops": 66,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 3609,
+        "totalLines": 65764
+      },
+      "leversBound": 8,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/page.tsx"
+      ]
+    },
+    "/self/wisdom/[id]": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient",
+          "Skia",
+          "particle",
+          "@shopify/react-native-skia",
+          "runtimeShader",
+          "Three"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "Skeleton",
+          "WorkspaceWallpaper",
+          "useVisualCapabilities",
+          "useVergerSnapshot",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB"
+        ],
+        "unvirtualizedLoops": 35,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 2011,
+        "totalLines": 62240
+      },
+      "leversBound": 9,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx"
+      ]
+    },
+    "/settings": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient",
+          "@shopify/react-native-skia",
+          "Three"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat"
+        ],
+        "virtualization": [
+          "FlatList",
+          "FlashList",
+          "LegendList"
+        ],
+        "governed": [
+          "Skeleton",
+          "SkiaGlowAura",
+          "useVisualCapabilities",
+          "Waiting",
+          "useVergerSnapshot",
+          "WorkspaceWallpaper",
+          "WaitingSign"
+        ],
+        "unvirtualizedLoops": 45,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 2755,
+        "totalLines": 62560
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/settings.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/settings/page.tsx"
+      ]
+    },
+    "/shell-lab": {
+      "intensity": "heavy",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 500,
+      "score": 70,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "runtimeShader",
+          "Three"
+        ],
+        "motion": [],
+        "virtualization": [],
+        "governed": [
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 3,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 86,
+        "totalLines": 10559
+      },
+      "leversBound": 1,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/shell-lab.tsx"
+      ]
+    },
+    "/si": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 75,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting"
+        ],
+        "unvirtualizedLoops": 31,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1326,
+        "totalLines": 20557
+      },
+      "leversBound": 2,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/si/page.tsx"
+      ]
+    },
+    "/si/[section]": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 30,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 2,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 33,
+        "totalLines": 465
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/si/[section]/page.tsx"
+      ]
+    },
+    "/sign-in": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "SovereignVirtualList",
+          "WorkspaceWallpaper",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 29,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1417,
+        "totalLines": 24696
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/sign-in/page.tsx"
+      ]
+    },
+    "/status": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 30,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 1,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 105,
+        "totalLines": 6736
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(marketing)/(info)/status/page.tsx"
+      ]
+    },
+    "/support": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1967,
+        "totalLines": 41771
+      },
+      "leversBound": 3,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(marketing)/(support)/support/page.tsx"
+      ]
+    },
+    "/ta": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 75,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting"
+        ],
+        "unvirtualizedLoops": 31,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1326,
+        "totalLines": 20557
+      },
+      "leversBound": 2,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/ta/page.tsx"
+      ]
+    },
+    "/ta/[section]": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 30,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 2,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 33,
+        "totalLines": 465
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/ta/[section]/page.tsx"
+      ]
+    },
+    "/terms": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 10,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 0,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 59,
+        "totalLines": 6688
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(marketing)/(legal)/terms/page.tsx"
+      ]
+    },
+    "/thuthimal": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 30,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 1,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 41,
+        "totalLines": 6689
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(marketing)/(info)/thuthimal/page.tsx"
+      ]
+    },
+    "/tutii-dance-preview": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 10,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 0,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 61,
+        "totalLines": 4705
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/tutii-dance-preview.tsx"
+      ]
+    },
+    "/ui-showcase": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 109,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "LinearGradient",
+          "Canvas"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat"
+        ],
+        "virtualization": [
+          "FlatList"
+        ],
+        "governed": [
+          "Waiting",
+          "useVisualCapabilities",
+          "WaitingSign",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 3,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 326,
+        "totalLines": 7941
+      },
+      "leversBound": 4,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/ui-showcase.tsx"
+      ]
+    },
+    "/verger-diagnostics": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 85,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "particle",
+          "runtimeShader"
+        ],
+        "motion": [],
+        "virtualization": [
+          "FlatList",
+          "FlashList"
+        ],
+        "governed": [
+          "Skeleton",
+          "useVergerSnapshot",
+          "useVerger",
+          "useLeverLevel",
+          "WorkspaceWallpaper",
+          "SkiaGlowAura",
+          "LotusPetalFAB"
+        ],
+        "unvirtualizedLoops": 3,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 93,
+        "totalLines": 4683
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/verger-diagnostics.tsx"
+      ]
+    },
+    "/verger-lab": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 90,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "particle",
+          "runtimeShader",
+          "Three"
+        ],
+        "motion": [],
+        "virtualization": [
+          "FlashList"
+        ],
+        "governed": [
+          "Skeleton",
+          "WorkspaceWallpaper",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "useVergerSnapshot",
+          "useVerger",
+          "useLeverLevel"
+        ],
+        "unvirtualizedLoops": 4,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 94,
+        "totalLines": 12182
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/verger-lab.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/verger-lab/page.tsx"
+      ]
+    },
+    "/welcome": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "particle",
+          "LinearGradient",
+          "Skia"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "SovereignVirtualList",
+          "FlatList",
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "Skeleton",
+          "useVisualCapabilities",
+          "Waiting",
+          "WaitingSign",
+          "useVergerSnapshot",
+          "WorkspaceWallpaper",
+          "useVerger",
+          "useLeverLevel"
+        ],
+        "unvirtualizedLoops": 50,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 3306,
+        "totalLines": 121522
+      },
+      "leversBound": 10,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/welcome.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/welcome/page.tsx"
+      ]
+    },
+    "/workspace": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient",
+          "Skia",
+          "particle",
+          "@shopify/react-native-skia",
+          "runtimeShader",
+          "Three"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "useVisualCapabilities",
+          "Skeleton",
+          "useVergerSnapshot",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB"
+        ],
+        "unvirtualizedLoops": 37,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 2275,
+        "totalLines": 68748
+      },
+      "leversBound": 9,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/page.tsx"
+      ]
+    },
+    "/workspace/atlas": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 109,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat"
+        ],
+        "virtualization": [
+          "FlatList"
+        ],
+        "governed": [
+          "Skeleton",
+          "useVisualCapabilities",
+          "Waiting",
+          "useVergerSnapshot",
+          "WorkspaceWallpaper",
+          "WaitingSign"
+        ],
+        "unvirtualizedLoops": 6,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 643,
+        "totalLines": 17045
+      },
+      "leversBound": 6,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/atlas/page.tsx"
+      ]
+    },
+    "/workspace/attendance": {
+      "intensity": "nominal",
+      "transitionDwellMs": 200,
+      "score": 0,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [],
+        "motion": [],
+        "virtualization": [],
+        "governed": [],
+        "unvirtualizedLoops": 0,
+        "unselectedStores": 0,
+        "complexity": false,
+        "totalJsxTags": 0,
+        "totalLines": 17
+      },
+      "leversBound": 0,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/attendance/page.tsx"
+      ]
+    },
+    "/workspace/badges": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 41,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1774,
+        "totalLines": 35532
+      },
+      "leversBound": 3,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/badges/page.tsx"
+      ]
+    },
+    "/workspace/claim": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 39,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1782,
+        "totalLines": 37264
+      },
+      "leversBound": 3,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/claim/page.tsx"
+      ]
+    },
+    "/workspace/classroom/[id]": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1751,
+        "totalLines": 39395
+      },
+      "leversBound": 3,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/classroom/[id]/page.tsx"
+      ]
+    },
+    "/workspace/climate": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1726,
+        "totalLines": 39734
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/climate/page.tsx"
+      ]
+    },
+    "/workspace/commercial/[batchId]": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient",
+          "@shopify/react-native-skia",
+          "Skia",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "useFrameCallback",
+          "withRepeat"
+        ],
+        "virtualization": [
+          "FlatList",
+          "FlashList",
+          "LegendList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "Skeleton",
+          "WorkspaceWallpaper",
+          "useVisualCapabilities",
+          "Waiting",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "WaitingSign",
+          "LotusPetalFAB",
+          "useVergerSnapshot"
+        ],
+        "unvirtualizedLoops": 11,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1333,
+        "totalLines": 54910
+      },
+      "leversBound": 9,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx"
+      ]
+    },
+    "/workspace/demo-fee": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 109,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "LinearGradient",
+          "Canvas"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "withSpring",
+          "GestureDetector",
+          "withRepeat"
+        ],
+        "virtualization": [
+          "FlatList"
+        ],
+        "governed": [
+          "Waiting",
+          "useVisualCapabilities",
+          "WaitingSign",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 3,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 293,
+        "totalLines": 8076
+      },
+      "leversBound": 4,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx"
+      ]
+    },
+    "/workspace/editorial": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 43,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1909,
+        "totalLines": 39184
+      },
+      "leversBound": 3,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/editorial/page.tsx"
+      ]
+    },
+    "/workspace/events": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "LinearGradient",
+          "Canvas",
+          "Skia",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "useVisualCapabilities",
+          "useVergerSnapshot"
+        ],
+        "unvirtualizedLoops": 26,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1127,
+        "totalLines": 19493
+      },
+      "leversBound": 4,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/events.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/events/page.tsx"
+      ]
+    },
+    "/workspace/gradebook": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1784,
+        "totalLines": 39821
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/gradebook/page.tsx"
+      ]
+    },
+    "/workspace/guardian": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1722,
+        "totalLines": 34396
+      },
+      "leversBound": 3,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/guardian/page.tsx"
+      ]
+    },
+    "/workspace/inventory": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "LinearGradient",
+          "Skia",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "withSpring",
+          "GestureDetector",
+          "withRepeat",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "useVisualCapabilities",
+          "useVergerSnapshot"
+        ],
+        "unvirtualizedLoops": 39,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 2151,
+        "totalLines": 57122
+      },
+      "leversBound": 5,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/inventory.tsx"
+      ]
+    },
+    "/workspace/kiosk": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 41,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1800,
+        "totalLines": 38678
+      },
+      "leversBound": 3,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/kiosk/page.tsx"
+      ]
+    },
+    "/workspace/notices": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 39,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1785,
+        "totalLines": 40358
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/notices/page.tsx"
+      ]
+    },
+    "/workspace/peers": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "LinearGradient",
+          "Canvas",
+          "Skia",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "useVisualCapabilities",
+          "useVergerSnapshot"
+        ],
+        "unvirtualizedLoops": 27,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1140,
+        "totalLines": 19529
+      },
+      "leversBound": 4,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/peers.tsx"
+      ]
+    },
+    "/workspace/plan": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 41,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1892,
+        "totalLines": 41606
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/plan/page.tsx"
+      ]
+    },
+    "/workspace/school": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 42,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 2012,
+        "totalLines": 44681
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/school/page.tsx"
+      ]
+    },
+    "/workspace/submissions": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 43,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1849,
+        "totalLines": 45385
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/submissions/page.tsx"
+      ]
+    },
+    "/workspace/timetable": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1704,
+        "totalLines": 39177
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/timetable/page.tsx"
+      ]
+    },
+    "/workspace/tuition": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "@shopify/react-native-skia",
+          "Skia",
+          "LinearGradient",
+          "runtimeShader",
+          "Three",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "useFrameCallback",
+          "withRepeat",
+          "GestureDetector",
+          "withSpring"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList",
+          "FlatList",
+          "SovereignVirtualList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper",
+          "SovereignVirtualList",
+          "SkiaGlowAura",
+          "LotusPetalFAB",
+          "Skeleton"
+        ],
+        "unvirtualizedLoops": 42,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1825,
+        "totalLines": 48311
+      },
+      "leversBound": 7,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/tuition/page.tsx"
+      ]
+    },
+    "/workspace/welfare": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 110,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "LinearGradient",
+          "Canvas",
+          "Skia",
+          "particle"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "GestureDetector",
+          "withSpring",
+          "withRepeat",
+          "useFrameCallback"
+        ],
+        "virtualization": [
+          "LegendList",
+          "FlashList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "useVisualCapabilities",
+          "useVergerSnapshot"
+        ],
+        "unvirtualizedLoops": 27,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1123,
+        "totalLines": 19447
+      },
+      "leversBound": 4,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/welfare.tsx"
+      ]
+    },
+    "/workspace/workforce": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 80,
+      "dominantPlatform": "web",
+      "breakdown": {
+        "gpu": [
+          "Canvas",
+          "Skia"
+        ],
+        "motion": [],
+        "virtualization": [
+          "LegendList"
+        ],
+        "governed": [
+          "WaitingSign",
+          "Waiting",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 40,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 1798,
+        "totalLines": 35124
+      },
+      "leversBound": 3,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/workforce/page.tsx"
+      ]
+    },
+    "/workspace/workforce-role": {
+      "intensity": "intensive",
+      "intent": "canvas-mount",
+      "transitionDwellMs": 600,
+      "score": 109,
+      "dominantPlatform": "mobile",
+      "breakdown": {
+        "gpu": [
+          "LinearGradient",
+          "Canvas"
+        ],
+        "motion": [
+          "useAnimatedStyle",
+          "withSpring",
+          "GestureDetector",
+          "withRepeat"
+        ],
+        "virtualization": [
+          "FlatList"
+        ],
+        "governed": [
+          "Waiting",
+          "useVisualCapabilities",
+          "WaitingSign",
+          "Skeleton",
+          "WorkspaceWallpaper"
+        ],
+        "unvirtualizedLoops": 4,
+        "unselectedStores": 0,
+        "complexity": true,
+        "totalJsxTags": 445,
+        "totalLines": 9724
+      },
+      "leversBound": 5,
+      "unregulatedSink": false,
+      "sources": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/workforce-role.tsx"
+      ]
+    }
+  }
+}

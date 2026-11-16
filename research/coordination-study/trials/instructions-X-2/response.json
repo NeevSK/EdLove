@@ -1,0 +1,109 @@
+{
+  "workId": "c619cfe0-c4ba-4f82-8b6d-908e7c990b62",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "A shared UI field should be implemented in the owned @repo/ui/components/native and @repo/ui/components/web surfaces with matching names and props; app-local hand-built reusable fields and legacy UI imports are disallowed.",
+      "sourceIds": [
+        "platform-rules"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The field should remain a presentation component. API contracts and clients belong in @repo/core, while domain capability ownership, procedure declaration and routing belong in the Sanctuary API module/catalog and its subdomain card. The API surface is oRPC v2 under /api/v1; new clients must not add direct Supabase database, RPC, or realtime paths or import frozen @repo/core/api/*.",
+      "sourceIds": [
+        "platform-rules"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The older workflow's tRPC, Zustand-as-source-of-truth, and shared logic in packages/ui/packages/core prescriptions conflict with the current API and package boundaries and should not guide implementation without revision.",
+      "sourceIds": [
+        "older-workflow",
+        "platform-rules"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The older workflow's fixed palette, shadow, animation, blur and 2GB constraints conflict with current world-recipe styling and the platform's platform-specific UI kit rules; reconsider those prescriptions before applying them to this field.",
+      "sourceIds": [
+        "older-workflow",
+        "platform-rules"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The older workflow requires user approval of a plan before implementation, while the current supplied platform rules prescribe explore, align, implement and verify and state no such blanket plan-approval gate. This process conflict needs an explicit policy owner decision before implementation proceeds.",
+      "sourceIds": [
+        "older-workflow",
+        "platform-rules"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The specific capability, domain/subdomain, request/response contract, authorization policy, failure behavior, and field interaction requirements cannot be identified from these records alone.",
+      "sourceIds": [
+        "platform-rules",
+        "older-workflow"
+      ],
+      "confidence": "unknown"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "shared_native_component_location",
+      "subject": "reusable shared UI field",
+      "object": "@repo/ui/components/native and @repo/ui/components/web with matching names and props",
+      "authoritySourceIds": [
+        "platform-rules"
+      ]
+    },
+    {
+      "relation": "API_contract_and_client_owner",
+      "subject": "API contract/client logic",
+      "object": "@repo/core",
+      "authoritySourceIds": [
+        "platform-rules"
+      ]
+    },
+    {
+      "relation": "API_transport_and_registration",
+      "subject": "new capability procedures",
+      "object": "Sanctuary API catalog/module, subdomain card, and oRPC v2 /api/v1",
+      "authoritySourceIds": [
+        "platform-rules"
+      ]
+    },
+    {
+      "relation": "prohibited_data_access_path",
+      "subject": "new API client call sites",
+      "object": "direct Supabase .from(), .rpc(), realtime, and frozen @repo/core/api/* imports",
+      "authoritySourceIds": [
+        "platform-rules"
+      ]
+    }
+  ],
+  "reviewRequired": [
+    "older-workflow"
+  ],
+  "unresolved": [
+    "Which domain/subdomain owns the field's API capability, and does a matching catalog card, contract, and route already exist?",
+    "What user interaction, validation, loading, error, retry and offline behavior does the field require?",
+    "Is approval of a pre-implementation plan an active requirement, or should the older workflow be updated to match current platform policy?"
+  ],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "Read the handoff request and its two supplied frozen source records.",
+      "Compared the API, UI boundary, styling and workflow instructions in those records.",
+      "Identified the current API/UI conventions and the older workflow guidance requiring reconsideration."
+    ],
+    "invalidatedSteps": [],
+    "nextAction": "Before implementation, inspect the actual API catalog/cards/contracts and owned native/web UI component surfaces; confirm the capability owner and resolve the older workflow's approval gate if it is still intended."
+  },
+  "limitations": [
+    "This conclusion uses only the supplied source excerpts; no repository files, manifests, runtime hooks, or implementation surfaces were inspected.",
+    "No implementation, compilation, or runtime verification was performed."
+  ]
+}

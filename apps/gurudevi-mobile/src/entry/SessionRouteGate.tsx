@@ -154,6 +154,7 @@ export function SessionRouteGate({
       pendingIntent,
       routeTarget: { decision, redirectTo },
     });
+    if (action.clearStaleIntent) pendingIntentStore.getState().clearPendingIntent();
     if (action.consumePendingIntent) pendingIntentStore.getState().drainPendingIntent();
     if (action.target) router.replace(action.target as any);
   }, [isDevelopmentToolRoute, pathname, decision, redirectTo, router]);

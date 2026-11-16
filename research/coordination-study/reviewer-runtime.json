@@ -1,0 +1,12 @@
+[
+  {
+    "sessionId": "01a1ca21-bcd1-7ab3-ae41-40ec7ea12a96",
+    "modelSettings": [
+      {
+        "model": "gpt-6.1-terra",
+        "effort": "low"
+      }
+    ],
+    "sourceTranscript": "C:/Users/Naween/.codex/sessions/2026/11/11\\rollout-2026-11-11T15-52-51-01a1ca21-bcd1-7ab3-ae41-40ec7ea12a96.jsonl"
+  }
+]

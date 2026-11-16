@@ -1,0 +1,72 @@
+{
+  "workId": "7b7ca271-b4a6-46f6-a8dd-3e68d3e8cdbd",
+  "request": "We need an accurate entry path for Gurudevi documentation. Explain how the introduction and Covenant relate, identify any document lifecycle changes needed, and preserve the useful purpose of both.",
+  "sources": [
+    {
+      "id": "intro",
+      "file": "sources/intro.txt",
+      "sha256": "a621766affdfd35df6c8054cb0529c99783ea39549660d55b9eb7cd3b2a0995d",
+      "origin": "docs/Core/what-is-gurudevi.md",
+      "lineStart": 1,
+      "lineEnd": 32
+    },
+    {
+      "id": "covenant",
+      "file": "sources/covenant.txt",
+      "sha256": "b25d935c9b55818fea4f7a69730db26d0d160182f6d5d681b5fd40aaf0438ed0",
+      "origin": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "lineStart": 1,
+      "lineEnd": 35
+    },
+    {
+      "id": "covenant-scope",
+      "file": "sources/covenant-scope.txt",
+      "sha256": "3b0f4b93f0f0602907972082067538d9bbe9e613b973b979b7271eb36065809b",
+      "origin": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "lineStart": 200,
+      "lineEnd": 218
+    }
+  ],
+  "procedure": "Before answering, recover the existing intent and decisions, inspect implementation evidence, distinguish historical and current state, record the consequential choices and sources, and reconcile affected records. Report unknowns explicitly. Return your result in the required JSON shape.",
+  "outputShape": {
+    "workId": "Copy the workId from work.json",
+    "verdict": "resolved | needs_decision | inconclusive",
+    "findings": [
+      {
+        "claim": "Your conclusion",
+        "sourceIds": [
+          "source ID"
+        ],
+        "confidence": "direct | supported | inferred | unknown"
+      }
+    ],
+    "decisions": [
+      {
+        "relation": "Relationship you establish",
+        "subject": "Entity",
+        "object": "Entity",
+        "authoritySourceIds": [
+          "source ID"
+        ]
+      }
+    ],
+    "reviewRequired": [
+      "Source IDs that need reconsideration"
+    ],
+    "unresolved": [
+      "Material unresolved questions"
+    ],
+    "execution": {
+      "runtimeHookStatus": "observed | configured_only | unavailable | not_applicable",
+      "canaryEvidence": "Path or null",
+      "completedSteps": [],
+      "invalidatedSteps": [],
+      "nextAction": "Next concrete action"
+    },
+    "limitations": [
+      "Limits on this conclusion"
+    ]
+  },
+  "toolActionLimit": 20,
+  "instructions": "Work only with these frozen sources and the provided local tools. Do not read neighboring work folders, manifests, evaluator material or the original repository. Do not modify sources. Write only local state/action files if needed, and return JSON. Null resource measurements are preferable to invented measurements."
+}

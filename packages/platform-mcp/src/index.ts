@@ -23,6 +23,7 @@ import { DocumentService } from './services/DocumentService.js';
 import { HelpService } from './services/HelpService.js';
 import { MaintenanceService } from './services/MaintenanceService.js';
 import { ScoutService } from './services/ScoutService.js';
+import { developerCoordinationSchema, dispatchCoordinationRequest } from './services/CoordinationService.js';
 import { generateDownstreamCedarSchema } from './services/cedarMcpSchema.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -618,6 +619,7 @@ class PolymathPlatformServer {
       'sovereign_maintenance',
       'sovereign_guide',
       'sovereign_device',
+      'sovereign_coordination',
       'help',
       'info',
       'sync_workspace_skills',
@@ -670,6 +672,12 @@ class PolymathPlatformServer {
   }
 
   private setupHandlers() {
+    this.registerPlatformTool(
+      'sovereign_coordination',
+      'Persistent developer coordination: inventory/context, local checks, and lifecycle classification, versioned requirements/invariants, role decomposition, reviewed handoffs, tool decisions, history and impact. Readiness is for review, not product approval.',
+      z.strictObject({ request: developerCoordinationSchema }),
+      async ({ request }) => ({ content: [{ type: 'text' as const, text: JSON.stringify(await dispatchCoordinationRequest(request)) }] }),
+    );
     this.registerPlatformTool(
       'sync_workspace_skills',
       'Surgically syncs active repo-level agent skills into global Antigravity Knowledge Items (KIs) dynamically.',

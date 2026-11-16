@@ -1,0 +1,96 @@
+{
+  "workId": "36f21a4a-8ec8-4e7c-ae7f-a92371235b28",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "Read What Is Gurudevi? first for the short human introduction, then Gurudevi Soul & Core Covenant for the expanded governing definition and product, integration, agentic capability, and implementation decisions. Both excerpts explicitly establish this sequence.",
+      "sourceIds": [
+        "intro",
+        "covenant"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The documents serve complementary purposes and both have active status. The Covenant supersedes overlapping pillar definitions in the introduction and the referenced older manifesto; it does not declare either whole document obsolete.",
+      "sourceIds": [
+        "intro",
+        "covenant",
+        "covenant-scope"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "Retain both active documents and their reciprocal links. Review the introduction's pillar section and annotate its subordinate summary role, pointing to the Covenant for authoritative definitions. Record supersession at the overlapping-definition level; whole-document archival or replacement is unsupported by these sources.",
+      "sourceIds": [
+        "intro",
+        "covenant",
+        "covenant-scope"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The entry path should preserve the ecosystem distinction: Gurudevi is the educational ideal and ecosystem, Sanctuary the integrated product environment, and mobile, web, messaging, assistants, authorized agents, and paper/QR paths its doors. No individual door is the whole system or system of record.",
+      "sourceIds": [
+        "intro",
+        "covenant"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The Covenant describes commitments without claiming every capability has shipped. Narrower philosophy, quiet-cultivation, and omnichannel documents remain supporting references.",
+      "sourceIds": [
+        "covenant",
+        "covenant-scope"
+      ],
+      "confidence": "direct"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "read_before",
+      "subject": "docs/Core/what-is-gurudevi.md",
+      "object": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "authoritySourceIds": [
+        "intro",
+        "covenant"
+      ]
+    },
+    {
+      "relation": "supersedes_overlapping_pillar_definitions_only",
+      "subject": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "object": "docs/Core/what-is-gurudevi.md",
+      "authoritySourceIds": [
+        "covenant-scope"
+      ]
+    },
+    {
+      "relation": "supersedes_overlapping_pillar_definitions_only",
+      "subject": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "object": "docs/decisions/2026-10-10-gurudevi-core-ecosystem-manifesto-and-architecture-covenant.md",
+      "authoritySourceIds": [
+        "covenant-scope"
+      ]
+    }
+  ],
+  "reviewRequired": [
+    "intro"
+  ],
+  "unresolved": [],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidatedSteps": [],
+    "nextAction": "Apply the recommended section-level authority annotation to the introduction in an authorized editing context; preserve both active documents and the existing entry sequence."
+  },
+  "limitations": [
+    "Only the three supplied frozen excerpts were reviewed. Full-document consistency, navigation elsewhere, and the older manifesto's unique content or lifecycle cannot be established.",
+    "Recommendations are recorded only; source documents were not modified.",
+    "The controller verified declared order, evidence references, and source freshness. It does not prove semantic correctness, deployed capabilities, or runtime-hook operation; no runtime hook or canary evidence was supplied or observed."
+  ]
+}

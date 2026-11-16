@@ -21,6 +21,7 @@ import {
   type VergerStore,
   type VergerTelemetrySink,
 } from '@repo/core/verger';
+import { resolveRouteMetabolicProfile } from '@repo/core/routing';
 import { useFidelityOptional } from '@repo/ui/context';
 import {
   createVergerAndroidPlatform,
@@ -103,16 +104,33 @@ const facts = (): CapacityFacts => ({ ...UNKNOWN_CAPACITY, totalMemoryBytes: tot
  * screen (`screenNameOf`).
  */
 function ScreenAnnouncer() {
-  const screen = screenNameOf(usePathname());
-  useScreenAnnouncement(screen);
+  const pathname = usePathname();
+  const screen = screenNameOf(pathname);
+  const metabolic = resolveRouteMetabolicProfile(pathname);
+  useScreenAnnouncement(screen, metabolic.transitionDwellMs ?? 200);
+
+  const verger = useVerger();
+  useEffect(() => {
+    if (!verger || !metabolic.intent) return;
+    console.log(
+      `[verger] anticipate: ${metabolic.intent} (screen: ${screen ?? 'root'}, intensity: ${metabolic.intensity}, duration: ${metabolic.transitionDwellMs ?? 400}ms)`,
+    );
+    verger.dispatch({
+      type: 'anticipate',
+      at: performance.now(),
+      intent: metabolic.intent,
+      durationMs: metabolic.transitionDwellMs ?? 400,
+    });
+  }, [verger, screen, metabolic]);
+
   useEffect(() => {
     if (!isExhaustiveCapture()) return;
     saveDevelopmentTelemetry({
       source: 'performance',
       name: 'screen-transition',
-      attributes: { screen },
+      attributes: { screen, intensity: metabolic.intensity },
     });
-  }, [screen]);
+  }, [screen, metabolic.intensity]);
   return null;
 }
 

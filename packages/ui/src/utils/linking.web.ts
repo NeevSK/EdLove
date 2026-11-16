@@ -39,6 +39,7 @@ const WEB_OVERRIDE_COUNT_KEY = 'external_link_override_count_web';
 const ALLOWED_URI_SCHEMES = new Set(['gurudevi:', 'mailto:', 'tel:', 'whatsapp:']);
 
 let runtime: ExternalLinkRuntime | null = null;
+let inMemoryPreference: ExternalOpenMethod | undefined = undefined;
 
 function isWebUrl(url: string) {
   return /^https?:\/\//i.test(url);
@@ -74,15 +75,23 @@ export function getRecommendedExternalOpenMethod(): ExternalOpenMethod {
 }
 
 export async function getStoredExternalOpenPreference(): Promise<ExternalOpenMethod | undefined> {
+  if (inMemoryPreference !== undefined) return inMemoryPreference;
   const val = await storage.getStringAsync(getPlatformKey());
-  return val as ExternalOpenMethod | undefined;
+  inMemoryPreference = val as ExternalOpenMethod | undefined;
+  return inMemoryPreference;
+}
+
+export function getCachedExternalOpenPreference(): ExternalOpenMethod | undefined {
+  return inMemoryPreference;
 }
 
 export async function setStoredExternalOpenPreference(method: ExternalOpenMethod) {
+  inMemoryPreference = method;
   storage.set(getPlatformKey(), method);
 }
 
 export async function clearStoredExternalOpenPreference() {
+  inMemoryPreference = undefined;
   storage.delete(getPlatformKey());
   storage.delete(getOverrideKey());
 }
@@ -169,6 +178,14 @@ async function openExternalURLInternal(
     if (typeof window !== 'undefined') {
       window.location.assign(url);
     }
+    return true;
+  }
+
+  // Synchronous fast path: If user open preference is already resolved in memory
+  // and prompt is not forced, execute window.open synchronously to preserve browser
+  // Transient User Activation (preventing Safari iOS / Chrome popup blocker drops).
+  if (!forcePrompt && !options.forcePrompt && inMemoryPreference) {
+    executeExternalOpen(url, inMemoryPreference);
     return true;
   }
 

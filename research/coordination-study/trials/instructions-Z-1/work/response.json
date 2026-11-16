@@ -1,0 +1,61 @@
+{
+  "workId": "7863d878-7ac2-4035-bfac-beca65b181ed",
+  "verdict": "needs_decision",
+  "findings": [
+    {
+      "claim": "For a shared field, the active UI direction is to add it to the owned @repo/ui/components/native and @repo/ui/components/web packages with matching props; browser web uses browser-native DOM components.",
+      "sourceIds": ["platform-rules"],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The current API direction is Sanctuary API with native oRPC v2 procedures targeting /api/v1; clients must not add new direct .from(), .rpc(), or realtime database paths, and new code must not import frozen pre-v1 @repo/core/api/*.",
+      "sourceIds": ["platform-rules"],
+      "confidence": "direct"
+    },
+    {
+      "claim": "Before adding an API procedure, the current rules require following the domain design method, including a <domain>.<subdomain> namespace and a subdomain card; capabilities belong in the catalog and have a card.",
+      "sourceIds": ["platform-rules"],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The older workflow's tRPC, Supabase migration, Zustand source-of-truth, and packages/ui or packages/core prescriptions conflict with the current API and package boundaries and should be revised before implementation.",
+      "sourceIds": ["older-workflow", "platform-rules"],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The older workflow requires an explicit user approval of its pre-compilation plan. The active platform rules prescribe a cognitive order before code but do not state that same approval gate, so whether to retain that gate requires an explicit policy decision.",
+      "sourceIds": ["older-workflow", "platform-rules"],
+      "confidence": "supported"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "controls current API and UI architecture",
+      "subject": "platform-rules",
+      "object": "shared API-calling field",
+      "authoritySourceIds": ["platform-rules"]
+    },
+    {
+      "relation": "requires update before use for this task",
+      "subject": "older-workflow architecture prescriptions",
+      "object": "platform-rules API and package boundaries",
+      "authoritySourceIds": ["older-workflow", "platform-rules"]
+    }
+  ],
+  "reviewRequired": ["older-workflow"],
+  "unresolved": [
+    "The requested field's concrete capability, subdomain, target surface(s), interaction behavior, and matching API procedure are not given in these records; consult the applicable architecture and implementation substrate before designing it.",
+    "Decide whether the older workflow's mandatory plan approval gate remains policy. The newer record neither repeats nor explicitly revokes it."
+  ],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": ["context", "analysis", "verification", "reconciliation"],
+    "invalidatedSteps": [],
+    "nextAction": "Review and update older-workflow guidance, resolve the plan-approval policy, then inspect the applicable domain/API contract and native/web component substrate before implementation."
+  },
+  "limitations": [
+    "Assessment is limited to the two supplied frozen records; no original repository, live package declarations, API contract, component implementations, or runtime was inspected.",
+    "The controller confirms source hashes and stage order only; its status does not prove the interpretation or runtime behavior."
+  ]
+}

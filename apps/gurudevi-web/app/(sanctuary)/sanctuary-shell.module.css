@@ -59,12 +59,17 @@
   background: transparent;
   color: var(--w-ink);
   text-decoration: none;
-}
-.menuBrandButton {
   cursor: pointer;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), background-color 160ms ease;
+  will-change: transform;
 }
 .menuBrandButton:hover {
-  background: color-mix(in srgb, var(--w-ink) 6%, transparent);
+  background: color-mix(in srgb, var(--w-ink) 8%, transparent);
+  transform: scale(1.06);
+}
+.menuBrandButton:active {
+  transform: scale(0.94);
+  transition-duration: 70ms;
 }
 .menuBrandButton:focus-visible {
   outline: 2px solid var(--w-focus);
@@ -136,6 +141,7 @@
   gap: inherit;
   flex-shrink: 0;
 }
+.commandPaletteTrigger,
 .headerAction {
   box-sizing: border-box;
   position: relative;
@@ -150,40 +156,36 @@
   color: var(--w-ink-soft);
   font: inherit;
   text-decoration: none;
-  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+  cursor: pointer;
+  transition: transform 140ms cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 160ms ease,
+              border-color 160ms ease,
+              color 160ms ease,
+              box-shadow 160ms ease;
+  will-change: transform;
 }
 .headerAction:hover,
+.commandPaletteTrigger:hover,
 .headerAction[aria-current="page"] {
-  background: color-mix(in srgb, var(--w-raised) 72%, var(--w-lamp) 8%);
-  border-color: var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 76%, var(--w-lamp) 14%);
+  border-color: color-mix(in srgb, var(--w-line) 70%, var(--w-lamp) 30%);
   color: var(--w-ink);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-ink) 6%, transparent);
 }
-.commandPaletteTrigger:hover {
-  background: color-mix(in srgb, var(--w-raised) 72%, var(--w-lamp) 8%);
-  border-color: var(--w-line);
-  color: var(--w-ink);
+.headerAction:active,
+.commandPaletteTrigger:active {
+  transform: translateY(0) scale(0.93);
+  transition-duration: 70ms;
+}
+.headerAction:focus-visible,
+.commandPaletteTrigger:focus-visible {
+  outline: 2px solid var(--w-focus);
+  outline-offset: 2px;
 }
 .profileAction {
   background: var(--w-raised);
   color: var(--w-ink-soft);
-}
-.commandPaletteTrigger,
-.headerAction {
-  box-sizing: border-box;
-  border: 1px solid var(--w-line);
-  border-radius: 50%;
-  background: var(--w-raised);
-  color: var(--w-ink-soft);
-  box-shadow: none;
-  transform: none;
-}
-.headerAction:hover,
-.headerAction:active {
-  border-color: var(--w-line);
-  background: var(--w-raised);
-  color: var(--w-ink-soft);
-  box-shadow: none;
-  transform: none;
 }
 .profileGlyph {
   width: 1.25rem;
@@ -216,6 +218,13 @@
   font-weight: 700;
   line-height: 1.1;
   text-align: center;
+  transform-origin: center center;
+  animation: badgePop 220ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes badgePop {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.18); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
 .exploreBanner {
   display: flex;
@@ -746,6 +755,7 @@
   min-width: 0;
   min-height: 100%;
   padding: clamp(0.75rem, 2cqi, 2rem);
+  padding-bottom: calc(max(env(safe-area-inset-bottom), 1.5rem) + 4.5rem);
 }
 .quickAccessNotice {
   width: fit-content;
@@ -1307,3 +1317,54 @@
     filter: none;
   }
 }
+
+/* =========================================================================
+   React 19 View Transitions & Persistent Shell Isolation
+   ========================================================================= */
+
+/* Isolate persistent shell chrome so only the canvas floor animates */
+:global(::view-transition-group(sanctuary-header)),
+:global(::view-transition-group(sanctuary-rail)),
+:global(::view-transition-group(sanctuary-fab)) {
+  animation: none;
+}
+
+/* Floor transition cross-fade & micro-settle (< 250ms) */
+:global(::view-transition-old(floor-exit)) {
+  animation: 160ms cubic-bezier(0.2, 0, 0, 1) both floorFadeOut;
+}
+
+:global(::view-transition-new(floor-enter)) {
+  animation: 220ms cubic-bezier(0, 0, 0.2, 1) both floorFadeIn;
+}
+
+@keyframes floorFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.995);
+  }
+}
+
+@keyframes floorFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global(::view-transition-group(*)),
+  :global(::view-transition-old(*)),
+  :global(::view-transition-new(*)) {
+    animation: none !important;
+  }
+}
+

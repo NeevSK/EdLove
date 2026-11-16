@@ -30,6 +30,8 @@ function components(barrel: Record<string, unknown>) {
 
 /** Pieces both sets must have; the web suite checks the same list. */
 const SHARED = [
+  'Radar',
+  'FeedbackScene',
   'ActionFab',
   'AudioRecord',
   'AppHeader',

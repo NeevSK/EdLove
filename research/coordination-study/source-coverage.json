@@ -1,0 +1,72 @@
+{
+  "observedAt": "2026-11-11T09:08:05.690Z",
+  "revision": "186809430aa10a4ef4de0e78313dc38aa041d229",
+  "scope": "Gurudevi coordination records and agent procedures",
+  "sources": [
+    {
+      "category": "source-control",
+      "status": "available",
+      "method": "local git history and working tree",
+      "limits": "Dirty working tree; no remote PR discussion searched yet."
+    },
+    {
+      "category": "long-form-documents",
+      "status": "partially-searched",
+      "method": "repository architecture, PJC and workflow records",
+      "limits": "No cloud document source queried."
+    },
+    {
+      "category": "agent-chat-history",
+      "status": "available",
+      "method": "Codex read_thread; introduction/Covenant and API architecture threads previously read",
+      "limits": "API exposes summaries and message items; full hidden model traces unavailable."
+    },
+    {
+      "category": "issue-tracker",
+      "status": "unavailable",
+      "query": "Gurudevi",
+      "tool": "linear.search",
+      "error": "Unknown tool"
+    },
+    {
+      "category": "real-time-team-chat",
+      "status": "unavailable",
+      "query": "Gurudevi in public channels",
+      "tool": "slack.slack_search_public",
+      "error": "Unknown tool",
+      "limits": "No private messages requested or searched."
+    },
+    {
+      "category": "code-graph",
+      "status": "unavailable",
+      "tool": "graphify.list_repositories",
+      "error": "Connection requires reauthentication"
+    },
+    {
+      "category": "infrastructure-observability",
+      "status": "not-searched",
+      "reason": "No matching connected tool discovered; study concerns local authoring and coordination, not production symptoms."
+    },
+    {
+      "category": "error-tracking",
+      "status": "not-searched",
+      "reason": "No matching connected tool discovered; no production incident claim made."
+    },
+    {
+      "category": "product-analytics",
+      "status": "not-searched",
+      "reason": "No matching connected warehouse tool discovered; no adoption or user-outcome claim made."
+    }
+  ],
+  "model": {
+    "requested": "inherit-parent",
+    "observedParent": "gpt-6.1-sol",
+    "reasoningEffort": "not exposed by runtime",
+    "tokenUsage": null,
+    "cost": null
+  },
+  "limitations": [
+    "Fresh subagents share tool availability and filesystem; frozen-directory restrictions are instructed, not OS-enforced.",
+    "The inherited root context and tool metadata can reveal study setting; neutral labels provide partial blinding only."
+  ]
+}

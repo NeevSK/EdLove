@@ -1,0 +1,229 @@
+{
+  "id": "radar-presentation-analysis",
+  "scope": "Supplemental shared presentation and feedback terrain; no production API or product-policy admission",
+  "authorId": "root",
+  "sourcePaths": [
+    "research/coordination-study/lifecycle/radar/owner-request.md",
+    "AGENTS.md",
+    "docs/architecture/platform-map.md",
+    "docs/architecture/data-governance-and-records.md",
+    "docs/architecture/authority-model.md",
+    "apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md",
+    "apps/gurudevi-mobile/docs/Core/GROWTH_MODEL.md",
+    "docs/research/edu-audit/teacher-holistic-profile-idea.md",
+    "packages/core/src/types/Growth.ts",
+    "packages/core/src/logic/schemas/teacher-insights.schema.ts",
+    "packages/core/src/flows/classroom/teacherStudentRadarAttunement.flow.ts",
+    "packages/core/src/flows/classroom/studentProfileSoulView.flow.ts",
+    "packages/core/src/flows/pjc/classroom.teaching_loop.json",
+    "packages/core/src/flows/pjc/self.learner_growth.json",
+    "packages/self/src/components/TeacherVitalityCard.tsx",
+    "packages/self/src/components/ResonancePatternCard.tsx",
+    "packages/graphics/src/layouts/radarLayout.ts",
+    "packages/graphics/src/charts/RadarSpiderChart.tsx",
+    "packages/ui/src/components/InteractiveRadarChart.tsx",
+    "packages/graphics/package.json",
+    "packages/ui/package.json",
+    "packages/core/src/api/studentPotential.ts",
+    "apps/gurudevi-mobile/supabase/migrations/20260315000001_student_potential_analysis.sql",
+    "apps/sanctuary-api/src/modules/catalog.ts",
+    "pnpm-lock.yaml",
+    "packages/core/src/api/studentPotential.contract.ts",
+    "research/coordination-study/lifecycle/radar/feedback-request.md",
+    "packages/ui/src/theme/contracts.ts",
+    "packages/ui/src/theme/types.ts",
+    "packages/ui/src/theme/build.ts",
+    "packages/ui/src/theme/css.ts",
+    "packages/ui/src/theme/kitCss.ts",
+    "packages/ui/src/components/shared/radarGeometry.ts",
+    "packages/ui/src/components/shared/feedbackScene.ts",
+    "packages/ui/src/components/shared/__tests__/radarGeometry.test.ts",
+    "packages/ui/src/components/shared/__tests__/feedbackScene.test.ts",
+    "packages/ui/src/components/native/Radar/Radar.tsx",
+    "packages/ui/src/components/native/FeedbackScene/FeedbackScene.tsx",
+    "packages/ui/src/components/native/States/States.tsx",
+    "packages/ui/src/components/native/__tests__/radar.test.tsx",
+    "packages/ui/src/components/native/index.ts",
+    "packages/ui/src/components/web/Radar/Radar.tsx",
+    "packages/ui/src/components/web/FeedbackScene/FeedbackScene.tsx",
+    "packages/ui/src/components/web/States/States.tsx",
+    "packages/ui/src/components/web/index.ts",
+    "apps/gurudevi-web/app/(sanctuary)/kit/radar/page.tsx",
+    "apps/gurudevi-web/app/(sanctuary)/kit/radar/RadarGalleryClient.tsx",
+    "apps/gurudevi-web/app/(sanctuary)/kit/radar/radar-gallery.module.css",
+    "apps/gurudevi-web/tests/unit/kit/radar.test.tsx",
+    "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx",
+    "packages/ui/src/components/native/Waiting/Waiting.tsx",
+    "packages/ui/src/components/web/Waiting/Waiting.tsx",
+    "packages/ui/src/theme/perches.ts",
+    "packages/ui/assets/mascot/manifest.json"
+  ],
+  "dependsOn": [
+    {
+      "version": 1,
+      "id": "radar-analysis"
+    },
+    {
+      "version": 1,
+      "id": "radar-requirement"
+    }
+  ],
+  "content": {
+    "kind": "analysis",
+    "requestKind": "feature",
+    "dimensions": {
+      "ux": {
+        "applicability": "applies",
+        "reason": "The owner selected one shared read-only experience with distinct measures and attributed perspectives. Existing journeys distinguish self-view from teacher viewing a learner; both must remain recognizable without merging their meanings.",
+        "sources": [
+          "research/coordination-study/lifecycle/radar/owner-request.md",
+          "packages/core/src/flows/classroom/studentProfileSoulView.flow.ts",
+          "packages/core/src/flows/pjc/classroom.teaching_loop.json"
+        ]
+      },
+      "screens": {
+        "applicability": "applies",
+        "reason": "Existing sources mention a student reflection radar and teacher classroom radar, while the chart renderer imports native React Native UI. Shared presentation must be evaluated against owned web/native UI boundaries and existing entry points.",
+        "sources": [
+          "packages/core/src/flows/classroom/teacherStudentRadarAttunement.flow.ts",
+          "packages/core/src/flows/classroom/studentProfileSoulView.flow.ts",
+          "packages/ui/src/components/InteractiveRadarChart.tsx",
+          "AGENTS.md"
+        ]
+      },
+      "state": {
+        "applicability": "applies",
+        "reason": "A read-only experience still needs separate active subject, measure, perspective and observation selection plus loading, empty, denied, unavailable and error states; existing source records do not define this combined state model.",
+        "sources": [
+          "research/coordination-study/lifecycle/radar/owner-request.md",
+          "packages/core/src/logic/schemas/teacher-insights.schema.ts",
+          "packages/core/src/api/studentPotential.ts"
+        ]
+      },
+      "errors": {
+        "applicability": "applies",
+        "reason": "The current student-potential API can return no row and can throw through its oRPC calls, while permission, source, and measure availability are contextual; the shared view needs explicit failure states and must not fabricate values.",
+        "sources": [
+          "packages/core/src/api/studentPotential.ts",
+          "packages/core/src/api/studentPotential.contract.ts",
+          "docs/architecture/authority-model.md"
+        ]
+      },
+      "feedback": {
+        "applicability": "applies",
+        "reason": "Users need to know which measure and whose perspective they are viewing, what date/source it reflects, and whether values are missing or unavailable; existing chart examples mainly label axes and numeric values.",
+        "sources": [
+          "packages/core/src/logic/schemas/teacher-insights.schema.ts",
+          "packages/ui/src/components/InteractiveRadarChart.tsx",
+          "packages/core/src/flows/pjc/classroom.teaching_loop.json"
+        ]
+      },
+      "motion": {
+        "applicability": "applies",
+        "reason": "Changing subject, measure, or perspective can change the polygon; transitions must not imply measured improvement or interpolate between unrelated constructs. Motion behavior is not specified in the supplied radar sources.",
+        "sources": [
+          "research/coordination-study/lifecycle/radar/owner-request.md",
+          "packages/ui/src/components/InteractiveRadarChart.tsx",
+          "packages/graphics/src/charts/RadarSpiderChart.tsx"
+        ]
+      },
+      "accessibility": {
+        "applicability": "applies",
+        "reason": "The present SVG chart labels axes visually but the supplied code does not establish an accessible textual equivalent for axis values, missingness, provenance, or perspective attribution.",
+        "sources": [
+          "packages/ui/src/components/InteractiveRadarChart.tsx",
+          "packages/graphics/src/charts/RadarSpiderChart.tsx"
+        ]
+      },
+      "data": {
+        "applicability": "applies",
+        "reason": "Existing domains define different axes, value ranges, subjects and histories. The shared view must preserve each measure's identity/version, units/range, per-axis missingness, provenance, timestamp and attributed perspective as provided, rather than inventing shared values.",
+        "sources": [
+          "packages/core/src/types/Growth.ts",
+          "packages/core/src/logic/schemas/teacher-insights.schema.ts",
+          "apps/gurudevi-mobile/supabase/migrations/20260315000001_student_potential_analysis.sql",
+          "research/coordination-study/lifecycle/radar/owner-request.md"
+        ]
+      },
+      "api": {
+        "applicability": "applies",
+        "reason": "Student potential has an existing core API contract, but the owner requires current API admission rules and frozen legacy/direct-data paths to remain in force. Shared chart mechanics may use caller-supplied admitted data or clearly labelled synthetic examples.",
+        "sources": [
+          "packages/core/src/api/studentPotential.ts",
+          "apps/sanctuary-api/src/modules/catalog.ts",
+          "apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md",
+          "research/coordination-study/lifecycle/radar/owner-request.md"
+        ]
+      },
+      "database": {
+        "applicability": "applies",
+        "reason": "A legacy migration stores and overwrites one student-potential row per teacher/student/classroom, while personal growth and teacher-insight history use different event/state forms. The shared experience does not authorize a new persistence or history model.",
+        "sources": [
+          "apps/gurudevi-mobile/supabase/migrations/20260315000001_student_potential_analysis.sql",
+          "packages/core/src/logic/schemas/teacher-insights.schema.ts",
+          "packages/core/src/types/Growth.ts",
+          "docs/architecture/data-governance-and-records.md"
+        ]
+      },
+      "dependencies": {
+        "applicability": "applies",
+        "reason": "Two existing chart implementations and separate graphics/UI packages are pinned by manifests and lockfile. A dependency or package change requires architecture review; the lockfile does not establish upstream compatibility or current releases.",
+        "sources": [
+          "packages/graphics/package.json",
+          "packages/ui/package.json",
+          "pnpm-lock.yaml",
+          "packages/graphics/src/charts/RadarSpiderChart.tsx",
+          "packages/ui/src/components/InteractiveRadarChart.tsx"
+        ]
+      },
+      "security": {
+        "applicability": "applies",
+        "reason": "A self/other view depends on active identity, relationship, school/classroom scope, sharing state and private-data boundaries. The request does not grant cross-person visibility or editing authority.",
+        "sources": [
+          "docs/architecture/authority-model.md",
+          "docs/architecture/data-governance-and-records.md",
+          "packages/core/src/logic/schemas/teacher-insights.schema.ts",
+          "packages/core/src/flows/pjc/classroom.teaching_loop.json",
+          "research/coordination-study/lifecycle/radar/owner-request.md"
+        ]
+      },
+      "offline": {
+        "applicability": "applies",
+        "reason": "The teacher-attunement flow declares an offline cached-roster path and local SQLite updates, but the new direction is read-only and does not establish an offline data source or freshness guarantee. Offline/unavailable must be shown distinctly.",
+        "sources": [
+          "packages/core/src/flows/classroom/teacherStudentRadarAttunement.flow.ts",
+          "apps/sanctuary-api/docs/architecture/api-domain-and-channel-model.md"
+        ]
+      },
+      "reuse": {
+        "applicability": "applies",
+        "reason": "Owned shared loading signs and EmptyState/ErrorState already exist on native and web. The latter had only a perch. Owned FeedbackScene ports reuse the existing static Tutii fallback geometry and world colors without frozen legacy imports. UI owns neutral chart geometry to avoid a UI-to-graphics dependency cycle. Default values-only display requires explicit caller assertion for plotting; this does not validate measure semantics or authorization.",
+        "sources": [
+          "research/coordination-study/lifecycle/radar/feedback-request.md",
+          "packages/ui/src/components/shared/feedbackScene.ts",
+          "packages/ui/src/components/native/Waiting/Waiting.tsx",
+          "packages/ui/src/components/web/Waiting/Waiting.tsx",
+          "packages/ui/src/components/native/States/States.tsx",
+          "packages/ui/src/components/web/States/States.tsx",
+          "packages/ui/src/components/shared/radarGeometry.ts"
+        ]
+      }
+    },
+    "reuse": [
+      "Evaluate a platform-neutral measure/geometry core and owned web/native components after Architecture review; this is the owner's proposed target, not an admitted production design.",
+      "Keep existing Self, Classroom and Profile records, entry points and behavior intact. The shared experience reads admitted values and does not replace or migrate their source records.",
+      "Before a new view uses RadarChart or SpiderChart, repair and verify the legacy geometry candidate: RadarSpiderChart.tsx computes each plotted vertex at the same full radius and does not scale by point.value or maxValue.",
+      "Synthetic examples must be visibly identified as synthetic and must not look like a real user's data."
+    ],
+    "openQuestions": [
+      "Which existing domains and entry points should host the shared read-only view first, and what existing data source is admitted at each entry?",
+      "Which per-measure metadata is available today for units/range, axis definitions/version, observation source, author/perspective, subject scope, timestamp, missingness, and confidence? No single current contract carries all of these.",
+      "What should the experience do when a measure has incompatible units, an unsupported axis count, incomplete values, no observations, stale history, or multiple attributed perspectives? It must not normalize or combine values by default.",
+      "What read authority and relationship context permits viewing another person's measure in each domain? This request does not answer it.",
+      "Can existing viewer contracts supply the read-only data without violating the API admission rules? No new direct database path or unadmitted capability is authorized.",
+      "Which existing chart surface is the right starting point after geometry repair, and how should native and web implementations expose equivalent labels, missingness and textual summaries?",
+      "What are the history/supersession rules for each domain measure? Existing student-potential upsert, teacher-insight event, and personal growth log/state have different semantics.",
+      "Are observation contribution, editing, sharing/revocation, alerts, thresholds, exports, comparisons, ranking, score normalization or cross-domain composite measures in scope? None is authorized by the shared-experience clarification."
+    ]
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "workId": "6e236213-d223-4b2e-89f7-4321d58f71f6",
+  "events": [
+    {
+      "id": "ctx-1",
+      "kind": "record",
+      "stage": "context",
+      "summary": "Read all three frozen sources. Both behavior documents are proposals without owner acceptance; governance assigns disclosure policy to the human product owner.",
+      "evidence": [
+        {
+          "sourceId": "proposal-a",
+          "sha256": "abc2b4bd1a09473efcc2665139fee183922d2ecf9b86198238bf6d03970c255a"
+        },
+        {
+          "sourceId": "proposal-b",
+          "sha256": "b83e9232c562edb838779e4820f1e604766f6c0b1cfe8ca16d3d270d808ceba1"
+        },
+        {
+          "sourceId": "governance",
+          "sha256": "d1934199ef2568b93af942f784391fe54d2fee8ee285def4f0bfb39cc7d2fca5"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "id": "analysis-1",
+      "kind": "record",
+      "stage": "analysis",
+      "summary": "The record does not authorize implementation. The proposals conflict between broad safeguarding access and owner-only journals with person-initiated sharing; neither has decision authority. The next material decision is the product owner's disclosure policy.",
+      "evidence": [
+        {
+          "sourceId": "proposal-a",
+          "sha256": "abc2b4bd1a09473efcc2665139fee183922d2ecf9b86198238bf6d03970c255a"
+        },
+        {
+          "sourceId": "proposal-b",
+          "sha256": "b83e9232c562edb838779e4820f1e604766f6c0b1cfe8ca16d3d270d808ceba1"
+        },
+        {
+          "sourceId": "governance",
+          "sha256": "d1934199ef2568b93af942f784391fe54d2fee8ee285def4f0bfb39cc7d2fca5"
+        }
+      ],
+      "unresolved": [
+        "Which journal disclosure policy does the human product owner approve?"
+      ]
+    },
+    {
+      "id": "verify-1",
+      "kind": "record",
+      "stage": "verification",
+      "summary": "Controller status confirms source hashes and ordered stage recording only. No runtime hook or canary evidence is supplied, and the controller cannot establish authorization identity or truthful interpretation.",
+      "evidence": [
+        {
+          "sourceId": "proposal-a",
+          "sha256": "abc2b4bd1a09473efcc2665139fee183922d2ecf9b86198238bf6d03970c255a"
+        },
+        {
+          "sourceId": "proposal-b",
+          "sha256": "b83e9232c562edb838779e4820f1e604766f6c0b1cfe8ca16d3d270d808ceba1"
+        },
+        {
+          "sourceId": "governance",
+          "sha256": "d1934199ef2568b93af942f784391fe54d2fee8ee285def4f0bfb39cc7d2fca5"
+        }
+      ],
+      "unresolved": [
+        "Which journal disclosure policy does the human product owner approve?"
+      ]
+    },
+    {
+      "id": "reconcile-1",
+      "kind": "record",
+      "stage": "reconciliation",
+      "summary": "Reconciled the conflicting proposals against governance: implementation is not authorized; request the human product owner's explicit policy decision before implementation.",
+      "evidence": [
+        {
+          "sourceId": "proposal-a",
+          "sha256": "abc2b4bd1a09473efcc2665139fee183922d2ecf9b86198238bf6d03970c255a"
+        },
+        {
+          "sourceId": "proposal-b",
+          "sha256": "b83e9232c562edb838779e4820f1e604766f6c0b1cfe8ca16d3d270d808ceba1"
+        },
+        {
+          "sourceId": "governance",
+          "sha256": "d1934199ef2568b93af942f784391fe54d2fee8ee285def4f0bfb39cc7d2fca5"
+        }
+      ],
+      "unresolved": [
+        "Which journal disclosure policy does the human product owner approve?"
+      ]
+    }
+  ]
+}

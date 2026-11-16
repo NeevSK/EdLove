@@ -1,0 +1,2053 @@
+diff --git a/.gitignore b/.gitignore
+index 41d0260bc..a7084dc92 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -171,6 +171,7 @@ docs/research
+ 
+ # Multi-agent teamwork scratch & ephemeral orchestration state
+ .agents/teamwork/
++.agents/state/coordination.sqlite*
+ .tmp/
+ .tmp-*/
+ PROJECT.md
+diff --git a/AGENTS.md b/AGENTS.md
+index 45b6cb1f2..aa53a47b1 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -10,6 +10,23 @@ tags: [AGENTS.md, quality, guardrails, architecture]
+ 
+ # AGENTS.md - Agent Guardrails for Polymath Platform
+ 
++## Pstack activation for Codex
++
++Pstack v0.15.36 is enabled for this workspace. For substantive engineering work, read `.agents/skills/poteto-mode/SKILL.md` and follow its applicable playbook. The complete, unmodified upstream package is in `research/pstack/`; its pinned revision and file hashes are in `research/pstack.upstream.json`. Resolve bundled documentation, agents, assets and automations from that package, and sibling skills from `.agents/skills/`.
++
++- Invoke a pstack skill by reading its `SKILL.md` and following it; use the installed skill catalog when available. The default router is `poteto-mode`.
++- In Codex, translate Cursor `Task` to the available collaboration tools. Use a supported agent type and include the complete upstream persona from `research/pstack/agents/poteto-agent.md` or `comment-sicko.md` in the brief, together with the absolute installed `poteto-mode` path. Never pass unsupported Cursor tool fields or agent names. Respect the session concurrency limit and assign file ownership to editing workers.
++- Inherit the current model and reasoning settings unless the user explicitly selects another supported model. Do not pass Cursor model slugs to Codex or claim a same-model review is a multi-model panel.
++- Translate source search and shell actions to the available repository tools, and chat-history actions to the Codex thread tools. Keep a checklist in progress messages when no todo tool is available. Report a missing capability explicitly; a skipped step is not completed evidence.
++- Cursor Automations, cloud agents and Bugbot activation require their own supported runtime. Installing skills does not activate Benny, configure Slack, schedule work, merge changes or deploy. Preserve the repository's architectural boundaries, authorization requirements and Deletion Veto when applying upstream principles.
++
++Developer coordination pilot: `pnpm --filter @repo/platform-mcp coordination <request.json|->`
++and gateway tool `sovereign_coordination({request: ...})` share a strict schema and a local
++SQLite history. See [`packages/platform-mcp/docs/developer-coordination.md`](packages/platform-mcp/docs/developer-coordination.md).
++Use explicit affected layers and source files; status reports stale sources, unresolved
++decisions and missing checks. This pilot does not intercept all agent actions, approve
++product policy, or replace PJC, C4, capability conformance, CI or existing quality gates.
++
+ > **PRIME DIRECTIVE: WEB-FIRST & REPO-DOCS-FIRST FOR ALL MODERN ECOSYSTEM DECISIONS**  
+ > Agent static training memory has a fixed cutoff and is blind to recent changes in Expo SDK 58, React Native 0.88+, Kotlin 2.x, Gradle 8.x, Skia v3, Effect v4, etc. **NEVER rely on internal memory or make guesses.** The model is a stateless reasoner (CPU), not a memory bank. Always inspect the physical substrate (source files, AST symbols, installed `node_modules` declarations) and perform live web searches (`search_web`) or registry queries.
+ > 0. **The Cognitive Handshake (Active Reasoning Invariant)**: Passive reading decays. Before proposing code or diffs, the agent MUST output the 3-line Bounding Triad: (1) Surface & Mode, (2) Grounded Substrate (files/types inspected), (3) Active Seam & Constraints.
+diff --git a/packages/platform-mcp/package.json b/packages/platform-mcp/package.json
+index 1e9df2cfa..dc26d0f7c 100644
+--- a/packages/platform-mcp/package.json
++++ b/packages/platform-mcp/package.json
+@@ -6,7 +6,9 @@
+   "main": "dist/index.js",
+   "type": "module",
+   "scripts": {
++    "coordination": "node dist/cli/coordination.js",
+     "cedar:mcp-schema": "tsx src/cli/cedarMcpSchema.ts",
++    "agent:pipeline": "tsx src/pipeline/cli.ts",
+     "build": "node ../../scripts/run-and-report.mjs --cmd \"tsc\" --name \"packages_platform-mcp-build\"",
+     "watch": "node ../../scripts/run-and-report.mjs --cmd \"tsc -w\" --name \"packages_platform-mcp-watch\"",
+     "start": "node ../../scripts/run-and-report.mjs --cmd \"node dist/index.js\" --name \"packages_platform-mcp-start\"",
+@@ -23,6 +25,8 @@
+   },
+   "dependencies": {
+     "@cedar-policy/mcp-schema-generator-wasm": "0.7.0",
++    "@langchain/core": "^1.3.6",
++    "@langchain/langgraph": "^1.7.3",
+     "@modelcontextprotocol/client": "^2.4.0",
+     "@modelcontextprotocol/core": "^2.4.0",
+     "@modelcontextprotocol/server": "^2.4.0",
+diff --git a/packages/platform-mcp/src/index.ts b/packages/platform-mcp/src/index.ts
+index 44e22e233..8766351ad 100644
+--- a/packages/platform-mcp/src/index.ts
++++ b/packages/platform-mcp/src/index.ts
+@@ -23,6 +23,7 @@ import { DocumentService } from './services/DocumentService.js';
+ import { HelpService } from './services/HelpService.js';
+ import { MaintenanceService } from './services/MaintenanceService.js';
+ import { ScoutService } from './services/ScoutService.js';
++import { developerCoordinationSchema, executeCoordinationRequest } from './services/CoordinationService.js';
+ import { generateDownstreamCedarSchema } from './services/cedarMcpSchema.js';
+ 
+ const __filename = fileURLToPath(import.meta.url);
+@@ -618,6 +619,7 @@ class PolymathPlatformServer {
+       'sovereign_maintenance',
+       'sovereign_guide',
+       'sovereign_device',
++      'sovereign_coordination',
+       'help',
+       'info',
+       'sync_workspace_skills',
+@@ -670,6 +672,12 @@ class PolymathPlatformServer {
+   }
+ 
+   private setupHandlers() {
++    this.registerPlatformTool(
++      'sovereign_coordination',
++      'Local developer procedure: inventory tools, resolve an explicit PJC journey, persist sourced changes, evaluate prerequisites and record allowlisted checks. Readiness is for review, not product approval.',
++      z.strictObject({ request: developerCoordinationSchema }),
++      async ({ request }) => ({ content: [{ type: 'text' as const, text: JSON.stringify(executeCoordinationRequest(request)) }] }),
++    );
+     this.registerPlatformTool(
+       'sync_workspace_skills',
+       'Surgically syncs active repo-level agent skills into global Antigravity Knowledge Items (KIs) dynamically.',
+diff --git a/packages/platform-mcp/src/services/HelpService.ts b/packages/platform-mcp/src/services/HelpService.ts
+index b0028f2f0..3f71d3fb0 100644
+--- a/packages/platform-mcp/src/services/HelpService.ts
++++ b/packages/platform-mcp/src/services/HelpService.ts
+@@ -40,6 +40,11 @@ Access all functionality through these four primary entry points:
+ 3. **sovereign_maintenance**: Refactoring, healing, imports normalization, and git checkpoints.
+ 4. **sovereign_guide**: Philosophy, orientation, tool inventory, and integration guidance.
+ 
++Developer changes can use **sovereign_coordination** with a strict JSON request:
++inventory, context, create, status, record, or check. It shares its local store and
++implementation with the package's coordination CLI. See docs/developer-coordination.md.
++Its ready-for-review result is not product approval or device evidence.
++
+ ## 🌟 The Shiny Toolchain
+ We integrate industry-leading Rust-based tools and native extractors for extreme performance:
+ - **Ripgrep (grep)**: 100x faster content search.
+diff --git a/packages/platform-mcp/src/coordination.ts b/packages/platform-mcp/src/coordination.ts
+new file mode 100644
+index 000000000..2098ea198
+--- /dev/null
++++ b/packages/platform-mcp/src/coordination.ts
+@@ -0,0 +1,364 @@
++import { createHash } from 'node:crypto';
++import { readFileSync, realpathSync, statSync } from 'node:fs';
++import path from 'node:path';
++import { fileURLToPath } from 'node:url';
++import { z } from 'zod';
++import { readChange, readEvents, transaction, withStore } from './coordinationStore.js';
++
++const text = z.string().trim().min(1).max(4000);
++const identifier = z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/);
++const impacts = z.enum([
++  'product',
++  'architecture',
++  'database',
++  'api',
++  'web',
++  'native',
++  'dependencies',
++  'integration',
++  'security',
++]);
++const source = z.strictObject({ path: text, scope: text });
++const link = z.strictObject({
++  subject: text,
++  predicate: text,
++  object: text,
++  sourcePath: text,
++  classification: z.enum(['declared', 'mechanically-extracted', 'inferred', 'unresolved']),
++});
++export const coordinationRequestSchema = z.discriminatedUnion('action', [
++  z.strictObject({
++    action: z.literal('create'),
++    id: identifier,
++    goal: text,
++    impacts: z.array(impacts).min(1).max(9),
++    sources: z.array(source).min(1).max(100),
++    links: z.array(link).max(500).optional(),
++  }),
++  z.strictObject({ action: z.literal('status'), id: identifier }),
++  z.strictObject({
++    action: z.literal('record'),
++    id: identifier,
++    actionId: identifier,
++    stage: z.enum(['analysis', 'reconciliation']),
++    notes: text,
++    evidencePaths: z.array(text).min(1).max(100),
++    unresolved: z.array(text).max(100),
++  }),
++  z.strictObject({
++    action: z.literal('check'),
++    id: identifier,
++    actionId: identifier,
++    checkId: identifier,
++  }),
++]);
++const changeSchema = z.strictObject({
++  id: identifier,
++  goal: text,
++  impacts: z.array(impacts),
++  sources: z.array(source.extend({ sha256: z.string() })),
++  links: z.array(link),
++  requiredChecks: z.array(identifier),
++  procedureVersion: z.literal('1'),
++  procedureRevision: text,
++});
++const checkResultSchema = z.strictObject({
++  ok: z.boolean(),
++  stdout: z.string(),
++  stderr: z.string(),
++  exitCode: z.number().nullable(),
++  error: z.string().optional(),
++});
++const eventSchema = z.strictObject({
++  actionId: identifier,
++  payload: z.string(),
++  observedAt: z.iso.datetime(),
++  finishedAt: z.iso.datetime().optional(),
++  stage: z.enum(['analysis', 'reconciliation', 'check']),
++  evidencePaths: z.array(z.string()),
++  unresolved: z.array(z.string()),
++  checkId: identifier.optional(),
++  result: checkResultSchema.optional(),
++  state: z.enum(['recorded', 'pending', 'finished', 'stale']),
++});
++type Change = z.infer<typeof changeSchema>;
++type Event = z.infer<typeof eventSchema>;
++type Options = {
++  root: string;
++  databasePath: string;
++  procedureRevision?: string;
++  checks: readonly { id: string; impacts: readonly string[] }[];
++  runCheck: (id: string) => {
++    ok: boolean;
++    stdout: string;
++    stderr: string;
++    exitCode: number | null;
++    error?: string;
++  };
++};
++const hash = (data: string | Buffer) => createHash('sha256').update(data).digest('hex');
++function fingerprint(root: string, file: string): string {
++  if (
++    path.isAbsolute(file) ||
++    file
++      .split(/[\\/]/)
++      .some(
++        (part) =>
++          part === '..' ||
++          /^\.env(?:\.|$)/i.test(part) ||
++          /^(?:secrets?|credentials?)$/i.test(part),
++      ) ||
++    /\.(?:pem|key|p12|pfx)$/i.test(file)
++  )
++    throw new Error('invalid_source_path');
++  const base = realpathSync(root);
++  const resolved = realpathSync(path.resolve(base, file));
++  const relative = path.relative(base, resolved);
++  if (
++    !relative ||
++    relative.startsWith('..') ||
++    path.isAbsolute(relative) ||
++    relative
++      .split(/[\\/]/)
++      .some(
++        (part) =>
++          /^\.env(?:\.|$)/i.test(part) ||
++          /^(?:\.git|node_modules|secrets?|credentials?|\.doppler)$/i.test(part),
++      ) ||
++    /\.(?:pem|key|p12|pfx)$/i.test(relative) ||
++    !statSync(resolved).isFile()
++  )
++    throw new Error('invalid_source_path');
++  return hash(readFileSync(resolved));
++}
++function staleSources(change: Change, root: string): string[] {
++  return change.sources
++    .filter((item) => {
++      try {
++        return fingerprint(root, item.path) !== item.sha256;
++      } catch {
++        return true;
++      }
++    })
++    .map((item) => item.path);
++}
++function revision(options: Options): string {
++  const modulePath = fileURLToPath(import.meta.url);
++  const storePath = path.join(
++    path.dirname(modulePath),
++    `coordinationStore${path.extname(modulePath)}`,
++  );
++  const checks = [...options.checks]
++    .map((item) => ({ id: item.id, impacts: [...item.impacts].sort() }))
++    .sort((a, b) => a.id.localeCompare(b.id));
++  return hash(
++    JSON.stringify({
++      core: hash(readFileSync(modulePath)),
++      store: hash(readFileSync(storePath)),
++      checks,
++      external: options.procedureRevision ?? null,
++    }),
++  );
++}
++function state(change: Change, events: Event[], root: string, currentRevision: string) {
++  const stale = staleSources(change, root);
++  const unresolved = [...new Set(events.flatMap((event) => event.unresolved))];
++  const analysis = events.some((event) => event.stage === 'analysis');
++  const passed = change.requiredChecks.filter((id) => {
++    const event = [...events]
++      .reverse()
++      .find((item) => item.stage === 'check' && item.checkId === id);
++    return (
++      event?.state === 'finished' &&
++      event.result?.ok === true &&
++      event.result.exitCode === 0 &&
++      !event.result.error
++    );
++  });
++  const missingChecks = change.requiredChecks.filter((id) => !passed.includes(id));
++  const lastReconciliation = events.map((event) => event.stage).lastIndexOf('reconciliation');
++  const lastWork = events.reduce(
++    (index, event, current) =>
++      event.stage === 'analysis' || event.stage === 'check' ? current : index,
++    -1,
++  );
++  const reconciled = lastReconciliation > lastWork;
++  return {
++    change,
++    events,
++    staleSources: stale,
++    procedureChanged: currentRevision !== change.procedureRevision,
++    unresolved,
++    missingChecks,
++    readiness:
++      currentRevision !== change.procedureRevision ||
++      stale.length ||
++      unresolved.length ||
++      !analysis ||
++      missingChecks.length ||
++      !reconciled
++        ? 'blocked'
++        : 'ready-for-review',
++    limitation:
++      'Local records are not authenticated, tamper-proof, or proof of product completion. Source changes require a new change ID and reconsideration; no automatic rebase.',
++  };
++}
++export function handleCoordination(input: unknown, options: Options) {
++  const request = coordinationRequestSchema.parse(input);
++  return withStore(options.databasePath, (db) => {
++    if (request.action === 'create')
++      return transaction(db, () => {
++        if (
++          new Set(request.sources.map((item) => item.path)).size !== request.sources.length ||
++          new Set(request.impacts).size !== request.impacts.length
++        )
++          throw new Error('duplicate_input');
++        const sources = request.sources.map((item) => ({
++          ...item,
++          sha256: fingerprint(options.root, item.path),
++        }));
++        if (
++          (request.links ?? []).some(
++            (item) => !sources.some((entry) => entry.path === item.sourcePath),
++          )
++        )
++          throw new Error('unknown_link_source');
++        if (
++          request.impacts.some(
++            (impact) => !options.checks.some((check) => check.impacts.includes(impact)),
++          )
++        )
++          throw new Error('uncovered_impact');
++        const requiredChecks = options.checks
++          .filter((check) =>
++            check.impacts.some((impact) => request.impacts.includes(impacts.parse(impact))),
++          )
++          .map((check) => identifier.parse(check.id));
++        if (new Set(requiredChecks).size !== requiredChecks.length)
++          throw new Error('duplicate_check');
++        const change = changeSchema.parse({
++          id: request.id,
++          goal: request.goal,
++          impacts: request.impacts,
++          sources,
++          links: request.links ?? [],
++          requiredChecks,
++          procedureVersion: '1',
++          procedureRevision: revision(options),
++        });
++        db.prepare('INSERT INTO changes(id, data) VALUES (?, ?)').run(
++          request.id,
++          JSON.stringify(change),
++        );
++        return state(change, [], options.root, revision(options));
++      });
++    const get = () => ({
++      change: changeSchema.parse(readChange(db, request.id)),
++      events: readEvents(db, request.id).map((event) => eventSchema.parse(event)),
++    });
++    if (request.action === 'status') {
++      const { change, events } = get();
++      return state(change, events, options.root, revision(options));
++    }
++    const payload = JSON.stringify(request);
++    const prepared = transaction(db, () => {
++      const { change, events } = get();
++      const existing = events.find((event) => event.actionId === request.actionId);
++      if (existing) {
++        if (existing.payload !== payload) throw new Error('action_id_conflict');
++        return { change, events, duplicate: true };
++      }
++      const current = state(change, events, options.root, revision(options));
++      if (current.staleSources.length) throw new Error('stale_sources');
++      if (current.procedureChanged) throw new Error('procedure_changed');
++      if (request.action === 'record') {
++        if (
++          request.evidencePaths.some((file) => !change.sources.some((entry) => entry.path === file))
++        )
++          throw new Error('unknown_evidence');
++        if (
++          request.stage === 'reconciliation' &&
++          (!events.some((event) => event.stage === 'analysis') ||
++            current.missingChecks.length ||
++            current.unresolved.length ||
++            request.unresolved.length)
++        )
++          throw new Error('missing_prerequisite');
++        const event: Event = {
++          actionId: request.actionId,
++          payload,
++          observedAt: new Date().toISOString(),
++          finishedAt: new Date().toISOString(),
++          stage: request.stage,
++          evidencePaths: request.evidencePaths,
++          unresolved: request.unresolved,
++          state: 'recorded',
++        };
++        db.prepare('INSERT INTO events(change_id, action_id, data) VALUES (?, ?, ?)').run(
++          request.id,
++          event.actionId,
++          JSON.stringify(event),
++        );
++        return { change, events: [...events, event], duplicate: false };
++      }
++      if (
++        !events.some((event) => event.stage === 'analysis') ||
++        !change.requiredChecks.includes(request.checkId)
++      )
++        throw new Error('missing_prerequisite');
++      if (!options.checks.some((check) => check.id === request.checkId))
++        throw new Error('check_unavailable');
++      const event: Event = {
++        actionId: request.actionId,
++        payload,
++        observedAt: new Date().toISOString(),
++        stage: 'check',
++        checkId: request.checkId,
++        evidencePaths: [],
++        unresolved: [],
++        state: 'pending',
++      };
++      db.prepare('INSERT INTO events(change_id, action_id, data) VALUES (?, ?, ?)').run(
++        request.id,
++        event.actionId,
++        JSON.stringify(event),
++      );
++      return { change, events: [...events, event], duplicate: false };
++    });
++    if (request.action !== 'check' || prepared.duplicate)
++      return {
++        ...state(prepared.change, prepared.events, options.root, revision(options)),
++        duplicate: prepared.duplicate,
++      };
++    const result = checkResultSchema.parse(options.runCheck(request.checkId));
++    return transaction(db, () => {
++      const { change, events } = get();
++      const pending = events.find((event) => event.actionId === request.actionId);
++      if (!pending || pending.state !== 'pending') throw new Error('check_state_conflict');
++      const event: Event = {
++        ...pending,
++        result,
++        finishedAt: new Date().toISOString(),
++        state:
++          staleSources(change, options.root).length ||
++          revision(options) !== change.procedureRevision
++            ? 'stale'
++            : 'finished',
++      };
++      db.prepare('UPDATE events SET data = ? WHERE change_id = ? AND action_id = ?').run(
++        JSON.stringify(event),
++        request.id,
++        request.actionId,
++      );
++      return {
++        ...state(
++          change,
++          events.map((item) => (item.actionId === event.actionId ? event : item)),
++          options.root,
++          revision(options),
++        ),
++        duplicate: false,
++      };
++    });
++  });
++}
+diff --git a/packages/platform-mcp/src/coordinationStore.ts b/packages/platform-mcp/src/coordinationStore.ts
+new file mode 100644
+index 000000000..550d6aa0b
+--- /dev/null
++++ b/packages/platform-mcp/src/coordinationStore.ts
+@@ -0,0 +1,40 @@
++import { mkdirSync } from 'node:fs';
++import path from 'node:path';
++import { DatabaseSync } from 'node:sqlite';
++import { z } from 'zod';
++
++const rowSchema = z.object({ data: z.string() });
++export function withStore<T>(databasePath: string, operation: (db: DatabaseSync) => T): T {
++  mkdirSync(path.dirname(path.resolve(databasePath)), { recursive: true });
++  const db = new DatabaseSync(databasePath);
++  try {
++    db.exec(
++      'PRAGMA busy_timeout = 3000; CREATE TABLE IF NOT EXISTS changes (id TEXT PRIMARY KEY, data TEXT NOT NULL); CREATE TABLE IF NOT EXISTS events (change_id TEXT NOT NULL, action_id TEXT NOT NULL, data TEXT NOT NULL, PRIMARY KEY(change_id, action_id));',
++    );
++    return operation(db);
++  } finally {
++    db.close();
++  }
++}
++export function transaction<T>(db: DatabaseSync, operation: () => T): T {
++  db.exec('BEGIN IMMEDIATE');
++  try {
++    const result = operation();
++    db.exec('COMMIT');
++    return result;
++  } catch (error) {
++    db.exec('ROLLBACK');
++    throw error;
++  }
++}
++export function readChange(db: DatabaseSync, id: string): unknown {
++  const row = db.prepare('SELECT data FROM changes WHERE id = ?').get(id);
++  if (!row) throw new Error('change_not_found');
++  return JSON.parse(rowSchema.parse(row).data);
++}
++export function readEvents(db: DatabaseSync, id: string): unknown[] {
++  return db
++    .prepare('SELECT data FROM events WHERE change_id = ? ORDER BY rowid')
++    .all(id)
++    .map((row) => JSON.parse(rowSchema.parse(row).data));
++}
+diff --git a/packages/platform-mcp/src/coordinationTools.ts b/packages/platform-mcp/src/coordinationTools.ts
+new file mode 100644
+index 000000000..4fbf87460
+--- /dev/null
++++ b/packages/platform-mcp/src/coordinationTools.ts
+@@ -0,0 +1,424 @@
++import { existsSync, readFileSync } from 'node:fs';
++import { createRequire } from 'node:module';
++import path from 'node:path';
++import { type CommandRunResult, runCommand } from './utils/execution.js';
++
++type CheckImpact =
++  | 'product'
++  | 'architecture'
++  | 'integration'
++  | 'api'
++  | 'web'
++  | 'native'
++  | 'database'
++  | 'dependencies'
++  | 'security';
++export type CoordinationCheck = { readonly id: string; readonly impacts: readonly CheckImpact[] };
++export type CoordinationCommandResult = Pick<
++  CommandRunResult,
++  'ok' | 'stdout' | 'stderr' | 'exitCode' | 'error'
++>;
++
++export const coordinationChecks: readonly CoordinationCheck[] = [
++  { id: 'pjc-check', impacts: ['product'] },
++  { id: 'c4-validate', impacts: ['architecture', 'integration'] },
++  { id: 'api-composition', impacts: ['api', 'integration'] },
++  { id: 'api-conformance', impacts: ['api'] },
++  { id: 'ui-boundaries', impacts: ['web', 'native'] },
++  { id: 'sql-migrations', impacts: ['database'] },
++  { id: 'dependency-cohorts', impacts: ['dependencies'] },
++  { id: 'security-review', impacts: ['security'] },
++];
++
++type CheckCommand = {
++  readonly executable: string;
++  readonly args: readonly string[];
++  readonly cwd?: string;
++};
++function isRecord(value: unknown): value is Record<string, unknown> {
++  return value !== null && typeof value === 'object' && !Array.isArray(value);
++}
++
++function resolvePackageBin(root: string, packageName: string, binName = packageName): string {
++  const requireFromRoot = createRequire(path.join(root, 'package.json'));
++  const manifestPath = requireFromRoot.resolve(`${packageName}/package.json`);
++  const manifestValue: unknown = JSON.parse(readFileSync(manifestPath, 'utf8'));
++  if (!isRecord(manifestValue)) throw new Error(`Invalid ${packageName} package manifest`);
++  const binValue = manifestValue.bin;
++  const bin =
++    typeof binValue === 'string' ? binValue : isRecord(binValue) ? binValue[binName] : undefined;
++  if (typeof bin !== 'string' || bin.length === 0)
++    throw new Error(`${packageName} does not declare bin ${binName}`);
++  const executable = path.resolve(path.dirname(manifestPath), bin);
++  if (!existsSync(executable)) throw new Error(`${packageName} bin does not exist: ${bin}`);
++  return executable;
++}
++
++function commandFor(root: string, id: string): CheckCommand | { readonly error: string } {
++  switch (id) {
++    case 'pjc-check': {
++      try {
++        const tsx = resolvePackageBin(root, 'tsx');
++        return {
++          executable: process.execPath,
++          args: [
++            tsx,
++            '--tsconfig',
++            'packages/core/tsconfig.json',
++            'scripts/pjc.ts',
++            'check',
++            '--format',
++            'json',
++          ],
++        };
++      } catch (error) {
++        return {
++          error: error instanceof Error ? error.message : 'Unable to resolve the tsx package bin',
++        };
++      }
++    }
++    case 'c4-validate': {
++      try {
++        return {
++          executable: process.execPath,
++          args: [resolvePackageBin(root, 'likec4'), 'validate', 'docs/architecture/model'],
++        };
++      } catch (error) {
++        return {
++          error:
++            error instanceof Error ? error.message : 'Unable to resolve the likec4 package bin',
++        };
++      }
++    }
++    case 'api-composition':
++      return { executable: process.execPath, args: ['scripts/audit-api-composition.mjs'] };
++    case 'api-conformance':
++      try {
++        return {
++          executable: process.execPath,
++          args: [
++            resolvePackageBin(root, 'tsx'),
++            '--tsconfig',
++            'tsconfig.json',
++            'scripts/capability-conformance.ts',
++            '--check',
++          ],
++          cwd: path.join(root, 'apps', 'sanctuary-api'),
++        };
++      } catch (error) {
++        return {
++          error: error instanceof Error ? error.message : 'Unable to resolve the tsx package bin',
++        };
++      }
++    case 'ui-boundaries':
++      return { executable: process.execPath, args: ['scripts/check-ui-boundaries.mjs'] };
++    case 'sql-migrations':
++      return { executable: process.execPath, args: ['scripts/lint-new-migrations.mjs'] };
++    case 'dependency-cohorts':
++      return {
++        executable: process.execPath,
++        args: ['scripts/harmonize-dependencies.mjs', '--check'],
++      };
++    case 'security-review':
++      return {
++        error: 'Security review is blocked because a scoped scan adapter is not implemented.',
++      };
++    default:
++      return { error: `Unknown or unavailable check: ${id}` };
++  }
++}
++
++function toCoordinationResult(result: CommandRunResult): CoordinationCommandResult {
++  return {
++    ok: result.ok,
++    stdout: result.stdout,
++    stderr: result.stderr,
++    exitCode: result.exitCode,
++    ...(result.error ? { error: result.error } : {}),
++  };
++}
++
++export function runCoordinationCheck(root: string, id: string): CoordinationCommandResult {
++  const command = commandFor(root, id);
++  if ('error' in command) {
++    return { ok: false, stdout: '', stderr: command.error, exitCode: null, error: command.error };
++  }
++  return toCoordinationResult(
++    runCommand(command.executable, [...command.args], {
++      cwd: command.cwd ?? root,
++      shell: false,
++      timeoutMs: 120_000,
++      maxBuffer: 2 * 1024 * 1024,
++    }),
++  );
++}
++
++export function runPjcJourney(root: string, journeyId: string): CoordinationCommandResult {
++  if (!/^[a-zA-Z0-9:_.-]{1,160}$/.test(journeyId)) {
++    const error = 'Invalid journey ID';
++    return { ok: false, stdout: '', stderr: error, exitCode: null, error };
++  }
++  let tsx: string;
++  try {
++    tsx = resolvePackageBin(root, 'tsx');
++  } catch (error) {
++    const message =
++      error instanceof Error ? error.message : 'Unable to resolve the tsx package bin';
++    return { ok: false, stdout: '', stderr: message, exitCode: null, error: message };
++  }
++  return toCoordinationResult(
++    runCommand(
++      process.execPath,
++      [
++        tsx,
++        '--tsconfig',
++        'packages/core/tsconfig.json',
++        'scripts/pjc.ts',
++        'journey',
++        journeyId,
++        '--format',
++        'json',
++      ],
++      {
++        cwd: root,
++        shell: false,
++        timeoutMs: 120_000,
++        maxBuffer: 2 * 1024 * 1024,
++      },
++    ),
++  );
++}
++
++export type CoordinationTool = {
++  readonly id: string;
++  readonly availability: 'available' | 'unavailable' | 'blocked';
++  readonly version: string | null;
++  readonly observedAt: string;
++  readonly capability: 'discovery-only' | 'check-enabled';
++  readonly prerequisites: readonly string[];
++  readonly limits: readonly string[];
++  readonly detail?: string;
++};
++
++type ToolProbe = {
++  readonly id: string;
++  readonly executable: string;
++  readonly args: readonly string[];
++  readonly packageBin?: { readonly packageName: string; readonly binName?: string };
++  readonly capability: CoordinationTool['capability'];
++  readonly prerequisites: readonly string[];
++  readonly limits: readonly string[];
++};
++
++const probeDefinitions: readonly ToolProbe[] = [
++  {
++    id: 'likec4',
++    executable: 'likec4',
++    args: ['--version'],
++    packageBin: { packageName: 'likec4' },
++    capability: 'check-enabled',
++    prerequisites: ['Model files and installed package'],
++    limits: [
++      'C4 validation checks model syntax and declared structure, not runtime hops or semantic correctness.',
++    ],
++  },
++  {
++    id: 'k6',
++    executable: 'k6.exe',
++    args: ['version'],
++    capability: 'discovery-only',
++    prerequisites: ['Approved workload and target'],
++    limits: ['No load or network scans are run by inventory.'],
++  },
++  {
++    id: 'syft',
++    executable: 'syft.exe',
++    args: ['version'],
++    capability: 'discovery-only',
++    prerequisites: ['Explicit scan target'],
++    limits: ['No filesystem scan is run by inventory.'],
++  },
++  {
++    id: 'gitleaks',
++    executable: 'gitleaks.exe',
++    args: ['version'],
++    capability: 'discovery-only',
++    prerequisites: ['Scoped repository or commit range'],
++    limits: ['A gitleaks version probe does not run a security review.'],
++  },
++  {
++    id: 'osv-scanner',
++    executable: 'osv-scanner.exe',
++    args: ['--version'],
++    capability: 'discovery-only',
++    prerequisites: ['Supported lockfile and scan scope'],
++    limits: ['No dependency scan is run by inventory.'],
++  },
++  {
++    id: 'schemathesis',
++    executable: 'schemathesis.exe',
++    args: ['--version'],
++    capability: 'discovery-only',
++    prerequisites: ['Supported contract schema and approved target'],
++    limits: ['Do not create a parallel OpenAPI API contract.'],
++  },
++  {
++    id: 'spectral',
++    executable: 'spectral',
++    args: ['--version'],
++    packageBin: { packageName: '@stoplight/spectral-cli', binName: 'spectral' },
++    capability: 'discovery-only',
++    prerequisites: ['Explicit ruleset and document'],
++    limits: ['No lint is run without a selected ruleset.'],
++  },
++  {
++    id: 'squawk',
++    executable: 'squawk',
++    args: ['--version'],
++    packageBin: { packageName: 'squawk-cli', binName: 'squawk' },
++    capability: 'discovery-only',
++    prerequisites: ['SQL input and selected rules'],
++    limits: ['No migration runtime behavior is exercised.'],
++  },
++  {
++    id: 'rg',
++    executable: 'rg.exe',
++    args: ['--version'],
++    capability: 'discovery-only',
++    prerequisites: [],
++    limits: ['Search results do not establish complete source coverage.'],
++  },
++  {
++    id: 'fd',
++    executable: 'fd.exe',
++    args: ['--version'],
++    capability: 'discovery-only',
++    prerequisites: [],
++    limits: ['Discovery output is not a complete repository inventory guarantee.'],
++  },
++  {
++    id: 'ast-grep',
++    executable: 'ast-grep.exe',
++    args: ['--version'],
++    capability: 'discovery-only',
++    prerequisites: ['Query or rule'],
++    limits: ['AST matches do not prove semantic correctness.'],
++  },
++];
++
++function findVersion(output: string): string | null {
++  const match = output.match(/(?:^|[^\d])v?(\d+\.\d+(?:\.\d+)?(?:[-+][\w.-]+)?)/);
++  return match?.[1] ?? null;
++}
++
++function nativeExecutableName(executable: string): string {
++  if (process.platform === 'win32')
++    return executable.endsWith('.exe') ? executable : `${executable}.exe`;
++  return executable.endsWith('.exe') ? executable.slice(0, -4) : executable;
++}
++
++export function listCoordinationTools(root: string): CoordinationTool[] {
++  const observedAt = new Date().toISOString();
++  const probes = probeDefinitions.map((definition): CoordinationTool => {
++    let executable = nativeExecutableName(definition.executable);
++    let args = [...definition.args];
++    try {
++      if (definition.packageBin) {
++        executable = process.execPath;
++        args = [
++          resolvePackageBin(root, definition.packageBin.packageName, definition.packageBin.binName),
++          ...args,
++        ];
++      }
++    } catch (error) {
++      return {
++        id: definition.id,
++        availability: 'unavailable',
++        version: null,
++        observedAt,
++        capability: definition.capability,
++        prerequisites: definition.prerequisites,
++        limits: definition.limits,
++        detail: error instanceof Error ? error.message : 'Package executable could not be resolved',
++      };
++    }
++    const available = runCommand(executable, args, {
++      cwd: root,
++      shell: false,
++      timeoutMs: 5_000,
++      maxBuffer: 64 * 1024,
++    });
++    const output = `${available.stdout}\n${available.stderr}`.trim();
++    if (available.exitCode === null && available.error) {
++      return {
++        id: definition.id,
++        availability: 'unavailable',
++        version: null,
++        observedAt,
++        capability: definition.capability,
++        prerequisites: definition.prerequisites,
++        limits: definition.limits,
++        detail: available.error,
++      };
++    }
++    return {
++      id: definition.id,
++      availability: available.ok ? 'available' : 'unavailable',
++      version: available.ok ? findVersion(output) : null,
++      observedAt,
++      capability: definition.capability,
++      prerequisites: definition.prerequisites,
++      limits: definition.limits,
++      ...(!available.ok ? { detail: available.error ?? (output || 'Version probe failed') } : {}),
++    };
++  });
++  for (const check of coordinationChecks) {
++    if (check.id === 'security-review') continue;
++    const resolution = commandFor(root, check.id);
++    const scriptPath =
++      'args' in resolution
++        ? resolution.args.find((argument) => argument.startsWith('scripts/'))
++        : undefined;
++    const workingDirectory = 'cwd' in resolution && resolution.cwd ? resolution.cwd : root;
++    const scriptAvailable =
++      scriptPath === undefined || existsSync(path.join(workingDirectory, scriptPath));
++    const available = !('error' in resolution) && scriptAvailable;
++    probes.push({
++      id: `check:${check.id}`,
++      availability: available ? 'available' : 'unavailable',
++      version: null,
++      observedAt,
++      capability: 'check-enabled',
++      prerequisites:
++        check.id === 'api-conformance'
++          ? ['Sanctuary API package files and installed tsx package']
++          : check.id === 'pjc-check'
++            ? ['PJC catalog inputs and installed tsx package']
++            : check.id === 'c4-validate'
++              ? ['Model files and installed LikeC4 package']
++              : ['Required repository script and inputs'],
++      limits:
++        check.id === 'sql-migrations'
++          ? ['A clean migration lint does not prove SQL runtime behavior.']
++          : ['Availability means the command and its entrypoint resolve; the check has not run.'],
++      ...(!available
++        ? {
++            detail:
++              'error' in resolution ? resolution.error : `Missing check entrypoint: ${scriptPath}`,
++          }
++        : {}),
++    });
++  }
++  probes.push({
++    id: 'security-review',
++    availability: 'blocked',
++    version: null,
++    observedAt,
++    capability: 'discovery-only',
++    prerequisites: ['Scoped security scan adapter'],
++    limits: ['A gitleaks executable alone does not run a security review.'],
++    detail:
++      'Select a scan scope, then implement and verify a scoped adapter. Inventory does not run a security scan.',
++  });
++  return probes;
++}
+diff --git a/packages/platform-mcp/src/coordination.test.ts b/packages/platform-mcp/src/coordination.test.ts
+new file mode 100644
+index 000000000..9399c57c7
+--- /dev/null
++++ b/packages/platform-mcp/src/coordination.test.ts
+@@ -0,0 +1,204 @@
++import { spawn } from 'node:child_process';
++import { mkdtempSync, writeFileSync } from 'node:fs';
++import os from 'node:os';
++import path from 'node:path';
++import { pathToFileURL } from 'node:url';
++import { describe, expect, it } from 'vitest';
++import { handleCoordination } from './coordination.js';
++
++function fixture() {
++  const root = mkdtempSync(path.join(os.tmpdir(), 'coordination-test-'));
++  writeFileSync(path.join(root, 'source.txt'), 'original');
++  const options = {
++    root,
++    databasePath: path.join(root, 'state.sqlite'),
++    checks: [{ id: 'verify', impacts: ['api'] }],
++    runCheck: () => ({ ok: true, stdout: 'ok', stderr: '', exitCode: 0 }),
++  };
++  const call = (request: unknown) => handleCoordination(request, options);
++  call({
++    action: 'create',
++    id: 'change',
++    goal: 'Inspect',
++    impacts: ['api'],
++    sources: [{ path: 'source.txt', scope: 'test' }],
++  });
++  const analysis = {
++    action: 'record',
++    id: 'change',
++    actionId: 'a',
++    stage: 'analysis',
++    notes: 'Reviewed',
++    evidencePaths: ['source.txt'],
++    unresolved: [],
++  };
++  return { root, options, call, analysis };
++}
++describe('developer coordination', () => {
++  it('serializes identical records from two independent processes', async () => {
++    const { root, options, call, analysis } = fixture();
++    const moduleUrl = pathToFileURL(path.resolve('src/coordination.ts')).href;
++    const script = `import { handleCoordination } from ${JSON.stringify(moduleUrl)};
++      process.stdout.write('ready\\n');
++      await new Promise(resolve => process.stdin.once('data', resolve));
++      const options = { root: process.argv[1], databasePath: process.argv[2], checks: [{id: 'verify', impacts: ['api']}], runCheck: () => ({ok: true, stdout: '', stderr: '', exitCode: 0}) };
++      process.stdout.write(JSON.stringify(handleCoordination(JSON.parse(process.argv[3]), options)) + '\\n');`;
++    function start() {
++      const child = spawn(
++        process.execPath,
++        [
++          '--import',
++          'tsx',
++          '--input-type=module',
++          '-e',
++          script,
++          root,
++          options.databasePath,
++          JSON.stringify(analysis),
++        ],
++        { cwd: process.cwd(), stdio: ['pipe', 'pipe', 'pipe'] },
++      );
++      let output = '';
++      let errors = '';
++      child.stderr.on('data', (chunk: Buffer) => {
++        errors += chunk.toString();
++      });
++      const ready = new Promise<void>((resolve, reject) => {
++        child.stdout.on('data', (chunk: Buffer) => {
++          output += chunk.toString();
++          if (output.includes('ready\n')) resolve();
++        });
++        child.once('error', reject);
++        child.once('exit', (code) => {
++          if (code !== 0) reject(new Error(errors));
++        });
++      });
++      const done = new Promise<string>((resolve, reject) => {
++        child.once('error', reject);
++        child.once('exit', (code) => (code === 0 ? resolve(output) : reject(new Error(errors))));
++      });
++      return { child, ready, done };
++    }
++    const first = start();
++    const second = start();
++    await Promise.all([first.ready, second.ready]);
++    first.child.stdin.end('go');
++    second.child.stdin.end('go');
++    const outputs = await Promise.all([first.done, second.done]);
++    const duplicates = outputs
++      .map((output) => JSON.parse(output.trim().split('\n').at(-1) ?? '').duplicate)
++      .sort();
++    expect(duplicates).toEqual([false, true]);
++    expect(call({ action: 'status', id: 'change' }).events).toHaveLength(1);
++  });
++  it('rejects missing prerequisites, records checks and survives reopening the store', () => {
++    const { call, analysis } = fixture();
++    expect(() => call({ action: 'check', id: 'change', actionId: 'c', checkId: 'verify' })).toThrow(
++      'missing_prerequisite',
++    );
++    call(analysis);
++    call({ action: 'check', id: 'change', actionId: 'c', checkId: 'verify' });
++    call({ ...analysis, actionId: 'r', stage: 'reconciliation' });
++    expect(call({ action: 'status', id: 'change' }).readiness).toBe('ready-for-review');
++  });
++  it('deduplicates retries and rejects changed payloads', () => {
++    const { call, analysis } = fixture();
++    call(analysis);
++    expect(call(analysis)).toMatchObject({ duplicate: true });
++    expect(() => call({ ...analysis, notes: 'Different' })).toThrow('action_id_conflict');
++  });
++  it('retains history but blocks changed sources and sticky unresolved decisions', () => {
++    const { call, analysis, root } = fixture();
++    call({ ...analysis, unresolved: ['Owner decision'] });
++    call({ action: 'check', id: 'change', actionId: 'c', checkId: 'verify' });
++    expect(() => call({ ...analysis, actionId: 'r', stage: 'reconciliation' })).toThrow(
++      'missing_prerequisite',
++    );
++    writeFileSync(path.join(root, 'source.txt'), 'changed');
++    const status = call({ action: 'status', id: 'change' });
++    expect(status.staleSources).toEqual(['source.txt']);
++    expect(status.events).toHaveLength(2);
++    expect(status.readiness).toBe('blocked');
++  });
++  it('leaves an interrupted invocation unknown and does not repeat it', () => {
++    const { options, analysis } = fixture();
++    handleCoordination(analysis, options);
++    const request = { action: 'check', id: 'change', actionId: 'c', checkId: 'verify' };
++    expect(() =>
++      handleCoordination(request, {
++        ...options,
++        runCheck: () => {
++          throw new Error('interrupted');
++        },
++      }),
++    ).toThrow('interrupted');
++    const result = handleCoordination(request, {
++      ...options,
++      runCheck: () => {
++        throw new Error('reran');
++      },
++    });
++    expect(result).toMatchObject({ duplicate: true });
++    expect(result.events.at(-1)?.state).toBe('pending');
++  });
++  it('blocks a failed check and requires reconciliation after a later check', () => {
++    const { call, analysis, options } = fixture();
++    call(analysis);
++    const request = { action: 'check', id: 'change', actionId: 'c', checkId: 'verify' };
++    handleCoordination(request, {
++      ...options,
++      runCheck: () => ({ ok: false, stdout: '', stderr: 'failed', exitCode: 1 }),
++    });
++    expect(() => call({ ...analysis, actionId: 'r', stage: 'reconciliation' })).toThrow(
++      'missing_prerequisite',
++    );
++    call({ ...request, actionId: 'c2' });
++    call({ ...analysis, actionId: 'r', stage: 'reconciliation' });
++    call({ ...request, actionId: 'c3' });
++    expect(call({ action: 'status', id: 'change' }).readiness).toBe('blocked');
++  });
++  it('blocks secrets, uncovered impacts and changed procedure identity', () => {
++    const { root, options, call } = fixture();
++    writeFileSync(path.join(root, '.env'), 'secret');
++    expect(() =>
++      call({
++        action: 'create',
++        id: 'secret',
++        goal: 'Inspect',
++        impacts: ['api'],
++        sources: [{ path: '.env', scope: 'secret' }],
++      }),
++    ).toThrow('invalid_source_path');
++    expect(() =>
++      call({
++        action: 'create',
++        id: 'uncovered',
++        goal: 'Inspect',
++        impacts: ['security'],
++        sources: [{ path: 'source.txt', scope: 'test' }],
++      }),
++    ).toThrow('uncovered_impact');
++    expect(
++      handleCoordination(
++        { action: 'status', id: 'change' },
++        { ...options, procedureRevision: 'changed' },
++      ).procedureChanged,
++    ).toBe(true);
++  });
++  it('invalidates a check when its source changes during invocation', () => {
++    const { root, options, analysis } = fixture();
++    handleCoordination(analysis, options);
++    const result = handleCoordination(
++      { action: 'check', id: 'change', actionId: 'c', checkId: 'verify' },
++      {
++        ...options,
++        runCheck: () => {
++          writeFileSync(path.join(root, 'source.txt'), 'changed');
++          return { ok: true, stdout: '', stderr: '', exitCode: 0 };
++        },
++      },
++    );
++    expect(result.events.at(-1)?.state).toBe('stale');
++    expect(result.readiness).toBe('blocked');
++  });
++});
+diff --git a/packages/platform-mcp/src/coordinationTools.test.ts b/packages/platform-mcp/src/coordinationTools.test.ts
+new file mode 100644
+index 000000000..0965c99a0
+--- /dev/null
++++ b/packages/platform-mcp/src/coordinationTools.test.ts
+@@ -0,0 +1,119 @@
++import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
++import os from 'node:os';
++import path from 'node:path';
++import { afterEach, describe, expect, it } from 'vitest';
++import {
++  coordinationChecks,
++  listCoordinationTools,
++  runCoordinationCheck,
++  runPjcJourney,
++} from './coordinationTools.js';
++
++const temporaryRoots: string[] = [];
++
++function makePjcFixture(): string {
++  const root = mkdtempSync(path.join(os.tmpdir(), 'coordination-tools-'));
++  temporaryRoots.push(root);
++  mkdirSync(path.join(root, 'node_modules', 'tsx'), { recursive: true });
++  mkdirSync(path.join(root, 'scripts'), { recursive: true });
++  writeFileSync(path.join(root, 'package.json'), '{}');
++  writeFileSync(
++    path.join(root, 'node_modules', 'tsx', 'package.json'),
++    JSON.stringify({ bin: { tsx: 'cli.mjs' } }),
++  );
++  writeFileSync(
++    path.join(root, 'node_modules', 'tsx', 'cli.mjs'),
++    'console.log(JSON.stringify(process.argv.slice(2)))',
++  );
++  writeFileSync(path.join(root, 'scripts', 'pjc.ts'), '');
++  return root;
++}
++
++afterEach(() => {
++  for (const root of temporaryRoots.splice(0)) rmSync(root, { recursive: true, force: true });
++});
++
++describe('coordination tool inventory and checks', () => {
++  it('declares impacts for every fixed check and keeps security review unavailable', () => {
++    const checks = new Map(coordinationChecks.map((check) => [check.id, check]));
++    expect(checks.get('pjc-check')?.impacts).toContain('product');
++    expect(checks.get('c4-validate')?.impacts).toEqual(['architecture', 'integration']);
++    expect(checks.get('api-composition')?.impacts).toContain('api');
++    expect(checks.get('api-conformance')?.impacts).toContain('api');
++    expect(checks.get('ui-boundaries')?.impacts).toEqual(['web', 'native']);
++    expect(checks.get('sql-migrations')?.impacts).toContain('database');
++    expect(checks.get('dependency-cohorts')?.impacts).toContain('dependencies');
++    expect(checks.get('security-review')?.impacts).toContain('security');
++    expect(runCoordinationCheck(process.cwd(), 'security-review')).toMatchObject({
++      ok: false,
++      exitCode: null,
++      error: 'Security review is blocked because a scoped scan adapter is not implemented.',
++    });
++  });
++
++  it('returns bounded live version probes with an observation time and explicit blocked security state', {
++    timeout: 60000,
++  }, () => {
++    const inventory = listCoordinationTools(process.cwd());
++    expect(inventory.map((tool) => tool.id)).toContain('likec4');
++    expect(inventory.map((tool) => tool.id)).toContain('rg');
++    const likec4 = inventory.find((tool) => tool.id === 'likec4');
++    const spectral = inventory.find((tool) => tool.id === 'spectral');
++    const squawk = inventory.find((tool) => tool.id === 'squawk');
++    expect(likec4).toMatchObject({ availability: 'available', version: '1.60.0' });
++    expect(spectral).toMatchObject({ availability: 'available', version: '6.17.1' });
++    expect(squawk).toMatchObject({ availability: 'available', version: '2.72.0' });
++    const k6 = inventory.find((tool) => tool.id === 'k6');
++    if (k6?.availability === 'available') expect(k6.version).not.toBe('3.0');
++    expect(inventory.find((tool) => tool.id === 'security-review')).toMatchObject({
++      availability: 'blocked',
++      version: null,
++      capability: 'discovery-only',
++    });
++    for (const tool of inventory) {
++      expect(Number.isNaN(Date.parse(tool.observedAt))).toBe(false);
++      expect(['available', 'unavailable', 'blocked']).toContain(tool.availability);
++    }
++  });
++
++  it('rejects unknown checks without launching a command', () => {
++    expect(runCoordinationCheck(process.cwd(), 'not-allowlisted')).toMatchObject({
++      ok: false,
++      stdout: '',
++      exitCode: null,
++      error: 'Unknown or unavailable check: not-allowlisted',
++    });
++  });
++
++  it('runs the PJC journey command through the package bin with a validated journey ID', () => {
++    const root = makePjcFixture();
++    const result = runPjcJourney(root, 'journey:sample-1');
++    expect(result).toMatchObject({ ok: true, exitCode: 0 });
++    expect(JSON.parse(result.stdout)).toEqual([
++      '--tsconfig',
++      'packages/core/tsconfig.json',
++      'scripts/pjc.ts',
++      'journey',
++      'journey:sample-1',
++      '--format',
++      'json',
++    ]);
++  });
++
++  it('rejects malformed PJC journey IDs before resolving tools or launching a process', () => {
++    expect(runPjcJourney('missing-root', '../outside')).toMatchObject({
++      ok: false,
++      stdout: '',
++      stderr: 'Invalid journey ID',
++      exitCode: null,
++      error: 'Invalid journey ID',
++    });
++  });
++
++  it('accepts dotted PJC journey IDs used by the catalog', () => {
++    const root = makePjcFixture();
++    const result = runPjcJourney(root, 'journey:api.secure_operations');
++    expect(result.ok).toBe(true);
++    expect(JSON.parse(result.stdout)).toContain('journey:api.secure_operations');
++  });
++});
+diff --git a/packages/platform-mcp/src/coordinationGateway.integration.test.ts b/packages/platform-mcp/src/coordinationGateway.integration.test.ts
+new file mode 100644
+index 000000000..309b23fbf
+--- /dev/null
++++ b/packages/platform-mcp/src/coordinationGateway.integration.test.ts
+@@ -0,0 +1,119 @@
++import { execFileSync } from 'node:child_process';
++import { mkdtempSync } from 'node:fs';
++import os from 'node:os';
++import path from 'node:path';
++import { fileURLToPath } from 'node:url';
++import { Client } from '@modelcontextprotocol/client';
++import { getDefaultEnvironment, StdioClientTransport } from '@modelcontextprotocol/client/stdio';
++import { expect, it } from 'vitest';
++import { z } from 'zod';
++
++const workspace = fileURLToPath(new URL('../../../', import.meta.url));
++const compiled = process.env.COORDINATION_TEST_COMPILED === '1';
++const runtimeArgs = compiled ? [] : ['--import', 'tsx'];
++const entrypoint = (name: string) =>
++  path.join(workspace, 'packages/platform-mcp', compiled ? `dist/${name}.js` : `src/${name}.ts`);
++const responseSchema = z.object({
++  content: z.array(z.object({ type: z.literal('text'), text: z.string() })),
++  isError: z.boolean().optional(),
++});
++
++it('shares a persistent change between the real CLI and MCP gateway without activating downstreams or skill sync', {
++  timeout: 60000,
++}, async () => {
++  const store = path.join(
++    mkdtempSync(path.join(os.tmpdir(), 'coordination-gateway-')),
++    'state.sqlite',
++  );
++  const cli = (request: unknown): unknown =>
++    JSON.parse(
++      execFileSync(
++        process.execPath,
++        [...runtimeArgs, entrypoint('cli/coordination'), '-', '--store', store],
++        { cwd: workspace, input: JSON.stringify(request), encoding: 'utf8', timeout: 20000 },
++      ),
++    );
++  const source = 'docs/architecture/model/gurudevi.c4';
++  expect(
++    cli({
++      action: 'create',
++      id: 'gateway-check',
++      goal: 'Validate declared architecture',
++      impacts: ['architecture'],
++      sources: [{ path: source, scope: 'C4 model only' }],
++    }),
++  ).toMatchObject({ readiness: 'blocked' });
++  const client = new Client({ name: 'coordination-integration-test', version: '1.0.0' });
++  const transport = new StdioClientTransport({
++    command: process.execPath,
++    args: [...runtimeArgs, entrypoint('index')],
++    cwd: workspace,
++    env: {
++      ...getDefaultEnvironment(),
++      MCP_MODE: 'GATEWAY',
++      PLATFORM_MCP_SKIP_DOWNSTREAM: '1',
++      PLATFORM_MCP_SKIP_SKILL_SYNC: '1',
++      COORDINATION_STORE: store,
++    },
++    stderr: 'pipe',
++  });
++  try {
++    await client.connect(transport);
++    expect((await client.listTools()).tools.map((tool) => tool.name)).toContain(
++      'sovereign_coordination',
++    );
++    const call = async (request: unknown): Promise<unknown> => {
++      const result = responseSchema.parse(
++        await client.callTool({ name: 'sovereign_coordination', arguments: { request } }),
++      );
++      expect(result.isError, JSON.stringify(result.content)).not.toBe(true);
++      const text = result.content[0]?.text;
++      if (!text) throw new Error('Missing coordination response');
++      return JSON.parse(text);
++    };
++    expect(await call({ action: 'status', id: 'gateway-check' })).toMatchObject({
++      change: { id: 'gateway-check' },
++      readiness: 'blocked',
++    });
++    const analysis = {
++      action: 'record',
++      id: 'gateway-check',
++      actionId: 'analysis',
++      stage: 'analysis',
++      notes: 'Declared C4 model only; runtime alignment unverified.',
++      evidencePaths: [source],
++      unresolved: [],
++    };
++    await call(analysis);
++    expect(
++      cli({ action: 'check', id: 'gateway-check', actionId: 'c4', checkId: 'c4-validate' }),
++    ).toMatchObject({ missingChecks: [] });
++    expect(await call({ ...analysis, actionId: 'review', stage: 'reconciliation' })).toMatchObject({
++      readiness: 'ready-for-review',
++    });
++    expect(cli({ action: 'status', id: 'gateway-check' })).toMatchObject({
++      readiness: 'ready-for-review',
++    });
++    expect(
++      await call({ action: 'context', journeyId: 'journey:api.secure_operations' }),
++    ).toMatchObject({ status: 'observed', journeyId: 'journey:api.secure_operations' });
++    const rejected = await client.callTool({
++      name: 'sovereign_coordination',
++      arguments: {
++        request: {
++          action: 'record',
++          id: 'gateway-check',
++          actionId: 'forged',
++          stage: 'analysis',
++          notes: 'Forged',
++          evidencePaths: [source],
++          unresolved: [],
++          result: { ok: true },
++        },
++      },
++    });
++    expect(rejected.isError).toBe(true);
++  } finally {
++    await client.close();
++  }
++});
+diff --git a/packages/platform-mcp/src/services/CoordinationService.ts b/packages/platform-mcp/src/services/CoordinationService.ts
+new file mode 100644
+index 000000000..2a18211c3
+--- /dev/null
++++ b/packages/platform-mcp/src/services/CoordinationService.ts
+@@ -0,0 +1,126 @@
++import { createHash } from 'node:crypto';
++import { readdirSync, readFileSync, realpathSync } from 'node:fs';
++import path from 'node:path';
++import { fileURLToPath } from 'node:url';
++import { z } from 'zod';
++import { coordinationRequestSchema, handleCoordination } from '../coordination.js';
++import {
++  coordinationChecks,
++  listCoordinationTools,
++  runCoordinationCheck,
++  runPjcJourney,
++} from '../coordinationTools.js';
++import { ROOT_DIR } from '../utils/constants.js';
++
++export const developerCoordinationSchema = z.union([
++  coordinationRequestSchema,
++  z.strictObject({ action: z.literal('inventory') }),
++  z.strictObject({
++    action: z.literal('context'),
++    journeyId: z
++      .string()
++      .max(160)
++      .regex(/^[a-zA-Z0-9:_.-]+$/),
++  }),
++]);
++
++function catalogSources(root: string) {
++  const directory = path.join(root, 'packages/core/src/flows/pjc');
++  const files = readdirSync(directory)
++    .filter((name) => name.endsWith('.json'))
++    .map((name) => path.join(directory, name));
++  files.push(
++    path.join(root, 'scripts/pjc.ts'),
++    path.join(root, 'docs/architecture/model/gurudevi.c4'),
++    path.join(root, 'apps/sanctuary-api/src/modules/catalog.ts'),
++  );
++  return files.map((file) => {
++    const resolved = realpathSync(file);
++    const relative = path.relative(realpathSync(root), resolved);
++    if (relative.startsWith('..') || path.isAbsolute(relative))
++      throw new Error('Context source escapes workspace');
++    return {
++      path: relative.replaceAll('\\', '/'),
++      sha256: createHash('sha256').update(readFileSync(resolved)).digest('hex'),
++    };
++  });
++}
++
++export function executeCoordinationRequest(
++  input: unknown,
++  options: { root?: string; databasePath?: string } = {},
++) {
++  const request = developerCoordinationSchema.parse(input);
++  const root = options.root ?? ROOT_DIR;
++  if (request.action === 'inventory')
++    return {
++      observedAt: new Date().toISOString(),
++      tools: listCoordinationTools(root),
++      checks: coordinationChecks,
++    };
++  if (request.action === 'context') {
++    const before = catalogSources(root);
++    const result = runPjcJourney(root, request.journeyId);
++    if (!result.ok)
++      return { status: 'unavailable', journeyId: request.journeyId, result, sources: before };
++    const projection: unknown = JSON.parse(result.stdout);
++    const after = catalogSources(root);
++    return {
++      status: JSON.stringify(before) === JSON.stringify(after) ? 'observed' : 'stale',
++      journeyId: request.journeyId,
++      projection,
++      sources: before,
++      coverageGaps: [
++        'PJC links are declarations; this reader does not establish execution or semantic correctness.',
++        'C4 and capability catalog hashes identify adjacent sources; their relationships are not automatically joined to this journey.',
++        'Chat history, external decisions, inaccessible sources and unregistered relationships are not searched by this projection.',
++      ],
++    };
++  }
++  return handleCoordination(request, {
++    root,
++    databasePath:
++      options.databasePath ??
++      process.env.COORDINATION_STORE ??
++      path.join(root, '.agents/state/coordination.sqlite'),
++    checks: coordinationChecks,
++    procedureRevision: createHash('sha256')
++      .update(readFileSync(new URL(import.meta.url)))
++      .update(
++        readFileSync(
++          new URL(
++            `../coordinationTools${path.extname(fileURLToPath(import.meta.url))}`,
++            import.meta.url,
++          ),
++        ),
++      )
++      .update(
++        readFileSync(
++          new URL(
++            `../utils/execution${path.extname(fileURLToPath(import.meta.url))}`,
++            import.meta.url,
++          ),
++        ),
++      )
++      .update(readFileSync(path.join(root, 'pnpm-lock.yaml')))
++      .update(
++        JSON.stringify(
++          [
++            'scripts/pjc.ts',
++            'scripts/audit-api-composition.mjs',
++            'scripts/check-ui-boundaries.mjs',
++            'scripts/lint-new-migrations.mjs',
++            'scripts/harmonize-dependencies.mjs',
++            'apps/sanctuary-api/scripts/capability-conformance.ts',
++          ].map((file) => ({
++            path: file,
++            sha256: createHash('sha256')
++              .update(readFileSync(path.join(root, file)))
++              .digest('hex'),
++          })),
++        ),
++      )
++      .digest('hex'),
++    runCheck: (id) => runCoordinationCheck(root, id),
++  });
++}
+diff --git a/packages/platform-mcp/src/cli/coordination.ts b/packages/platform-mcp/src/cli/coordination.ts
+new file mode 100644
+index 000000000..51977f14e
+--- /dev/null
++++ b/packages/platform-mcp/src/cli/coordination.ts
+@@ -0,0 +1,25 @@
++import { readFileSync } from 'node:fs';
++import { executeCoordinationRequest } from '../services/CoordinationService.js';
++
++const args = process.argv.slice(2);
++if (args.length === 0 || args[0] === '--help') {
++  process.stdout.write(
++    'Usage: pnpm --filter @repo/platform-mcp coordination <request.json|-> [--store database.sqlite]\nActions: inventory, context, create, status, record, check. JSON requests use the same schema as sovereign_coordination.\n',
++  );
++  process.exitCode = args.length === 0 ? 2 : 0;
++} else {
++  try {
++    if (args.length !== 1 && !(args.length === 3 && args[1] === '--store'))
++      throw new Error('Expected request file and optional --store path');
++    const file = args[0];
++    if (!file) throw new Error('Missing request file');
++    const request: unknown = JSON.parse(readFileSync(file === '-' ? 0 : file, 'utf8'));
++    const result = executeCoordinationRequest(request, args[2] ? { databasePath: args[2] } : {});
++    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
++  } catch (error) {
++    process.stderr.write(
++      `${JSON.stringify({ error: error instanceof Error ? error.message : String(error) })}\n`,
++    );
++    process.exitCode = 1;
++  }
++}
+diff --git a/packages/platform-mcp/docs/developer-coordination.md b/packages/platform-mcp/docs/developer-coordination.md
+new file mode 100644
+index 000000000..784d58837
+--- /dev/null
++++ b/packages/platform-mcp/docs/developer-coordination.md
+@@ -0,0 +1,142 @@
++---
++title: "Local developer coordination"
++status: "active"
++created: 2026-11-11
++updated: 2026-11-11
++author: "Codex"
++tags: [agents, developer-tooling, procedures, evidence]
++---
++
++# Local developer coordination
++
++The CLI and `sovereign_coordination` MCP tool share one implementation and local SQLite
++history. This is a bounded pilot for recording engineering analysis and existing checks.
++It does not schedule agents, intercept editor writes, accept product requirements, or
++replace the repository's gates. The gateway exposes it in GATEWAY and unrestricted modes;
++LEAN mode retains its existing allowlist.
++
++Build first with `pnpm --filter @repo/platform-mcp build`, then use
++`pnpm --filter @repo/platform-mcp coordination <request.json|->`. A dash reads JSON
++from stdin. `--store <database.sqlite>` selects an isolated local store for experiments;
++the default is `.agents/state/coordination.sqlite` in the workspace. MCP uses that same
++default; `COORDINATION_STORE` can select a different store before starting the gateway.
++Restart a gateway to load changed tool registrations. No host configuration is changed
++automatically by this pilot.
++
++The package command uses the compiled CLI, matching the compiled gateway's implementation
++identity. For source development, run both entrypoints through `tsx`. Mixing compiled and
++source entrypoints is deliberately treated as a changed procedure; rebuild and use the
++same entrypoint form for a shared run.
++
++## Recover context and check tools
++
++```json
++{"action":"inventory"}
++```
++
++Inventory actually probes versions. Available, unavailable, blocked, discovery-only and
++check-enabled are distinct. Inventory does not execute load tests or vulnerability scans.
++Spectral needs a document and ruleset; Schemathesis needs a supported schema and scoped
++target. Their installation does not authorize a parallel first-party API contract.
++
++```json
++{"action":"context","journeyId":"journey:api.secure_operations"}
++```
++
++Context calls the existing PJC journey reader and returns its projection with hashes of
++the adjacent PJC JSON files, C4 model, API catalog and reader entrypoint. Missing inputs
++or a failed reader produce errors; they do not become an empty successful search. These
++hashes identify sources, not a complete dependency closure. C4 and API relationships are
++not automatically joined to the journey. External sources and chat history remain explicit
++coverage gaps. Before/after hashes detect source changes during the reader call.
++
++## Record a bounded change
++
++```json
++{
++  "action":"create", "id":"c4-review-001", "goal":"Review the declared system model",
++  "impacts":["architecture"],
++  "sources":[{"path":"docs/architecture/model/gurudevi.c4","scope":"Declared model only; live hops unverified"}],
++  "links":[]
++}
++```
++
++Source paths must be explicit workspace files. Known secret paths and escapes are rejected;
++filename checks are not a secret scanner. Supply no credentials. Sources are hashed, not
++copied. Choose all affected layers; the pilot cannot prove that an agent declared the
++complete impact set. Link records carry subject, predicate, object, sourcePath and a
++classification: declared, mechanically-extracted, inferred or unresolved. Their supporting
++source must be in this change. A sourced inference does not become an accepted requirement.
++
++| Declared impact | Required existing check |
++| --- | --- |
++| product | PJC structural check |
++| architecture | LikeC4 validation |
++| integration | LikeC4 and API composition |
++| api | API composition and capability conformance |
++| web, native | UI import boundaries |
++| database | Existing changed-migration Squawk wrapper |
++| dependencies | Existing dependency cohort check |
++| security | Blocked: scoped security scan adapter not implemented |
++
++This matrix is a versioned pilot policy, not the complete acceptance policy for each
++layer. In particular, import boundaries do not test UI behavior; a migration run with no
++changed files is not database runtime proof. Continue all applicable build, test,
++device, CI, architecture and human review requirements.
++
++```json
++{"action":"record","id":"c4-review-001","actionId":"analysis-1","stage":"analysis","notes":"Reviewed declared C4 structure; runtime correspondence remains unverified.","evidencePaths":["docs/architecture/model/gurudevi.c4"],"unresolved":[]}
++```
++
++```json
++{"action":"check","id":"c4-review-001","actionId":"check-1","checkId":"c4-validate"}
++```
++
++Only allowlisted check IDs run, with fixed argument arrays and no command shell. The
++adapter records real stdout, stderr, exit status and errors. Callers cannot submit an
++observed pass. Analysis must precede checks. A check must exit successfully before it
++satisfies its prerequisite. Exceptions, timeouts and missing tools remain unsuccessful.
++
++```json
++{"action":"record","id":"c4-review-001","actionId":"reconcile-1","stage":"reconciliation","notes":"The declared model validator completed; product behavior still requires its own evidence.","evidencePaths":["docs/architecture/model/gurudevi.c4"],"unresolved":[]}
++```
++
++```json
++{"action":"status","id":"c4-review-001"}
++```
++
++Reconciliation requires successful selected checks and no unresolved decisions. Later
++analysis or checks require reconciliation again. The terminal label is `ready-for-review`.
++It proves this local procedure's recorded prerequisites, not truth, approval or shipment.
++
++CLI exit 0 means the request was processed. Inspect the returned check result and
++`readiness`; a recorded failing check can still be a successfully processed request.
++Use the guarded reconciliation action before treating the local procedure as satisfied.
++
++## Retry, resume and failure
++
++Reuse an action ID with the identical parsed request to retrieve its recorded outcome.
++A conflicting payload under that ID is rejected. New attempts use new action IDs. Every
++call reopens the same store, so a later process can resume recorded work. Check intent is
++persisted before invocation. A crash before its result leaves a pending/unknown outcome;
++retrying that ID does not execute the command again. Inspect it, then use a new ID for a
++fresh read-only check when appropriate. No exactly-once side-effect guarantee is claimed.
++
++Status rehashes declared sources. Changed or missing files, or a changed procedure
++implementation, block readiness and further writes. History is retained. Create a new
++change ID after reconsidering the affected conclusions and source set; automatic rebasing
++or transferring conclusions is not implemented. Unresolved decisions accumulate and
++cannot be erased with an empty later record. Record the eventual authoritative decision
++in its owning source, then create a reconsidered change referencing it. This does not
++authenticate the person who made the decision.
++
++SQLite transactions serialize local writes with a bounded busy timeout. The local owner
++can edit the database or bypass this tool; it is not an authorization boundary, tamper-proof
++ledger, or multi-host scheduler. No automatic Codex/Claude hook enforcement is claimed.
++
++Study findings and the integration's verification limits are in
++[`2026-11-11-agent-coordination-study.md`](../../../docs/architecture/2026-11-11-agent-coordination-study.md).
++
++The first real local pilot record is `coordination-foundation-20261111`. Resume it with
++`{"action":"status","id":"coordination-foundation-20261111"}`. Its retained blockers
++are evidence about unfinished integration, not authority to waive repository gates.
+diff --git a/docs/architecture/2026-11-11-agent-coordination-study.md b/docs/architecture/2026-11-11-agent-coordination-study.md
+new file mode 100644
+index 000000000..4ec832389
+--- /dev/null
++++ b/docs/architecture/2026-11-11-agent-coordination-study.md
+@@ -0,0 +1,318 @@
++---
++title: "Persistent coordination for AI development: investigation and experiments"
++status: "active"
++created: 2026-11-11
++updated: 2026-11-11
++author: "Codex"
++tags: [agents, architecture, coordination, provenance, experiments, pstack]
++---
++
++# Persistent coordination for AI development
++
++This study examines how project knowledge, responsibilities, procedures, and execution history can be connected for AI-assisted engineering. It contains a proposed architecture and an isolated controller. Neither is a production service or a replacement for existing product authorities. All 36 trial responses were collected and independently reviewed. The study supports specific mechanical checks, but does not establish a general reasoning advantage from the added procedures.
++
++The study artifacts are in [research/coordination-study](../../research/coordination-study/). The [protocol](../../research/coordination-study/protocol.json), [amendments](../../research/coordination-study/protocol-amendments.json), and [decision trail](../../research/coordination-study/decisions.tsv) record scope and consequential changes. The user requested reuse of investigators and cheaper models where sufficient. Controlled trial contexts remain fresh. Comparisons are grouped by case and model.
++
++## What exists and where the connections stop
++
++The [knowledge investigation](../../research/coordination-study/knowledge-findings.json) and [procedure investigation](../../research/coordination-study/procedure-findings.json) preserve source locators, evidence classifications, history, and limitations. These are observations of a changing working tree. Git HEAD changed during the study because other work continued. Each snapshot's own revision, timestamp, and content hashes apply; the report does not assume one immutable repository revision.
++
++| Existing authority or mechanism | What it represents | Observed boundary |
++| --- | --- | --- |
++| PJC | Feature, intent, journey, requirements, scenarios, implementation bindings, observations, impacts, and evidence | Generic links do not express scoped expansion, clarification, or supersession. Static validity does not establish current prose or behavioral truth. |
++| API module and capability catalog | Declared admission, kind, channel, assurance, and required evidence | Does not grant permission to invent product policy or establish successful execution. |
++| API conformance | Joins declared capabilities with cards, selected document tables, contract/router, tagged evidence, callers, and channels | PJC narrative is outside this join. Handler-related freshness uses filesystem modification times, which differ from content-version semantics. |
++| Domain cards and architectural decisions | Human decisions about ownership, authority, boundaries, and sequencing | Proposal, implementation description, and governing decision can coexist in a document and require scope-aware interpretation. |
++| Platform discovery and Scout | Source and dependency discovery | Some caught discovery failures can be rendered as no traces. No measured recall for the whole study was established. |
++| Product FlowDAGs | Product journey structure and validation | Product journey state is not an engineering run or developer workflow execution. |
++| Agent workflow documents and pstack | Procedures interpreted by an agent | Numbered steps and instructions are not an executing state machine. |
++| Local gates, receipts, and CI | Selected dialect, dependency, evidence, and architecture checks | Invocation, payload compatibility, coverage, and failure behavior must be tested independently of comments and configuration. |
++
++The observed PJC check returned zero structural errors, 428 gap entries, and 113 bindings. This is a G0 declaration check, not 428 independently confirmed defects or proof of working application journeys. See investigation command records for the exact scope.
++
++Two source cases illustrate why relationships need scope. The Covenant expands the introduction and explicitly supersedes only overlapping pillar definitions. Both relations are valid simultaneously. The API PJC narrative describes an empty v1 contract, while the supplied router and catalog declare six foundation capabilities. An empty business contract is a separate qualification and does not conflict with horizontal identity and authority admission.
++
++## Proposed architecture
++
++The project needs a connection between the existing knowledge authorities and a persistent record of engineering work. A context result is a projection with provenance and gaps. It is not a new source of product truth.
++
++```mermaid
++flowchart TD
++    P[PJC and product decisions] --> R[Context resolution]
++    A[API catalogs and domain cards] --> R
++    S[Source, designs, history and evidence] --> R
++    R --> C[Persistent engineering change]
++    C --> W[Versioned procedure and permitted actions]
++    W --> T[Deterministic tools]
++    W --> M[AI investigation and interpretation]
++    W --> H[Human decisions when required]
++    T --> E[Recorded results and evidence]
++    M --> E
++    H --> E
++    E --> V[Validate and evaluate transition]
++    V --> W
++    V --> Q[Reconciliation obligations]
++    Q --> P
++    Q --> A
++```
++
++### Knowledge and source identity
++
++Keep PJC record IDs, API capability names, domain-card/module identities, source paths and symbols, and scenario IDs as distinct references to their respective authorities. Record cross-system associations explicitly. A shared display name is not an identity join.
++
++A source reference contains its locator, exact content hash or provider version, observed revision, observation time, and scope. A relationship contains subject, predicate, object, scope, source references, classification, and temporal applicability. Classifications are declared, mechanically extracted, inferred, and unresolved. The last two must not silently become accepted decisions.
++
++Relations include ownership, dependency, implementation, verification, clarification, expansion, supersession, and historical applicability. Supersession names the affected statement or section. It does not retire the entire source unless the authorizing decision has that scope. Observation time and a document's effective time are separate.
++
++### Responsibilities and authority
++
++The coordinator owns the change's goal, dependencies, integration, and handoff. Investigators provide source-backed observations. Implementers produce scoped changes. Verifiers evaluate outputs and claims independently. A product owner supplies decisions requiring product authority. Graph ownership is a maintenance/contact relation, not runtime permission.
++
++AI can propose an interpretation, discover an unrecorded dependency, or identify a suspected conflict. It cannot promote its own inference to an accepted owner decision. A valid structured record is not evidence of a correct interpretation. Missing source access remains an explicit coverage gap.
++
++### Proposed interfaces
++
++These contracts are design outputs for future tooling, not added public application endpoints.
++
++| Interface | Input | Output and rule |
++| --- | --- | --- |
++| `resolveContext` | Explicit selectors such as PJC IDs, capability names, files, symbols, and required evidence categories | Source snapshots, classified relations, applicable decisions, existing behavior, declared dependencies, and coverage gaps. Natural-language matching first produces recorded candidate selectors. |
++| `createChange` | Goal, scope, authorizing source, context snapshot, procedure ID and version | Persistent change ID, run ID, initial state, dependencies, and completion criteria. The procedure version is pinned for the run. |
++| `recordAction` | Change/run/action ID, action kind, typed input/output, source dependencies, evidence, actor identity, and outcome | Append-only event or explicit rejection. Identical retries are idempotent; conflicting payloads under an existing action ID are rejected. |
++| `evaluateNext` | Recorded events, pinned procedure, current source versions, and authority | Allowed actions, blocked prerequisites, invalidated work, and unresolved decisions. It does not infer that an omitted relationship is absent. |
++| `resumeChange` | Change ID and current source observations | Valid completed work, invalidated dependent work, retained history, and next permitted actions. |
++| `reconcileChange` | Changed artifacts, declared relationships, and check evidence | Obligations to update, reverify, or explicitly review affected records. Prose drift candidates require interpretation. |
++
++Procedure definitions specify required inputs and outputs, permissible transitions, dependencies, retry boundaries, failure outcomes, and completion criteria. Production design must add authenticated decision resolution, trusted persistence, concurrent-writer handling, and runtime adapters. The isolated prototype intentionally does not implement those mechanisms.
++
++### Persistence and change propagation
++
++Persist engineering changes and runs separately from product journey state. Record decisions and action events with evidence. Derive status from events rather than trusting a mutable `done` flag. Preserve earlier decisions and invalidate only the dependent work affected by new inputs. A changed source set also requires context reconsideration.
++
++Start integration in developer tooling through existing PJC and conformance readers. Developer coordination belongs outside product screens and the Sanctuary business API. Before choosing its permanent module, inspect the platform-MCP package's current service contracts and testable entry points. The report recommends that seam, not a new parallel product namespace or database platform.
++
++## Experiment method and evidence
++
++The prepared suite contains six cases, three conditions, and two repetitions, for 36 fresh contexts. Every case's source extracts are frozen and hashed once, then copied identically across conditions. Two cases use synthetic handoffs or competing proposals. The tasks inspect bounded source packets rather than discover an entire repository. That isolates reasoning about supplied relationships but does not measure discovery recall.
++
++Condition X uses the current project context. Condition Y adds explicit pstack-derived recovery, investigation, and reconciliation instructions. It is a bounded procedural treatment, not the full pstack multi-agent stack. Condition Z adds actual local controller calls. All conditions can access the same provided tools. The existing root already activates pstack, so X is not a clean no-pstack baseline.
++
++Document and API case groups use Sol. After the user's model preference, the remaining complete case groups use Luna. Effective model and reasoning settings are taken from scoped transcripts. Comparison across these strata cannot establish a model-independent treatment effect. Token records report runtime usage including cached input; monetary cost is unknown.
++
++Candidate directories and work IDs are neutral. Candidates do not receive the condition mapping or evaluation oracle. Root instructions and tool metadata are shared, so blinding and filesystem isolation are partial. Source boundaries are instructed rather than enforced by a sandbox. Transcript checks must distinguish actual reading and controller invocation from self-report.
++
++The [collector](../../research/coordination-study/experiment/collect.mjs) extracts task messages, actual tool calls and outputs, final responses, model settings, and usage from only matching child sessions of this coordinator. It excludes private reasoning and system/developer instruction text. It preserves raw final text separately from parsed responses and copies each completed work directory into the study. Tool counts are model-visible invocations, not arbitrary subprocess actions inside a shell command. One initial usage-limit failure was retried once before a usable response; the trial transcript retains both task starts.
++
++Source-fidelity criteria were formalized from the approved case goals after the coordinator had seen early outputs. The Terra reviewer received all 36 outputs under neutral labels before inspecting their model/condition mapping. Response wording can reveal methodology, so this is partial blinding and engineering judgment, not a preregistered causal experiment. Execution fields were examined separately after that semantic review.
++
++### Local controller checks
++
++The frozen controller supplied to candidates is preserved as [controller.frozen.mjs](../../research/coordination-study/experiment/controller.frozen.mjs). A hardened version is [controller.mjs](../../research/coordination-study/experiment/controller.mjs). They have separate evidence and must not be conflated.
++
++G1 local boundary and subprocess checks ran against 13 scenarios. The frozen version passed 10 and failed three: payload-key reorder idempotency, changed source-set membership, and silently clearing a prior unresolved decision. The hardened version passed all 13. The [raw verification record](../../research/coordination-study/local-verification.json) includes both results. These tests use synthetic state with real Node processes and local files. They do not prove production operation, model reasoning, human authority, concurrency safety, or automatic hook interception.
++
++The hardened controller preserves unresolved declarations across later stages. It has no authenticated resolution action, so unresolved decisions remain blocked rather than being cleared through a new interpretation. It checks declared source hashes and stage order, but an owner of its local files can manufacture coherent history. An explicit test demonstrates that bypass. Source hashing also cannot prove a source was read or understood.
++
++### Existing gate canaries
++
++Nine G1 isolated subprocess canaries reproduced the investigator's exit-code observations. The [reproduction script](../../research/coordination-study/experiment/canaries.mjs) copies the existing scripts into temporary directories and uses synthetic content with real Node and Git. The [raw reproduction](../../research/coordination-study/canary-reproduction.json) records stdout and stderr.
++
++| Boundary | Observed result |
++| --- | --- |
++| Recognized `input.file_path/content`, truncating 60 lines | Rejects with exit 2 |
++| Same truncation under `tool_input` | Exits 0 without the expected check |
++| Missing path/input | Exits 0 |
++| Native input without a receipt | Rejects with exit 2 |
++| Same input with `--auto-ground` | Exits 0 and creates a fresh receipt |
++| Receipt with invalid timestamp | Exits 0 |
++| Stop script outside Git | Exits 0 |
++| Native violation in a nested untracked directory | Reports clean and exits 0 |
++| Same violation staged | Rejects with exit 2 |
++
++These results establish specific script behavior, not live hook registration. The inspected Codex CLI supports hooks, but current-session automatic interception remains unobserved. The Claude configuration declares pre-write and completion actions; actual compatibility with the installed runtime must be verified separately. No claim is made that Codex lacks hooks.
++
++## Results and interpretation
++
++All 36 responses are preserved with source packets, raw final text, actual tool calls, model settings, and available token records. All post-run source and controller hashes match their prepared snapshots. Each case group used one model and effort setting across all conditions. Every trial stayed within 20 model-visible tool calls. See the [artifact audit](../../research/coordination-study/artifact-audit.json), [comparison](../../research/coordination-study/comparison.json), and [trial manifest](../../research/coordination-study/trial-manifest.json).
++
++| Case and model | Structural checks X / Y / Z | Main-answer review X / Y / Z |
++| --- | --- | --- |
++| Introduction and Covenant, Sol | 2 / 2 / 2 | 2 supported / 2 supported / 2 supported |
++| API scope, Sol | 2 / 2 / 2 | 2 supported / 2 supported / 2 supported |
++| Older instructions, Luna | 2 / 1 / 2 | 1 supported and 1 partial in each condition |
++| Hook observation, Luna | 2 / 2 / 2 | 2 supported / 2 supported / 2 supported |
++| Resume, Luna | 1 / 1 / 2 | 2 partial / 2 supported / 2 supported |
++| Missing authority, Luna | 2 / 0 / 2 | 2 supported / 2 supported / 2 supported |
++
++Each cell covers two repetitions. Structural and semantic outcomes are separate. The limited structural checker accepted 31 responses and flagged five: two wrong work IDs and three findings without source IDs. The latter include unknown/absence claims, so the flags reflect a source-reference policy rather than proof of incorrect reasoning. Original responses were not repaired to pass.
++
++The static artifact review also found that the original local `resume-Y-1/work/response.json` ends with a literal backslash-n outside its JSON object. That malformed local file is retained unchanged as negative evidence. The separately captured final response parses as JSON but still has the wrong work ID. The limited structural score uses the captured final response and does not count this separate file-format failure. A coordinator-authored syntax error in `source-coverage.json` was corrected; it was not candidate evidence.
++
++The independent source-fidelity review classified 31 main answers as supported and five as partial. These are not the same 31 responses as the structural passes. Two resume answers claimed a matching historical handoff hash that the synthetic handoff did not contain. Three older-instruction answers overextended the conflict, treating compatible package placement or resource constraints as contradicted, or omitting the world-recipe boundary. The correct main direction did not justify those extra claims. See the [semantic review](../../research/coordination-study/semantic-review.json).
++
++All 12 Z runs invoked the controller and persisted four stage records. A direct projection of their saved states showed seven `canComplete: true` and five blocked by declared unresolved items. These values describe the controller's local review procedure, not completion of the underlying product work. The [saved-state projection](../../research/coordination-study/controller-run-status.json) and transcripts permit independent checking.
++
++The resume fixture supplied a written handoff rather than the prior persisted controller state or historical source bytes. Consequently the agent trials tested reasoning about that handoff. They did not demonstrate actual cross-session rebase of that interrupted change. Real subprocess restart and stale-prefix recovery were exercised separately in the G1 controller tests. Several trial execution fields also called verification/reconciliation stages complete while the underlying change remained unverified. The independent review flags those as review-stage declarations, not product-work evidence; some next actions omitted explicit reconciliation.
++
++In these curated packets, the baseline already reached the main document, API, hook, and owner-authority conclusions. Added procedures did not eliminate unsupported claims. The controller made declared transitions and evidence inspectable and rejected modeled violations in local tests. The evidence does not establish a general semantic improvement, discovery completeness, or production-ready enforcement. The useful next investment is stronger authority and evidence connections at specific boundaries, rather than adding another broad prompt or declaring the prototype a complete organization model.
++
++### Independent verification and quality gate
++
++Terra checked selected source citations, independently reran the hardened controller's 13 tests, reviewed all neutral response labels, and challenged the reproduction path. It found that the runner initially copied the hardened controller for new preparations while integrity checks expected the frozen version. The runner was corrected to use the frozen file. A fresh preparation then matched its hash, and all 36 unrun entries scored inconclusive. Existing results were not regenerated or replaced. See [verification.json](../../research/coordination-study/verification.json).
++
++This is G0 source/configuration inspection and G1 synthetic boundaries with real local Node/Git subprocesses. It does not establish deployed API behavior, device behavior, automatic Codex hook interception, authenticated decision approval, concurrent writers, or exhaustive citation/relationship coverage. The independent reviewer is a separate model execution, not a deterministic oracle.
++
++The required broader anti-slop run exited 1 at aislop with 48 errors and 1,304 warnings across the then-current working tree. CNG, native-slop, and hollow-stub stages exited zero; later chained stages did not run. The extracted study diagnostics contained no errors and 72 formatting warnings, including preserved trial artifacts. This does not attribute the whole-tree failures to this study or waive them. See [gate result](../../research/coordination-study/anti-slop-result.json), [full output](../../research/coordination-study/anti-slop-output.txt), and [scoped diagnostics](../../research/coordination-study/anti-slop-diagnostics.json).
++
++## Prioritized implementation handoff
++
++Retain PJC, domain cards, capability declarations, conformance readers, and their existing authorities. Keep engineering execution state separate from product journey state. The following are proposed future changes, not implemented production mechanisms.
++
++| Priority | Existing seam and proposed change | Acceptance evidence |
++| --- | --- | --- |
++| P0 | Discovery/Scout result contracts distinguish available, empty, partial, and failed source searches | Inject provider/process failure and prove it cannot be rendered as a verified empty result; retain underlying diagnostics. |
++| P0 | Hook adapters validate actual installed-runtime payloads and registration separately from scanning | Harmless automatic edit and completion canaries in Codex; missing paths, unknown envelopes, failed scanners, invalid receipt dates, and nested untracked files cannot claim a completed check. |
++| P1 | Developer context projection joins explicit PJC IDs, capability names, scoped source claims, and evidence | The known empty-v1 narrative is surfaced for review after its bound contract changes, while business-admission deferral is retained. |
++| P1 | Persistent engineering change/run/action records and final-output validation | Wrong work IDs and conflicting duplicate actions are rejected; a restart retains valid work; content and source-set changes invalidate dependents. |
++| P1 | Scoped decision and reconciliation records preserve owner authority and unresolved dependencies | Introduction expansion and partial supersession coexist; an agent cannot clear an owner decision merely by submitting an empty unresolved list. Authenticated resolution requires a distinct action. |
++| P2 | Runtime integration and broader evidence | Demonstrate the same contracts on real authoring boundaries, concurrent runs, representative changes, and realistic incomplete discovery before wider adoption. |
++
++Place a context projection behind the existing developer gateway only after grounding its current callable contract. Use PJC's existing filesystem loader and journey projection and conformance's typed readers as sources. Do not copy their declarations into a parallel product catalog. Permanent persistence, authorization integration, and runtime hook deployment remain separate implementation work requiring their own bounded design and verification.
++
++To reproduce local boundary checks, run `node research/coordination-study/experiment/verify-local.mjs` and `node research/coordination-study/experiment/canaries.mjs`. To prepare another fresh agent matrix, run `node research/coordination-study/experiment/runner.mjs prepare` and use the resulting neutral work packets. Dispatch one fresh context per packet, limit active workers to three, preserve raw results, and apply the same case/model grouping. `score` only checks recorded outputs; it never runs or fabricates an agent response. A new preparation observes current repository sources, so use the archived trial work folders for exact replay of this study's source bytes.
++
++Connected source limitations are in [source-coverage.json](../../research/coordination-study/source-coverage.json). Public Slack and Linear calls failed, Graphify required reauthentication, and no production observability, error-tracker, or analytics evidence was evaluated. Prior Codex message records are preserved as source claims, not accepted runtime proof.
++
++## Developer integration after the study
++
++The owner subsequently requested inspection of the recent Claude CLI installations and
++an integrated deterministic workflow. This extends the earlier investigation with a bounded
++developer tooling pilot. It does not roll out product behavior or automatic agent interception.
++The original 36-trial results remain unchanged and do not evaluate this later implementation.
++
++[Claude installation findings](../../research/coordination-study/cli-history-findings.json)
++trace scoped user prompts, commands and results from the current project's Claude history.
++The current [runtime inventory](../../research/coordination-study/integration-runtime.json)
++separately probes availability. In particular, a historical canceled k6 install and a stale
++model README saying it is absent do not override the current working k6 executable.
++The later installation's provenance remains untraced.
++
++| Tool | Observed version | Integration scope |
++| --- | --- | --- |
++| LikeC4 | 1.60.0 | Existing model validation is an executable prerequisite |
++| Squawk | 2.72.0 | Existing changed-migration wrapper is an executable prerequisite |
++| Spectral | 6.17.1 | Discovery; needs an explicit ruleset and document |
++| k6 | 2.3.0 | Discovery; needs a defined workload, thresholds and scoped target |
++| Syft | 1.55.0 | Discovery; can describe a selected dependency inventory |
++| Gitleaks | 8.30.1 | Discovery; scoped security adapter remains unimplemented |
++| OSV-Scanner | 2.7.0 | Discovery; needs dependency input and advisory review policy |
++| Schemathesis | 4.33.1 | Discovery; needs a supported schema and scoped target |
++
++Installed tools have different proof obligations. k6 assertions alone do not fail a run;
++its [thresholds](https://grafana.com/docs/k6/latest/using-k6/thresholds/) determine failure.
++The installed 2.3.0 version is grounded against its [release](https://github.com/grafana/k6/releases/tag/v2.3.0).
++[Spectral](https://github.com/stoplightio/spectral/blob/develop/docs/getting-started/3-rulesets.md)
++requires rules; its presence does not define the project's API policy. Do not invent an
++OpenAPI transport alongside the approved native oRPC contract to make a tool usable.
++The [LikeC4 1.60.0 release](https://github.com/likec4/likec4/releases/tag/v1.60.0)
++and actual package binaries ground the model validator. These are tool contracts,
++not evidence that the repository meets a business requirement.
++
++Two grounded designs are preserved in
++[Terra's sketch](../../research/coordination-study/integration-design-terra.md) and
++[Luna's sketch](../../research/coordination-study/integration-design-luna.md).
++Both favor a narrow receipt and prerequisite mechanism before a general scheduler.
++The installed LangGraph dependency is retained; this pilot does not need graph scheduling
++to record one finite local procedure. Foundational Thinking drove the strict source,
++event and check shapes; Prove It Works drove direct CLI/MCP and SQLite checks.
++
++### Implemented boundary
++
++`@repo/platform-mcp` now exposes `sovereign_coordination` in gateway mode and the
++`coordination` package CLI. Both use the same strict schema, evaluator, adapters and
++SQLite store. The [operating guide](../../packages/platform-mcp/docs/developer-coordination.md)
++contains runnable requests and the affected-layer check matrix.
++
++The pilot pins explicit source hashes and procedure implementation identity, persists
++check intent before execution, records real command results, rejects conflicting action
++IDs and unsupported observed-result fields, and evaluates prerequisites. Changed sources
++or procedure bytes block readiness. Unresolved decisions cannot disappear through an empty
++later record. Interrupted invocation remains pending/unknown; a retry does not rerun it.
++Reconciliation yields `ready-for-review`, with no claim of product approval.
++
++An explicit PJC journey reader returns the existing projection with hashed adjacent sources
++and coverage gaps. Philosophy-to-decision-to-requirement-to-code relationships can be recorded
++as classified, sourced links. Their completeness and meaning still require review. PJC,
++C4, capability catalogs and owner decisions keep their respective authority; this is not
++a parallel product catalog. The source snapshot is a declared set, not a dependency closure.
++
++The same-host store uses SQLite transactions and a busy timeout. The local owner can edit
++it or bypass the tool. There is no authenticated approval, automatic hook enforcement,
++multi-host scheduler, automatic rebase or proof that the declared impacts are complete.
++Source changes currently require a new change ID after reconsideration. Responsibilities
++remain procedure/review responsibilities; authenticated role assignment is follow-up work.
++
++### Current check results and integration gaps
++
++[Actual check output](../../research/coordination-study/integration-checks.json) records
++seven current adapter invocations. PJC, LikeC4, capability conformance, UI boundaries,
++changed-migration lint and dependency cohorts returned exit 0. API composition returned
++exit 1 with legacy-source findings; API/integration records therefore remain blocked.
++Conformance's zero exit means no gap count exceeded its ceiling, not zero gaps. The migration
++wrapper found no changed migrations, so it produced no SQL runtime evidence.
++
++The CLI/MCP scenario creates a change through one process, analyzes it through MCP,
++runs the actual C4 validator through the CLI, reconciles through MCP and reopens it through
++the CLI. It also resolves an actual journey and rejects forged result input. SQLite tests
++cover stale input, implementation changes, sticky uncertainty, failed and interrupted
++checks, prerequisites, idempotency, and concurrent same-ID records from two Node processes.
++These are local developer execution checks, not device or production verification.
++
++A concurrent `src/pipeline` implementation was also observed. At inspection its E2E node
++returned `passed: true` without invoking a device, and its headless node checked an embedded
++example reducer. Those receipts were not admitted to this pilot as observed feature evidence.
++That code was preserved. Integrating it requires real stage adapters, source applicability,
++failure receipts and restart semantics before its status can support a verification claim.
++
++Retain existing PJC, C4, capability conformance, checks and pstack investigation practices.
++Next priorities are: independently confirm the affected-layer policy; add scoped security
++and runtime adapters; define authenticated decision/responsibility records; support explicit
++source reconsideration and run linkage; and only then evaluate scheduler and hook integration.
++No full-system deterministic workflow claim follows from this first local slice.
++
++Validation: the package build and typecheck completed at G0. The package's G1-labelled
++Vitest run completed 51 checks across 10 files, including the CLI/MCP scenario and the
++two-process record test. The first full run timed out on live version probing; its output
++is retained in `integration-test-first-failure.log`. The live-probe test now has an explicit
++60-second runtime bound matching its sequence of individually bounded subprocesses;
++assertions and global gates were retained. Scoped Biome checks completed on the eight new
++TypeScript files, with repository configuration notices about its schema version.
++
++The wider anti-slop run stopped at `aislop`: 19 errors and 1,442 warnings across its changed
++tree snapshot; later chained gates did not execute. The integration files had no reported
++errors in that snapshot, with formatting, exported-type and function-length warnings.
++Formatting and the unused type export were subsequently corrected; the function-length
++warning remains a maintainability limitation. See `integration-anti-slop.txt` and
++`integration-gate-diagnostics.json`. The whole repository is not green. Independent Luna
++review is preserved in `integration-verification.json`; it confirms the bounded rejection
++behavior and explicitly rejects completeness and automatic hook-enforcement claims.
++
++The shared-store scenario was also executed against compiled CLI and gateway entrypoints.
++The package command uses the compiled CLI so normal compiled gateway sessions share the
++same procedure identity. Source-mode and compiled-mode records intentionally have distinct
++implementation hashes; mixing those modes blocks a run. The first real local record,
++`coordination-foundation-20261111`, retains current blockers and can be resumed through
++`status`. Its exported observation is `integration-pilot-state.json`.
++
++Late workspace change: a subsequent typecheck at 18:07 Sri Lanka time reported eight
++errors in concurrently edited `src/pipeline/nodes/groundingNode.ts` and
++`src/pipeline/tools/sovereignTools.ts` (constructor arguments, unavailable methods and
++command options). The earlier successful G0/G1 snapshots therefore do not certify the
++latest whole-package state. Those concurrent files were not modified by this workstream.
++The failure is preserved in `integration-check-types-final.log`. This report update also
++changes a pinned pilot source; `status` must invalidate that source while retaining the
++completed action history. The pilot is blocked, not accepted or ready for rollout.
++An additional G0 check of the eight new coordination files and their imports, extending
++the actual package configuration with an explicit include set, completed successfully;
++`integration-tsconfig.json` and `integration-scoped-types.log` preserve that limited check.
++It is additional evidence, not a replacement or waiver for the failed package gate.

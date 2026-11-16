@@ -15,10 +15,11 @@ import {
   type VergerHost,
   screenNameOf,
 } from '@repo/core/verger';
-import { useScreenAnnouncement } from '@repo/verger-react';
+import { resolveRouteMetabolicProfile } from '@repo/core/routing';
+import { useScreenAnnouncement, useVerger } from '@repo/verger-react';
 import { usePathname } from 'next/navigation';
 import { VergerBrowser } from '@repo/verger-web/react';
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useWebFidelity } from './webFidelity';
 import { browserNetworkSignals } from './browserNetwork';
 
@@ -62,7 +63,21 @@ const killSwitchOn = () => typeof window !== 'undefined' && globalThis.__GURUDEV
 function ScreenAnnouncer() {
   // Typed `string`, but null outside the App Router (tests, a Pages Router fallback): no screen yet.
   const pathname: string | null = usePathname();
-  useScreenAnnouncement(pathname === null ? null : screenNameOf(pathname));
+  const screen = pathname === null ? null : screenNameOf(pathname);
+  const metabolic = pathname === null ? null : resolveRouteMetabolicProfile(pathname);
+  useScreenAnnouncement(screen, metabolic?.transitionDwellMs ?? 200);
+
+  const verger = useVerger();
+  useEffect(() => {
+    if (!verger || !metabolic?.intent) return;
+    verger.dispatch({
+      type: 'anticipate',
+      at: performance.now(),
+      intent: metabolic.intent,
+      durationMs: metabolic.transitionDwellMs ?? 400,
+    });
+  }, [verger, metabolic]);
+
   return null;
 }
 

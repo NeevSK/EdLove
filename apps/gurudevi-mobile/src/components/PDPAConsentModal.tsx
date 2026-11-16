@@ -1,8 +1,7 @@
 import { useConsentStore } from '@repo/core/logic';
-import { Button, Dialog } from '@repo/ui/components/native';
-import { Shield } from '@repo/ui/icons';
-import { HStack, Link, LinkText, Text, VStack } from '@repo/ui/primitives';
+import { Button, Dialog, Text } from '@repo/ui/components/native';
 import { EXTERNAL_URLS } from '@repo/ui/utils';
+import { Linking, View } from 'react-native';
 
 interface PDPAConsentModalProps {
   isOpen: boolean;
@@ -30,26 +29,36 @@ export default function PDPAConsentModal({ isOpen, onClose }: PDPAConsentModalPr
       description="In compliance with the Personal Data Protection Act (PDPA), we ask whether you want to allow telemetry and product analytics. Essential service operation does not depend on optional analytics."
       dismissable={false}
       actions={
-        <HStack className="gap-3 justify-end mt-4">
+        <View style={{ flexDirection: 'row', gap: 12, justifyContent: 'flex-end', marginTop: 16 }}>
           <Button variant="secondary" size="sm" label="Decline" onPress={handleDecline} />
           <Button variant="primary" size="sm" label="Accept" onPress={handleAccept} />
-        </HStack>
+        </View>
       }
     >
-      <VStack className="gap-4 my-2">
-        <Text className="text-phase-text-secondary text-xs leading-relaxed">
+      <View style={{ gap: 12, marginVertical: 8 }}>
+        <Text kind="caption" tone="soft" style={{ fontSize: 13, lineHeight: 18 }}>
           Allowing analytics helps us monitor app performance and improve the experience. We do not
           sell personal information. You can decline, and you can read the{' '}
-          <Link href={EXTERNAL_URLS.privacy} isExternal>
-            <LinkText>Privacy Policy</LinkText>
-          </Link>{' '}
+          <Text
+            kind="caption"
+            tone="lamp"
+            style={{ fontSize: 13, textDecorationLine: 'underline' }}
+            onPress={() => Linking.openURL(EXTERNAL_URLS.privacy)}
+          >
+            Privacy Policy
+          </Text>{' '}
           and{' '}
-          <Link href={EXTERNAL_URLS.terms} isExternal>
-            <LinkText>Terms of Use</LinkText>
-          </Link>{' '}
+          <Text
+            kind="caption"
+            tone="lamp"
+            style={{ fontSize: 13, textDecorationLine: 'underline' }}
+            onPress={() => Linking.openURL(EXTERNAL_URLS.terms)}
+          >
+            Terms of Use
+          </Text>{' '}
           before choosing.
         </Text>
-      </VStack>
+      </View>
     </Dialog>
   );
 }

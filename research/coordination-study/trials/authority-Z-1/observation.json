@@ -1,0 +1,26 @@
+{
+  "collectedAt": "2026-11-11T10:23:46.182Z",
+  "sessionId": "01a1ca20-c574-7b71-b5c1-d0dbb29459af",
+  "agentPath": "/root/work_35",
+  "contexts": [
+    {
+      "model": "gpt-6-luna",
+      "effort": "medium"
+    }
+  ],
+  "toolActionsObserved": 8,
+  "toolActionDefinition": "Model-visible function/custom tool invocations. Nested calls inside the exec entrypoint are retained in transcripts but not separately counted.",
+  "tokens": {
+    "input_tokens": 322911,
+    "cached_input_tokens": 308608,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 3238,
+    "reasoning_output_tokens": 603,
+    "total_tokens": 326149
+  },
+  "monetaryCost": null,
+  "infrastructureErrors": [],
+  "hasFinal": true,
+  "hasOutput": true,
+  "prototypeSha256": null
+}

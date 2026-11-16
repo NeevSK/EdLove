@@ -56,6 +56,7 @@ export {
   type CreateVergerStateOptions,
   createVergerState,
   type VergerState,
+  isOrnamentalOrDeferrable,
   networkLimitOf,
   nextTimedChangeAt,
   reduceVerger,
@@ -128,6 +129,9 @@ export {
   createOutcomeLedger,
   DEFAULT_HOLD_WINDOW_MS,
   DEFAULT_JUDGE_WINDOW_MS,
+  evaluateEvsi,
+  type EvsiLevel,
+  type EvsiSessionFacts,
   type LeverOutcomes,
   type MoveCause,
   type MoveDirection,
@@ -137,6 +141,7 @@ export {
   type OutcomeSummary,
   type Verdict,
   outcomeAttributes,
+  shouldTransmitTelemetry,
   verdictLine,
 } from './outcomes';
 export { checkRun, checkSnapshot, type InvariantViolation } from './invariants';

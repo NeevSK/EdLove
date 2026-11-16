@@ -1,0 +1,102 @@
+{
+  "workId": "cbee6005-7ce5-4fd1-ab5d-5d76acb5efb4",
+  "verdict": "resolved",
+  "findings": [
+    {
+      "claim": "Read What Is Gurudevi? first for the short human introduction, then the Soul & Core Covenant for expanded governing product and architectural commitments. Both documents explicitly establish this order.",
+      "sourceIds": [
+        "intro",
+        "covenant"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The Covenant supersedes overlapping pillar definitions in the introduction and named older manifesto. This scoped authority does not establish whole-document retirement or make the introduction obsolete.",
+      "sourceIds": [
+        "covenant-scope",
+        "intro",
+        "covenant"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "Preserve both active documents and their reciprocal links. No lifecycle status change to either is warranted by the supplied excerpts; optionally clarify beside the introduction's pillar summary that the Covenant governs overlapping definitions.",
+      "sourceIds": [
+        "intro",
+        "covenant",
+        "covenant-scope"
+      ],
+      "confidence": "supported"
+    },
+    {
+      "claim": "The Covenant describes ecosystem commitments, not proof that every capability has shipped. Gurudevi is the ecosystem, the Sanctuary is the integrated product environment, and apps and channels are doors into it.",
+      "sourceIds": [
+        "covenant"
+      ],
+      "confidence": "direct"
+    },
+    {
+      "claim": "The listed narrower references remain supporting documents. The older manifesto's overall lifecycle cannot be determined from a statement superseding only its overlapping pillar definitions.",
+      "sourceIds": [
+        "covenant-scope"
+      ],
+      "confidence": "supported"
+    }
+  ],
+  "decisions": [
+    {
+      "relation": "precedes_in_reading_order",
+      "subject": "docs/Core/what-is-gurudevi.md",
+      "object": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "authoritySourceIds": [
+        "intro",
+        "covenant"
+      ]
+    },
+    {
+      "relation": "supersedes_overlapping_pillar_definitions_only",
+      "subject": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "object": "docs/Core/what-is-gurudevi.md",
+      "authoritySourceIds": [
+        "covenant-scope"
+      ]
+    },
+    {
+      "relation": "retain_active_as_short_introduction",
+      "subject": "docs/Core/what-is-gurudevi.md",
+      "object": "Gurudevi documentation entry path",
+      "authoritySourceIds": [
+        "intro",
+        "covenant"
+      ]
+    },
+    {
+      "relation": "retain_active_as_expanded_governing_reference",
+      "subject": "docs/Core/gurudevi-soul-and-core-covenant.md",
+      "object": "Gurudevi product decisions and implementation boundaries",
+      "authoritySourceIds": [
+        "covenant",
+        "covenant-scope"
+      ]
+    }
+  ],
+  "reviewRequired": [],
+  "unresolved": [],
+  "execution": {
+    "runtimeHookStatus": "unavailable",
+    "canaryEvidence": null,
+    "completedSteps": [
+      "context",
+      "analysis",
+      "verification",
+      "reconciliation"
+    ],
+    "invalidatedSteps": [],
+    "nextAction": "Use the introduction-to-Covenant reading path; retain both active statuses and scoped authority. Inspect the older manifesto before any separate whole-document lifecycle decision."
+  },
+  "limitations": [
+    "Only the three supplied frozen excerpts were inspected; no repository edits were made.",
+    "The full older manifesto, documentation index, and lifecycle policy were not supplied.",
+    "The local controller verified source freshness and stage order, ending with canComplete true; it does not independently verify interpretation or authorization. No runtime hook or canary was supplied or tested."
+  ]
+}
