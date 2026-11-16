@@ -109,11 +109,11 @@ export default function TeacherFeedbackModal({
   );
 
   return (
-    <SanctuaryModal
-      isOpen={isOpen}
+    <Dialog
+      open={isOpen}
       onClose={onClose}
       title={t('teacher.feedback.title')}
-      subtitle={t('teacher.feedback.subtitle')}
+      description={t('teacher.feedback.subtitle')}
       footer={footer}
     >
       <VStack className="gap-6 pt-4">
