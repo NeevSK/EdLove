@@ -20,32 +20,35 @@ Each application is independent but philosophically connected.
 ### 1) The Main House
 
 - App: `edlove-web`
-- Identity: Educational Transformation Ecosystem (hub)
-- Context (read first): [edlove-web/CONTEXT.md](./edlove-web/CONTEXT.md)
-- Status: Active construction (Phase 1)
+- Stack: Astro 7.4 (Svelte, Tailwind v4)
+- Identity: Educational Transformation Epistemic Commons (`edlove.org`)
+- Status: Active production
 
 ### 2) Satellites
 
-#### Gurudevi Public Site (Marketing)
-
-- App: `gurudevi-marketingWeb`
-- Identity: Public landing / marketing / information site
-- Context: [gurudevi-marketingWeb/CONTEXT.md](./gurudevi-marketingWeb/CONTEXT.md)
-- Relation: Public-facing pages (About, FAQ, Privacy, etc.). Not the operational platform web app.
+#### Gurudevi Public Site
+- App: `gurudevi-public`
+- Stack: Astro 7.4 (React 19 islands, Tailwind v4)
+- Identity: Public marketing, journal, SEO, legal (`gurudevi.app`)
+- Status: Active production (replaces legacy `gurudevi-marketingWeb`)
 
 #### Gurudevi Platform (Web App)
-
-- App: `gurudevi-web` (Next.js)
-- Identity: Canonical browser app for public Gurudevi and the authenticated sanctuary.
-- Relation: Replaces the Metro/React Native Web target incrementally; it does not replace Android or iOS.
-- Domains: `gurudevi.app` (public) and future `sanctuary.gurudevi.app` (authenticated).
+- App: `gurudevi-web`
+- Stack: Vite 8.3.5 SPA (`spa/` with `@tanstack/react-router`, Tailwind v4)
+- Identity: Canonical browser app for authenticated sanctuary workspaces (`sanctuary.gurudevi.app`) and Explore showroom (`explore.gurudevi.app`).
+- Status: Active production
 
 #### Gurudevi Mobile
-
 - App: `gurudevi-mobile`
+- Stack: Expo 58 / React Native 0.88
 - Identity: Operational engine (teachers, principals, students)
 - Context: [gurudevi-mobile/README.md](./gurudevi-mobile/README.md)
-- Relation: Primary product; pillar packages live under `../packages/*`.
+- Relation: Primary mobile client; pillar packages live under `../packages/*`.
+
+#### Sanctuary Verification API
+- App: `sanctuary-api`
+- Stack: Node.js / Hono / oRPC v2
+- Identity: Central verification engine, cryptographic receipts, OpenAPI contracts, and distributed sync coordination.
 
 > `intuitui-web` (Systems Intelligence Studio) and `neevsk-web` (Personal Digital
 > Archive) were extracted into standalone private repos:

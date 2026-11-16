@@ -152,7 +152,7 @@ const resources = defineCollection({
 });
 
 const innovations = defineCollection({
-  loader: glob({ base: './docs/ed-tech-and-world/innovations', pattern: '**/*.md' }),
+  loader: glob({ base: '../../docs/edlove/ed-tech-and-world/innovations', pattern: '**/*.md' }),
   schema: z.object({
     title: z.string(),
     status: z.string().default('active'),

@@ -38,7 +38,7 @@ model {
       }
     }
     web = app 'Web app' {
-      technology 'Next.js 16.4.5 · React 19.3.1, hosted on Vercel'
+      technology 'Vite 8.3.5 · React 19 · TanStack Router, hosted on Cloudflare Pages'
     }
     api = service 'Sanctuary API v1' {
       technology 'Node 24.22.2 · Hono 5.0.0-rc.1 · oRPC 2.0.0-beta.49 · pg 8.23.1, raw SQL'

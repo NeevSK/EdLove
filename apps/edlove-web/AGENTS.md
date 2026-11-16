@@ -1,9 +1,20 @@
-<!-- BEGIN:nextjs-agent-rules -->
+---
+title: "AGENTS.md - EdLove Web (edlove.org)"
+status: "active"
+created: 2026-11-16
+author: "Naveen"
+scribe: "Antigravity"
+tags: [edlove-web, astro, svelte, architecture, rules]
+---
 
-# This is NOT the Next.js you know
+# AGENTS.md - EdLove Web (`edlove.org`)
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+> **PRIME DIRECTIVE: ASTRO 7.4 STATIC SITE (SSG) ARCHITECTURE**  
+> `apps/edlove-web` is a zero-tracker, public epistemic commons built on **Astro 7.4**, Svelte islands, and Tailwind CSS v4.
+> Next.js has been completely purged per ADR [`docs/decisions/2026-11-12-web-stack-astro-vite.md`](../../docs/decisions/2026-11-12-web-stack-astro-vite.md).
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->
+## Architectural Invariants
+1. **SSG Pre-rendering**: All routes are pre-rendered statically with zero client-side hydration overhead unless interactive.
+2. **TypeScript 7.1 Content Mappers**: Content collections (e.g. 200 Educational Innovations, Cosmos Paradigms, Pedagogy Canon) are strongly typed via Astro content collections (`src/content.config.ts`) and `@astrojs/ts-content-mapper`.
+3. **Accessibility (APCA & WCAG3)**: Ensure high-contrast tactile typography and WCAG AAA compliance.
+4. **Boundary Rules**: Do not import native/mobile packages (React Native, Expo, MMKV, PowerSync) into `apps/edlove-web`.
