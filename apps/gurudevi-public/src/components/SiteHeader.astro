@@ -18,7 +18,7 @@ const navItems = [
   { name: t('nav.support'), href: '/support' },
 ];
 const platform = surfaceUrl('explore', '/self');
-const languageHrefs = Object.fromEntries(LANGUAGES.map((l) => [l.code, localePath(l.code, path)]));
+const languageHrefs = Object.fromEntries(LANGUAGES.map((l) => [l.code, localePath(l.code, path)])) as Record<SupportedLocale, string>;
 ---
 <header class="site-header">
   <a

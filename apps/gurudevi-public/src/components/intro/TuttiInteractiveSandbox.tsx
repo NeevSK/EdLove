@@ -202,7 +202,7 @@ export function TuttiInteractiveSandbox({
             width={96}
             height={96}
             className="object-contain filter drop-shadow-[0_0_24px_rgba(251,191,36,0.45)]"
-            priority
+            fetchPriority="high"
           />
         </div>
 

@@ -207,11 +207,11 @@
         
         for(let i=0; i < 2000; i++) {
             const i3 = i*3;
-            const x = positions[i3];
+            const x = positions[i3]!;
             // Sine wave logic based on X position and Time
-            positions[i3+1] = -50 + Math.sin(x * 0.05 + time) * 5 + Math.cos(positions[i3+2] * 0.05 + time) * 5;
+            positions[i3+1] = -50 + Math.sin(x * 0.05 + time) * 5 + Math.cos(positions[i3+2]! * 0.05 + time) * 5;
         }
-        oceanGeo.attributes.position.needsUpdate = true;
+        oceanGeo.attributes.position!.needsUpdate = true;
     }
 
     renderer.render(scene, camera);

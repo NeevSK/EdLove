@@ -6,16 +6,11 @@ import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
 import { absoluteUrl } from '../../lib/site';
 
 export async function getStaticPaths() {
-  const entries = await getCollection('library', ({ data }) => !data.draft && (data.contentKind !== 'translation' || data.translationStatus === 'approved'));
+  const entries = await getCollection('library', ({ data }) => !data.draft);
   return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
 const { entry } = Astro.props;
-const versions = await getCollection('library', ({ data }) => !data.draft && (data.contentKind !== 'translation' || data.translationStatus === 'approved') && data.workId === entry.data.workId);
-const alternateLanguages = versions.map((version) => ({
-  lang: version.data.language,
-  href: absoluteUrl(`/library/${version.id}`),
-}));
 const { Content } = await render(entry);
 const canonical = entry.data.canonicalUrl ?? absoluteUrl(`/library/${entry.id}`);
 const cadenceMap = {
@@ -25,15 +20,15 @@ const cadenceMap = {
   diagnostic: 'diagnostic',
   pattern: 'living-document',
 } as const;
-const cadence = cadenceMap[entry.data.category] ?? 'living-document';
+const cadence = cadenceMap[entry.data.category as keyof typeof cadenceMap] ?? 'living-document';
 ---
 
-<Layout title={`${entry.data.title} | EdLove Library`} description={entry.data.subtitle} ogType="article" alternateLanguages={alternateLanguages}>
+<Layout title={`${entry.data.title} | EdLove Library`} description={entry.data.subtitle} ogType="article">
   <CinematicBackground />
   <main class="relative z-10 pb-24 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
     <article class="max-w-[68ch] mx-auto pt-6">
       <header class="mb-12 space-y-4">
-        <p class="font-heading text-xs uppercase tracking-[0.3em] font-bold text-[var(--color-gold)]">{entry.data.category} · {entry.data.language}</p>
+        <p class="font-heading text-xs uppercase tracking-[0.3em] font-bold text-[var(--color-gold)]">{entry.data.category}</p>
         <h1 class="font-heading text-4xl md:text-5xl font-bold text-[var(--color-midnightInk)] leading-tight">{entry.data.title}</h1>
         {entry.data.subtitle && <p class="font-body text-xl text-[var(--color-midnightInk)]/70 italic leading-relaxed">{entry.data.subtitle}</p>}
         <div class="pt-2">
@@ -42,10 +37,9 @@ const cadence = cadenceMap[entry.data.category] ?? 'living-document';
             author={entry.data.author}
             createdDate={entry.data.publishDate}
             updatedDate={entry.data.updatedDate}
-            version={entry.data.language.toUpperCase()}
+            version="Canon v1.0"
             canonicalUrl={canonical}
             license={entry.data.license}
-            translationStatus={entry.data.translationStatus}
             customNote={`Archived entry in EdLove Pedagogical Library (${entry.data.category}).`}
           />
         </div>

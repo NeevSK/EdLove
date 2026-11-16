@@ -8,7 +8,7 @@
     "dev": "astro dev --port 4321",
     "build": "astro build",
     "preview": "astro preview --port 4321",
-    "check-types": "astro check",
+    "check-types": "astro sync && tsc --runExternalCode --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
@@ -25,6 +25,7 @@
     "tailwindcss": "4.3.4"
   },
   "devDependencies": {
+    "@astrojs/ts-content-mapper": "^0.2.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "19.3.0",
     "typescript": "7.1.0-beta",

@@ -4,8 +4,21 @@
     "declaration": false,
     "declarationMap": false,
     "jsx": "react-jsx",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types": ["astro/client", "vitest/globals"]
   },
-  "include": [".astro/types.d.ts", "src/**/*", "tests/**/*", "astro.config.mjs", "vitest.config.ts"],
+  "contentMappers": [
+    {
+      "package": "@astrojs/ts-content-mapper",
+      "extensions": [".astro"]
+    }
+  ],
+  "include": [
+    ".astro/types.d.ts",
+    "src/**/*",
+    "tests/**/*",
+    "astro.config.mjs",
+    "vitest.config.ts"
+  ],
   "exclude": ["dist"]
 }

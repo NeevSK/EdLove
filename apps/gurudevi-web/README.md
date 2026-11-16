@@ -1,15 +1,16 @@
-# Gurudevi Web — Unified Browser Platform
+# Gurudevi Web — Browser Sanctuary & Explore Platform
 
-> **Live Environment**: [gurudevi.app](https://gurudevi.app)
+> **Live Environments**: [sanctuary.gurudevi.app](https://sanctuary.gurudevi.app) · [explore.gurudevi.app](https://explore.gurudevi.app)
+> *(Public landing, journal, and SEO live in `apps/gurudevi-public` at [gurudevi.app](https://gurudevi.app))*
 
-Gurudevi Web is the browser home of the **Gurudevi Sanctuary**. It brings together public community discovery, educational stories, and the complete authenticated workspace for teachers, school leaders, students, and families in a modern, accessible web interface.
+Gurudevi Web is the browser application of the **Gurudevi Sanctuary**. It brings together the complete authenticated workspace for teachers, school leaders, students, and families, alongside the Explore showroom, in a fast, offline-capable client-side architecture.
 
 ---
 
 ## 🌸 What This Surface Delivers
 
-* **The Public Portal**: Educational philosophies, community stories, privacy charters, and guidance for schools considering adopting Gurudevi.
-* **The Living Workspaces**:
+* **The Explore Showroom (`explore.gurudevi.app`)**: Public guest showcase of the 11 Cultural Worlds, diurnal sky and weather scenes, and interactive workspace clearings running purely on local sample data (zero login, zero network dependency).
+* **The Living Workspaces (`sanctuary.gurudevi.app`)**:
   * **Classroom Workspace**: Attendance, compassionate grading, lesson delivery, and timetable overviews.
   * **Inner Sanctuary (`/self`)**: Private journaling, mindful check-ins, and personal growth reflection.
   * **Institutional Stewardship (`/admin`)**: School structure, approvals, and official reporting.
@@ -21,7 +22,7 @@ Gurudevi Web is the browser home of the **Gurudevi Sanctuary**. It brings togeth
 ## 🎨 Craft & Accessibility Standards
 
 * **Accessible to All**: Full compliance with APCA and WCAG contrast guidelines for effortless reading in classroom environments.
-* **Browser-Native Performance**: Powered by Next.js 16 with the App Router, Turbopack, and semantic HTML without heavy native emulation wrappers.
+* **Browser-Native Performance**: Powered by Vite 8.3.5 SPA with `@tanstack/react-router` (`spa/`), Tailwind CSS v4, and semantic HTML without heavy native emulation wrappers.
 * **Mobile-First Responsiveness**: Designed to adapt gracefully from handheld smartphones up to wide classroom smart-displays.
 
 ---
@@ -29,11 +30,14 @@ Gurudevi Web is the browser home of the **Gurudevi Sanctuary**. It brings togeth
 ## 🚀 Running Locally
 
 ```bash
-# From the repository root
+# Sanctuary mode (port 3000)
 pnpm --filter gurudevi-web dev
+
+# Explore mode (port 3001)
+pnpm --filter gurudevi-web dev:explore
 ```
 
-Visit `http://localhost:3000` in your browser.
+Visit `http://localhost:3000` or `http://localhost:3001` in your browser.
 
 To configure local credentials, copy `.env.example` to `.env.local` and add your local Supabase test keys.
 

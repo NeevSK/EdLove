@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { getViteConfig } from 'astro/config';
 
 // Astro's own Vite config, so tests resolve modules and `import.meta.env` the way the build does.

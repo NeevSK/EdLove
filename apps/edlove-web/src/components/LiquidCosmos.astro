@@ -173,7 +173,7 @@
     requestAnimationFrame(animate);
     const elapsedTime = performance.now() / 1000;
     
-    if (material) {
+    if (material && material.uniforms.uTime) {
         material.uniforms.uTime.value = elapsedTime;
     }
 

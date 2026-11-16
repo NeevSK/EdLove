@@ -236,7 +236,7 @@ export function IntroClient() {
                 width={96}
                 height={96}
                 className="object-contain drop-shadow-md"
-                priority
+                fetchPriority="high"
               />
             </div>
 
