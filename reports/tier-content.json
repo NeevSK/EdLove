@@ -8034,7 +8034,7 @@
    "package": "packages/classroom",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 285,
+   "lines": 284,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -8042,7 +8042,7 @@
     "ambient": 1,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 242,
+    "functionLines": 243,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -8066,10 +8066,10 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/ui/src/components/native/index.ts",
+     "to": "packages/core/src/logic/files/filePolicy.ts",
      "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
+     "toShape": "contract+logic",
+     "toTier": "T2"
     },
     {
      "to": "packages/ui/src/components/native/index.ts",
@@ -8100,12 +8100,6 @@
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T6"
-    },
-    {
-     "to": "packages/core/src/logic/files/filePolicy.ts",
-     "typeOnly": false,
-     "toShape": "contract+logic",
-     "toTier": "T2"
     }
    ],
    "outside": [
@@ -64280,7 +64274,7 @@
    "package": "packages/people",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 196,
+   "lines": 192,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -64288,7 +64282,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 181,
+    "functionLines": 178,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -64306,6 +64300,12 @@
    },
    "imports": [
     {
+     "to": "packages/people/src/feedback.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
      "to": "packages/ui/src/components/native/index.ts",
      "typeOnly": false,
      "toShape": "barrel",
@@ -64316,12 +64316,6 @@
      "typeOnly": false,
      "toShape": "barrel",
      "toTier": "T6"
-    },
-    {
-     "to": "packages/people/src/feedback.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
     }
    ],
    "outside": [
@@ -83555,7 +83549,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 137,
+    "prod": 136,
     "tests": 6
    },
    "imports": [
@@ -109848,7 +109842,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 48,
+    "prod": 47,
     "tests": 13
    },
    "imports": [
@@ -130148,7 +130142,7 @@
    "package": "apps/gurudevi-mobile",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 651,
+   "lines": 650,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -130242,12 +130236,6 @@
     },
     {
      "to": "packages/ui/src/icons.native.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/theme/native/index.ts",
      "typeOnly": false,
      "toShape": "barrel",
      "toTier": "T6"
@@ -132295,7 +132283,7 @@
    "package": "apps/gurudevi-public",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 251,
+   "lines": 253,
    "counts": {
     "types": 1,
     "consts": 2,
@@ -132303,7 +132291,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 230,
+    "functionLines": 232,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,

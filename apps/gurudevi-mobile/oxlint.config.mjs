@@ -32,7 +32,10 @@ export default defineConfig({
     "import/no-unassigned-import": "off",
     "react/style-prop-object": "off",
     "oxc/no-map-spread": "off",
-    "promise/no-multiple-resolved": "off"
+    "promise/no-multiple-resolved": "off",
+    "react-hooks-js/set-state-in-effect": "warn",
+    "react-hooks-js/refs": "warn",
+    "react-hooks-js/purity": "warn"
   },
   ignorePatterns: [
     "node_modules",

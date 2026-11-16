@@ -22,7 +22,7 @@
   "effectDependencyGaps": 90,
   "effectsThatSetState": 139,
   "reactCompilerRuleHits": 188,
-  "unparseableFiles": 5,
+  "unparseableFiles": 1,
   "referenceOnlyDrift": 0,
   "catchAndLogOnly": 158,
   "handRolledPacing": 3,

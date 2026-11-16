@@ -38,9 +38,8 @@ import {
   TextField,
   useFloorPresence,
 } from '@repo/ui/components/native';
-import { WorldEnter } from '@repo/ui/theme/native';
+import { useWorld, WorldEnter } from '@repo/ui/theme/native';
 import { ArrowLeft } from '@repo/ui/icons/native';
-import { useWorld } from '@repo/ui/theme/native';
 import { EXTERNAL_URLS } from '@repo/ui/utils';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import type { AccountPinModalSubmit } from '@repo/ui/components/AccountPinModal';
