@@ -46,7 +46,8 @@ export default [
       "jest-setup.ts",
       "vitest-*.ts",
       "runtime-fixtures/**",
-      "supabase/**"
+      "supabase/**",
+      "src/navigation/**"
     ]
   },
   {
