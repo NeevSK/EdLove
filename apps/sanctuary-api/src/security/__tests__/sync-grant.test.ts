@@ -1,12 +1,12 @@
 import { generateKeyPairSync } from 'node:crypto';
+import { call } from '@orpc/server';
 import { edloveUuidV8ProfileV1AccountVector } from '@repo/core/logic/schemas/edloveUuidV8ProfileV1Vectors';
 import { createLocalJWKSet, decodeProtectedHeader, jwtVerify } from 'jose';
-import { call } from '@orpc/server';
 import { describe, expect, it } from 'vitest';
 import type { APIContext } from '../../core/context';
 import { router } from '../../core/router';
-import { SYNC_GRANT_LIFETIME_SECONDS, type SyncGrants, createSyncGrants } from '../syncGrant';
 import type { AuthenticatedIdentity } from '../security';
+import { createSyncGrants, SYNC_GRANT_LIFETIME_SECONDS, type SyncGrants } from '../syncGrant';
 
 const ENDPOINT = 'https://sync.example.com';
 const NOW = 1_800_000_000_000;

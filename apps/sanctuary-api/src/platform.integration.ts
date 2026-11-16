@@ -7,9 +7,9 @@ import { Pool } from 'pg';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 import { readServerConfig } from './config';
+import { capabilityTag } from './conformance/evidence';
 import { createApp } from './core/app';
 import type { APIContext } from './core/context';
-import { capabilityTag } from './conformance/evidence';
 import { startNodeServer } from './node-server';
 import { createPlatform, type Platform } from './platform';
 
@@ -1509,10 +1509,10 @@ describe('composed API foundation with real PostgreSQL and Cedar', () => {
           'select operation_id from public.api_command_audit where account_id=$1 order by chain_sequence limit 1',
           [account],
         );
-        await pool.query('update public.api_command_audit set resource_id=$1 where operation_id=$2', [
-          'forged',
-          target.rows[0]?.operation_id,
-        ]);
+        await pool.query(
+          'update public.api_command_audit set resource_id=$1 where operation_id=$2',
+          ['forged', target.rows[0]?.operation_id],
+        );
         expect(await verify('public.api_command_audit')).toBe('1');
         await pool.query(
           'delete from public.api_command_audit where account_id=$1 and chain_sequence=1',
@@ -1547,7 +1547,9 @@ describe('composed API foundation with real PostgreSQL and Cedar', () => {
       try {
         await expect(read('no audit storage')).rejects.toMatchObject({ code: '42P01' });
       } finally {
-        await pool.query('alter table public.api_sensitive_reads_off rename to api_sensitive_reads');
+        await pool.query(
+          'alter table public.api_sensitive_reads_off rename to api_sensitive_reads',
+        );
       }
     });
 
@@ -1684,9 +1686,9 @@ describe('composed API foundation with real PostgreSQL and Cedar', () => {
         lifecycle(async ({ records }) => records.softDelete(record, deletion)),
       ).rejects.toMatchObject(conflict);
       await lifecycle(async ({ records }) => records.restore(record));
-      await expect(
-        lifecycle(async ({ records }) => records.restore(record)),
-      ).rejects.toMatchObject(conflict);
+      await expect(lifecycle(async ({ records }) => records.restore(record))).rejects.toMatchObject(
+        conflict,
+      );
 
       const expired = { type: 'fixture.grade', id: randomUUID() };
       await lifecycle(async ({ records }) =>
@@ -1784,7 +1786,9 @@ describe('composed API foundation with real PostgreSQL and Cedar', () => {
       const foreign = await pool.connect();
       try {
         const { sharingGrants } = await import('./consent/grants');
-        await expect(sharingGrants(foreign, otherIdentity.accountId).revoke(accountGrant)).rejects.toMatchObject({
+        await expect(
+          sharingGrants(foreign, otherIdentity.accountId).revoke(accountGrant),
+        ).rejects.toMatchObject({
           code: 'FORBIDDEN',
         });
       } finally {

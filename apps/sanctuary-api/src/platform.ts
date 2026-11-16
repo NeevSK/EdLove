@@ -3,6 +3,7 @@ import { ORPCError } from '@orpc/server';
 import { check } from '@repo/policies';
 import { Pool, type PoolClient } from 'pg';
 import type { ServerConfig } from './config';
+import { assertDelegation, type SharingGrants, sharingGrants } from './consent/grants';
 import {
   type EffectInput,
   type OperationJSON,
@@ -10,11 +11,10 @@ import {
   prepareEffect,
   validateOperationJSON,
 } from './operations/store';
-import { assertDelegation, type SharingGrants, sharingGrants } from './consent/grants';
 import { purgeExpiredRecords, type RecordLifecycle, recordLifecycle } from './records/records';
 import {
-  APP_CALLER,
   type ActiveScope,
+  APP_CALLER,
   type AuthenticatedIdentity,
   assertCommandAuthority,
   authorizeCommand,
@@ -60,7 +60,10 @@ export function createPlatform(
   });
   const syncGrants =
     config.POWERSYNC_URL && config.POWERSYNC_SIGNING_JWK
-      ? createSyncGrants({ endpoint: config.POWERSYNC_URL, signingJwk: config.POWERSYNC_SIGNING_JWK })
+      ? createSyncGrants({
+          endpoint: config.POWERSYNC_URL,
+          signingJwk: config.POWERSYNC_SIGNING_JWK,
+        })
       : undefined;
   const operations = new OperationStore(pool, {
     statementTimeoutMs: config.DB_STATEMENT_TIMEOUT_MS,
@@ -389,108 +392,114 @@ export function createPlatform(
       )
         throw new ORPCError('FORBIDDEN');
     };
-    const execute = () => operations.execute(
-      {
-        accountId: scope.identity.accountId,
-        scope: scopeKey,
-        capability,
-        key,
-        payload,
-      },
-      {
-        signal,
-        recordAccepted: async (client, operationId) => {
-          if (!authorizedScope || !resolvedResource)
-            throw new Error('Command authority was not resolved');
-          await client.query(
-            `insert into public.api_command_audit
+    const execute = () =>
+      operations.execute(
+        {
+          accountId: scope.identity.accountId,
+          scope: scopeKey,
+          capability,
+          key,
+          payload,
+        },
+        {
+          signal,
+          recordAccepted: async (client, operationId) => {
+            if (!authorizedScope || !resolvedResource)
+              throw new Error('Command authority was not resolved');
+            await client.query(
+              `insert into public.api_command_audit
              (operation_id,account_id,bond_id,entity_type,entity_id,capacity,capability,resource_type,resource_id,channel,agent_key,grant_id,run_id)
              values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
-            [
-              operationId,
-              authorizedScope.identity.accountId,
-              authorizedScope.bondId,
-              authorizedScope.entityType,
-              authorizedScope.entityId,
-              authorizedScope.capacity,
-              capability,
-              resolvedResource.type,
-              resolvedResource.id,
-              caller.channel,
-              caller.agent?.key,
-              caller.agent?.delegationId,
-              caller.runId,
-            ],
-          );
-        },
-        authorize: async (client) => {
-          resolvedResource = undefined;
-          await authorizeCommand(security, scope, authority, signal, client);
-          if (caller.agent)
-            await assertDelegation(
+              [
+                operationId,
+                authorizedScope.identity.accountId,
+                authorizedScope.bondId,
+                authorizedScope.entityType,
+                authorizedScope.entityId,
+                authorizedScope.capacity,
+                capability,
+                resolvedResource.type,
+                resolvedResource.id,
+                caller.channel,
+                caller.agent?.key,
+                caller.agent?.delegationId,
+                caller.runId,
+              ],
+            );
+          },
+          authorize: async (client) => {
+            resolvedResource = undefined;
+            await authorizeCommand(security, scope, authority, signal, client);
+            if (caller.agent)
+              await assertDelegation(
+                client,
+                scope.identity.accountId,
+                caller.agent,
+                capability,
+                resolvedResource,
+              );
+            const current = await security.resolveScope(
+              scope.identity,
+              scope.bondId,
+              signal,
               client,
-              scope.identity.accountId,
-              caller.agent,
-              capability,
-              resolvedResource,
             );
-          const current = await security.resolveScope(scope.identity, scope.bondId, signal, client);
-          if (deriveScope(current, validateOperationJSON(JSON.parse(serialized))) !== scopeKey)
-            throw new ORPCError('FORBIDDEN');
-          authorizedScope = current;
+            if (deriveScope(current, validateOperationJSON(JSON.parse(serialized))) !== scopeKey)
+              throw new ORPCError('FORBIDDEN');
+            authorizedScope = current;
+          },
+          mutate: async (client, enqueue) => {
+            const initialRole = await client.query<{ role: string }>('select current_user as role');
+            const role = initialRole.rows[0]?.role;
+            if (!role || role === 'authenticated') throw new Error('Invalid command database role');
+            await client.query(`select set_config('request.jwt.claims',$1,true)`, [
+              JSON.stringify({
+                sub: scope.identity.subject,
+                role: 'authenticated',
+                canonical_account_id: scope.identity.accountId,
+              }),
+            ]);
+            await client.query('set local role authenticated');
+            const staged: { id: string; intent: EffectInput }[] = [];
+            let bytes = 0;
+            let accepting = true;
+            let result: OperationJSON;
+            try {
+              result = await mutate(
+                client,
+                validateOperationJSON(JSON.parse(serialized)),
+                async (intent) => {
+                  if (!accepting) throw new Error('Command effect staging is closed');
+                  const value = JSON.stringify(prepareEffect(intent));
+                  bytes += new TextEncoder().encode(value).byteLength;
+                  if (staged.length >= 32 || bytes > 262_144)
+                    throw new Error('Command effect budget exceeded');
+                  const id = randomUUID();
+                  staged.push({ id, intent: prepareEffect(JSON.parse(value)) });
+                  return id;
+                },
+              );
+            } finally {
+              accepting = false;
+            }
+            signal.throwIfAborted();
+            await client.query('reset role');
+            const restored = await client.query<{ role: string }>('select current_user as role');
+            if (restored.rows[0]?.role !== role)
+              throw new Error('Command database role was not restored');
+            await client.query(`select set_config('request.jwt.claims','',true)`);
+            if (options.lifecycle) {
+              const actor = scope.identity.accountId;
+              await options.lifecycle(
+                { records: recordLifecycle(client, actor), grants: sharingGrants(client, actor) },
+                result,
+              );
+            }
+            for (const effect of staged) await enqueue(effect.intent, effect.id);
+            return result;
+          },
         },
-        mutate: async (client, enqueue) => {
-          const initialRole = await client.query<{ role: string }>('select current_user as role');
-          const role = initialRole.rows[0]?.role;
-          if (!role || role === 'authenticated') throw new Error('Invalid command database role');
-          await client.query(`select set_config('request.jwt.claims',$1,true)`, [
-            JSON.stringify({
-              sub: scope.identity.subject,
-              role: 'authenticated',
-              canonical_account_id: scope.identity.accountId,
-            }),
-          ]);
-          await client.query('set local role authenticated');
-          const staged: { id: string; intent: EffectInput }[] = [];
-          let bytes = 0;
-          let accepting = true;
-          let result: OperationJSON;
-          try {
-            result = await mutate(
-              client,
-              validateOperationJSON(JSON.parse(serialized)),
-              async (intent) => {
-                if (!accepting) throw new Error('Command effect staging is closed');
-                const value = JSON.stringify(prepareEffect(intent));
-                bytes += new TextEncoder().encode(value).byteLength;
-                if (staged.length >= 32 || bytes > 262_144)
-                  throw new Error('Command effect budget exceeded');
-                const id = randomUUID();
-                staged.push({ id, intent: prepareEffect(JSON.parse(value)) });
-                return id;
-              },
-            );
-          } finally {
-            accepting = false;
-          }
-          signal.throwIfAborted();
-          await client.query('reset role');
-          const restored = await client.query<{ role: string }>('select current_user as role');
-          if (restored.rows[0]?.role !== role)
-            throw new Error('Command database role was not restored');
-          await client.query(`select set_config('request.jwt.claims','',true)`);
-          if (options.lifecycle) {
-            const actor = scope.identity.accountId;
-            await options.lifecycle(
-              { records: recordLifecycle(client, actor), grants: sharingGrants(client, actor) },
-              result,
-            );
-          }
-          for (const effect of staged) await enqueue(effect.intent, effect.id);
-          return result;
-        },
-      },
-    );
+      );
     try {
       admitted();
       return await execute();

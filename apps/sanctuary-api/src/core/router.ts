@@ -2,12 +2,12 @@ import { implement, ORPCError } from '@orpc/server';
 import { appContract } from '@repo/core/api/v1/contract';
 import type { PoolClient } from 'pg';
 import type { Platform } from '../platform';
-import type { AuthenticatedIdentity } from '../security/security';
 import {
   cancelAccountDeletion,
   readAccountDeletion,
   requestAccountDeletion,
 } from '../security/accountDeletion';
+import type { AuthenticatedIdentity } from '../security/security';
 import type { APIContext } from './context';
 
 const api = implement(appContract)
@@ -62,7 +62,8 @@ export const router = api.router({
     ),
     syncGrant: api.identity.syncGrant.handler(({ context }) => {
       const grants = context.platform.syncGrants;
-      if (!grants) throw new ORPCError('SERVICE_UNAVAILABLE', { message: 'Sync is not configured.' });
+      if (!grants)
+        throw new ORPCError('SERVICE_UNAVAILABLE', { message: 'Sync is not configured.' });
       return grants.issue(context.identity);
     }),
     deletion: {
