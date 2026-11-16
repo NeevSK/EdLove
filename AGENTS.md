@@ -79,6 +79,17 @@ legacy aliases, conversion or parallel first-party transports. Passing its
 fixtures is not proof that the current API meets the target. User MCP, browser
 WebMCP and developer `platform-mcp` are distinct; record unimplemented channels
 and unresolved product decisions honestly.
+Every capability is declared in `apps/sanctuary-api/src/modules/catalog.ts` and has a card;
+`pnpm --filter @repo/sanctuary-api audit:conformance` compares card, contract, router, docs,
+tagged evidence (`capabilityTag()`) and callers, and fails if a gap count rises. New code never
+imports the frozen pre-v1 `@repo/core/api/*` (ratchet `legacyCoreApiImports`). Clients get no
+new direct database paths until the v1 API covers them (owner, 2026-11-11): `.from()`, `.rpc()` and
+realtime call sites are frozen (ratchets `supabaseFromSites`, `directRpcAndRealtimeSites`).
+The whole system is modelled in C4 at `docs/architecture/model/gurudevi.c4` (LikeC4): query it
+through the `likec4` MCP server, check it with `pnpm exec likec4 validate docs/architecture/model`,
+and keep it current when a hop changes. Measure hops live with `scripts/probe-hops.mjs`. Bedrock first:
+dependencies at the newest release in their own channel, and a tool's output is grounding only
+once its recall is measured ([plan](apps/sanctuary-api/docs/implementation/2026-11-08-capability-conformance-plan.md)).
 
 **Architecture mental model (read first):** [`docs/architecture/2026-11-12-architecture-mental-model.md`](docs/architecture/2026-11-12-architecture-mental-model.md) explains the whole model in one place: modules versus layers, why each layer exists, the decisions and their costs, a scorecard and the known unverified risks. It also says how the other architecture documents relate. For state, effects, hooks, `useReducer` versus XState, and which library capabilities to use, follow [`docs/architecture/2026-11-12-state-effects-hooks-and-capabilities.md`](docs/architecture/2026-11-12-state-effects-hooks-and-capabilities.md).
 

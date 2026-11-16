@@ -56,8 +56,16 @@ export type IssuedSnapshot = Awaited<ReturnType<AppContractClient['authority']['
 
 /** Keeps the signed row on the device, so permissions survive a restart with no network. */
 export async function storePermissionSnapshot(issued: IssuedSnapshot): Promise<void> {
+  const row = {
+    ...issued,
+    permissions: JSON.stringify(issued.permissions),
+    temporalHints: JSON.stringify(issued.temporalHints),
+  };
+  if (!(await verifySnapshotSignature(row))) throw new Error('Snapshot signature is invalid');
   const db = getDrizzleDB();
   const id = `${issued.userId}:${issued.activeBondId}`;
+  const known = await db.query?.policyVersion?.findFirst?.();
+  const newer = !known || Date.parse(issued.generatedAt) > Date.parse(known.updatedAt);
   await db.transaction(async (tx) => {
     await tx.run(sql`delete from permission_snapshots where id = ${id}`);
     await tx.run(sql`insert into permission_snapshots
@@ -65,8 +73,9 @@ export async function storePermissionSnapshot(issued: IssuedSnapshot): Promise<v
        generated_at, expires_at, permissions, temporal_hints, signature)
       values (${id}, ${issued.userId}, ${issued.activeBondId}, ${issued.activeEntityId},
        ${issued.activeEntityType}, ${issued.schoolId}, ${issued.policyVersion}, ${issued.generatedAt},
-       ${issued.expiresAt}, ${JSON.stringify(issued.permissions)}, ${JSON.stringify(issued.temporalHints)},
+       ${issued.expiresAt}, ${row.permissions}, ${row.temporalHints},
        ${issued.signature})`);
+    if (!newer) return;
     await tx.run(sql`delete from policy_version where id = 'cedar'`);
     await tx.run(sql`insert into policy_version (id, hash, updated_at)
       values ('cedar', ${issued.policyVersion}, ${issued.generatedAt})`);

@@ -10,6 +10,61 @@ tags: [api, foundation, authority, roadmap, follow-ups, todo]
 
 # Foundation Roadmap and Follow-ups
 
+## 2026-11-08 PowerSync deployed; Render blocked
+
+- PowerSync Cloud had two instances, Development and Production, **both unprovisioned**. Development
+  is now provisioned and deployed with `pnpm dlx powersync@0.10.3 deploy` (owner-authorized; Production
+  untouched). Live: connected to Supabase, initial replication done, `bonds`, `school_memberships`,
+  `classroom_students` and `classrooms` replicating.
+- Live trust proof: a grant from `identity.syncCredentials`, signed with Doppler's key, opens
+  `/sync/stream` (200, checkpoint); the same grant with a tampered signature gets 401.
+- The `user_todos` stream (deployed) names `public.lists` and `public.todos`, which **don't exist** in
+  the database, so device todos can't sync anywhere yet.
+- Snapshot signing key pair created (owner-approved): an Ed25519 pair generated in one process, the
+  private PKCS#8 PEM piped into Doppler `gurudevi-mobile:dev` as `SNAPSHOT_SIGNING_PRIVATE_KEY`, the
+  raw base64 public key as `EXPO_PUBLIC_` and `NEXT_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY`. Never printed
+  or kept on disk. Proof: a snapshot from `generateSnapshot` passes the client's
+  `verifySnapshotSignature`; one with an added permission fails. Render still needs the private key
+  set, and app builds need the public key at build time.
+- Render (`srv-dbgndsvlk1mc73914n0g`, free, Singapore, auto-deploy off) builds branch
+  `terrain/version-hops`, not this branch. Blocked: Doppler's `RENDER_API_KEY` is rejected (401) and the
+  Render CLI can't set env vars; and **no snapshot signing key pair exists** (no
+  `SNAPSHOT_SIGNING_PRIVATE_KEY`, no `EXPO_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY` in Doppler), which v1
+  production needs to start and clients need to verify snapshots. `AUTH_ISSUER`, `AUTH_JWKS_URL` and
+  `API_BROWSER_ORIGINS` aren't in Doppler either.
+
+## 2026-11-08 Gate 1 evidence and device sync on v1
+
+- `test:database` ran (G2, 65/65, disposable database dropped). It proves a signed-in session
+  can't insert or upgrade its own bond (`42501`), the Gate 1 security claim.
+- New capability `identity.syncCredentials`: a 5-minute ES256 grant for PowerSync, never past
+  the session (`src/security/syncCredentials.ts`). Verified against the real Doppler key: the
+  key id and public point match the key `powersync/service.yaml` trusts, and a grant verifies
+  with it. The API refuses half a PowerSync configuration; without one, the capability answers
+  `SERVICE_UNAVAILABLE`. Whether production must require sync is an open owner decision.
+- `createV1SyncConnector` in `@repo/core/adapters/powersync`, wired into mobile's
+  `PowerSyncProvider` with its rollout, network and read-policy admission restored (its 15
+  G3-substituted tests pass; 7 had failed since the reset). Synced writes have no v1 capability
+  yet, so they stay queued; each domain adds its path when its card is admitted.
+- Snapshots don't use sync: they come in the `refreshSnapshot` response and the client's
+  permission tables are local-only. The `issueSnapshot` comment saying otherwise was corrected.
+- PowerSync CLI: `pnpm dlx powersync@0.10.3`. Its top-level `--help` crashes inside the CLI's own
+  UI library; subcommands work. Cloud commands need `powersync login` by the owner (no token is
+  in Doppler). Nothing was deployed; the sync config needed no change.
+
+## 2026-11-08 Capability conformance and bedrock
+
+- Every capability is declared in `src/modules/catalog.ts` (`capabilities`), held equal to the
+  contract and router by fitness tests. `pnpm --filter @repo/sanctuary-api audit:conformance`
+  compares intent (cards), symbol, code and practice (tagged evidence, client callers) and fails
+  if a gap count rises. Tag a test that proves a capability with `capabilityTag()`.
+- oRPC moved to the newest 2.0 beta and `hono` joined its cohort, synced to the version the API uses.
+- Legacy `@repo/core/api` (252 files) is frozen, not sorted: `legacyCoreApiImports` may only fall.
+- The ratchet had been reading `rg` failures as 0; it now fails loudly, which shows two older
+  regressions (files over 800 lines, root scripts). Ceilings were not raised.
+- Next: run `test:database` so the identity queries get G2 evidence; confirm the two platform
+  cards. Record: [capability conformance plan](../implementation/2026-11-08-capability-conformance-plan.md).
+
 ## 2026-11-06 Channels, agents and the road to v1
 
 Owner direction: narrow, person-bound agents are the main model. Short-lived, non-destructive

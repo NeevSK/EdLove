@@ -122,6 +122,11 @@ apps/gurudevi-mobile/web-firewall-report.md
 apps/gurudevi-mobile/web-runtime-smoke.png
 apps/gurudevi-mobile/web-smoke.png
 reports/playwright/
+# Per-run capability evidence and the report derived from it; regenerate, never commit.
+reports/evidence/
+reports/hops/
+reports/schema-ledger.*
+reports/capability-conformance.*
 
 # Backup and one-off artifacts
 *.bak

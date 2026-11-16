@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { readServerConfig } from './config';
 import { createApp } from './core/app';
 import type { APIContext } from './core/context';
+import { capabilityTag } from './conformance/evidence';
 import { startNodeServer } from './node-server';
 import { createPlatform, type Platform } from './platform';
 
@@ -212,7 +213,7 @@ describe('composed API foundation with real PostgreSQL and Cedar', () => {
     );
     expect(recovered.rowCount).toBe(1);
   });
-  it('refreshes snapshots without waiting on an unchanged global policy version', async () => {
+  it(`refreshes snapshots without waiting on an unchanged global policy version ${capabilityTag('authority.refreshSnapshot')}`, async () => {
     const platform = create();
     const identity = await platform.security.authenticate(`Bearer ${token}`, signal);
     const initial = await platform.security.issueSnapshot(identity, bond, signal);
@@ -230,7 +231,7 @@ describe('composed API foundation with real PostgreSQL and Cedar', () => {
       blocker.release();
     }
   });
-  it('persists permission snapshots with owner-only reads and denies ended bonds', async () => {
+  it(`persists permission snapshots with owner-only reads and denies ended bonds ${capabilityTag('authority.refreshSnapshot', 'identity.entry')}`, async () => {
     const platform = create();
     const identity = await platform.security.authenticate(`Bearer ${token}`, signal);
     const other = await platform.security.authenticate(`Bearer ${otherToken}`, signal);
@@ -728,7 +729,7 @@ describe('composed API foundation with real PostgreSQL and Cedar', () => {
     }
   });
 
-  it('bounds pending authentication across disconnects and releases after denial or budget failure', async () => {
+  it(`bounds pending authentication across disconnects and releases after denial or budget failure ${capabilityTag('identity.session')}`, async () => {
     await pool.query('delete from public.api_request_budgets where account_id=$1', [account]);
     const platform = create(1, 1);
     const identity = await platform.security.authenticate(`Bearer ${token}`, signal);
@@ -799,7 +800,7 @@ describe('composed API foundation with real PostgreSQL and Cedar', () => {
     }
   });
 
-  it('serves authenticated identity over a real Node socket backed by PostgreSQL', async () => {
+  it(`serves authenticated identity over a real Node socket backed by PostgreSQL ${capabilityTag('identity.session', 'identity.scopes')}`, async () => {
     const platform = create();
     const runtime = await startNodeServer(
       { ...readServerConfig({ NODE_ENV: 'test' }), PORT: 0 },
@@ -850,7 +851,7 @@ describe('composed API foundation with real PostgreSQL and Cedar', () => {
     expect(runtime.server.listening).toBe(false);
   });
 
-  it('serves the actual canonical identity procedures with private scope discovery and revoked-session denial', async () => {
+  it(`serves the actual canonical identity procedures with private scope discovery and revoked-session denial ${capabilityTag('identity.session', 'identity.scopes')}`, async () => {
     const platform = create();
     const host = createApp(undefined, { platform, logger: () => {} });
     const client = (bearer?: string) =>
@@ -929,7 +930,11 @@ describe('composed API foundation with real PostgreSQL and Cedar', () => {
       records: os.$context<APIContext>().handler(async ({ context, signal: requestSignal }) => {
         if (!context.identity || !context.platform || !requestSignal)
           throw new ORPCError('UNAUTHORIZED');
-        expect(Object.keys(context.platform).sort()).toEqual(['executeAccountCommand', 'security']);
+        expect(Object.keys(context.platform).sort()).toEqual([
+          'executeAccountCommand',
+          'security',
+          'syncCredentials',
+        ]);
         const identity = context.identity;
         return platform.withAccountData(identity, requestSignal, async (client) => {
           const result = await client.query<{ owner_id: string; value: string }>(

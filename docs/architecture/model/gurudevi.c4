@@ -1,0 +1,116 @@
+// The Gurudevi system as a C4 model (LikeC4). One source for diagrams and for agents:
+// `pnpm exec likec4 validate docs/architecture/model` checks it; `likec4 mcp` serves it.
+// Versions and regions here were read or measured live on 2026-11-11; see
+// apps/sanctuary-api/docs/current_progress/2026-11-02-foundation-follow-ups.md.
+
+specification {
+  element actor
+  element system
+  element app
+  element service
+  element store
+  element saas
+
+  tag frozen
+  tag broken
+  tag held
+}
+
+model {
+  person = actor 'Person' {
+    description 'A student, teacher, guardian or principal, mostly in Sri Lanka'
+  }
+
+  gurudevi = system 'Gurudevi' {
+    mobile = app 'Mobile app' {
+      technology 'Expo 58.0.23 · React Native 0.88.1 · React 19.3.1'
+      gate = service 'Feature gate (sanctuaryFeature)' {
+        description 'Citizenship, then the Cedar snapshot, then entitlement, then the rollout flag'
+      }
+      localDb = store 'Local database' {
+        technology 'op-sqlite 17.2.0 + SQLCipher, Drizzle 0.45.4'
+      }
+      snapshot = store 'Signed permission snapshot' {
+        technology 'Ed25519, local-only tables'
+      }
+      deviceSecrets = store 'Device secrets' {
+        technology 'expo-secure-store 58.0.2, MMKV 4.3.2'
+      }
+    }
+    web = app 'Web app' {
+      technology 'Next.js 16.4.5 · React 19.3.1, hosted on Vercel'
+    }
+    api = service 'Sanctuary API v1' {
+      technology 'Node 24.22.2 · Hono 5.0.0-rc.1 · oRPC 2.0.0-beta.49 · pg 8.23.1, raw SQL'
+      description 'Render runs the pre-v1 build until the next deploy'
+    }
+  }
+
+  supabase = system 'Supabase' {
+    auth = service 'Auth' {
+      technology 'GoTrue v2.197.0'
+    }
+    dataApi = service 'Table API and Realtime' {
+      technology 'PostgREST, Realtime; clients reach it with supabase-js 2.119.0'
+    }
+    pooler = service 'Connection pooler' {
+      technology 'Supavisor'
+    }
+    postgres = store 'Postgres' {
+      technology 'Postgres 17.6, row-level security, pg_cron, pg_stat_statements'
+    }
+  }
+
+  powersync = saas 'PowerSync Cloud' {
+    technology 'Sync streams (edition 3); CLI 0.10.3'
+  }
+  growthbook = saas 'GrowthBook' {
+    technology 'Feature flags over a CDN'
+  }
+  doppler = saas 'Doppler' {
+    technology 'Secrets for every environment'
+  }
+
+  person -> mobile 'uses'
+  person -> web 'uses'
+
+  mobile -> api 'calls v1 commands and queries' #broken
+  web -> api 'calls v1 commands and queries' #broken
+  mobile -> dataApi 'reads tables directly' #frozen
+  web -> dataApi 'reads tables directly' #frozen
+  mobile -> auth 'signs in'
+  web -> auth 'signs in'
+  mobile -> growthbook 'reads flags'
+
+  api -> auth 'verifies tokens (JWKS)'
+  api -> pooler 'runs SQL'
+  pooler -> postgres 'pools connections'
+  dataApi -> postgres 'queries under row-level security'
+
+  postgres -> powersync 'streams changes (logical replication slot)'
+  powersync -> localDb 'syncs rows the grant allows'
+  localDb -> api 'uploads queued writes' #held
+  api -> snapshot 'returns signed snapshots'
+  gate -> snapshot 'reads decisions'
+  doppler -> api 'injects secrets'
+}
+
+views {
+  view index {
+    title 'Gurudevi landscape'
+    include *
+  }
+
+  view dataPath of gurudevi {
+    title 'Data path, both directions'
+    include *, supabase.*, powersync, growthbook
+    style element.tag = #frozen {
+      color muted
+    }
+  }
+
+  view device of mobile {
+    title 'Inside the mobile app'
+    include *
+  }
+}

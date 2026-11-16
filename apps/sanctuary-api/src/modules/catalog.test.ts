@@ -1,14 +1,18 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { appContract } from '@repo/core/api/v1/contract';
 import { describe, expect, it } from 'vitest';
+import { cardPath, readCard } from '../conformance/cards.adapter';
 import { router } from '../core/router';
 import {
   admittedNamespaces,
+  capabilities,
   channels,
   domainModules,
   domainNames,
   platformModules,
 } from './catalog';
+import { implementedPaths, procedurePaths } from './contractPaths';
 
 const repo = (path: string) => fileURLToPath(new URL(`../../../../${path}`, import.meta.url));
 const allNames = [...domainModules.map((m) => m.name), ...platformModules.map((m) => m.name)];
@@ -42,12 +46,15 @@ describe('module catalog fitness', () => {
       );
   });
 
-  it('admits a domain module only with its card', () => {
-    for (const m of domainModules.filter((d) => d.status === 'admitted')) {
-      const [domain, subdomain] = m.name.split('.');
-      expect(existsSync(repo(`docs/architecture/domains/${domain}/${subdomain}.md`)), m.name).toBe(
-        true,
-      );
+  it('admits a module only with its card, platform modules included', () => {
+    for (const m of [...domainModules, ...platformModules].filter((d) => d.status === 'admitted'))
+      expect(existsSync(repo(cardPath(m.name))), m.name).toBe(true);
+  });
+
+  it("lists every admitted capability in its module's card, under its kind", () => {
+    for (const c of capabilities.filter((x) => x.status === 'admitted')) {
+      const card = readCard(repo(''), c.module);
+      expect(card?.[c.kind === 'command' ? 'commands' : 'queries'], c.name).toContain(c.name);
     }
   });
 
@@ -57,6 +64,32 @@ describe('module catalog fitness', () => {
         expect(read).not.toBe(m.name);
         expect(domainModules.map((d) => d.name)).toContain(read);
       }
+  });
+
+  it('declares every contract procedure as an admitted capability, and no more', () => {
+    const admitted = capabilities.filter((c) => c.status === 'admitted').map((c) => c.name);
+    expect(procedurePaths(appContract)).toEqual([...admitted].sort());
+  });
+
+  it('implements every capability in the contract with a handler in the router', () => {
+    expect(implementedPaths(router, appContract)).toEqual(procedurePaths(appContract));
+  });
+
+  it('names every capability once, under its own module', () => {
+    const names = capabilities.map((c) => c.name);
+    expect(new Set(names).size).toBe(names.length);
+    for (const c of capabilities) expect(c.name.startsWith(`${c.module}.`), c.name).toBe(true);
+  });
+
+  it('admits a capability only in an admitted module', () => {
+    const modules = [...platformModules, ...domainModules];
+    for (const c of capabilities.filter((x) => x.status === 'admitted'))
+      expect(modules.find((m) => m.name === c.module)?.status, c.name).toBe('admitted');
+  });
+
+  it('opens capabilities only on catalog channels', () => {
+    const known = channels.map((ch) => ch.name);
+    for (const c of capabilities) for (const ch of c.channels) expect(known, c.name).toContain(ch);
   });
 
   it('keeps the app channel as the only admitted channel until another is reviewed', () => {

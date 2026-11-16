@@ -137,7 +137,7 @@ new modules, not deleted unread.
 
 | Step | Done | Not yet |
 | --- | --- | --- |
-| Platform frame | All 15 platform modules named in the catalog with their layer; `identity` admitted | Deny-by-default stubs for authority, audit, records and consent, which are real work in layers 2–7 |
+| Platform frame | All 15 platform modules named in the catalog with their layer; `identity` admitted, `authority` admitted | Deny-by-default stubs for audit, records and consent, and authority's domain namespaces, which are real work in layers 2–7 |
 | Domain frame | All 9 domains and 42 subdomains in the catalog as `skeleton`; one default-deny Cedar namespace per domain in `packages/policies/src/modules/` | Postgres schemas per domain (created with each domain's first migration); cards |
 | Channels | `app` admitted; `workers`, `bots`, `mcp`, `partners`, `operators` named as skeletons | Adapters |
 | Fitness | `catalog.test.ts`: unique names, router exposes only admitted namespaces, the domain index matches the catalog, every domain has a Cedar namespace, admitted modules have cards. `domain-namespaces.test.ts`: fragments parse, assemble and deny by default. The composition audit admits `modules/catalog.ts` | Import-boundary checks for module internals and cross-module table writes (added when the first module folder exists) |

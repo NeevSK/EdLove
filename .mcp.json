@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "likec4": {
+      "command": "node",
+      "args": ["node_modules/@likec4/mcp/bin/likec4-mcp.mjs"],
+      "env": { "LIKEC4_WORKSPACE": "docs/architecture/model" }
+    }
+  }
+}

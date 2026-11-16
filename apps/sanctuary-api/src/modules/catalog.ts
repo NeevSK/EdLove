@@ -110,6 +110,85 @@ export const channels = [
   { name: 'operators', status: 'skeleton' },
 ] as const satisfies readonly { name: string; status: ModuleStatus }[];
 
+export type CatalogChannel = (typeof channels)[number]['name'];
+
+// Evidence levels from AGENTS.md section 6, weakest first.
+export const evidenceOrder = ['G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'R1'] as const;
+export type EvidenceLevel = (typeof evidenceOrder)[number];
+
+export interface CapabilityManifest {
+  name: `${PlatformModule | DomainModule}.${string}`;
+  module: PlatformModule | DomainModule;
+  kind: 'query' | 'command';
+  /** Default `['app']`; an agent or bot channel is opened read-only first (channel admission D5, D7). */
+  channels: readonly CatalogChannel[];
+  assurance: 'session' | 'fresh-person';
+  status: ModuleStatus;
+  /** The least evidence an admitted capability must hold; the conformance report flags anything below. */
+  requiredEvidence: EvidenceLevel;
+}
+
+// One entry per procedure in `appContract`; the fitness tests keep the two equal. Kind follows
+// what the code does: refreshSnapshot upserts permission_snapshots and policy_version, so it is
+// a command. Owner to confirm G2 as the bar for admitted foundation capabilities.
+export const capabilities: readonly CapabilityManifest[] = [
+  {
+    name: 'identity.session',
+    module: 'identity',
+    kind: 'query',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
+    name: 'identity.scopes',
+    module: 'identity',
+    kind: 'query',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
+    name: 'identity.entry',
+    module: 'identity',
+    kind: 'query',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
+    name: 'identity.createInitialBond',
+    module: 'identity',
+    kind: 'command',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
+    // Signs a grant and stores nothing, so a query.
+    name: 'identity.syncCredentials',
+    module: 'identity',
+    kind: 'query',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
+    name: 'authority.refreshSnapshot',
+    module: 'authority',
+    kind: 'command',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+];
+
 export const domainNames = Object.keys(domains) as Domain[];
 
 /** Top-level router namespaces that may exist: admitted platform modules and domains with an admitted subdomain. */

@@ -94,7 +94,12 @@ const environmentSchema = z
       path: ['SNAPSHOT_SIGNING_PRIVATE_KEY'],
       message: 'Production requires the permission snapshot signing key',
     },
-  );
+  )
+  // Without both, identity.syncCredentials answers SERVICE_UNAVAILABLE; half a configuration is a mistake.
+  .refine((config) => Boolean(config.POWERSYNC_URL) === Boolean(config.POWERSYNC_SIGNING_JWK), {
+    path: ['POWERSYNC_SIGNING_JWK'],
+    message: 'PowerSync needs both its URL and its signing key, or neither',
+  });
 
 export type ServerConfig = z.infer<typeof environmentSchema>;
 

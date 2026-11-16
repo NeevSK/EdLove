@@ -246,7 +246,8 @@ export const DEPENDENCY_COHORTS = {
     id: 'ORPC_FOUNDATION',
     name: 'oRPC Sovereign API Engine',
     governance: 'MONOREPO_UNIVERSAL',
-    guidance: 'Deterministic RPC contract and client runtime. Aligned to 2.0.0-beta.46.',
+    guidance:
+      'Deterministic RPC contract and client runtime, and the Hono host it runs on. Aligned to the newest 2.0.0 beta; hono to the highest version any workspace uses.',
     packages: {
       '@orpc/client': '2.0.0-beta.50',
       '@orpc/contract': '2.0.0-beta.50',
@@ -255,6 +256,7 @@ export const DEPENDENCY_COHORTS = {
       '@orpc/openapi': '2.0.0-beta.50',
       '@orpc/shared': '2.0.0-beta.50',
       '@orpc/mcp': '2.0.0-beta.50',
+      hono: '5.0.0-rc.1',
     },
   },
 

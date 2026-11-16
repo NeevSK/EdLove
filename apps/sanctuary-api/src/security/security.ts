@@ -473,8 +473,9 @@ export function createSecurity(options: SecurityOptions) {
   /**
    * Signs and stores the offline permission snapshot for one of the account's bonds.
    * The bond is re-read under lock in the same transaction, so an ended bond gets no
-   * snapshot. PowerSync delivers the stored row; the client verifies signature, bond,
-   * policy version and expiry before use (useCedarDecisionStore).
+   * snapshot. The API response delivers it (not sync: the client's permission tables are
+   * local-only); the client verifies signature, bond, policy version and expiry before use
+   * (snapshotRefresh, useCedarDecisionStore).
    */
   function issueSnapshot(
     identity: AuthenticatedIdentity,

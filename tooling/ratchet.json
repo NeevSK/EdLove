@@ -2,7 +2,7 @@
   "anyInSrc": 2065,
   "tsIgnore": 1,
   "lintSuppressions": 53,
-  "supabaseFromSites": 533,
+  "supabaseFromSites": 277,
   "sourceFilesOver800Loc": 36,
   "rootScripts": 129,
   "plainErrorSubclasses": 20,
@@ -26,5 +26,23 @@
   "referenceOnlyDrift": 0,
   "catchAndLogOnly": 165,
   "handRolledPacing": 3,
-  "handRolledLoadingFlags": 48
+  "handRolledLoadingFlags": 48,
+  "legacyCoreApiImports": 80,
+  "capabilityGaps": {
+    "INTENT_NO_CARD": 0,
+    "INTENT_UNLISTED": 0,
+    "INTENT_UNCONFIRMED": 6,
+    "INTENT_ONLY": 0,
+    "SYMBOL_UNDECLARED": 0,
+    "SYMBOL_NO_CONTRACT": 0,
+    "DOC_DRIFT": 0,
+    "CODE_NO_HANDLER": 0,
+    "CODE_NO_POLICY": 0,
+    "PRACTICE_NO_EVIDENCE": 0,
+    "PRACTICE_BELOW_BAR": 2,
+    "PRACTICE_STALE": 0,
+    "PRACTICE_NO_CONSUMER": 2,
+    "CHANNEL_UNPROVEN": 6
+  },
+  "directRpcAndRealtimeSites": 32
 }
