@@ -7,13 +7,13 @@ import type {
   UploadOptions,
 } from '@powersync/common';
 import { SyncGrant } from '@repo/core/api/v1/contract';
-import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
 import { UnauthorizedError, UnavailableError } from '@repo/core/effect/Errors';
+import { assertSecureApiUrl } from '@repo/core/lib/security/transportSecurity.adapter';
 import {
+  decideUploadFailure,
   type RejectReason,
   UPLOAD_POLICY,
   type UploadPolicy,
-  decideUploadFailure,
 } from '@repo/core/logic/sync/uploadDecision';
 
 /**

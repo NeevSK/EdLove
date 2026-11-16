@@ -1,7 +1,7 @@
-import { View, Text } from 'react-native';
-import type { Assignment } from '@repo/core/logic';
+import type { AssignmentRow } from '@repo/core/logic/schemas/classroom.schema';
 import { CircleCheck, Sparkles, Target } from '@repo/ui/icons';
 import { useMemo } from 'react';
+import { Text, View } from 'react-native';
 
 type GoalCard = {
   id: string;
@@ -9,7 +9,7 @@ type GoalCard = {
 };
 
 interface StudentProgressOverviewProps {
-  assignments: Assignment[];
+  assignments: AssignmentRow[];
   goals: GoalCard[];
   growthPoints: number;
   badgeCount: number;

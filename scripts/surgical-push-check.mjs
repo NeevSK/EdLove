@@ -63,7 +63,7 @@ try {
   execSync('node scripts/audit-test-evidence-levels.mjs --changed', { stdio: 'inherit' });
   execSync('node scripts/check-effect-boundaries.mjs', { stdio: 'inherit' });
 
-  const cmd = `pnpm exec turbo run lint check-types ${filterArgs} --continue --concurrency=1`;
+  const cmd = `pnpm exec turbo run lint check-types ${filterArgs} --only --continue --concurrency=1`;
   console.log(`>>> Executing: ${cmd}`);
   execSync(cmd, { stdio: ['ignore', 'inherit', 'inherit'] });
   console.log('\n✅ Surgical Push Sentinel: Affected packages integrity verified.');

@@ -24,7 +24,7 @@ _tmp_*
 *.db
 *.sqlite
 *.sqlite3
-data/
+/data/
 
 # Doppler fallback files are encrypted, machine-bound cache artifacts.
 # They must not be committed or used as the workspace source of truth.

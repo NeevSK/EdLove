@@ -12,4 +12,4 @@ export const v1Client: AppContractClient = createAuthenticatedV1Client({
  * `useMutation(v1.identity.createInitialBond.mutationOptions())`. Retry, backoff and failure
  * feedback come from the QueryClient policy (src/lib/queryClient.ts).
  */
-export const v1 = createV1QueryUtils(v1Client);
+export const v1: ReturnType<typeof createV1QueryUtils> = createV1QueryUtils(v1Client);

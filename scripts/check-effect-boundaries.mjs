@@ -31,7 +31,7 @@ function filesIn(directory) {
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
     const absolute = path.join(directory, entry.name);
     if (entry.isDirectory()) {
-      if (!ignoredDirectories.has(entry.name)) files.push(...filesIn(absolute));
+      if (!ignoredDirectories.has(entry.name) && !entry.name.startsWith('dist-')) files.push(...filesIn(absolute));
     } else if (sourceExtensions.has(path.extname(entry.name))) {
       files.push(absolute);
     }

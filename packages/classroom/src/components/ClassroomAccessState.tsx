@@ -1,8 +1,7 @@
-import { AppHeader } from '@repo/ui/components/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Text } from '@repo/ui/components/native';
+import { AppHeader, Button, Text } from '@repo/ui/components/native';
 import React from 'react';
 import { View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export type ClassroomAccessStateKind = 'missing' | 'unavailable';
 
@@ -18,10 +17,10 @@ export function ClassroomAccessState({
   const missing = kind === 'missing';
 
   return (
-    <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 bg-phase-canvas">
+    <SafeAreaView edges={['bottom', 'left', 'right']} className="flex-1 bg-phase-canvas">
       <AppHeader
         title={missing ? 'Choose a classroom' : 'Classroom unavailable'}
-        onBack={onBack}
+        leading={{ kind: 'back', label: 'Back', onPress: onBack }}
       />
       <View className="flex-1 justify-center items-center p-6">
         <View className="gap-3 items-center max-w-[420px]">
@@ -35,11 +34,7 @@ export function ClassroomAccessState({
           </Text>
           {onRetry ? (
             <View style={{ marginTop: 8 }}>
-              <Button
-                label="Try again"
-                onPress={onRetry}
-                variant="primary"
-              />
+              <Button label="Try again" onPress={onRetry} variant="primary" />
             </View>
           ) : null}
         </View>

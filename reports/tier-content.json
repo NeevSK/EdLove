@@ -6530,7 +6530,7 @@
    "package": "packages/classroom",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 52,
+   "lines": 47,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -6538,7 +6538,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 43,
+    "functionLines": 39,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -6566,18 +6566,12 @@
      "typeOnly": false,
      "toShape": "barrel",
      "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/native/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
     }
    ],
    "outside": [
-    "react-native-safe-area-context",
     "react",
-    "react-native"
+    "react-native",
+    "react-native-safe-area-context"
    ]
   },
   {
@@ -7880,10 +7874,10 @@
    },
    "imports": [
     {
-     "to": "packages/core/src/logic/index.ts",
+     "to": "packages/core/src/logic/schemas/classroom.schema.ts",
      "typeOnly": true,
-     "toShape": "barrel",
-     "toTier": "T2"
+     "toShape": "contract",
+     "toTier": "T0"
     },
     {
      "to": "packages/ui/src/icons.ts",
@@ -7893,8 +7887,8 @@
     }
    ],
    "outside": [
-    "react-native",
-    "react"
+    "react",
+    "react-native"
    ]
   },
   {
@@ -12977,16 +12971,16 @@
      "toTier": "T2"
     },
     {
-     "to": "packages/core/src/api/transportSecurity.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": "RETIRED"
-    },
-    {
      "to": "packages/core/src/effect/Errors.ts",
      "typeOnly": false,
      "toShape": "contract",
      "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/lib/security/transportSecurity.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T3"
     },
     {
      "to": "packages/core/src/logic/sync/uploadDecision.ts",
@@ -25696,7 +25690,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 19,
+    "prod": 18,
     "tests": 2
    },
    "imports": [],
@@ -34208,7 +34202,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 2,
+    "prod": 3,
     "tests": 1
    },
    "imports": [],
@@ -34281,7 +34275,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 35,
+    "prod": 38,
     "tests": 21
    },
    "imports": [
@@ -34525,6 +34519,7 @@
     "SovereignEventMap",
     "SovereignEvent",
     "SovereignEventPayload",
+    "SovereignBus",
     "sovereignBus"
    ],
    "unions": [],
@@ -37729,7 +37724,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 115,
+    "prod": 114,
     "tests": 17
    },
    "imports": [
@@ -43168,7 +43163,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 14,
+    "prod": 15,
     "tests": 2
    },
    "imports": [
@@ -54550,7 +54545,7 @@
     }
    ],
    "importers": {
-    "prod": 20,
+    "prod": 23,
     "tests": 0
    },
    "imports": [],
@@ -71671,15 +71666,25 @@
    },
    "imports": [
     {
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T3"
+    },
+    {
      "to": "packages/self/src/lib/selfFts.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": null
+    },
+    {
+     "to": "packages/core/src/types/Wellbeing.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
     }
    ],
-   "outside": [
-    "@repo/core"
-   ]
+   "outside": []
   },
   {
    "file": "packages/self/src/data/selfInsights.data.ts",
@@ -71716,15 +71721,25 @@
    },
    "imports": [
     {
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/types/Wellbeing.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
      "to": "packages/self/src/data/wellbeing.data.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": null
     }
    ],
-   "outside": [
-    "@repo/core"
-   ]
+   "outside": []
   },
   {
    "file": "packages/self/src/data/wellbeing.data.ts",
@@ -71769,6 +71784,12 @@
      "toTier": "T3"
     },
     {
+     "to": "packages/core/src/lib/storageWrapper.adapter.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T3"
+    },
+    {
      "to": "packages/core/src/native/index.ts",
      "typeOnly": false,
      "toShape": "barrel",
@@ -71779,10 +71800,15 @@
      "typeOnly": false,
      "toShape": "barrel",
      "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/types/Wellbeing.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
     }
    ],
    "outside": [
-    "@repo/core",
     "drizzle-orm",
     "react-native"
    ]
@@ -75607,10 +75633,47 @@
     }
    ],
    "importers": {
-    "prod": 3,
+    "prod": 4,
     "tests": 0
    },
    "imports": [],
+   "outside": []
+  },
+  {
+   "file": "packages/self/src/types/index.ts",
+   "package": "packages/self",
+   "folderTier": null,
+   "shape": "barrel",
+   "lines": 2,
+   "counts": {
+    "types": 0,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 1,
+    "jsx": false
+   },
+   "exports": [],
+   "unions": [],
+   "importers": {
+    "prod": 0,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/self/src/types/healthPort.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": null
+    }
+   ],
    "outside": []
   },
   {
@@ -83549,7 +83612,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 136,
+    "prod": 135,
     "tests": 6
    },
    "imports": [

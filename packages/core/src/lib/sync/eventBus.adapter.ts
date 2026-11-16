@@ -91,7 +91,7 @@ type Listener<K extends SovereignEvent> = (payload: SovereignEventPayload<K>) =>
 
 // ─── Bus Implementation ───────────────────────────────────────────────────────
 
-class SovereignBus {
+export class SovereignBus {
   private listeners = new Map<SovereignEvent, Set<Listener<any>>>();
 
   /**

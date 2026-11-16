@@ -170,7 +170,7 @@ export default function SubmissionModal({
       open={isOpen}
       onClose={handleCancel}
       title={t('submission.title') || 'Submit Work'}
-      footer={
+      actions={
         <Button
           className="w-full h-16 bg-templeGold rounded-[24px] shadow-lg shadow-templeGold/20 flex-row items-center justify-center gap-3"
           onPress={handleSubmit}
@@ -178,7 +178,7 @@ export default function SubmissionModal({
         >
           {isSubmitting ? (
             <HStack className="items-center gap-2">
-              <WaitingSign size="sm" />
+              <WaitingSign size={20} />
               <ButtonText className="text-phaseText-inverse font-bold text-lg">
                 {t('submission.submitting') || 'Turning in...'}
               </ButtonText>

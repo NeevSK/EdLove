@@ -27,7 +27,7 @@
   "catchAndLogOnly": 158,
   "handRolledPacing": 3,
   "handRolledLoadingFlags": 48,
-  "legacyCoreApiImports": 80,
+  "legacyCoreApiImports": 79,
   "capabilityGaps": {
     "INTENT_NO_CARD": 0,
     "INTENT_UNLISTED": 0,

@@ -114,7 +114,7 @@ export default function TeacherFeedbackModal({
       onClose={onClose}
       title={t('teacher.feedback.title')}
       description={t('teacher.feedback.subtitle')}
-      footer={footer}
+      actions={footer}
     >
       <VStack className="gap-6 pt-4">
         {/* Category selection */}

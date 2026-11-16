@@ -9,7 +9,7 @@ import {
 } from '@repo/core/lib/scopedStateStorage.adapter';
 import { storage } from '@repo/core/lib/storage.adapter';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
+import { SovereignBus, sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import {
   getGuestScope,
   getGuestScopeRevision,
@@ -67,4 +67,4 @@ export const sessionScope = {
 };
 
 /** The in-process event bus that state publishes transitions on. */
-export const eventBus = sovereignBus;
+export const eventBus: SovereignBus = sovereignBus;

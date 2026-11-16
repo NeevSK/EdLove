@@ -1,4 +1,3 @@
-import { View, Text, Pressable, ScrollView } from 'react-native';
 import { marksToGPA } from '@repo/analytics/stats';
 import { ProgressRing } from '@repo/graphics/charts';
 import { Surface } from '@repo/ui/components/native';
@@ -16,6 +15,7 @@ import {
   Zap,
 } from '@repo/ui/icons';
 import { Theme } from '@repo/ui/theme/Theme';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 interface AnalyticsWidgetProps {
   title: string;
@@ -175,7 +175,7 @@ export default function QuickAnalytics({
           />
         </View>
 
-        <Card className="p-8 bg-phase-surface-secondary rounded-[40px] border border-phase-border shadow-md">
+        <View className="p-8 bg-phase-surface-secondary rounded-[40px] border border-phase-border shadow-md">
           <View className="flex-row items-center items-center gap-2 mb-8">
             <TrendingUp size={16} className="text-sanctuarySaffron" />
             <Text className="text-xl font-black text-phase-text-primary tracking-tighter uppercase">
@@ -206,7 +206,7 @@ export default function QuickAnalytics({
               </Text>
             </View>
           </View>
-        </Card>
+        </View>
 
         <View className="gap-4">
           <View className="flex-row items-center items-center gap-2 px-2">
@@ -223,6 +223,7 @@ export default function QuickAnalytics({
               { icon: FileText, label: 'Download progress report' },
             ].map((action, i) => (
               <Pressable
+                accessibilityRole="button"
                 key={i}
                 className="flex-row items-center justify-between p-5 bg-phase-surface-secondary rounded-[24px] border border-phase-border active:bg-phase-border/10 transition-colors"
               >
@@ -240,7 +241,7 @@ export default function QuickAnalytics({
           </View>
         </View>
 
-        <Card className="p-8 bg-phase-surface-secondary rounded-[40px] border border-phase-border relative overflow-hidden">
+        <View className="p-8 bg-phase-surface-secondary rounded-[40px] border border-phase-border relative overflow-hidden">
           <View className="absolute -top-10 -right-10 w-40 h-40 bg-sanctuarySaffron/5 rounded-full" />
           <View className="flex-row items-center items-center gap-2 mb-6">
             <Lightbulb size={16} className="text-sanctuarySaffron" />
@@ -262,7 +263,7 @@ export default function QuickAnalytics({
               <Tip text="Outstanding scholarship. This is the perfect time to explore advanced coursework or research topics." />
             )}
           </View>
-        </Card>
+        </View>
       </View>
     </ScrollView>
   );
