@@ -1,7 +1,7 @@
-import { View, Text, ScrollView } from 'react-native';
 import { usePrincipalGovernanceHistory } from '@repo/profile';
 import { WorldSkeleton } from '@repo/ui/components/native';
 import { Award, Calendar, School, Shield, TrendingUp, UserPlus, Users } from '@repo/ui/icons';
+import { ScrollView, Text, View } from 'react-native';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 
 type GovernanceRecord = {
@@ -24,7 +24,7 @@ export default function GovernanceHistoryTimeline({ userId }: GovernanceHistoryT
 
   if (isLoading) {
     return (
-      <View space="md">
+      <View className="gap-4">
         <WorldSkeleton height={100} />
         <WorldSkeleton height={100} />
       </View>
@@ -44,7 +44,7 @@ export default function GovernanceHistoryTimeline({ userId }: GovernanceHistoryT
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
-      <View space="lg" className="pb-10">
+      <View className="gap-6 pb-10">
         {history.map((record: GovernanceRecord, index: number) => (
           <Animated.View key={record.id} entering={FadeInRight.delay(index * 100)}>
             <View className="p-6 rounded-[32px] bg-white/3 border border-white/5 overflow-hidden">
@@ -94,7 +94,7 @@ export default function GovernanceHistoryTimeline({ userId }: GovernanceHistoryT
                 <View className="flex-row items-center justify-between gap-4">
                   <View className="flex-row items-center gap-4">
                     <View className="items-center">
-                      <View className="flex-row items-center" space="xs" items-center>
+                      <View className="flex-row items-center gap-1">
                         <UserPlus size={10} className="text-mistGray/40" />
                         <Text className="text-[8px] text-mistGray/40 font-black uppercase tracking-widest">
                           Staff
@@ -105,7 +105,7 @@ export default function GovernanceHistoryTimeline({ userId }: GovernanceHistoryT
                       </Text>
                     </View>
                     <View className="items-center">
-                      <View className="flex-row items-center" space="xs" items-center>
+                      <View className="flex-row items-center gap-1">
                         <Users size={10} className="text-mistGray/40" />
                         <Text className="text-[8px] text-mistGray/40 font-black uppercase tracking-widest">
                           Students
@@ -118,7 +118,7 @@ export default function GovernanceHistoryTimeline({ userId }: GovernanceHistoryT
                   </View>
 
                   <View className="items-end">
-                    <View className="flex-row items-center" space="xs" items-center>
+                    <View className="flex-row items-center gap-1">
                       <TrendingUp size={10} className="text-amber-400" />
                       <Text className="text-[8px] text-amber-400 font-black uppercase tracking-widest">
                         Vitality
@@ -136,17 +136,13 @@ export default function GovernanceHistoryTimeline({ userId }: GovernanceHistoryT
                       Governance Initiatives
                     </Text>
                     <View className="flex-row items-center flex-wrap gap-2">
-                      {record.key_initiatives.map((initiative: string, i: number) => (
+                      {record.key_initiatives.map((initiative: string) => (
                         <View
-                          key={i}
-                          className="bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20"
+                          key={initiative}
+                          className="bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 flex-row items-center gap-1"
                         >
-                          <View className="flex-row items-center" space="xs" items-center>
-                            <Award size={10} className="text-amber-400" />
-                            <Text className="text-[10px] text-amber-300 font-bold">
-                              {initiative}
-                            </Text>
-                          </View>
+                          <Award size={10} className="text-amber-400" />
+                          <Text className="text-[10px] text-amber-300 font-bold">{initiative}</Text>
                         </View>
                       ))}
                     </View>

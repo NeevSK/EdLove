@@ -1,7 +1,7 @@
-import { View, Text, ScrollView } from 'react-native';
 import { useClassroomLegacyHistory } from '@repo/profile';
 import { WorldSkeleton } from '@repo/ui/components/native';
 import { Award, Calendar, School, User, Users } from '@repo/ui/icons';
+import { ScrollView, Text, View } from 'react-native';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 
 type ClassroomLegacyRecord = {
@@ -22,7 +22,7 @@ export default function ClassroomLegacyTimeline({ classroomId }: ClassroomLegacy
 
   if (isLoading) {
     return (
-      <View space="md">
+      <View className="gap-4">
         <WorldSkeleton height={100} />
         <WorldSkeleton height={100} />
       </View>
@@ -42,7 +42,7 @@ export default function ClassroomLegacyTimeline({ classroomId }: ClassroomLegacy
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
-      <View space="lg" className="pb-10">
+      <View className="gap-6 pb-10">
         {history.map((record: ClassroomLegacyRecord, index: number) => (
           <Animated.View key={record.id} entering={FadeInRight.delay(index * 100)}>
             <View className="p-6 rounded-[32px] bg-white/3 border border-white/5 overflow-hidden">
@@ -89,7 +89,7 @@ export default function ClassroomLegacyTimeline({ classroomId }: ClassroomLegacy
 
                 <View className="flex-row items-center justify-between gap-4">
                   <View className="items-center">
-                    <View className="flex-row items-center" space="xs" items-center>
+                    <View className="flex-row items-center gap-1">
                       <Users size={10} className="text-mistGray/40" />
                       <Text className="text-[8px] text-mistGray/40 font-black uppercase tracking-widest">
                         Students
@@ -112,7 +112,7 @@ export default function ClassroomLegacyTimeline({ classroomId }: ClassroomLegacy
                           key={i}
                           className="bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20"
                         >
-                          <View className="flex-row items-center" space="xs" items-center>
+                          <View className="flex-row items-center gap-1">
                             <Award size={10} className="text-emerald-400" />
                             <Text className="text-[10px] text-emerald-300 font-bold">
                               {achievement}

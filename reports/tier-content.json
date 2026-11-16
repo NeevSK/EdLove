@@ -7560,7 +7560,7 @@
    "package": "packages/classroom",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 292,
+   "lines": 293,
    "counts": {
     "types": 2,
     "consts": 0,
@@ -7568,7 +7568,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 4,
-    "functionLines": 258,
+    "functionLines": 259,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -70585,7 +70585,7 @@
    "package": "packages/self",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 271,
+   "lines": 273,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -70593,7 +70593,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 240,
+    "functionLines": 244,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -70630,21 +70630,15 @@
      "toTier": null
     },
     {
-     "to": "packages/ui/src/components/native/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
-     "to": "packages/ui/src/components/native/index.ts",
-     "typeOnly": false,
-     "toShape": "barrel",
-     "toTier": "T6"
-    },
-    {
      "to": "packages/ui/src/components/layout.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
+     "toTier": "T6"
+    },
+    {
+     "to": "packages/ui/src/components/native/index.ts",
+     "typeOnly": false,
+     "toShape": "barrel",
      "toTier": "T6"
     },
     {
@@ -71601,7 +71595,7 @@
    "package": "packages/self",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 492,
+   "lines": 490,
    "counts": {
     "types": 4,
     "consts": 0,
@@ -71609,7 +71603,7 @@
     "ambient": 2,
     "schemas": 0,
     "functions": 34,
-    "functionLines": 473,
+    "functionLines": 472,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -71672,16 +71666,16 @@
      "toTier": "T3"
     },
     {
-     "to": "packages/self/src/lib/selfFts.ts",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
      "to": "packages/core/src/types/Wellbeing.ts",
      "typeOnly": true,
      "toShape": "contract",
      "toTier": "T0"
+    },
+    {
+     "to": "packages/self/src/lib/selfFts.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
     }
    ],
    "outside": []
@@ -71691,7 +71685,7 @@
    "package": "packages/self",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 107,
+   "lines": 111,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -71699,7 +71693,7 @@
     "ambient": 2,
     "schemas": 0,
     "functions": 5,
-    "functionLines": 97,
+    "functionLines": 98,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -71746,7 +71740,7 @@
    "package": "packages/self",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 206,
+   "lines": 205,
    "counts": {
     "types": 0,
     "consts": 1,
@@ -71754,7 +71748,7 @@
     "ambient": 5,
     "schemas": 0,
     "functions": 9,
-    "functionLines": 198,
+    "functionLines": 197,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -74341,7 +74335,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 0,
     "tests": 0
    },
    "imports": [
@@ -74469,7 +74463,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 0,
     "tests": 0
    },
    "imports": [
@@ -74621,7 +74615,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 0,
     "tests": 0
    },
    "imports": [
@@ -74759,7 +74753,7 @@
     "errorClasses": 0,
     "mutable": 0,
     "sideEffects": 0,
-    "reexports": 6,
+    "reexports": 1,
     "jsx": false
    },
    "exports": [],
@@ -74770,39 +74764,9 @@
    },
    "imports": [
     {
-     "to": "packages/self/src/screens/self/AdminSelfView.tsx",
+     "to": "packages/self/src/screens/self/roleResolution.ts",
      "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/screens/self/FounderSelfView.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/screens/self/GuardianSelfView.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/screens/self/PrincipalSelfView.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/screens/self/StudentSelfView.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
-     "toTier": null
-    },
-    {
-     "to": "packages/self/src/screens/self/TeacherSelfView.tsx",
-     "typeOnly": false,
-     "toShape": "runtime",
+     "toShape": "contract+logic",
      "toTier": null
     }
    ],
@@ -74834,7 +74798,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 0,
     "tests": 0
    },
    "imports": [
@@ -75016,7 +74980,7 @@
     }
    ],
    "importers": {
-    "prod": 7,
+    "prod": 8,
     "tests": 1
    },
    "imports": [
@@ -75055,7 +75019,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 0,
     "tests": 0
    },
    "imports": [
@@ -75158,7 +75122,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 1,
+    "prod": 0,
     "tests": 0
    },
    "imports": [
@@ -83612,7 +83576,7 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 135,
+    "prod": 134,
     "tests": 6
    },
    "imports": [

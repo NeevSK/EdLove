@@ -135,8 +135,8 @@ export async function createMoodLog(
         note,
         created_at: createdAt,
       };
-    } catch (err) {
-      console.warn('[WellbeingRepository] Local SQLite insert failed.', err);
+    } catch (_err) {
+      // Fall through to guest/in-memory storage fallback when SQLite is unavailable
     }
   }
 
