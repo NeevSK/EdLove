@@ -1,0 +1,2285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Feature Visibility & Unwired Components Audit</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; background: #0b1120; color: #f8fafc; margin: 0; padding: 2rem; }
+    h1 { color: #38bdf8; font-size: 1.8rem; margin-bottom: 0.25rem; }
+    h2 { color: #94a3b8; font-size: 1.25rem; margin-top: 2rem; border-bottom: 1px solid #1e293b; padding-bottom: 0.5rem; }
+    .badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; }
+    .badge.red { background: #991b1b; color: #f87171; }
+    .badge.amber { background: #854d0e; color: #fde047; }
+    .badge.green { background: #065f46; color: #34d399; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .card { background: #1e293b; padding: 1.25rem; border-radius: 0.5rem; border: 1px solid #334155; }
+    .card-val { font-size: 2rem; font-weight: 700; color: #f1f5f9; }
+    .card-lbl { font-size: 0.85rem; color: #94a3b8; margin-top: 0.25rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: #1e293b; border-radius: 0.5rem; overflow: hidden; }
+    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #334155; font-size: 0.85rem; }
+    th { background: #0f172a; color: #94a3b8; font-weight: 600; }
+    .code-tag { font-family: monospace; background: #0f172a; padding: 0.2rem 0.4rem; border-radius: 0.25rem; color: #e2e8f0; }
+  </style>
+</head>
+<body>
+  <h1>Feature Visibility & Unwired Components Audit</h1>
+  <p style="color: #94a3b8;">Enforcing Centralized Authority & Detecting Island UI Elements</p>
+
+  <h2>1. Executive Summary</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="card-val">611</div>
+      <div class="card-lbl">Total Candidate UI Components</div>
+    </div>
+    <div class="card">
+      <div class="card-val" style="color: #f87171;">317</div>
+      <div class="card-lbl">Unwired Orphan Components (Never Rendered)</div>
+      <span class="badge red">Dead UI Islands</span>
+    </div>
+    <div class="card">
+      <div class="card-val" style="color: #fde047;">0</div>
+      <div class="card-lbl">Hardcoded Role / Visibility Bypasses</div>
+      <span class="badge amber">Authority Deficit</span>
+    </div>
+  </div>
+
+  <h2>2. Hardcoded Authority Bypasses on Screens (0)</h2>
+  <table>
+    <thead>
+      <tr><th>File & Line</th><th>Violation Rule</th><th>Severity</th><th>Code Snippet</th><th>Architectural Fix</th></tr>
+    </thead>
+    <tbody>
+      
+    </tbody>
+  </table>
+
+  <h2>3. Unwired / Orphan Components Built but Never Rendered (317)</h2>
+  <table>
+    <thead>
+      <tr><th>Component Name</th><th>Source Path</th><th>Category</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td><strong>AccessibleTouchable</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/AccessibleTouchable.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AccountPinModal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/AccountPinModal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AchievementUnlockOverlay</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/AchievementUnlockOverlay.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AdaptiveLayout</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/AdaptiveLayout.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AuthorizeDeviceModal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/AuthorizeDeviceModal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>BondBadge</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/BondBadge.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>BrandedEmptyState</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/BrandedEmptyState.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>BreathAnimation</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/BreathAnimation.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>BreathingLoader</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/BreathingLoader.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>CelebrationOverlay</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/CelebrationOverlay.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ChatComposer</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/ChatComposer.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>CollectionCard</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/CollectionCard.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>CommercialBatchModal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/CommercialBatchModal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ConflictResolver</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/ConflictResolver.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ContentComposer</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/ContentComposer.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ConversationSheet</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/ConversationSheet.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>DeleteAccountModal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/DeleteAccountModal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>DerivedHistoryView</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/DerivedHistoryView.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>DeviceSecurityCenter</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/DeviceSecurityCenter.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>DeviceSecurityCenter.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/DeviceSecurityCenter.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>DomainSubHeader</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/DomainSubHeader.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>EaseView</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/EaseView.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>EaseView.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/EaseView.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>EntityModal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/EntityModal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>EntityModal.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/EntityModal.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>EntityView</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/EntityView.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>EnvironmentGuard</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/EnvironmentGuard.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FeatureDiscoveryModal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/FeatureDiscoveryModal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FeatureInfoIcon</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/FeatureInfoIcon.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FireflyFeedbackScene</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/FireflyFeedbackScene.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FireflyMascot</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/FireflyMascot.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FireflyProductMoment</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/FireflyProductMoment.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FocusRing</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/FocusRing.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FocusRing.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/FocusRing.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FounderGlow</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/FounderGlow.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GatewayFooter.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/GatewayFooter.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GatewayHeader.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/GatewayHeader.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GatewayScreenShell.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/GatewayScreenShell.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GlobalHeader</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/GlobalHeader.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GlobalHeader.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/GlobalHeader.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GuestDataSyncModal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/GuestDataSyncModal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>HeroBanner</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/HeroBanner.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>HorizontalChipRow</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/HorizontalChipRow.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>IdentityCard</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/IdentityCard.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>InteractiveRadarChart</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/InteractiveRadarChart.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>InternalBrowser</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/InternalBrowser.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>InternalBrowser.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/InternalBrowser.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>JourneyErrorBoundary</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/JourneyErrorBoundary.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>JourneyHistoryCard</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/JourneyHistoryCard.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>LifecycleMonitor</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/LifecycleMonitor.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>LinkWardModal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/LinkWardModal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>LivingFirefly</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/LivingFirefly.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>LivingGlow</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/LivingGlow.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>LoadingOverlay</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/LoadingOverlay.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>LogoutModal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/LogoutModal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>LotusDropdown</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/LotusDropdown.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>LotusLoader</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/LotusLoader.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>LotusPetalFAB</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/LotusPetalFAB.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>MapProvider</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/maps/MapProvider.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>UnifiedMapView</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/maps/UnifiedMapView.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>UnifiedMapView.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/maps/UnifiedMapView.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>UnifiedMarker</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/maps/UnifiedMarker.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>UnifiedMarker.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/maps/UnifiedMarker.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>MascotPod</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/MascotPod.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AssetCollectionPicker</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/media/AssetCollectionPicker.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AssetCreationPortal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/media/AssetCreationPortal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AssetShareModal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/media/AssetShareModal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PdfViewer</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/media/PdfViewer.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ResourceActionSheet</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/media/ResourceActionSheet.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ResourceCard</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/media/ResourceCard.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>UniversalDocumentPortal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/media/UniversalDocumentPortal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>VideoPlayer.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/media/VideoPlayer.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AgentCards</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Agent/AgentCards.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ButtonPulse</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Button/ButtonPulse.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Scrim</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Dialog/Scrim.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Keypad</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Keyboard/Keypad.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TypingBar</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Keyboard/TypingBar.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Launcher</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Launcher/Launcher.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TwoPane</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Layout/TwoPane.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>EnrichedMarkdownAdapter</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Media/EnrichedMarkdownAdapter.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>EnrichedRichTextAdapter</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Media/EnrichedRichTextAdapter.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ExpoVideoAdapter</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Media/ExpoVideoAdapter.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FileCard</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Media/FileCard.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>WorldMoment</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Moment/WorldMoment.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Perch</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Perch/Perch.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Radar</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Radar/Radar.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SceneWeather</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Scene/SceneWeather.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SettingsRows</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Settings/SettingsRows.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>WorldTabBar</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Shell/WorldTabBar.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ArtLife</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Stage/ArtLife.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ArtStill</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Stage/ArtStill.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>CompanionOnFloor</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Stage/CompanionOnFloor.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FloorOverlays</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Stage/FloorOverlays.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StageContext</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Stage/StageContext.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>WorldFloor</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Stage/WorldFloor.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SwipeRow</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/SwipeRow/SwipeRow.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>DateTravel</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Time/DateTravel.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TimeDial</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/native/Time/TimeDial.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>NetworkStatusBanner</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/NetworkStatusBanner.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>NotificationDrawer</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/NotificationDrawer.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>NotificationSettingsPanel</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/NotificationSettingsPanel.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PollWidget</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/PollWidget.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PositiveInvitation</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/PositiveInvitation.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PostCard</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/PostCard.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PredictiveButton</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/PredictiveButton.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PressableScale</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/PressableScale.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ProgressIndicator</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/ProgressIndicator.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SchoolJoinPrompt</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/prompts/SchoolJoinPrompt.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SignupPrompt</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/prompts/SignupPrompt.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>UpgradePrompt</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/prompts/UpgradePrompt.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>QRCodeGenerator</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/QRCodeGenerator.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ResonantHeatmap</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/ResonantHeatmap.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SafeButton</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SafeButton.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryBackground</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryBackground.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryCard</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryCard.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryCarousel</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryCarousel.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryChatScrollView</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryChatScrollView.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryChip</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryChip.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryDoorwayActions</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryDoorwayActions.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryFlashList</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryFlashList.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryFlashList.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryFlashList.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryGlobalStyles</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryGlobalStyles.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryGuard</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryGuard.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryInput</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryInput.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryLegendList</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryLegendList.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryLegendList.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryLegendList.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryModal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryModal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryModal.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryModal.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryNudge</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryNudge.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryProgressBar</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryProgressBar.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryRealmSelector</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryRealmSelector.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuarySignal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuarySignal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryStatsCard</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryStatsCard.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryTable</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryTable.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryTable.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryTable.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryToast.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryToast.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SanctuaryVirtualTable.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SanctuaryVirtualTable.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SandboxBanner</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SandboxBanner.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ScreenWrapper</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/ScreenWrapper.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ScreenWrapper.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/ScreenWrapper.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SettingsGroup</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SettingsGroup.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Skeleton</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/Skeleton.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Skeleton.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/Skeleton.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SkeletonLoader</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SkeletonLoader.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SkeletonLoader.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SkeletonLoader.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SkiaGlowAura</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SkiaGlowAura.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SkiaGlowAura.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SkiaGlowAura.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SmartShelf</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SmartShelf.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>CommunityPresence</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/social/CommunityPresence.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>CommunityPresence.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/social/CommunityPresence.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SocialShieldModal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/social/SocialShieldModal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SovereignVirtualList</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SovereignVirtualList.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StepIndicator</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/StepIndicator.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SyncStatusCompact</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SyncStatusCompact.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SyncStatusFull</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SyncStatusFull.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SyncStatusIndicator</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SyncStatusIndicator.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SyncStatusRetryButton</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SyncStatusRetryButton.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SyncStatusStats</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/SyncStatusStats.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TemporalNavigator</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/TemporalNavigator.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TemporalPilot</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/TemporalPilot.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TemporalProvider</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/TemporalProvider.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TemporalProvider.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/TemporalProvider.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TemporalScrubber</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/TemporalScrubber.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TemporalShield</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/TemporalShield.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TutiiLiving</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/TutiiLiving.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>UniversalModal</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/UniversalModal.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>UniversalModal.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/UniversalModal.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>UserAvatar</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/UserAvatar.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>VisualCapabilityInspector</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/VisualCapabilityInspector.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AstroView</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/visualization/AstroView.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>DharmaView</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/visualization/DharmaView.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>JyotiView</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/visualization/JyotiView.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TerraView</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/visualization/TerraView.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>UniversalPerspective</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/visualization/UniversalPerspective.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>VastuView</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/visualization/VastuView.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>VastuView.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/visualization/VastuView.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>VatyaView</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/visualization/VatyaView.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>VatyaView.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/visualization/VatyaView.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AgentCards</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/web/Agent/AgentCards.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Basics</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/web/Basics/Basics.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Launcher</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/web/Launcher/Launcher.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FileCard</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/web/Media/FileCard.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Perch</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/web/Perch/Perch.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>Radar</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/web/Radar/Radar.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SettingsRows</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/web/Settings/SettingsRows.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SwipeRow</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/web/SwipeRow/SwipeRow.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>WebScreenHeader.web</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/WebScreenHeader.web.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>CanvasSurfaceCard</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/workspace/CanvasSurfaceCard.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>CanvasZoneColumn</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/workspace/CanvasZoneColumn.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>DraggableCanvasSurface</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/workspace/DraggableCanvasSurface.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>MobileWorkspaceCanvas</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/workspace/renderers/MobileWorkspaceCanvas.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TabletWorkspaceCanvas</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/workspace/renderers/TabletWorkspaceCanvas.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>WebWorkspaceCanvas</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/workspace/renderers/WebWorkspaceCanvas.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ResponsiveWorkspaceCanvas</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/workspace/ResponsiveWorkspaceCanvas.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>WebCanvasZoneColumn</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/workspace/WebCanvasZoneColumn.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>WebDraggableCanvasSurface</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/workspace/WebDraggableCanvasSurface.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>WorkspaceRenderer</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/workspace/WorkspaceRenderer.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>WorkspaceSettingsSurface</strong></td>
+          <td><span class="code-tag">packages/ui/src/components/workspace/WorkspaceSettingsSurface.tsx</span></td>
+          <td>ui</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>BulkStudentCreation</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/BulkStudentCreation.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ClassroomAccessState</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/ClassroomAccessState.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GradebookTable</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/grading/GradebookTable.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GradeEntryForm</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/grading/GradeEntryForm.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GradingSettings</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/grading/GradingSettings.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ReportCard</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/grading/ReportCard.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>IdentityInitialState</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/IdentityInitialState.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>OCRScanner</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/OCRScanner.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PrincipalOnboardingView.web</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/onboarding/PrincipalOnboardingView.web.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StudentOnboardingView</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/onboarding/StudentOnboardingView.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StudentOnboardingView.web</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/onboarding/StudentOnboardingView.web.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TeacherOnboardingView</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/onboarding/TeacherOnboardingView.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TeacherOnboardingView.web</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/onboarding/TeacherOnboardingView.web.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>CreateClassroomAction</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/poa/CreateClassroomAction.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>MyEchoesAction</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/poa/MyEchoesAction.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PrincipalEchoAction</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/poa/PrincipalEchoAction.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ScanQRAction</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/poa/ScanQRAction.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TeacherActions</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/poa/TeacherActions.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TeacherEchoActions</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/poa/TeacherEchoActions.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TeacherPrimaryActions</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/poa/TeacherPrimaryActions.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>QuickAnalytics</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/QuickAnalytics.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StudentGrowthPoints</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/student/StudentGrowthPoints.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StudentHeader</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/student/StudentHeader.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StudentProgressOverview</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/student/StudentProgressOverview.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StudentStats</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/student/StudentStats.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StudentStudySuite</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/student/StudentStudySuite.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StudentUpcomingAssignments</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/student/StudentUpcomingAssignments.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SubmissionModal</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/SubmissionModal.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SubmissionModal.web</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/SubmissionModal.web.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TeacherActivePeriodCard</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/teacher/TeacherActivePeriodCard.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TeacherAdminActions</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/teacher/TeacherAdminActions.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TeacherAssignmentsSidebar</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/teacher/TeacherAssignmentsSidebar.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TeacherClassroomList</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/teacher/TeacherClassroomList.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TeacherSnapshot</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/teacher/TeacherSnapshot.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TeacherStats</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/teacher/TeacherStats.tsx</span></td>
+          <td>classroom</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GuardianEvents</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/guardian/GuardianEvents.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GuardianNotifications</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/guardian/GuardianNotifications.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GuardianStudentsGrid</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/guardian/GuardianStudentsGrid.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PrincipalOnboardingView</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/onboarding/PrincipalOnboardingView.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GuardianChildrenList</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/poa/GuardianChildrenList.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GuardianHeader</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/poa/GuardianHeader.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>CurriculumPulse</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/principal/CurriculumPulse.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>DashboardEcho</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/principal/DashboardEcho.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ManagementStation</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/principal/ManagementStation.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PrincipalActions</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/principal/PrincipalActions.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PrincipalModuleAtlas</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/principal/PrincipalModuleAtlas.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PrincipalObservationsSection</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/principal/PrincipalObservationsSection.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PrincipalOnboardingView</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/principal/PrincipalOnboardingView.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PrincipalSetupWizard</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/principal/PrincipalSetupWizard.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SchoolOverview</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/principal/SchoolOverview.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SchoolStats</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/principal/SchoolStats.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StaffDirectory</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/principal/StaffDirectory.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>InviteCodeManager</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/school/InviteCodeManager.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SchoolSettingsSheet</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/school/SchoolSettingsSheet.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StepBasicInfo</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/school/StepBasicInfo.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StepDemographics</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/school/StepDemographics.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StepHierarchy</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/school/StepHierarchy.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StepLocation</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/school/StepLocation.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AdminAuditLog</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/AdminAuditLog.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AdminFeatureRegistry</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/AdminFeatureRegistry.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AdminRoomShell</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/AdminRoomShell.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AnalyticsDashboardScreen</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/AnalyticsDashboardScreen.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>DocumentListScreen</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/DocumentListScreen.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>DocumentListScreen.web</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/DocumentListScreen.web.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>EnhancedAnalyticsDashboard.web</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/EnhancedAnalyticsDashboard.web.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FounderVisionScreen</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/FounderVisionScreen.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GradeHeadDashboard</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/GradeHeadDashboard.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GuardianCommunicationBridgeScreen</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/guardian/GuardianCommunicationBridgeScreen.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GuardianRoomShell</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/guardian/GuardianRoomShell.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>CommandCenter</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/principal/CommandCenter.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>DashboardContent</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/principal/DashboardContent.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>HierarchyDashboard</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/principal/HierarchyDashboard.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>InstitutionalArcCard</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/principal/InstitutionalArcCard.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>LegacyDashboard</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/principal/LegacyDashboard.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PrincipalRoomShell</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/principal/PrincipalRoomShell.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>PrincipalWorkspaceContainer</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/PrincipalWorkspaceContainer.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SchoolProfileScreen.web</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/SchoolProfileScreen.web.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SectionHeadDashboard</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/SectionHeadDashboard.tsx</span></td>
+          <td>admin</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>AcademicHistoryTimeline</strong></td>
+          <td><span class="code-tag">packages/self/src/components/AcademicHistoryTimeline.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ShadowAgentDrawer.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/archive/ShadowAgentDrawer.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>BaseSelfView</strong></td>
+          <td><span class="code-tag">packages/self/src/components/BaseSelfView.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>BaseSelfView.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/BaseSelfView.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>BreathGuide.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/BreathGuide.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ClassroomLegacyTimeline</strong></td>
+          <td><span class="code-tag">packages/self/src/components/ClassroomLegacyTimeline.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>CommunityPresence</strong></td>
+          <td><span class="code-tag">packages/self/src/components/CommunityPresence.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>CommunityPresence.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/CommunityPresence.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>DailyRhythm.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/DailyRhythm.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>EnergyBarChart</strong></td>
+          <td><span class="code-tag">packages/self/src/components/EnergyBarChart.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>EnergyBarChart.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/EnergyBarChart.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>EnergyForecast.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/EnergyForecast.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FeatureErrorBoundary</strong></td>
+          <td><span class="code-tag">packages/self/src/components/FeatureErrorBoundary.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FeaturePicker</strong></td>
+          <td><span class="code-tag">packages/self/src/components/FeaturePicker.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>FireJournal.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/FireJournal.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GenesisNode</strong></td>
+          <td><span class="code-tag">packages/self/src/components/GenesisNode.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GovernanceHistoryTimeline</strong></td>
+          <td><span class="code-tag">packages/self/src/components/GovernanceHistoryTimeline.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>GratitudeGlimmers.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/GratitudeGlimmers.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>JoyJar.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/JoyJar.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>MoodLotus.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/MoodLotus.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>MoodPickerCard</strong></td>
+          <td><span class="code-tag">packages/self/src/components/MoodPickerCard.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>MyGradesView.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/MyGradesView.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>OrientationCaptureStep</strong></td>
+          <td><span class="code-tag">packages/self/src/components/OrientationCaptureStep.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ProgressTree.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/ProgressTree.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ResonancePatternCard.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/ResonancePatternCard.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>ResonanceTimeline</strong></td>
+          <td><span class="code-tag">packages/self/src/components/ResonanceTimeline.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>RoleWeightEditor</strong></td>
+          <td><span class="code-tag">packages/self/src/components/RoleWeightEditor.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SchoolLegacyTimeline</strong></td>
+          <td><span class="code-tag">packages/self/src/components/SchoolLegacyTimeline.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SelfNavigator</strong></td>
+          <td><span class="code-tag">packages/self/src/components/SelfNavigator.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SleepTracker.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/SleepTracker.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SpotlightEmpty</strong></td>
+          <td><span class="code-tag">packages/self/src/components/SpotlightEmpty.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>StudentGoals.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/StudentGoals.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>SwipeableTodoRow</strong></td>
+          <td><span class="code-tag">packages/self/src/components/SwipeableTodoRow.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TeacherVitalityCard</strong></td>
+          <td><span class="code-tag">packages/self/src/components/TeacherVitalityCard.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TimelineEvent</strong></td>
+          <td><span class="code-tag">packages/self/src/components/TimelineEvent.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>TomorrowPrep.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/TomorrowPrep.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>VoiceJournaling.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/VoiceJournaling.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>WelcomeModal</strong></td>
+          <td><span class="code-tag">packages/self/src/components/WelcomeModal.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>WelcomeModal.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/WelcomeModal.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>WindDownRitual.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/WindDownRitual.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>WisdomSeeds.web</strong></td>
+          <td><span class="code-tag">packages/self/src/components/WisdomSeeds.web.tsx</span></td>
+          <td>self</td>
+          <td><span class="badge red">Never Mounted on Any Screen</span></td>
+        </tr>
+      
+    </tbody>
+  </table>
+</body>
+</html>

@@ -212,7 +212,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--w-lamp);
+  color: var(--w-lamp-deep, var(--w-ink));
 }
 
 .streamlineTitle {
@@ -330,7 +330,7 @@
 }
 
 .actionPipActive {
-  color: var(--w-lamp);
+  color: var(--w-lamp-deep, var(--w-ink));
 }
 
 .orientationPeek {
@@ -817,7 +817,7 @@
 }
 
 .pebbleCornerStickerFace[data-active="true"] .stickerGlyph {
-  color: var(--w-lamp);
+  color: var(--w-lamp-deep, var(--w-ink));
 }
 
 /* Counter Badge Number */
@@ -826,7 +826,7 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   transform: translate(2px, -2px);
-  color: var(--w-lamp);
+  color: var(--w-lamp-deep, var(--w-ink));
 }
 
 /* Live Status Dot */
@@ -896,7 +896,7 @@
 
 .stickerDropdownItem:hover {
   background: color-mix(in srgb, var(--w-lamp) 16%, var(--w-ground));
-  color: var(--w-lamp);
+  color: var(--w-lamp-deep, var(--w-ink));
 }
 
 /* Micro Tooltip */
@@ -1217,7 +1217,7 @@
 }
 
 .trailingActionBtn[data-active="true"] {
-  color: var(--w-lamp);
+  color: var(--w-lamp-deep, var(--w-ink));
   background: color-mix(in srgb, var(--w-lamp) 12%, transparent);
   border-color: color-mix(in srgb, var(--w-lamp) 30%, transparent);
 }

@@ -48,15 +48,18 @@ records what the module does, not a new rule. The owner confirms it before `stat
 ## Commands
 
 - `identity.createInitialBond`
+- `identity.deletion.request`
+- `identity.deletion.cancel`
 
 ## Queries
 
 - `identity.session`
 - `identity.scopes`
 - `identity.entry`
-- `identity.syncCredentials`: a PowerSync grant for the caller's own account (ES256, `sub` and
+- `identity.syncGrant`: a PowerSync grant for the caller's own account (ES256, `sub` and
   `canonical_account_id` = the account, audience = the PowerSync origin, at most 5 minutes and never
   past the session). Stores nothing. Added 2026-11-08 for the device sync connector.
+- `identity.deletion.status`
 
 ## Events it publishes
 

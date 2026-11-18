@@ -350,15 +350,15 @@ const BASE_CSS = `
 .gd-pebble-sticker[data-active="true"]{opacity:1!important;background:color-mix(in srgb,var(--w-lamp) 22%,var(--w-ground));border-color:color-mix(in srgb,var(--w-lamp) 55%,var(--w-line));box-shadow:-2px 2px 10px -2px color-mix(in srgb,var(--w-lamp) 35%,transparent)}
 .gd-pebble-glyph{font-size:.92rem;line-height:1;display:inline-flex;align-items:center;justify-content:center;transform:translate(2px,-2px);color:var(--w-ink-soft);transition:transform .18s cubic-bezier(.16,1,.3,1),color .15s ease}
 .gd-pebble-hitbox:hover .gd-pebble-glyph{transform:translate(2px,-2px) scale(1.12);color:var(--w-ink)}
-.gd-pebble-sticker[data-active="true"] .gd-pebble-glyph{color:var(--w-lamp)}
-.gd-pebble-counter{font-size:.72rem;font-weight:700;font-variant-numeric:tabular-nums;transform:translate(2px,-2px);color:var(--w-lamp)}
+.gd-pebble-sticker[data-active="true"] .gd-pebble-glyph{color:var(--w-lamp-deep, var(--w-ink))}
+.gd-pebble-counter{font-size:.72rem;font-weight:700;font-variant-numeric:tabular-nums;transform:translate(2px,-2px);color:var(--w-lamp-deep, var(--w-ink))}
 .gd-pebble-status{width:7px;height:7px;border-radius:50%;transform:translate(2px,-2px);background:var(--w-success, var(--w-lamp));box-shadow:0 0 6px var(--w-success, var(--w-lamp))}
 .gd-pebble-status[data-state="busy"]{background:var(--w-lamp);box-shadow:0 0 6px var(--w-lamp)}
 .gd-pebble-status[data-state="syncing"]{background:var(--w-focus);box-shadow:0 0 6px var(--w-focus)}
 .gd-pebble-menu{position:absolute;top:calc(100% - .2rem);right:0;min-width:155px;background:var(--w-ground);border:1px solid var(--w-line);box-shadow:0 10px 30px -4px color-mix(in srgb, var(--w-ink) 22%, transparent);border-radius:.85rem;padding:.35rem;display:flex;flex-direction:column;gap:.25rem;z-index:40;animation:gdPebblePop .14s cubic-bezier(.16,1,.3,1)}
 @keyframes gdPebblePop{from{opacity:0;transform:translateY(-4px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
 .gd-pebble-menu-item{display:flex;align-items:center;gap:.55rem;padding:.45rem .75rem;border-radius:.55rem;font-size:.76rem;font-weight:500;color:var(--w-ink);background:transparent;border:none;cursor:pointer;text-align:left;transition:background .12s ease,color .12s ease}
-.gd-pebble-menu-item:hover{background:color-mix(in srgb,var(--w-lamp) 16%,var(--w-ground));color:var(--w-lamp)}
+.gd-pebble-menu-item:hover{background:color-mix(in srgb,var(--w-lamp) 16%,var(--w-ground));color:var(--w-lamp-deep, var(--w-ink))}
 .gd-pebble-tooltip{position:absolute;bottom:calc(100% + 4px);right:0;background:var(--w-ink);color:var(--w-ground);font-size:.7rem;font-weight:500;padding:.25rem .6rem;border-radius:.45rem;white-space:nowrap;pointer-events:none;z-index:50;box-shadow:0 4px 14px color-mix(in srgb, var(--w-ink) 18%, transparent);animation:gdPebblePop .12s ease}
 .gd-pebble[data-gear="compact"],@container (max-width: 114px){.gd-pebble{padding:.8rem .4rem .7rem .4rem}.gd-pebble-emoji{font-size:1.55rem}.gd-pebble-title{font-size:.78rem}.gd-pebble-rhythm{display:none!important}.gd-pebble-sticker{width:1.65rem;height:1.65rem;padding:0 0 .15rem .15rem}.gd-pebble-glyph{font-size:.78rem;transform:translate(1px,-1px)}.gd-pebble-counter{font-size:.65rem;transform:translate(1px,-1px)}.gd-pebble-status{width:6px;height:6px;transform:translate(1px,-1px)}}
 .gd-rail{display:flex;flex-direction:column;gap:var(--gd-gap-inside,8px);min-width:0}.gd-rail-label{margin:0}
@@ -1431,7 +1431,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-combo-nanoClockTime {
   font: 700 0.72rem var(--w-font-mono, monospace, ui-monospace);
   letter-spacing: 0.04em;
-  color: var(--w-lamp);
+  color: var(--w-lamp-deep);
 }
 
 /* COMPACT TWO-ROW QUIET STACK */

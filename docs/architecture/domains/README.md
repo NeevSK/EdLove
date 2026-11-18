@@ -40,7 +40,7 @@ namespace that isn't admitted, or if a domain lacks its Cedar namespace in
 | | | Assessments and quizzes | `learning.assessments` | card ([draft](learning/assessments.md)) |
 | | | Grading | `learning.grading` | skeleton |
 | | | Classroom notes | `learning.notes` | skeleton |
-| Institution operations | `ops` | Schools and academic structure | `ops.institutions` | skeleton |
+| Institution operations | `ops` | Schools and academic structure | `ops.institutions` | admitted (`provision`, `handleAvailable`, `update`, `createInviteCode`, `listInviteCodes`, `revokeInviteCode`; [card](ops/institutions.md)) |
 | | | Enrolment | `ops.enrolment` | skeleton |
 | | | Timetables | `ops.timetables` | skeleton |
 | | | Attendance | `ops.attendance` | skeleton (owner to confirm: Learning or Ops) |
@@ -77,7 +77,7 @@ namespace that isn't admitted, or if a domain lacks its Cedar namespace in
 
 | Module | Namespace | Status |
 | --- | --- | --- |
-| Identity and accounts | `identity` | admitted (`session`, `scopes`, `entry`, `createInitialBond`, `syncCredentials`; [card](platform/identity.md), draft) |
+| Identity and accounts | `identity` | admitted (`session`, `scopes`, `entry`, `createInitialBond`, `syncGrant`, `deletion.status`, `deletion.request`, `deletion.cancel`; [card](platform/identity.md), draft) |
 | Bonds and authority | `authority` | admitted (`refreshSnapshot`; boundary in `security.ts`; domain namespaces permit nothing yet; [card](platform/authority.md), draft) |
 | Durable operations | `operations` | skeleton (store and dispatcher implemented internally) |
 | Request budgets | `budgets` | skeleton |

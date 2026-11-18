@@ -9,7 +9,15 @@ const catalog = { modules: [...platformModules, ...domainModules], capabilities 
 // The catalog as it stood when that drift existed, so later capabilities don't rewrite history.
 const catalogOn20261108 = {
   ...catalog,
-  capabilities: capabilities.filter((c) => c.name !== 'identity.syncCredentials'),
+  capabilities: capabilities.filter((c) =>
+    [
+      'identity.session',
+      'identity.scopes',
+      'identity.entry',
+      'identity.createInitialBond',
+      'authority.refreshSnapshot',
+    ].includes(c.name),
+  ),
 };
 
 // The rows as they stood on 2026-11-08, before the drift was corrected.

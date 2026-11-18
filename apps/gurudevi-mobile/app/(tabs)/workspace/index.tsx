@@ -1,10 +1,11 @@
 import { View } from 'react-native';
+import { SchoolConnectionWelcome } from '@repo/admin';
 import { usePermissions, usePerspectiveSwitch } from '@repo/core/logic';
 import { isLocalGuestSessionId } from '@repo/core/types/localGuest';
 import { useAuthorityStatus } from '@repo/core/logic/permissions/hooks/useAuthority';
 import { EmptyState, ErrorState, WaitingSign } from '@repo/ui/components/native';
 import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { GoTo } from '@repo/ui/components/native/navigation';
+import { GoTo, useNavigator } from '@repo/ui/components/native/navigation';
 import { resolveWorkspaceRoute } from '@/lib/workspace/routeResolution';
 
 export { RouteErrorBoundary as ErrorBoundary };
@@ -18,6 +19,7 @@ const STATE = {
 } as const;
 
 export default function WorkspaceDispatcher() {
+  const router = useNavigator();
   const { context } = usePermissions();
   const { activePerspective } = usePerspectiveSwitch();
   const {
@@ -66,6 +68,15 @@ export default function WorkspaceDispatcher() {
   }
 
   if (routeResolution.kind === 'permission-denied') {
+    if (context.userId && routeResolution.message.includes('active workspace role')) {
+      return (
+        <SchoolConnectionWelcome
+          message={routeResolution.message}
+          onReturnPersonal={() => router.push('/(tabs)/self')}
+          onProvisioned={retryPermissionResolution}
+        />
+      );
+    }
     return (
       <View style={STATE}>
         <ErrorState title="Workspace access is unavailable" message={routeResolution.message} />

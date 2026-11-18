@@ -1049,7 +1049,7 @@ export function PracticeCardCandidates() {
                         {practice.emoji}
                       </span>
                       {isPinned ? (
-                        <span title="Pinned to quick access" style={{ fontSize: '0.85rem', color: 'var(--w-lamp)' }}>
+                        <span title="Pinned to quick access" style={{ fontSize: '0.85rem', color: 'var(--w-lamp-deep, #78350f)' }}>
                           📍
                         </span>
                       ) : null}
@@ -1117,7 +1117,7 @@ export function PracticeCardCandidates() {
                           <span>{practice.rhythm}</span>
                         </span>
                         {isPinned ? (
-                          <span style={{ fontSize: '0.8rem', color: 'var(--w-lamp)' }}>📍</span>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--w-lamp-deep, #78350f)' }}>📍</span>
                         ) : (
                           <span style={{ color: 'var(--w-ink-ghost)' }}>
                             <ChevronRight size={14} />

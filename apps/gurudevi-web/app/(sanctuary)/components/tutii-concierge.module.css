@@ -1,0 +1,271 @@
+.conciergeContainer {
+  position: relative;
+  margin: 0 0 1.5rem 0;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--w-radius-lg, 1.25rem);
+  background: var(--w-surface, var(--paper-light, #ffffff));
+  border: 1px solid var(--w-border, color-mix(in srgb, var(--w-ink, #2d3748) 12%, transparent));
+  box-shadow: 0 8px 24px -6px color-mix(in srgb, var(--w-ink, #000) 6%, transparent);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.conciergeContainer[data-theme='wellbeing'] {
+  border-color: color-mix(in srgb, var(--w-lotus, #e28743) 25%, var(--w-border, #e2e8f0));
+  background: linear-gradient(
+    135deg,
+    var(--w-surface, #ffffff) 0%,
+    color-mix(in srgb, var(--w-lotus, #e28743) 4%, var(--w-surface, #ffffff)) 100%
+  );
+}
+
+.conciergeContainer[data-theme='community'] {
+  border-color: color-mix(in srgb, var(--w-foliage, #2e7d32) 25%, var(--w-border, #e2e8f0));
+  background: linear-gradient(
+    135deg,
+    var(--w-surface, #ffffff) 0%,
+    color-mix(in srgb, var(--w-foliage, #2e7d32) 4%, var(--w-surface, #ffffff)) 100%
+  );
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.avatarVoiceGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.avatarWrapper {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--w-ground, #fafafa);
+  border: 1.5px solid var(--w-lamp, #e28743);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-lamp, #e28743) 20%, transparent);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.avatarImg {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.titleArea {
+  display: flex;
+  flex-direction: column;
+}
+
+.badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--w-lamp, #e28743);
+  margin-bottom: 0.15rem;
+}
+
+.conciergeContainer[data-theme='community'] .badge {
+  color: var(--w-foliage, #2e7d32);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--w-ink, #1a202c);
+  letter-spacing: -0.01em;
+}
+
+.escapeHatchBtn {
+  background: none;
+  border: none;
+  color: var(--w-ink-soft, #718096);
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--w-radius-sm, 0.4rem);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.15s ease;
+}
+
+.escapeHatchBtn:hover {
+  background: color-mix(in srgb, var(--w-ink, #000) 6%, transparent);
+  color: var(--w-ink, #1a202c);
+}
+
+.promptCard {
+  background: var(--w-ground, #fdfbf7);
+  border-radius: var(--w-radius-md, 0.75rem);
+  padding: 1rem 1.15rem;
+  border: 1px solid color-mix(in srgb, var(--w-ink, #000) 6%, transparent);
+  margin-bottom: 0.85rem;
+}
+
+.speechText {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--w-ink, #2d3748);
+}
+
+.stepIndicator {
+  font-size: 0.75rem;
+  color: var(--w-ink-soft, #a0aec0);
+  margin-top: 0.4rem;
+  display: block;
+}
+
+.optionsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.optionCard {
+  flex: 1 1 200px;
+  background: var(--w-surface, #ffffff);
+  border: 1.5px solid var(--w-border, #e2e8f0);
+  border-radius: var(--w-radius-md, 0.75rem);
+  padding: 0.75rem 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.optionCard:hover {
+  border-color: var(--w-lamp, #e28743);
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-lamp, #e28743) 14%, transparent);
+}
+
+.conciergeContainer[data-theme='community'] .optionCard:hover {
+  border-color: var(--w-foliage, #2e7d32);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--w-foliage, #2e7d32) 14%, transparent);
+}
+
+.optionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--w-ink, #1a202c);
+}
+
+.optionEmoji {
+  font-size: 1.15rem;
+}
+
+.optionSub {
+  font-size: 0.8rem;
+  color: var(--w-ink-soft, #718096);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.actionStep {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.actionRow {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.primaryActionBtn {
+  background: var(--w-action, var(--w-lamp, #e28743));
+  color: var(--w-on-action, #ffffff);
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--w-radius-full, 9999px);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-action, #e28743) 25%, transparent);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.primaryActionBtn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.secondaryActionBtn {
+  background: none;
+  border: 1px solid var(--w-border, #cbd5e0);
+  color: var(--w-ink, #2d3748);
+  padding: 0.55rem 1rem;
+  border-radius: var(--w-radius-full, 9999px);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.secondaryActionBtn:hover {
+  background: color-mix(in srgb, var(--w-ink, #000) 4%, transparent);
+}
+
+.minimizedBar {
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  border-radius: var(--w-radius-md, 0.75rem);
+  background: color-mix(in srgb, var(--w-surface, #ffffff) 80%, var(--w-ground, #fafafa));
+  border: 1px dashed color-mix(in srgb, var(--w-ink, #000) 15%, transparent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.minimizedBar:hover {
+  border-color: var(--w-lamp, #e28743);
+  background: var(--w-surface, #ffffff);
+}
+
+.minimizedText {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--w-ink-soft, #4a5568);
+  font-weight: 500;
+}
+
+.minimizedAction {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--w-lamp, #e28743);
+}
+
+.conciergeContainer[data-theme='community'] .minimizedAction {
+  color: var(--w-foliage, #2e7d32);
+}

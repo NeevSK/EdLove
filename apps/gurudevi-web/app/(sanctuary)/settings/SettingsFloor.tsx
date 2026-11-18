@@ -284,8 +284,8 @@ export function SettingsFloor({
             style={{
               padding: '1rem',
               borderRadius: '0.5rem',
-              background: 'var(--color-paper-light, #f7f3ea)',
-              border: '1px solid var(--color-line, rgba(104, 94, 85, 0.2))',
+              background: 'var(--w-surface, #f7f3ea)',
+              border: '1px solid var(--w-line, rgba(104, 94, 85, 0.2))',
               marginBottom: '1.5rem',
               display: 'flex',
               alignItems: 'center',
@@ -295,10 +295,10 @@ export function SettingsFloor({
             }}
           >
             <div>
-              <strong style={{ display: 'block', color: 'var(--color-ink, #131e27)' }}>
+              <strong style={{ display: 'block', color: 'var(--w-ink, #131e27)' }}>
                 Guest Preferences Active
               </strong>
-              <span style={{ fontSize: '0.85rem', color: 'var(--color-ink-soft, #453c35)' }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--w-ink-subtle, #453c35)' }}>
                 Your settings are saved locally to this device under Sri Lanka PDPA No. 9 of 2022.
               </span>
             </div>
@@ -307,7 +307,7 @@ export function SettingsFloor({
               style={{
                 fontSize: '0.85rem',
                 fontWeight: 700,
-                color: 'var(--color-action, #a85022)',
+                color: 'var(--w-ink, #131e27)',
                 textDecoration: 'underline',
               }}
             >

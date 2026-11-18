@@ -22,7 +22,7 @@ function mobileRoutes() {
   const app = join(ROOT, 'apps/gurudevi-mobile/app');
   return walk(app)
     .filter((f) => /\.tsx?$/.test(f) && !/\.(test|spec)\.tsx?$/.test(f))
-    .map((f) => relative(app, f).replace(/\.tsx?$/, ''))
+    .map((f) => relative(app, f).replace(/\\/g, '/').replace(/\.tsx?$/, ''))
     .filter((r) => !r.split('/').some((s) => s === '_layout' || s.startsWith('+')))
     .map((r) => `/${r}`.replace(/\/index$/, '') || '/');
 }

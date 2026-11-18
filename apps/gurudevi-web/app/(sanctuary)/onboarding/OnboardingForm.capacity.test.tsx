@@ -28,4 +28,19 @@ describe('primary capacity selection', () => {
     fireEvent.click(teacher);
     expect(continueButton.disabled).toBe(false);
   });
+
+  it('supports selecting the principal & leader role and advancing', () => {
+    render(<OnboardingForm />);
+    fireEvent.change(screen.getByLabelText('Preferred name'), { target: { value: 'Dr. Silva' } });
+    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+
+    const principal = screen.getByRole('radio', { name: /principal/i }) as HTMLInputElement;
+    const continueButton = screen.getByRole('button', { name: /continue/i }) as HTMLButtonElement;
+    expect(principal.checked).toBe(false);
+    fireEvent.click(principal);
+    expect(principal.checked).toBe(true);
+    expect(continueButton.disabled).toBe(false);
+    fireEvent.click(continueButton);
+    expect(screen.getByText(/create your account with tutii/i)).toBeDefined();
+  });
 });

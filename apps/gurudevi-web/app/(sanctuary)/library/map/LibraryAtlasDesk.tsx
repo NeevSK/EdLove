@@ -1,3 +1,4 @@
+import { classifyGurudeviHost } from '../../../../lib/host-routing';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type {
   MockKnowledgeTopology as TopologyData,
@@ -47,6 +48,12 @@ export function LibraryAtlasDesk({ displayName, capacity }: Readonly<LibraryAtla
   useEffect(() => {
     let active = true;
     (async () => {
+      // In guest Explore mode or when API origin is absent, retain offline sandbox topology without network fetch
+      const onGuestExplore =
+        typeof window !== 'undefined' && classifyGurudeviHost(window.location.host) === 'explore';
+      const apiUrl = process.env.VITE_API_URL || process.env.NEXT_PUBLIC_API_URL;
+      if (onGuestExplore || !apiUrl) return;
+
       try {
         const res = await (orpcClient.library as any).getMapTopology({ query: {} });
         if (!active || !res) return;

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Agentic User Journey & Interaction Feedback Report</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 2rem; }
+    h1 { font-size: 1.75rem; color: #38bdf8; margin-bottom: 0.5rem; }
+    .badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; }
+    .badge.success { background: #065f46; color: #34d399; }
+    .badge.failed { background: #991b1b; color: #f87171; }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .metric-card { background: #1e293b; padding: 1rem; border-radius: 0.5rem; border: 1px solid #334155; }
+    .metric-val { font-size: 1.5rem; font-weight: 700; color: #f1f5f9; }
+    .flow-card { background: #1e293b; border-radius: 0.5rem; border: 1px solid #334155; margin-bottom: 1.5rem; overflow: hidden; }
+    .flow-header { padding: 1rem; background: #243248; display: flex; justify-content: space-between; align-items: center; }
+    .step-list { padding: 1rem; }
+    .step-item { padding: 0.75rem; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    .step-item:last-child { border-bottom: none; }
+  </style>
+</head>
+<body>
+  <h1>Agentic User Journey Report</h1>
+  <div>Status: <span class="badge success">SUCCESS</span> · Engine: PLAYWRIGHT</div>
+  <div class="metrics">
+    <div class="metric-card"><div class="metric-val">1 / 1</div><div>Flows Passed</div></div>
+    <div class="metric-card"><div class="metric-val">3</div><div>Assertions Passed</div></div>
+    <div class="metric-card"><div class="metric-val">123</div><div>Axe Rules Passed</div></div>
+    <div class="metric-card"><div class="metric-val">18</div><div>Axe Violations</div></div>
+  </div>
+  <h2>Flow Executions</h2>
+  
+    <div class="flow-card">
+      <div class="flow-header">
+        <div><strong>[pjc:student.daily_prep] PJC: Manage Tomorrow's Preparation</strong><div style="font-size: 0.85rem; color: #94a3b8;"></div></div>
+        <span class="badge success">PASSED</span>
+      </div>
+      <div class="step-list">
+        
+          <div class="step-item">
+            <div>
+              <strong>Step 1: [step:student.open_self] Open Self Workspace</strong>
+              <div style="font-size: 0.8rem; color: #94a3b8;">Step "Open Self Workspace" reached and rendered cleanly</div>
+            </div>
+            <span class="badge success">PASSED</span>
+          </div>
+        
+          <div class="step-item">
+            <div>
+              <strong>Step 2: [step:student.add_prep_goal] Add Prep Item</strong>
+              <div style="font-size: 0.8rem; color: #94a3b8;">Step "Add Prep Item" reached and rendered cleanly</div>
+            </div>
+            <span class="badge success">PASSED</span>
+          </div>
+        
+          <div class="step-item">
+            <div>
+              <strong>Step 3: [step:student.complete_prep_goal] Complete Prep Item</strong>
+              <div style="font-size: 0.8rem; color: #94a3b8;">Step "Complete Prep Item" reached and rendered cleanly</div>
+            </div>
+            <span class="badge success">PASSED</span>
+          </div>
+        
+      </div>
+    </div>
+  
+</body>
+</html>

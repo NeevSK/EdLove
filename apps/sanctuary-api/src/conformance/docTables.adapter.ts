@@ -41,14 +41,17 @@ export function parseIndexTable(doc: string, text: string): DocClaim[] {
         : undefined;
     const statusCell = cells[at] ?? '';
     if (!module) return [];
-    const listed = statusCell.match(/\(([^)]*)\)/)?.[1] ?? '';
+    const inParens = statusCell.match(/\(([^)]*)\)/)?.[1] ?? '';
+    const beforeSemicolon = inParens.split(';')[0] ?? '';
     return [
       {
         doc,
         line: i + 1,
         module,
         status: statusCell.match(STATUS)?.[1] ?? '',
-        capabilities: backticked(listed).filter((n) => /^[a-z][A-Za-z]*$/.test(n)),
+        capabilities: backticked(beforeSemicolon).filter((n) =>
+          /^[a-z][A-Za-z0-9]*(?:\.[a-z][A-Za-z0-9]*)*$/.test(n),
+        ),
       },
     ];
   });

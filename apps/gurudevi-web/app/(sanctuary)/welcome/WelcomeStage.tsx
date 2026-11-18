@@ -1,3 +1,4 @@
+import { classifyGurudeviHost } from '../../../lib/host-routing';
 import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { Link } from '@tanstack/react-router';
 import { useNavigator } from '../../../lib/navigation/useNavigator';
@@ -26,8 +27,6 @@ export function WelcomeStage(props?: WelcomeStageProps) {
   const [exploreStep, setExploreStep] = useState<'welcome' | 'orientation' | 'role'>('welcome');
   const [selectedRole, setSelectedRole] = useState<ExploreCapacity>('teacher');
 
-  const exploreSelfUrl = resolveSurfaceUrl('explore', '/self');
-
   function handleCompleteExploreIntro() {
     setExploreCapacity(selectedRole);
     try {
@@ -36,9 +35,16 @@ export function WelcomeStage(props?: WelcomeStageProps) {
     } catch {
       // Storage unavailable in private modes
     }
-    const targetUrl =
-      exploreSelfUrl + (exploreSelfUrl.includes('?') ? '&intro=complete' : '?intro=complete');
-    navigator.follow(targetUrl, 'welcome', 'replace');
+    const targetPath = '/self?intro=complete';
+    const currentHost = typeof window !== 'undefined' ? window.location.host : '';
+    const onExploreHost = classifyGurudeviHost(currentHost) === 'explore';
+
+    if (onExploreHost || typeof window === 'undefined') {
+      navigator.follow(targetPath, 'welcome', 'replace');
+    } else {
+      const exploreSelfUrl = resolveSurfaceUrl('explore', targetPath);
+      window.location.replace(exploreSelfUrl);
+    }
   }
   return (
     <LivingGround atmosphere="canopy" dither className={styles.viewport}>

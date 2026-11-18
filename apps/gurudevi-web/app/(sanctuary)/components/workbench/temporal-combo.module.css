@@ -74,7 +74,7 @@
 .nanoClockTime {
   font: 700 0.72rem var(--w-font-mono, monospace, ui-monospace);
   letter-spacing: 0.04em;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp-deep, #78350f);
 }
 
 /* COMPACT TWO-ROW QUIET STACK */

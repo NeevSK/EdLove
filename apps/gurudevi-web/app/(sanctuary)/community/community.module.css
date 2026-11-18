@@ -1006,7 +1006,7 @@
   padding: 0.4rem 1rem;
   border: none;
   background: var(--w-action, var(--color-action));
-  color: var(--w-ground, var(--paper-light));
+  color: var(--w-on-lamp, var(--w-ink, #1c2a16));
   font-size: 0.82rem;
   font-weight: 700;
   border-radius: var(--w-radius-full, 9999px);
@@ -1024,7 +1024,7 @@
   padding: 0 0.3rem;
   border-radius: var(--w-radius-full, 9999px);
   background: var(--w-surface, var(--paper-light));
-  color: var(--w-action, var(--color-action));
+  color: var(--w-lamp-deep, var(--w-ink, #2d3b24));
   font-size: 0.7rem;
   font-weight: 800;
 }

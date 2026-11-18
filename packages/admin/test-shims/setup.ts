@@ -1,7 +1,15 @@
-if (typeof (globalThis as any).ErrorUtils === 'undefined') {
-  (globalThis as any).ErrorUtils = {
-    setGlobalHandler: () => {},
-    getGlobalHandler: () => () => {},
-    reportFatalError: () => {},
-  };
-}
+import { vi } from 'vitest';
+
+(globalThis as any).ErrorUtils = {
+  setGlobalHandler: vi.fn(),
+  getGlobalHandler: vi.fn(),
+};
+
+vi.mock('react-native-enriched-markdown', () => ({
+  EnrichedMarkdownText: 'View',
+}));
+
+vi.mock('expo-video', () => ({
+  VideoView: 'VideoView',
+  useVideoPlayer: () => ({}),
+}));

@@ -59,6 +59,28 @@ function hostFiles(connect: readonly string[]): Plugin {
 export default defineConfig(({ mode }) => {
   const explore = mode === 'explore';
   const root = path.resolve(__dirname, 'spa');
+
+  // Ground environment variables with canonical VITE_* priority, falling back to legacy Doppler/Expo keys
+  const supabaseUrl =
+    process.env.VITE_SUPABASE_URL ??
+    process.env.NEXT_PUBLIC_SUPABASE_URL ??
+    process.env.EXPO_PUBLIC_SUPABASE_URL ??
+    '';
+  const supabaseKey =
+    process.env.VITE_SUPABASE_PUBLISHABLE_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+    process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ??
+    '';
+  const apiUrl =
+    process.env.VITE_API_URL ??
+    process.env.NEXT_PUBLIC_API_URL ??
+    process.env.EXPO_PUBLIC_API_URL ??
+    '';
+  const supportAction =
+    process.env.VITE_SUPPORT_FORM_ACTION ??
+    process.env.NEXT_PUBLIC_SUPPORT_FORM_ACTION ??
+    '';
+
   return {
     root,
     publicDir: path.resolve(__dirname, 'public'),
@@ -67,8 +89,8 @@ export default defineConfig(({ mode }) => {
         explore
           ? []
           : connectOrigins({
-              authUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-              apiUrl: process.env.NEXT_PUBLIC_API_URL,
+              authUrl: supabaseUrl,
+              apiUrl: apiUrl,
             }),
       ),
       tanstackRouter({
@@ -98,27 +120,33 @@ export default defineConfig(({ mode }) => {
             ]
           : []),
         // One surface per build: Explore's bundle never contains the account surface, and the reverse.
+        // In local development, devSurface dynamically dispatches by hostname (explore.localhost vs sanctuary.localhost).
         {
           find: /^#surface$/,
-          replacement: path.join(root, explore ? 'surface/explore.tsx' : 'surface/account.tsx'),
+          replacement: path.join(
+            root,
+            explore
+              ? 'surface/explore.tsx'
+              : mode === 'development'
+                ? 'surface/devSurface.tsx'
+                : 'surface/account.tsx',
+          ),
         },
       ],
     },
     define: {
       'process.env.NODE_ENV': JSON.stringify(mode === 'development' ? 'development' : 'production'),
-      // Explore has no backend by definition: every connection setting is empty in that build.
-      'process.env.NEXT_PUBLIC_SUPABASE_URL': JSON.stringify(
-        explore ? '' : (process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''),
-      ),
-      'process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY': JSON.stringify(
-        explore ? '' : (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? ''),
-      ),
-      'process.env.NEXT_PUBLIC_API_URL': JSON.stringify(
-        explore ? '' : (process.env.NEXT_PUBLIC_API_URL ?? ''),
-      ),
-      'process.env.NEXT_PUBLIC_SUPPORT_FORM_ACTION': JSON.stringify(
-        process.env.NEXT_PUBLIC_SUPPORT_FORM_ACTION ?? '',
-      ),
+      // Canonical Vite environment variables
+      'process.env.VITE_SUPABASE_URL': JSON.stringify(explore ? '' : supabaseUrl),
+      'process.env.VITE_SUPABASE_PUBLISHABLE_KEY': JSON.stringify(explore ? '' : supabaseKey),
+      'process.env.VITE_API_URL': JSON.stringify(explore ? '' : apiUrl),
+      'process.env.VITE_SUPPORT_FORM_ACTION': JSON.stringify(supportAction),
+
+      // Backward-compatible aliases for legacy references
+      'process.env.NEXT_PUBLIC_SUPABASE_URL': JSON.stringify(explore ? '' : supabaseUrl),
+      'process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY': JSON.stringify(explore ? '' : supabaseKey),
+      'process.env.NEXT_PUBLIC_API_URL': JSON.stringify(explore ? '' : apiUrl),
+      'process.env.NEXT_PUBLIC_SUPPORT_FORM_ACTION': JSON.stringify(supportAction),
     },
     build: {
       outDir: path.resolve(__dirname, explore ? 'dist-explore' : 'dist-sanctuary'),

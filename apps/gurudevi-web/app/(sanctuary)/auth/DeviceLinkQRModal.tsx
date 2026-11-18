@@ -28,6 +28,67 @@ export function DeviceLinkQRModal({
   const [secondsRemaining, setSecondsRemaining] = useState<number>(120);
   const [status, setStatus] = useState<'generating' | 'waiting' | 'authorized' | 'claiming' | 'expired' | 'error'>('generating');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // W3C Dialog focus trap & escape dismissal
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousActiveElement = document.activeElement as HTMLElement | null;
+
+    const focusTimer = setTimeout(() => {
+      if (modalRef.current) {
+        const focusables = modalRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        );
+        focusables[0]?.focus();
+      }
+    }, 50);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        onClose();
+        return;
+      }
+
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusables = Array.from(
+          modalRef.current.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          ),
+        );
+
+        if (focusables.length === 0) {
+          e.preventDefault();
+          return;
+        }
+
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first || !modalRef.current.contains(document.activeElement)) {
+            e.preventDefault();
+            last?.focus();
+          }
+        } else {
+          if (document.activeElement === last || !modalRef.current.contains(document.activeElement)) {
+            e.preventDefault();
+            first?.focus();
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      clearTimeout(focusTimer);
+      window.removeEventListener('keydown', handleKeyDown);
+      previousActiveElement?.focus();
+    };
+  }, [isOpen, onClose]);
 
   const initChallenge = useCallback(async () => {
     setStatus('generating');
@@ -210,7 +271,16 @@ export function DeviceLinkQRModal({
   if (!isOpen) return null;
 
   return (
-    <div className={styles.overlay} role="dialog" aria-modal="true" aria-labelledby="qr-modal-title">
+    <div
+      ref={modalRef}
+      className={styles.overlay}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="qr-modal-title"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className={styles.modal}>
         <div className={styles.header}>
           <div className={styles.titleGroup}>

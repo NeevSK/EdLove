@@ -163,11 +163,13 @@ export function decide(
   decision: CedarDecision,
   action: string,
   subject: string,
+  isLocalOnly = false,
 ): boolean {
   const openRead = action === 'read' && PERSONAL_SANCTUARY_READ_SUBJECTS.has(subject);
   if (!userId) return openRead;
-  // A local guest has no server permissions to consult; their Self data never leaves the phone.
-  if (isLocalGuestSessionId(userId)) return openRead || LOCAL_GUEST_SELF_SUBJECTS.has(subject);
+  // A local guest or local-only user has no server permissions to consult; their Self data never leaves the phone.
+  if (isLocalGuestSessionId(userId) || isLocalOnly)
+    return openRead || LOCAL_GUEST_SELF_SUBJECTS.has(subject);
   if (decision === 'allow') return true;
   if (decision === 'deny') return false;
   return openRead;

@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gurudevi Screen-Anchored Tree Verification Audit</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 24px; }
+    h1 { font-size: 24px; margin-bottom: 8px; color: #38bdf8; }
+    .meta { font-size: 13px; color: #94a3b8; margin-bottom: 24px; }
+    .stats { display: flex; gap: 16px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 16px 20px; min-width: 140px; }
+    .stat-value { font-size: 26px; font-weight: 700; color: #f8fafc; }
+    .stat-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.5px; }
+    .badge-pass { color: #4ade80; font-weight: 600; }
+    .badge-fail { color: #f87171; font-weight: 600; }
+    .badge-warn { color: #fbbf24; font-weight: 600; }
+    .badge-gold { background: #78350f; color: #fef08a; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-silver { background: #334155; color: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-bronze { background: #451a03; color: #fdba74; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; margin-bottom: 32px; background: #1e293b; border-radius: 8px; overflow: hidden; }
+    th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid #334155; font-size: 13px; }
+    th { background: #0f172a; color: #94a3b8; font-weight: 600; }
+    tr:hover { background: #243248; }
+    .code { font-family: monospace; background: #0f172a; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; background: #334155; color: #e2e8f0; }
+    .tag-pjc { background: #1e3a5f; color: #38bdf8; }
+    .tag-flow { background: #2e1065; color: #c084fc; }
+  </style>
+</head>
+<body>
+  <h1>Screen-Anchored Tree Verification Audit</h1>
+  <div class="meta">
+    Generated: 2026-11-18T11:40:16.399Z | Mode: <strong>smoke</strong> | 
+    Surface: <strong>explore</strong> | 
+    Target Anchor: <strong>/settings</strong>
+  </div>
+  
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-value">4</div>
+      <div class="stat-label">Screen Anchors</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">16</div>
+      <div class="stat-label">Spokes Exercised</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-pass">3 / 3</div>
+      <div class="stat-label">Round-Trips Passed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-pass">3</div>
+      <div class="stat-label">PJC Scenarios Verified</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-warn">
+        3 / 4
+      </div>
+      <div class="stat-label">WCAG 2.2 AA Legal</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-warn">
+        2 / 4
+      </div>
+      <div class="stat-label">Bronze Tier Pass</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-warn">
+        2 / 4
+      </div>
+      <div class="stat-label">Silver Tier Pass</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-silver">
+        0 / 4
+      </div>
+      <div class="stat-label">Gold Tier Pass</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-pass">
+        69
+      </div>
+      <div class="stat-label">Wired Hints</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-fail">
+        1
+      </div>
+      <div class="stat-label">Total A11y Defects</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-pass">
+        Off
+      </div>
+      <div class="stat-label">Dual Theme Stable</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-fail">
+        9 / 13
+      </div>
+      <div class="stat-label">In-Page Effects Verified</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-fail">
+        4
+      </div>
+      <div class="stat-label">Dead Clicks Detected</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-fail">
+        61 p / 2 v
+      </div>
+      <div class="stat-label">Axe W3C Rules</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-pass">
+        2 / 2
+      </div>
+      <div class="stat-label">Focus Traps Verified</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-silver">
+        0
+      </div>
+      <div class="stat-label">Sequential Flows</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value badge-pass">0</div>
+      <div class="stat-label">Uncaught Errors</div>
+    </div>
+  </div>
+
+  <h2>In-Page Affordances & Action Effects Tested (16)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Affordance / Spoke Label</th>
+        <th>Spoke Type</th>
+        <th>Screen Anchor</th>
+        <th>Observed Action Effects & Mutations</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Horizontal row Recommended · keeps the workspace w</strong></td>
+        <td><span class="tag tag-pjc">IN_PAGE_CONTROL</span></td>
+        <td><span class="code">/settings</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            <li>Live feedback notice: &quot;✓ Navigation layout updated&quot;</li>
+          </ul>
+        </td>
+        <td><span class="badge-pass">✔ EFFECT VERIFIED</span></td>
+      </tr><tr>
+        <td><strong>Side rail A familiar vertical menu for desktop</strong></td>
+        <td><span class="tag tag-pjc">IN_PAGE_CONTROL</span></td>
+        <td><span class="code">/settings</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            <li>aria-pressed: &quot;false&quot; -&gt; &quot;true&quot;</li><li>data-selected: &quot;false&quot; -&gt; &quot;true&quot;</li>
+          </ul>
+        </td>
+        <td><span class="badge-pass">✔ EFFECT VERIFIED</span></td>
+      </tr><tr>
+        <td><strong>Day (Light) Crisp high-readability daylight surfac</strong></td>
+        <td><span class="tag tag-pjc">IN_PAGE_CONTROL</span></td>
+        <td><span class="code">/settings</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            <li>data-selected: &quot;false&quot; -&gt; &quot;true&quot;</li><li>Live feedback notice: &quot;✓ Light appearance updated to Day&quot;</li>
+          </ul>
+        </td>
+        <td><span class="badge-pass">✔ EFFECT VERIFIED</span></td>
+      </tr><tr>
+        <td><strong>Night (Dark) Deep contemplative dark surface with </strong></td>
+        <td><span class="tag tag-pjc">IN_PAGE_CONTROL</span></td>
+        <td><span class="code">/settings</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            <li>data-selected: &quot;false&quot; -&gt; &quot;true&quot;</li><li>diurnal mode: &quot;light&quot; -&gt; &quot;dark&quot;</li><li>Live feedback notice: &quot;✓ Light appearance updated to Night&quot;</li>
+          </ul>
+        </td>
+        <td><span class="badge-pass">✔ EFFECT VERIFIED</span></td>
+      </tr><tr>
+        <td><strong>Follow Device Automatically synchronizes with your</strong></td>
+        <td><span class="tag tag-pjc">IN_PAGE_CONTROL</span></td>
+        <td><span class="code">/settings</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            <li>data-selected: &quot;false&quot; -&gt; &quot;true&quot;</li><li>diurnal mode: &quot;dark&quot; -&gt; &quot;light&quot;</li><li>Live feedback notice: &quot;✓ Light appearance updated to Device&quot;</li>
+          </ul>
+        </td>
+        <td><span class="badge-pass">✔ EFFECT VERIFIED</span></td>
+      </tr><tr>
+        <td><strong>Go to Sanctuary →</strong></td>
+        <td><span class="tag tag-pjc">NAVIGATION_SPOKE</span></td>
+        <td><span class="code">/settings</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            <li>Route transition: http://explore.localhost:3000/settings -&gt; http://sanctuary.localhost:3000/welcome</li>
+          </ul>
+        </td>
+        <td><span class="badge-pass">✔ EFFECT VERIFIED</span></td>
+      </tr><tr>
+        <td><strong>Enter Sanctuary to Sync ↗</strong></td>
+        <td><span class="tag tag-pjc">NAVIGATION_SPOKE</span></td>
+        <td><span class="code">/settings</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            <li>Route transition: http://explore.localhost:3000/settings -&gt; http://sanctuary.localhost:3000/sign-in</li>
+          </ul>
+        </td>
+        <td><span class="badge-pass">✔ EFFECT VERIFIED</span></td>
+      </tr><tr>
+        <td><strong>G Continue with Google</strong></td>
+        <td><span class="tag tag-pjc">ACTION</span></td>
+        <td><span class="code">http://sanctuary.localhost:3000/sign-in</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            <li>Live feedback notice: &quot;Sign in is unavailable because this environment is missing its public Supabase settings.&quot;</li>
+          </ul>
+        </td>
+        <td><span class="badge-pass">✔ EFFECT VERIFIED</span></td>
+      </tr><tr>
+        <td><strong> Continue with Apple</strong></td>
+        <td><span class="tag tag-pjc">ACTION</span></td>
+        <td><span class="code">http://sanctuary.localhost:3000/sign-in</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            
+          </ul>
+        </td>
+        <td><span class="badge-fail">⚠ DEAD CLICK</span></td>
+      </tr><tr>
+        <td><strong>✉ Continue with email</strong></td>
+        <td><span class="tag tag-pjc">ACTION</span></td>
+        <td><span class="code">http://sanctuary.localhost:3000/sign-in</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            <li>class updated: &quot;null&quot;</li>
+          </ul>
+        </td>
+        <td><span class="badge-pass">✔ EFFECT VERIFIED</span></td>
+      </tr><tr>
+        <td><strong>📲 Sign in with Phone QR Code</strong></td>
+        <td><span class="tag tag-pjc">ACTION</span></td>
+        <td><span class="code">http://sanctuary.localhost:3000/sign-in</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            <li>Modal dialog opened: &quot;Link with Gurudevi Mobile&quot;</li><li>Focus trap verified (2 items)</li><li>Focus restored to trigger</li>
+          </ul>
+        </td>
+        <td><span class="badge-pass">✔ EFFECT VERIFIED</span></td>
+      </tr><tr>
+        <td><strong>EdLove Foundation</strong></td>
+        <td><span class="tag tag-pjc">NAVIGATION_SPOKE</span></td>
+        <td><span class="code">http://sanctuary.localhost:3000/sign-in</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            
+          </ul>
+        </td>
+        <td><span class="badge-fail">⚠ DEAD CLICK</span></td>
+      </tr><tr>
+        <td><strong>Gurudevi</strong></td>
+        <td><span class="tag tag-pjc">SHELL_NAV</span></td>
+        <td><span class="code">http://sanctuary.localhost:3000/sign-in</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            <li>Route transition: http://sanctuary.localhost:3000/sign-in -&gt; http://sanctuary.localhost:3000/self</li>
+          </ul>
+        </td>
+        <td><span class="badge-pass">✔ EFFECT VERIFIED</span></td>
+      </tr><tr>
+        <td><strong>⋮⋮ Personal Shelf &amp; History QUICK ACCESS &amp; HISTORY</strong></td>
+        <td><span class="tag tag-pjc">PRIMARY_ACTION</span></td>
+        <td><span class="code">http://sanctuary.localhost:3000/self</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            
+          </ul>
+        </td>
+        <td><span class="badge-fail">⚠ DEAD CLICK</span></td>
+      </tr><tr>
+        <td><strong>🏠 Home</strong></td>
+        <td><span class="tag tag-pjc">IN_PAGE_CONTROL</span></td>
+        <td><span class="code">http://sanctuary.localhost:3000/self</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            
+          </ul>
+        </td>
+        <td><span class="badge-fail">⚠ DEAD CLICK</span></td>
+      </tr><tr>
+        <td><strong>☀️ Clear &amp; Energized Alert mind, high vital energy</strong></td>
+        <td><span class="tag tag-pjc">IN_PAGE_CONTROL</span></td>
+        <td><span class="code">http://sanctuary.localhost:3000/self</span></td>
+        <td>
+          <ul style="margin: 0; padding-left: 18px;">
+            <li>class updated: &quot;null&quot;</li><li>Modal dialog opened: &quot;Wisdom Seeds&quot;</li><li>Focus trap verified (1 items)</li>
+          </ul>
+        </td>
+        <td><span class="badge-pass">✔ EFFECT VERIFIED</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>PJC & FlowDAG Verified Scenarios (3)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Scenario ID</th>
+        <th>Evidence Tier</th>
+        <th>Verification Tool</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="code">scenario:custom.scene</span></td>
+        <td><span class="tag tag-pjc">G4 (Platform-Real)</span></td>
+        <td>screen-anchored-tree-runner</td>
+        <td><span class="badge-pass">✔ VERIFIED ON SCENE</span></td>
+      </tr><tr>
+        <td><span class="code">scenario:welcome.explore_entry</span></td>
+        <td><span class="tag tag-pjc">G4 (Platform-Real)</span></td>
+        <td>screen-anchored-tree-runner</td>
+        <td><span class="badge-pass">✔ VERIFIED ON SCENE</span></td>
+      </tr><tr>
+        <td><span class="code">scenario:self.morning_situational_brief</span></td>
+        <td><span class="tag tag-pjc">G4 (Platform-Real)</span></td>
+        <td>screen-anchored-tree-runner</td>
+        <td><span class="badge-pass">✔ VERIFIED ON SCENE</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Bidirectional Round-Trip Reconstitution Tested (3)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Spoke Element</th>
+        <th>Screen Anchor S₀</th>
+        <th>Destination Child</th>
+        <th>Reconstituted URL</th>
+        <th>Result</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Go to Sanctuary →</strong></td>
+        <td><span class="code">/settings</span></td>
+        <td><span class="code">http://sanctuary.localhost:3000/welcome</span></td>
+        <td><span class="code">/settings</span></td>
+        <td><span class="badge-pass">✔ PASS (S' ≅ S₀)</span></td>
+      </tr><tr>
+        <td><strong>Gurudevi</strong></td>
+        <td><span class="code">http://sanctuary.localhost:3000/sign-in</span></td>
+        <td><span class="code">http://sanctuary.localhost:3000/self</span></td>
+        <td><span class="code">http://sanctuary.localhost:3000/sign-in</span></td>
+        <td><span class="badge-pass">✔ PASS (S' ≅ S₀)</span></td>
+      </tr><tr>
+        <td><strong>Enter Sanctuary to Sync ↗</strong></td>
+        <td><span class="code">/settings</span></td>
+        <td><span class="code">http://sanctuary.localhost:3000/sign-in</span></td>
+        <td><span class="code">/settings</span></td>
+        <td><span class="badge-pass">✔ PASS (S' ≅ S₀)</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Screen Anchor Quality Scorecards (4)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Screen Anchor Path</th>
+        <th>Title</th>
+        <th>PJC Feature / Flow</th>
+        <th>Mined Spokes</th>
+        <th>WCAG 2.2 AA</th>
+        <th>WCAG 3.0 Tier</th>
+        <th>Dual-Theme Mode</th>
+        <th>APCA Contrast (Pass / Fail)</th>
+        <th>Touch Targets</th>
+        <th>Semantics & ARIA Shield</th>
+        <th>Overflow</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="code">/settings</span></td>
+        <td>Settings | Gurudevi Sanctuary</td>
+        <td>
+          <span class="tag tag-pjc">feature:dynamic</span><br>
+          <span class="tag tag-flow" style="margin-top: 4px;">flow:dynamic</span>
+        </td>
+        <td><strong>50</strong> (49 fwd, 1 rev)</td>
+        <td>
+          <span class="badge-pass">✔ PASS</span><br>
+          <span style="font-size: 11px; color: #94a3b8;">60p / 0f (100%)</span>
+        </td>
+        <td>
+          
+          
+          <span class="badge-fail">FAIL</span>
+        </td>
+        <td>
+          <span style="color: #64748b; font-size: 11px;">Not Tested</span>
+        </td>
+        <td>
+          Bronze: 60p / 0f<br>
+          Silver: 59p / 1f<br>
+          Gold: 48p / 12f
+        </td>
+        <td>
+          ≥48px (Gold): 27<br>
+          ≥44px (Silver): 8<br>
+          ≥24px (Bronze): 13<br>
+          <span class="badge-fail">&lt;24px: 4</span>
+        </td>
+        <td>
+          Hints: 8<br>
+          Missing: 0<br>
+          Broken ARIA: 0<br>
+          Hidden Focus: 0<br>
+          Dupe IDs: 0<br>
+          Live: 0
+        </td>
+        <td><span class="badge-pass">✔ 0px</span></td>
+      </tr><tr>
+        <td><span class="code">/welcome</span></td>
+        <td>Gurudevi</td>
+        <td>
+          <span class="tag tag-pjc">feature:entry.web_sanctuary</span><br>
+          <span class="tag tag-flow" style="margin-top: 4px;">flow:entry:web_sanctuary</span>
+        </td>
+        <td><strong>0</strong> (0 fwd, 0 rev)</td>
+        <td>
+          <span class="badge-pass">✔ PASS</span><br>
+          <span style="font-size: 11px; color: #94a3b8;">0p / 0f (0%)</span>
+        </td>
+        <td>
+          
+          <span class="badge-silver">SILVER</span> 
+          <span class="badge-bronze">BRONZE</span>
+        </td>
+        <td>
+          <span style="color: #64748b; font-size: 11px;">Not Tested</span>
+        </td>
+        <td>
+          Bronze: 0p / 0f<br>
+          Silver: 0p / 0f<br>
+          Gold: 0p / 0f
+        </td>
+        <td>
+          ≥48px (Gold): 0<br>
+          ≥44px (Silver): 0<br>
+          ≥24px (Bronze): 0<br>
+          &lt;24px: 0
+        </td>
+        <td>
+          Hints: 0<br>
+          Missing: 0<br>
+          Broken ARIA: 0<br>
+          Hidden Focus: 0<br>
+          Dupe IDs: 0<br>
+          Live: 0
+        </td>
+        <td><span class="badge-pass">✔ 0px</span></td>
+      </tr><tr>
+        <td><span class="code">/sign-in</span></td>
+        <td>Gurudevi</td>
+        <td>
+          <span class="tag tag-pjc">feature:dynamic</span><br>
+          <span class="tag tag-flow" style="margin-top: 4px;">flow:dynamic</span>
+        </td>
+        <td><strong>0</strong> (0 fwd, 0 rev)</td>
+        <td>
+          <span class="badge-pass">✔ PASS</span><br>
+          <span style="font-size: 11px; color: #94a3b8;">0p / 0f (0%)</span>
+        </td>
+        <td>
+          
+          <span class="badge-silver">SILVER</span> 
+          <span class="badge-bronze">BRONZE</span>
+        </td>
+        <td>
+          <span style="color: #64748b; font-size: 11px;">Not Tested</span>
+        </td>
+        <td>
+          Bronze: 0p / 0f<br>
+          Silver: 0p / 0f<br>
+          Gold: 0p / 0f
+        </td>
+        <td>
+          ≥48px (Gold): 0<br>
+          ≥44px (Silver): 0<br>
+          ≥24px (Bronze): 0<br>
+          &lt;24px: 0
+        </td>
+        <td>
+          Hints: 0<br>
+          Missing: 0<br>
+          Broken ARIA: 0<br>
+          Hidden Focus: 0<br>
+          Dupe IDs: 0<br>
+          Live: 0
+        </td>
+        <td><span class="badge-pass">✔ 0px</span></td>
+      </tr><tr>
+        <td><span class="code">/self</span></td>
+        <td>Self | Gurudevi Sanctuary</td>
+        <td>
+          <span class="tag tag-pjc">feature:self.learner_growth</span><br>
+          <span class="tag tag-flow" style="margin-top: 4px;">flow:self:student_daily_prep</span>
+        </td>
+        <td><strong>72</strong> (72 fwd, 0 rev)</td>
+        <td>
+          <span class="badge-warn">⚠ DEFICIT</span><br>
+          <span style="font-size: 11px; color: #94a3b8;">59p / 1f (98%)</span>
+        </td>
+        <td>
+          
+          
+          <span class="badge-fail">FAIL</span>
+        </td>
+        <td>
+          <span style="color: #64748b; font-size: 11px;">Not Tested</span>
+        </td>
+        <td>
+          Bronze: 58p / 2f<br>
+          Silver: 55p / 5f<br>
+          Gold: 46p / 14f
+        </td>
+        <td>
+          ≥48px (Gold): 30<br>
+          ≥44px (Silver): 26<br>
+          ≥24px (Bronze): 23<br>
+          <span class="badge-fail">&lt;24px: 1</span>
+        </td>
+        <td>
+          Hints: 61<br>
+          Missing: 0<br>
+          Broken ARIA: 0<br>
+          Hidden Focus: 0<br>
+          <span class="badge-warn">Dupe IDs: 1</span><br>
+          Live: 3
+        </td>
+        <td><span class="badge-pass">✔ 0px</span></td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

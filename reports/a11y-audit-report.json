@@ -1,0 +1,1505 @@
+{
+  "timestamp": "2026-11-18T09:37:07.336Z",
+  "auditResults": {
+    "Walkthrough Tab (Dark Mode)": {
+      "passes": 16,
+      "violationsCount": 4,
+      "violations": [
+        {
+          "id": "landmark-one-main",
+          "impact": "moderate",
+          "description": "Ensure the document has a main landmark",
+          "help": "Document should have one main landmark",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/landmark-one-main?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<html lang=\"en\" data-theme=\"dark\">",
+              "target": "html",
+              "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
+            }
+          ]
+        },
+        {
+          "id": "page-has-heading-one",
+          "impact": "moderate",
+          "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+          "help": "Page should contain a level-one heading",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/page-has-heading-one?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<html lang=\"en\" data-theme=\"dark\">",
+              "target": "html",
+              "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+            }
+          ]
+        },
+        {
+          "id": "region",
+          "impact": "moderate",
+          "description": "Ensure all page content is contained by landmarks",
+          "help": "All page content should be contained by landmarks",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/region?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<div class=\"tab-view-container\" id=\"view-walkthrough\">",
+              "target": "#view-walkthrough",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"panel-header-left\">",
+              "target": ".panel-header-left",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"panel-content\" id=\"panel-content\">Select a file to inspect.</div>",
+              "target": "#panel-content",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            }
+          ]
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "description": "Ensure elements that have scrollable content are accessible by keyboard",
+          "help": "Scrollable region must have keyboard access",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/scrollable-region-focusable?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<div class=\"main-view\" id=\"main-view\">",
+              "target": "#main-view",
+              "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            },
+            {
+              "html": "<div class=\"panel-content\" id=\"panel-content\">Select a file to inspect.</div>",
+              "target": "#panel-content",
+              "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            }
+          ]
+        }
+      ]
+    },
+    "Dependencies Tab - External NPM (Dark Mode)": {
+      "passes": 20,
+      "violationsCount": 5,
+      "violations": [
+        {
+          "id": "landmark-one-main",
+          "impact": "moderate",
+          "description": "Ensure the document has a main landmark",
+          "help": "Document should have one main landmark",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/landmark-one-main?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<html lang=\"en\" data-theme=\"dark\">",
+              "target": "html",
+              "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
+            }
+          ]
+        },
+        {
+          "id": "page-has-heading-one",
+          "impact": "moderate",
+          "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+          "help": "Page should contain a level-one heading",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/page-has-heading-one?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<html lang=\"en\" data-theme=\"dark\">",
+              "target": "html",
+              "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+            }
+          ]
+        },
+        {
+          "id": "region",
+          "impact": "moderate",
+          "description": "Ensure all page content is contained by landmarks",
+          "help": "All page content should be contained by landmarks",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/region?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<div class=\"hero-banner\" style=\"margin-bottom: 1.25rem;\">",
+              "target": "#view-deps > .hero-banner",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.75rem; font-weight: bold; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem;\">\n            Select Target Application (Tier 1):\n          </div>",
+              "target": "#deps-content > div:nth-child(1) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"stats-grid\">",
+              "target": ".stats-grid",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; align-items: center; gap: 0.5rem;\">",
+              "target": "#deps-content > div:nth-child(3) > div:nth-child(1) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"margin-top: 0.75rem;\">\n            <input type=\"text\" class=\"search-box\" id=\"dep-search-input\" placeholder=\"Search Gurudevi Mobile dependencies by name, use case, or maintainer (e.g. 'reanimated', 'gesture', 'nitro', 'powersync')...\" value=\"\" style=\"width: 100%;\">\n          </div>",
+              "target": "#deps-content > div:nth-child(3) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"file-group\" id=\"layer-section-L0-ENGINE\" style=\"margin-bottom: 2rem;\">",
+              "target": "#layer-section-L0-ENGINE",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"file-group\" id=\"layer-section-L1-FRAMEWORK\" style=\"margin-bottom: 2rem;\">",
+              "target": "#layer-section-L1-FRAMEWORK",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"file-group\" id=\"layer-section-L2-NATIVE-BRIDGE\" style=\"margin-bottom: 2rem;\">",
+              "target": "#layer-section-L2-NATIVE-BRIDGE",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"file-group\" id=\"layer-section-L3-UI-PRIMITIVES\" style=\"margin-bottom: 2rem;\">",
+              "target": "#layer-section-L3-UI-PRIMITIVES",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"file-group\" id=\"layer-section-L4-APP-INFRA\" style=\"margin-bottom: 2rem;\">",
+              "target": "#layer-section-L4-APP-INFRA",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"file-group\" id=\"layer-section-L5-FEATURE\" style=\"margin-bottom: 2rem;\">",
+              "target": "#layer-section-L5-FEATURE",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"file-group\" id=\"layer-section-L6-UI-KIT\" style=\"margin-bottom: 2rem;\">",
+              "target": "#layer-section-L6-UI-KIT",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"file-group\" id=\"layer-section-S1-SERVER\" style=\"margin-bottom: 2rem;\">",
+              "target": "#layer-section-S1-SERVER",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"file-group\" id=\"layer-section-D1-BUILD\" style=\"margin-bottom: 2rem;\">",
+              "target": "#layer-section-D1-BUILD",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"file-group\" id=\"layer-section-D2-TEST\" style=\"margin-bottom: 2rem;\">",
+              "target": "#layer-section-D2-TEST",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"file-group\" id=\"layer-section-D3-QUALITY\" style=\"margin-bottom: 2rem;\">",
+              "target": "#layer-section-D3-QUALITY",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"file-group\" id=\"layer-section-D4-TYPES\" style=\"margin-bottom: 2rem;\">",
+              "target": "#layer-section-D4-TYPES",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"file-group\" id=\"layer-section-D5-DEVOPS\" style=\"margin-bottom: 2rem;\">",
+              "target": "#layer-section-D5-DEVOPS",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"file-group\" id=\"layer-section-D6-DEVTOOLS-AGENT\" style=\"margin-bottom: 2rem;\">",
+              "target": "#layer-section-D6-DEVTOOLS-AGENT",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"panel-header-left\">",
+              "target": ".panel-header-left",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"panel-content\" id=\"panel-content\">Select a file to inspect.</div>",
+              "target": "#panel-content",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            }
+          ]
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "description": "Ensure elements that have scrollable content are accessible by keyboard",
+          "help": "Scrollable region must have keyboard access",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/scrollable-region-focusable?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<div class=\"panel-content\" id=\"panel-content\">Select a file to inspect.</div>",
+              "target": "#panel-content",
+              "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            }
+          ]
+        },
+        {
+          "id": "select-name",
+          "impact": "critical",
+          "description": "Ensure select element has an accessible name",
+          "help": "Select element must have an accessible name",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/select-name?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<select id=\"layer-toc-select\" style=\"background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 0.45rem 0.75rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer;\">",
+              "target": "#layer-toc-select",
+              "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
+            }
+          ]
+        }
+      ]
+    },
+    "Dependencies Tab - Internal Modules (Dark Mode)": {
+      "passes": 20,
+      "violationsCount": 5,
+      "violations": [
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "description": "Ensure the order of headings is semantically correct",
+          "help": "Heading levels should only increase by one",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/heading-order?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<h4 style=\"font-family: monospace; font-size: 1rem; color: var(--accent); margin: 0;\">\n                    @repo/core\n                  </h4>",
+              "target": ".critique-item:nth-child(1) > div:nth-child(1) > div > h4",
+              "failureSummary": "Fix any of the following:\n  Heading order invalid"
+            }
+          ]
+        },
+        {
+          "id": "landmark-one-main",
+          "impact": "moderate",
+          "description": "Ensure the document has a main landmark",
+          "help": "Document should have one main landmark",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/landmark-one-main?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<html lang=\"en\" data-theme=\"dark\">",
+              "target": "html",
+              "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
+            }
+          ]
+        },
+        {
+          "id": "page-has-heading-one",
+          "impact": "moderate",
+          "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+          "help": "Page should contain a level-one heading",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/page-has-heading-one?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<html lang=\"en\" data-theme=\"dark\">",
+              "target": "html",
+              "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+            }
+          ]
+        },
+        {
+          "id": "region",
+          "impact": "moderate",
+          "description": "Ensure all page content is contained by landmarks",
+          "help": "All page content should be contained by landmarks",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/region?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<div class=\"hero-banner\" style=\"margin-bottom: 1.25rem;\">",
+              "target": "#view-deps > .hero-banner",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"stats-grid\">",
+              "target": ".stats-grid",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"search-bar-container\" style=\"margin-bottom: 1.5rem;\">\n          <input type=\"text\" class=\"search-box\" id=\"mod-search-input\" placeholder=\"Search internal @repo/* packages by name or responsibility (e.g. 'core', 'classroom', 'verger', 'ui')...\" value=\"\">\n        </div>",
+              "target": ".search-bar-container",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(1) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": "div:nth-child(4) > .critique-item:nth-child(1) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": "div:nth-child(4) > .critique-item:nth-child(1) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">19</strong> consumers\n                  (gurudevi-mobile, gurudevi-web...)\n                </div>",
+              "target": "div:nth-child(4) > .critique-item:nth-child(1) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(1) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(2) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": "div:nth-child(4) > .critique-item:nth-child(2) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": "div:nth-child(4) > .critique-item:nth-child(2) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">2</strong> consumers\n                  (core, profile)\n                </div>",
+              "target": "div:nth-child(4) > .critique-item:nth-child(2) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(2) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(3) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Unified Engineering Control Plane for EdLove Agents\n              </div>",
+              "target": "div:nth-child(4) > .critique-item:nth-child(3) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": "div:nth-child(4) > .critique-item:nth-child(3) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">0</strong> consumers\n                  \n                </div>",
+              "target": "div:nth-child(4) > .critique-item:nth-child(3) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(3) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(4) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": "div:nth-child(4) > .critique-item:nth-child(4) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": "div:nth-child(4) > .critique-item:nth-child(4) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">2</strong> consumers\n                  (sanctuary-api, core)\n                </div>",
+              "target": "div:nth-child(4) > .critique-item:nth-child(4) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(4) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(5) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": "div:nth-child(4) > .critique-item:nth-child(5) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": "div:nth-child(4) > .critique-item:nth-child(5) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">2</strong> consumers\n                  (core, database)\n                </div>",
+              "target": ".critique-item:nth-child(5) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(5) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(6) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                A dummy shim to satisfy legacy @types/react-native peer dependencies\n              </div>",
+              "target": ".critique-item:nth-child(6) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(6) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">3</strong> consumers\n                  (gurudevi-mobile, core...)\n                </div>",
+              "target": ".critique-item:nth-child(6) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(6) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(7) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(7) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(7) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">2</strong> consumers\n                  (gurudevi-mobile, payments)\n                </div>",
+              "target": ".critique-item:nth-child(7) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(7) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(8) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(8) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(8) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">2</strong> consumers\n                  (gurudevi-mobile, classroom)\n                </div>",
+              "target": ".critique-item:nth-child(8) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(8) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(9) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(9) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(9) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">3</strong> consumers\n                  (gurudevi-mobile, admin...)\n                </div>",
+              "target": ".critique-item:nth-child(9) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(9) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(10) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(10) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(10) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">3</strong> consumers\n                  (gurudevi-mobile, admin...)\n                </div>",
+              "target": ".critique-item:nth-child(10) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(10) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(11) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(11) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(11) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">1</strong> consumers\n                  (gurudevi-mobile)\n                </div>",
+              "target": ".critique-item:nth-child(11) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(11) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(12) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(12) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(12) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">3</strong> consumers\n                  (gurudevi-mobile, admin...)\n                </div>",
+              "target": ".critique-item:nth-child(12) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(12) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(13) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Provider-neutral editorial publishing contracts and distribution ledger\n              </div>",
+              "target": ".critique-item:nth-child(13) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(13) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">0</strong> consumers\n                  \n                </div>",
+              "target": ".critique-item:nth-child(13) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(13) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(14) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(14) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(14) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">4</strong> consumers\n                  (gurudevi-mobile, admin...)\n                </div>",
+              "target": ".critique-item:nth-child(14) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(14) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(15) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(15) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(15) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">1</strong> consumers\n                  (gurudevi-mobile)\n                </div>",
+              "target": ".critique-item:nth-child(15) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(15) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(16) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(16) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(16) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">4</strong> consumers\n                  (gurudevi-mobile, admin...)\n                </div>",
+              "target": ".critique-item:nth-child(16) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(16) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(17) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(17) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(17) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">5</strong> consumers\n                  (gurudevi-mobile, admin...)\n                </div>",
+              "target": ".critique-item:nth-child(17) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(17) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(18) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(18) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(18) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">5</strong> consumers\n                  (gurudevi-mobile, admin...)\n                </div>",
+              "target": ".critique-item:nth-child(18) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(18) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(19) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(19) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(19) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">5</strong> consumers\n                  (gurudevi-mobile, gurudevi-web...)\n                </div>",
+              "target": ".critique-item:nth-child(19) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(19) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(20) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(20) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(20) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">2</strong> consumers\n                  (gurudevi-mobile, gurudevi-web)\n                </div>",
+              "target": ".critique-item:nth-child(20) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(20) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(21) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(21) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(21) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">1</strong> consumers\n                  (gurudevi-mobile)\n                </div>",
+              "target": ".critique-item:nth-child(21) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(21) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(22) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Topology &amp; layout brain for Gurudevi visualization perspectives. No rendering - pure layout math.\n              </div>",
+              "target": ".critique-item:nth-child(22) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(22) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">4</strong> consumers\n                  (admin, analytics...)\n                </div>",
+              "target": ".critique-item:nth-child(22) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(22) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(23) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(23) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(23) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">16</strong> consumers\n                  (gurudevi-mobile, gurudevi-web...)\n                </div>",
+              "target": ".critique-item:nth-child(23) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(23) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(24) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Verger's Android sensing and app-wide hardware levers, as an Expo module. Measures; never decides.\n              </div>",
+              "target": ".critique-item:nth-child(24) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(24) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">1</strong> consumers\n                  (gurudevi-mobile)\n                </div>",
+              "target": ".critique-item:nth-child(24) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(24) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(25) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Verger: an app-level resource supervisor. Host-neutral decision layer: reducer, runtime loop, telemetry, replay, experiments.\n              </div>",
+              "target": ".critique-item:nth-child(25) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(25) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">7</strong> consumers\n                  (gurudevi-mobile, gurudevi-web...)\n                </div>",
+              "target": ".critique-item:nth-child(25) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(25) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(26) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Verger's React bindings, for any React platform: hooks over the process's verger (no provider) and the long-task observer.\n              </div>",
+              "target": ".critique-item:nth-child(26) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(26) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">5</strong> consumers\n                  (gurudevi-mobile, gurudevi-web...)\n                </div>",
+              "target": ".critique-item:nth-child(26) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(26) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(27) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Verger's React Native shell: VergerRoot runs and binds verger, feeds app state, touches, reduced motion and long tasks, and applies the global reduced-motion lever.\n              </div>",
+              "target": ".critique-item:nth-child(27) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(27) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">2</strong> consumers\n                  (gurudevi-mobile, ui)\n                </div>",
+              "target": ".critique-item:nth-child(27) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(27) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(28) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">",
+              "target": ".critique-item:nth-child(28) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(28) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">1</strong> consumers\n                  (gurudevi-web)\n                </div>",
+              "target": ".critique-item:nth-child(28) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.2rem;\">",
+              "target": ".critique-item:nth-child(28) > div:nth-child(5)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(29) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(29) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(29) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">22</strong> consumers\n                  (gurudevi-mobile, gurudevi-web...)\n                </div>",
+              "target": ".critique-item:nth-child(29) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+              "target": ".critique-item:nth-child(30) > div:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-top: 0.4rem;\">\n                Monorepo workspace package.\n              </div>",
+              "target": ".critique-item:nth-child(30) > div:nth-child(2)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;\">",
+              "target": ".critique-item:nth-child(30) > div:nth-child(3)",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div style=\"color: var(--text-muted);\">\n                  <strong style=\"color: var(--text);\">30</strong> consumers\n                  (gurudevi-mobile, gurudevi-web...)\n                </div>",
+              "target": ".critique-item:nth-child(30) > div:nth-child(4) > div",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"panel-header-left\">",
+              "target": ".panel-header-left",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"panel-content\" id=\"panel-content\">Select a file to inspect.</div>",
+              "target": "#panel-content",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            }
+          ]
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "description": "Ensure elements that have scrollable content are accessible by keyboard",
+          "help": "Scrollable region must have keyboard access",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/scrollable-region-focusable?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<div class=\"panel-content\" id=\"panel-content\">Select a file to inspect.</div>",
+              "target": "#panel-content",
+              "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            }
+          ]
+        }
+      ]
+    },
+    "Drift Tab (Dark Mode)": {
+      "passes": 16,
+      "violationsCount": 4,
+      "violations": [
+        {
+          "id": "landmark-one-main",
+          "impact": "moderate",
+          "description": "Ensure the document has a main landmark",
+          "help": "Document should have one main landmark",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/landmark-one-main?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<html lang=\"en\" data-theme=\"dark\">",
+              "target": "html",
+              "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
+            }
+          ]
+        },
+        {
+          "id": "page-has-heading-one",
+          "impact": "moderate",
+          "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+          "help": "Page should contain a level-one heading",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/page-has-heading-one?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<html lang=\"en\" data-theme=\"dark\">",
+              "target": "html",
+              "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+            }
+          ]
+        },
+        {
+          "id": "region",
+          "impact": "moderate",
+          "description": "Ensure all page content is contained by landmarks",
+          "help": "All page content should be contained by landmarks",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/region?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<div class=\"tab-view-container\" id=\"view-drift\" style=\"display: block;\">",
+              "target": "#view-drift",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"panel-header-left\">",
+              "target": ".panel-header-left",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"panel-content\" id=\"panel-content\">Select a file to inspect.</div>",
+              "target": "#panel-content",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            }
+          ]
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "description": "Ensure elements that have scrollable content are accessible by keyboard",
+          "help": "Scrollable region must have keyboard access",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/scrollable-region-focusable?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<div class=\"main-view\" id=\"main-view\">",
+              "target": "#main-view",
+              "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            },
+            {
+              "html": "<div style=\"display: flex; flex-direction: column; gap: 0.45rem; max-height: 320px; overflow-y: auto;\">",
+              "target": "#drift-content > .critique-card:nth-child(3) > div",
+              "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            },
+            {
+              "html": "<div class=\"panel-content\" id=\"panel-content\">Select a file to inspect.</div>",
+              "target": "#panel-content",
+              "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            }
+          ]
+        }
+      ]
+    },
+    "Side Panel Inspector (Dark Mode)": {
+      "passes": 18,
+      "violationsCount": 4,
+      "violations": [
+        {
+          "id": "landmark-one-main",
+          "impact": "moderate",
+          "description": "Ensure the document has a main landmark",
+          "help": "Document should have one main landmark",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/landmark-one-main?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<html lang=\"en\" data-theme=\"dark\">",
+              "target": "html",
+              "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
+            }
+          ]
+        },
+        {
+          "id": "list",
+          "impact": "serious",
+          "description": "Ensure that lists are structured correctly",
+          "help": "<ul> and <ol> must only directly contain <li>, <script> or <template> elements",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/list?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<ul>",
+              "target": "ul",
+              "failureSummary": "Fix all of the following:\n  List element has direct children that are not allowed: br"
+            }
+          ]
+        },
+        {
+          "id": "region",
+          "impact": "moderate",
+          "description": "Ensure all page content is contained by landmarks",
+          "help": "All page content should be contained by landmarks",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/region?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<div class=\"tab-view-container\" id=\"view-drift\" style=\"display: block;\">",
+              "target": "#view-drift",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"panel-header-left\">",
+              "target": ".panel-header-left",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"panel-content\" id=\"panel-content\">",
+              "target": "#panel-content",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            }
+          ]
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "description": "Ensure elements that have scrollable content are accessible by keyboard",
+          "help": "Scrollable region must have keyboard access",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/scrollable-region-focusable?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<div class=\"main-view\" id=\"main-view\">",
+              "target": "#main-view",
+              "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            },
+            {
+              "html": "<div style=\"display: flex; flex-direction: column; gap: 0.45rem; max-height: 320px; overflow-y: auto;\">",
+              "target": "#drift-content > .critique-card:nth-child(3) > div",
+              "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            },
+            {
+              "html": "<div class=\"panel-content\" id=\"panel-content\">",
+              "target": "#panel-content",
+              "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            }
+          ]
+        }
+      ]
+    },
+    "Global Shell & Inspector (Light Mode)": {
+      "passes": 18,
+      "violationsCount": 5,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<span>Polymath Dev-Console</span>",
+              "target": ".logo-badge > span:nth-child(1)",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #0284c7, background color: #ffffff, font size: 13.2pt (17.6px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "html": "<span class=\"version\">2026 Sovereign</span>",
+              "target": ".version",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.64 (foreground color: #0284c7, background color: #e1f5fe, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "html": "<button class=\"tab-btn active\" data-tab=\"drift\">\n          <span>⚠️</span> Incompatibilities &amp; Drift\n        </button>",
+              "target": "button[data-tab=\"drift\"]",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #0284c7, background color: #ffffff, font size: 9.8pt (13.12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "html": "<span class=\"tag verified\">Active</span>",
+              "target": "#drift-content > .stats-grid > .stat-card:nth-child(1) > .stat-card-header > .verified.tag",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.64 (foreground color: #0284c7, background color: #e1f5fe, font size: 8.6pt (11.52px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "html": "<div class=\"stat-value\" style=\"color: var(--success)\">\n              GREEN\n            </div>",
+              "target": "#drift-content > .stats-grid > .stat-card:nth-child(1) > .stat-value",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #10b981, background color: #ffffff, font size: 19.2pt (25.6px), font weight: bold). Expected contrast ratio of 3:1"
+            },
+            {
+              "html": "<div class=\"panel-header-title\" id=\"panel-title\">apps/gurudevi-mobile</div>",
+              "target": "#panel-title",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #0284c7, background color: #ffffff, font size: 10.8pt (14.4px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "html": "<span class=\"panel-meta-badge\" id=\"panel-badge\">APPS/GURUDEVI-MOBILE</span>",
+              "target": "#panel-badge",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.86 (foreground color: #64748b, background color: #e2e8f0, font size: 7.8pt (10.4px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "html": "<span class=\"clickable-link\" data-path=\"apps/gurudevi-mobile/.agents\">.agents</span>",
+              "target": "span[data-path=\"apps/gurudevi-mobile/.agents\"]",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.91 (foreground color: #0284c7, background color: #f8fafc, font size: 10.6pt (14.08px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "html": "<span class=\"clickable-link\" data-path=\"apps/gurudevi-mobile/.argent\">.argent</span>",
+              "target": "span[data-path=\"apps/gurudevi-mobile/.argent\"]",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.91 (foreground color: #0284c7, background color: #f8fafc, font size: 10.6pt (14.08px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "landmark-one-main",
+          "impact": "moderate",
+          "description": "Ensure the document has a main landmark",
+          "help": "Document should have one main landmark",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/landmark-one-main?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<html lang=\"en\" data-theme=\"light\">",
+              "target": "html",
+              "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
+            }
+          ]
+        },
+        {
+          "id": "list",
+          "impact": "serious",
+          "description": "Ensure that lists are structured correctly",
+          "help": "<ul> and <ol> must only directly contain <li>, <script> or <template> elements",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/list?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<ul>",
+              "target": "ul",
+              "failureSummary": "Fix all of the following:\n  List element has direct children that are not allowed: br"
+            }
+          ]
+        },
+        {
+          "id": "region",
+          "impact": "moderate",
+          "description": "Ensure all page content is contained by landmarks",
+          "help": "All page content should be contained by landmarks",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/region?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<div class=\"tab-view-container\" id=\"view-drift\" style=\"display: block;\">",
+              "target": "#view-drift",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"panel-header-left\">",
+              "target": ".panel-header-left",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            },
+            {
+              "html": "<div class=\"panel-content\" id=\"panel-content\">",
+              "target": "#panel-content",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            }
+          ]
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "description": "Ensure elements that have scrollable content are accessible by keyboard",
+          "help": "Scrollable region must have keyboard access",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/scrollable-region-focusable?application=axeAPI",
+          "nodes": [
+            {
+              "html": "<div class=\"main-view\" id=\"main-view\">",
+              "target": "#main-view",
+              "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            },
+            {
+              "html": "<div style=\"display: flex; flex-direction: column; gap: 0.45rem; max-height: 320px; overflow-y: auto;\">",
+              "target": "#drift-content > .critique-card:nth-child(3) > div",
+              "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            },
+            {
+              "html": "<div class=\"panel-content\" id=\"panel-content\">",
+              "target": "#panel-content",
+              "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "customChecks": {
+    "orphanedInputs": [
+      {
+        "tag": "INPUT",
+        "id": "mod-search-input",
+        "name": "",
+        "placeholder": "Search internal @repo/* packages by name or responsibility (e.g. 'core', 'classroom', 'verger', 'ui')...",
+        "selector": "#mod-search-input"
+      }
+    ],
+    "unnamedButtons": [],
+    "headingSkips": [
+      {
+        "from": {
+          "level": 2,
+          "text": "Substrate & Dependency Ecosystem Matrix"
+        },
+        "to": {
+          "level": 4,
+          "text": "@repo/core"
+        }
+      }
+    ],
+    "smallTapTargetsCount": 12,
+    "smallTapTargets": [
+      {
+        "tag": "BUTTON",
+        "text": "🗺️\nPlatform Map & Walkthrough",
+        "width": 230,
+        "height": 31,
+        "html": "<button class=\"tab-btn\" data-tab=\"walkthrough\">\n          <span>🗺️</span> Platf"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "📦\nDependency Stack & Ecosyste",
+        "width": 254,
+        "height": 31,
+        "html": "<button class=\"tab-btn\" data-tab=\"deps\">\n          <span>📦</span> Dependency St"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "⚠️\nIncompatibilities & Drift",
+        "width": 198,
+        "height": 31,
+        "html": "<button class=\"tab-btn active\" data-tab=\"drift\">\n          <span>⚠️</span> Incom"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "🏛️\nDeterministic AI SDLC Matr",
+        "width": 232,
+        "height": 31,
+        "html": "<button class=\"tab-btn\" data-tab=\"matrix\">\n          <span>🏛️</span> Determinis"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "📚\nDocs & Code Index",
+        "width": 170,
+        "height": 31,
+        "html": "<button class=\"tab-btn\" data-tab=\"docs\">\n          <span>📚</span> Docs &amp; Co"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "📐\nArchitecture Tiers DAG",
+        "width": 196,
+        "height": 31,
+        "html": "<button class=\"tab-btn\" data-tab=\"dag\">\n          <span>📐</span> Architecture T"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "🗄️\nCode ERD & Identity",
+        "width": 178,
+        "height": 31,
+        "html": "<button class=\"tab-btn\" data-tab=\"erd\">\n          <span>🗄️</span> Code ERD &amp"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "🛡️\nPermissions Graph",
+        "width": 171,
+        "height": 31,
+        "html": "<button class=\"tab-btn\" data-tab=\"permissions\">\n          <span>🛡️</span> Permi"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "🌐\nWeb State Crawl",
+        "width": 153,
+        "height": 31,
+        "html": "<button class=\"tab-btn\" data-tab=\"web-state\">\n          <span>🌐</span> Web Stat"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "💻\nRaw",
+        "width": 68,
+        "height": 29,
+        "html": "<button class=\"panel-btn\" id=\"toggle-view-btn\" style=\"display: flex;\" title=\"Tog"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "⛶",
+        "width": 33,
+        "height": 29,
+        "html": "<button class=\"panel-btn\" id=\"maximize-btn\" title=\"Maximize View\">⛶</button>"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "✕",
+        "width": 32,
+        "height": 26,
+        "html": "<button class=\"close-btn\" id=\"close-btn\" title=\"Close (Esc)\">✕</button>"
+      }
+    ]
+  }
+}

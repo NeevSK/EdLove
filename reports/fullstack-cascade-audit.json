@@ -1,0 +1,356 @@
+{
+  "metadata": {
+    "auditor": "fullstack-cascade-layers",
+    "timestamp": "2026-11-18T16:58:00.655Z",
+    "totalSourcesScanned": 8115
+  },
+  "layer4": {
+    "totalScreensBuilt": 106,
+    "ghostScreensCount": 0,
+    "flowMappedCount": 41,
+    "darkScreensCount": 65,
+    "totalRoutesCataloged": 108,
+    "islandRoutesCount": 14
+  },
+  "layer3": {
+    "totalScreensScanned": 310,
+    "totalComponentsScanned": 611,
+    "wiredComponentsCount": 294,
+    "unwiredComponentsCount": 317,
+    "visibilityViolationsCount": 0
+  },
+  "layer2": {
+    "totalHooks": 315,
+    "orphanHooksCount": 0,
+    "orphanHooks": [],
+    "storageBypassesCount": 8,
+    "storageBypasses": [
+      {
+        "hook": "usePWAInstallPrompt",
+        "path": ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/utils/usePWAInstallPrompt.ts",
+        "issue": "Direct localStorage access bypasses cross-platform storageDriver proxy"
+      },
+      {
+        "hook": "useBrowserWorkspaceAppearance",
+        "path": ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/canvas/useBrowserWorkspaceAppearance.ts",
+        "issue": "Direct localStorage access bypasses cross-platform storageDriver proxy"
+      },
+      {
+        "hook": "useSelfCanvas",
+        "path": ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/canvas/useSelfCanvas.ts",
+        "issue": "Direct localStorage access bypasses cross-platform storageDriver proxy"
+      },
+      {
+        "hook": "useWorldTheme",
+        "path": ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/theme/useWorldTheme.ts",
+        "issue": "Direct localStorage access bypasses cross-platform storageDriver proxy"
+      },
+      {
+        "hook": "usePWAInstallPrompt",
+        "path": "apps/gurudevi-mobile/src/utils/usePWAInstallPrompt.ts",
+        "issue": "Direct localStorage access bypasses cross-platform storageDriver proxy"
+      },
+      {
+        "hook": "useBrowserWorkspaceAppearance",
+        "path": "apps/gurudevi-web/lib/canvas/useBrowserWorkspaceAppearance.ts",
+        "issue": "Direct localStorage access bypasses cross-platform storageDriver proxy"
+      },
+      {
+        "hook": "useSelfCanvas",
+        "path": "apps/gurudevi-web/lib/canvas/useSelfCanvas.ts",
+        "issue": "Direct localStorage access bypasses cross-platform storageDriver proxy"
+      },
+      {
+        "hook": "useWorldTheme",
+        "path": "apps/gurudevi-web/lib/theme/useWorldTheme.ts",
+        "issue": "Direct localStorage access bypasses cross-platform storageDriver proxy"
+      }
+    ],
+    "rawFetchBypassesCount": 0,
+    "rawFetchBypasses": []
+  },
+  "layer1": {
+    "totalPrimitivesScanned": 8115,
+    "taxonomyViolationsCount": 29,
+    "taxonomyViolations": [
+      {
+        "file": ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/boot/nativeSplashService.ts",
+        "name": "nativeSplashService.ts",
+        "rule": "Java OOP *Service name prohibited outside platform-mcp. Use *Driver, *Monitor, *Vault, or *.adapter.ts."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/self/components/RemindersManager.tsx",
+        "name": "RemindersManager.tsx",
+        "rule": "Java OOP *Manager name prohibited. Use 2026 Spatial/Driver taxonomy (*Modal, *Panel, *Driver)."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/educational/classroomRepository.ts",
+        "name": "classroomRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/educational/schoolRepository.ts",
+        "name": "schoolRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/guardianRepository.ts",
+        "name": "guardianRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/paymentsRepository.ts",
+        "name": "paymentsRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/profileRepository.ts",
+        "name": "profileRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/schoolInviteRepository.ts",
+        "name": "schoolInviteRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/tuitionBatchRepository.ts",
+        "name": "tuitionBatchRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/uiExperienceRepository.ts",
+        "name": "uiExperienceRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/workspaceLayoutRepository.ts",
+        "name": "workspaceLayoutRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/packages/core/src/adapters/zenstack/profileRepository.ts",
+        "name": "profileRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/packages/ui/src/sensory/SensoryFeedbackService.ts",
+        "name": "SensoryFeedbackService.ts",
+        "rule": "Java OOP *Service name prohibited outside platform-mcp. Use *Driver, *Monitor, *Vault, or *.adapter.ts."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/packages/workforce/src/workforceService.ts",
+        "name": "workforceService.ts",
+        "rule": "Java OOP *Service name prohibited outside platform-mcp. Use *Driver, *Monitor, *Vault, or *.adapter.ts."
+      },
+      {
+        "file": "apps/gurudevi-mobile/src/boot/nativeSplashService.ts",
+        "name": "nativeSplashService.ts",
+        "rule": "Java OOP *Service name prohibited outside platform-mcp. Use *Driver, *Monitor, *Vault, or *.adapter.ts."
+      },
+      {
+        "file": "apps/gurudevi-web/app/(sanctuary)/self/components/RemindersManager.tsx",
+        "name": "RemindersManager.tsx",
+        "rule": "Java OOP *Manager name prohibited. Use 2026 Spatial/Driver taxonomy (*Modal, *Panel, *Driver)."
+      },
+      {
+        "file": "packages/admin/src/components/school/InviteCodeManager.tsx",
+        "name": "InviteCodeManager.tsx",
+        "rule": "Java OOP *Manager name prohibited. Use 2026 Spatial/Driver taxonomy (*Modal, *Panel, *Driver)."
+      },
+      {
+        "file": "packages/core/src/adapters/supabase/educational/classroomRepository.ts",
+        "name": "classroomRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": "packages/core/src/adapters/supabase/educational/schoolRepository.ts",
+        "name": "schoolRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": "packages/core/src/adapters/supabase/guardianRepository.ts",
+        "name": "guardianRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": "packages/core/src/adapters/supabase/paymentsRepository.ts",
+        "name": "paymentsRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": "packages/core/src/adapters/supabase/profileRepository.ts",
+        "name": "profileRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": "packages/core/src/adapters/supabase/schoolInviteRepository.ts",
+        "name": "schoolInviteRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": "packages/core/src/adapters/supabase/tuitionBatchRepository.ts",
+        "name": "tuitionBatchRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": "packages/core/src/adapters/supabase/uiExperienceRepository.ts",
+        "name": "uiExperienceRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": "packages/core/src/adapters/supabase/workspaceLayoutRepository.ts",
+        "name": "workspaceLayoutRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": "packages/core/src/adapters/zenstack/profileRepository.ts",
+        "name": "profileRepository.ts",
+        "rule": "Java OOP *Repository name prohibited. Use reactive live queries or typed oRPC adapters."
+      },
+      {
+        "file": "packages/ui/src/sensory/SensoryFeedbackService.ts",
+        "name": "SensoryFeedbackService.ts",
+        "rule": "Java OOP *Service name prohibited outside platform-mcp. Use *Driver, *Monitor, *Vault, or *.adapter.ts."
+      },
+      {
+        "file": "packages/workforce/src/workforceService.ts",
+        "name": "workforceService.ts",
+        "rule": "Java OOP *Service name prohibited outside platform-mcp. Use *Driver, *Monitor, *Vault, or *.adapter.ts."
+      }
+    ]
+  },
+  "layer0": {
+    "cedarPolicyFilesCount": 13,
+    "cedarPolicies": [
+      "packages/policies/src/policies/guest/personal.cedar",
+      "packages/policies/src/policies/platform/admin.cedar",
+      "packages/policies/src/policies/platform/ai.cedar",
+      "packages/policies/src/policies/platform/dataBoundaries.cedar",
+      "packages/policies/src/policies/platform/editorial.cedar",
+      "packages/policies/src/policies/school/assistantPrincipal.cedar",
+      "packages/policies/src/policies/school/gradeHead.cedar",
+      "packages/policies/src/policies/school/parent.cedar",
+      "packages/policies/src/policies/school/principal.cedar",
+      "packages/policies/src/policies/school/sectionHead.cedar",
+      "packages/policies/src/policies/school/staff.cedar",
+      "packages/policies/src/policies/school/student.cedar",
+      "packages/policies/src/policies/school/teacher.cedar"
+    ],
+    "hardcodedColorsCount": 187,
+    "hardcodedColors": [
+      {
+        "file": ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/page.tsx",
+        "count": 72,
+        "samples": [
+          "#faf8f5",
+          "#1c1c24",
+          "#e5dec9",
+          "#fffefb"
+        ],
+        "issue": "Multiple hardcoded color hex codes found. Must consume world recipe variables (var(--w-*))."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/school/[census_no]/page.tsx",
+        "count": 263,
+        "samples": [
+          "#faf8f5",
+          "#73685e",
+          "#a85022",
+          "#1a1714"
+        ],
+        "issue": "Multiple hardcoded color hex codes found. Must consume world recipe variables (var(--w-*))."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasCharitiesTab.tsx",
+        "count": 45,
+        "samples": [
+          "#fffefb",
+          "#e5dec9",
+          "#a85022",
+          "#fbf0e8"
+        ],
+        "issue": "Multiple hardcoded color hex codes found. Must consume world recipe variables (var(--w-*))."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasCompassArchetypes.tsx",
+        "count": 86,
+        "samples": [
+          "#fffefb",
+          "#e5dec9",
+          "#a85022",
+          "#fbf0e8"
+        ],
+        "issue": "Multiple hardcoded color hex codes found. Must consume world recipe variables (var(--w-*))."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasCompassLogistics.tsx",
+        "count": 85,
+        "samples": [
+          "#fffefb",
+          "#e5dec9",
+          "#a85022",
+          "#fbf0e8"
+        ],
+        "issue": "Multiple hardcoded color hex codes found. Must consume world recipe variables (var(--w-*))."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasCompassStandpoints.tsx",
+        "count": 48,
+        "samples": [
+          "#fffefb",
+          "#e5dec9",
+          "#a85022",
+          "#fbf0e8"
+        ],
+        "issue": "Multiple hardcoded color hex codes found. Must consume world recipe variables (var(--w-*))."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasCompassTab.tsx",
+        "count": 76,
+        "samples": [
+          "#fffefb",
+          "#e5dec9",
+          "#a85022",
+          "#fbf0e8"
+        ],
+        "issue": "Multiple hardcoded color hex codes found. Must consume world recipe variables (var(--w-*))."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasCompetitionsTab.tsx",
+        "count": 62,
+        "samples": [
+          "#fffefb",
+          "#e5dec9",
+          "#a85022",
+          "#fbf0e8"
+        ],
+        "issue": "Multiple hardcoded color hex codes found. Must consume world recipe variables (var(--w-*))."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasEdTechTab.tsx",
+        "count": 23,
+        "samples": [
+          "#fffefb",
+          "#e5dec9",
+          "#1a1714",
+          "#615951"
+        ],
+        "issue": "Multiple hardcoded color hex codes found. Must consume world recipe variables (var(--w-*))."
+      },
+      {
+        "file": ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasFinanceTab.tsx",
+        "count": 91,
+        "samples": [
+          "#fffefb",
+          "#e5dec9",
+          "#f0e7d8",
+          "#a85022"
+        ],
+        "issue": "Multiple hardcoded color hex codes found. Must consume world recipe variables (var(--w-*))."
+      }
+    ],
+    "dialectViolationsCount": 0,
+    "dialectViolations": []
+  }
+}

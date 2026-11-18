@@ -40,6 +40,11 @@ import { DateTimeCombo } from '@repo/ui/components/web';
 import { timeGreeting } from '../../../lib/timeGreeting';
 import { TaskStrip } from '../components/TaskStrip';
 import { TeacherWorkspaceFloor } from './TeacherWorkspaceFloor';
+import { WorkspaceUnboundWelcomeHub } from './WorkspaceUnboundWelcomeHub';
+import { RoomAperture } from '../components/RoomAperture';
+import { CommercialSchoolCreationModal } from './school/CommercialSchoolCreationModal';
+import type { SchoolProfileData } from '@/lib/domain/ports/school.port';
+import schoolStyles from './school/school.module.css';
 import styles from './workspace.module.css';
 import {
   getWorkspaceOverviewPosture,
@@ -63,7 +68,6 @@ type WorkspaceFloorProps = Readonly<{
 }>;
 
 const WORKSPACE_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
-  { id: 'role-lens', label: 'Role Perspective Lens & Nav', icon: '🏷️' },
   { id: 'workbench', label: 'Daily Operations & Timeline', icon: '🧭' },
   { id: 'heading', label: 'Workspace Posture & Header', icon: '🏛️' },
   { id: 'attendance', label: 'Attendance Roster & Actions', icon: '📋' },
@@ -139,6 +143,30 @@ export function WorkspaceFloor({
   useEffect(() => {
     if (requestedTask === 'attendance') setOverview(false);
   }, [requestedTask]);
+
+  const [creationModalOpen, setCreationModalOpen] = useState(false);
+  const [createdSchoolProfile, setCreatedSchoolProfile] = useState<SchoolProfileData | null>(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('gurudevi_established_school') : null;
+      if (saved) return JSON.parse(saved) as SchoolProfileData;
+    } catch {
+      // Safe fallback
+    }
+    return null;
+  });
+
+  const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const forceNoSchool = urlParams?.get('noSchool') === 'true';
+
+  const hasSchool = !forceNoSchool && Boolean(
+    createdSchoolProfile ||
+    (scope?.entityId &&
+     scope.entityId !== 'default-school' &&
+     scope.entityId !== 'personal' &&
+     (scope as { entityType?: string })?.entityType !== 'PERSONAL_CLASSROOM')
+  );
+
+  const canEstablishSchool = ['principal', 'founder', 'admin'].includes(voice) || Boolean(import.meta.env.DEV);
   const workspaceFeatureIds = features.map((feature) => feature.id);
   const quickAccessScope = mode === 'explore' ? 'explore' : 'sanctuary';
   const quickAccess = useQuickAccessPreferences(
@@ -242,7 +270,7 @@ export function WorkspaceFloor({
   }, [activeSession, activeStudents, morningRoster]);
 
   useEffect(() => {
-    if (mode !== 'account' || practiceMode) return;
+    if (mode !== 'account' || practiceMode || voice !== 'teacher') return;
     if (!scope || !subjectId || !accountAttendance.scope) {
       setLoadState('error');
       setError('Your selected classroom scope is unavailable. Reload Workspace.');
@@ -285,10 +313,11 @@ export function WorkspaceFloor({
     practiceMode,
     scope,
     subjectId,
+    voice,
   ]);
 
   useEffect(() => {
-    if (mode !== 'account' || practiceMode) return;
+    if (mode !== 'account' || practiceMode || voice !== 'teacher') return;
     // Never project a prior scoped roster while a new principal, bond, entity,
     // grade class, or date query is being admitted.
     setStudents([]);
@@ -297,7 +326,7 @@ export function WorkspaceFloor({
     setUnsynced(false);
     setUnmatchedDraftCount(0);
     setSaved(false);
-  }, [classroom?.id, date, mode, practiceMode, scope?.bondId, scope?.entityId, subjectId]);
+  }, [classroom?.id, date, mode, practiceMode, scope?.bondId, scope?.entityId, subjectId, voice]);
 
   useEffect(() => {
     if (mode !== 'account' || practiceMode || !classroom || !scope || !subjectId) return;
@@ -812,7 +841,8 @@ export function WorkspaceFloor({
         </p>
       ) : null}
 
-      {overview ? (
+      <RoomAperture kind="doorway">
+        {overview ? (
         <div className={styles.featureContentIn} key="workspace-home">
           {voice === 'teacher' ? (
             <TeacherWorkspaceFloor
@@ -839,6 +869,46 @@ export function WorkspaceFloor({
                 }
                 openAttendance();
               }}
+            />
+          ) : !hasSchool ? (
+            <WorkspaceUnboundWelcomeHub
+              displayName={displayName}
+              voice={voice}
+              canEstablish={canEstablishSchool}
+              establishedSchool={createdSchoolProfile}
+              onSchoolEstablished={(profile) => {
+                try {
+                  localStorage.setItem('gurudevi_established_school', JSON.stringify(profile));
+                } catch {
+                  // Safe fallback
+                }
+                setCreatedSchoolProfile(profile);
+              }}
+              onOpenSchoolProfile={() => {
+                void router.navigate({ href: '/workspace/school' });
+              }}
+              onDismissBanner={() => {
+                try {
+                  localStorage.removeItem('gurudevi_established_school');
+                } catch {
+                  // Safe fallback
+                }
+                setCreatedSchoolProfile(null);
+              }}
+              onTryPractice={
+                practiceAvailability.available
+                  ? () => {
+                      latestLoadRef.current += 1;
+                      setPracticeMode(true);
+                      setOverview(false);
+                      const result = workbench.open(attendanceTask);
+                      if (result.kind === 'at-capacity') {
+                        setPracticeMode(false);
+                        setOverview(true);
+                      }
+                    }
+                  : undefined
+              }
             />
           ) : (
             <>
@@ -914,14 +984,27 @@ export function WorkspaceFloor({
                     Family guides
                   </Link>
                 </>
-              ) : voice === 'principal' && coordinates.intent === 'plan' ? (
+              ) : voice === 'principal' ? (
                 <>
-                  <Link to="/workspace/events" className={styles.primary}>
-                    {posture.actionText}
+                  <Link to="/workspace/school" className={styles.primary}>
+                    🏛️ School Profile & Credentials
                   </Link>
-                  <Link to="/workspace/school" className={styles.secondary}>
-                    School profile
+                  <Link to="/workspace/workforce" className={styles.secondary}>
+                    👥 Workforce & Staff
                   </Link>
+                  <Link to="/workspace/kiosk" className={styles.secondary}>
+                    🚪 Doorway Kiosk
+                  </Link>
+                  <Link to="/workspace/events" className={styles.secondary}>
+                    🎉 Campus Events
+                  </Link>
+                  <button
+                    className={styles.secondary}
+                    onClick={openAttendance}
+                    type="button"
+                  >
+                    Classroom Roll Call
+                  </button>
                 </>
               ) : (
                 <>
@@ -1369,6 +1452,20 @@ export function WorkspaceFloor({
           </main>
         </div>
       )}
+      </RoomAperture>
+      <CommercialSchoolCreationModal
+        open={creationModalOpen}
+        onClose={() => setCreationModalOpen(false)}
+        onCreated={(profile) => {
+          try {
+            localStorage.setItem('gurudevi_established_school', JSON.stringify(profile));
+          } catch {
+            // Safe fallback
+          }
+          setCreatedSchoolProfile(profile);
+        }}
+        styles={schoolStyles}
+      />
     </SanctuaryFloorCanvas>
   );
 }

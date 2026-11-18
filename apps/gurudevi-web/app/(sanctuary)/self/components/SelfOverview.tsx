@@ -30,6 +30,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { isBrowserSelfFeatureDelivered } from '../browserFeatureRegistry';
 import { ContourCohortDeck } from './ContourCohortDeck';
+import { TutiiConciergeHub, type ConciergeStep } from '../../components/TutiiConciergeHub';
 import styles from '../self-floor.module.css';
 
 type SelfGroup = SelfFeatureManifestItem['category'];
@@ -1063,6 +1064,58 @@ export function SelfOverview({
     return sectionOrder;
   }, [floorSectionOrder, sectionOrder]);
 
+  const wellbeingSteps: Record<string, ConciergeStep> = useMemo(() => {
+    const breathFeature = manifestAll.find((f) => f.id === 'breath_guide');
+    const gratitudeFeature = manifestAll.find((f) => f.id === 'gratitude_glimmers');
+    const sadhanaFeature = manifestAll.find((f) => f.id === 'daily_sadhana');
+    const wisdomFeature = manifestAll.find((f) => f.id === 'wisdom_seeds');
+
+    return {
+      weather: {
+        id: 'weather',
+        question: `How is your inner weather right now, ${displayName}?`,
+        subtext: 'A quiet pause before the day’s work. Select what feels true right now.',
+        options: [
+          {
+            id: 'clear',
+            emoji: '☀️',
+            title: 'Clear & Energized',
+            subtitle: 'Alert mind, high vital energy, ready for purposeful rhythm.',
+            outcomeText: 'Vitality is a gift. Let us center your energy with daily focus and sadhana.',
+            primaryActionLabel: sadhanaFeature ? 'Open Daily Sadhana' : 'Explore Wisdom Seeds',
+            onSelect: () => {
+              if (sadhanaFeature) onOpenFeature(sadhanaFeature);
+              else if (wisdomFeature) onOpenFeature(wisdomFeature);
+            },
+          },
+          {
+            id: 'steady',
+            emoji: '⛅',
+            title: 'Steady & Reflective',
+            subtitle: 'Centered, taking in the day with poise and gentle attention.',
+            outcomeText: 'A balanced mind creates fertile soil for gratitude. Anchor 3 quiet glimmers from today.',
+            primaryActionLabel: 'Anchor Gratitude Glimmers',
+            onSelect: () => {
+              if (gratitudeFeature) onOpenFeature(gratitudeFeature);
+            },
+          },
+          {
+            id: 'heavy',
+            emoji: '🌧️',
+            title: 'Heavy or Full',
+            subtitle: 'Carrying tension or emotional fatigue; seeking stillness and release.',
+            outcomeText: 'You do not have to carry everything right now. Let us decompress with a 3-minute somatic breath or release into Fire Journal.',
+            primaryActionLabel: 'Begin 3-Min Breath',
+            onSelect: () => {
+              if (breathFeature) onOpenFeature(breathFeature);
+              else onOpenFireJournal();
+            },
+          },
+        ],
+      },
+    };
+  }, [manifestAll, displayName, onOpenFeature, onOpenFireJournal]);
+
   return (
     <>
       <header className={styles.arrival}>
@@ -1074,6 +1127,19 @@ export function SelfOverview({
               : 'Self · Overview'}
         </h2>
       </header>
+
+      {!isReview && !isPlan && (
+        <TutiiConciergeHub
+          theme="wellbeing"
+          badge="Tutii · Life Wellbeing Concierge"
+          title="Inner Weather & Vitality"
+          initialStepId="weather"
+          steps={wellbeingSteps}
+          storageKey="self_wellbeing"
+          minimizedPrompt="Check inner weather with Tutii"
+          escapeHatchLabel="Browse practices directly ✕"
+        />
+      )}
 
       {layoutMode === 'bento-asymmetric' ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%' }}>

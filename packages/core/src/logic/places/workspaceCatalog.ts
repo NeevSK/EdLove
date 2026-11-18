@@ -212,9 +212,9 @@ const builders: Floor = ['agent_lab', 'icon_lab'];
 
 /** The floor each capacity opens to. Every capacity has its own, even where two start out alike. */
 export const WORKSPACE_FLOORS: { readonly [C in Capacity]: Floor } = {
-  founder: [...teacher, 'founder_command', ...builders],
-  coFounder: [...teacher, 'founder_command'],
-  director: [...teacher, 'founder_command'],
+  founder: [...principal, 'founder_command', ...builders],
+  coFounder: [...principal, 'founder_command'],
+  director: [...principal, 'founder_command'],
   principal,
   assistantPrincipal: principal,
   admin: principal,

@@ -49,6 +49,7 @@ export const EXPLORE_CAPACITIES: readonly ExploreCapacityMeta[] = [
     label: 'School Leader',
     roleTitle: 'School Leader & Principal',
     defaultSector: 'institutional',
+    civicRole: 'principal',
     description:
       'School Coordination: institutional climate sensing, school-wide presence, and educator support.',
     domainOverview: {

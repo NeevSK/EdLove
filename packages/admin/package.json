@@ -95,6 +95,16 @@
       "import": "./src/*.js",
       "default": "./src/*.js"
     },
+    "./machines/*": {
+      "types": "./src/machines/*.ts",
+      "import": "./src/machines/*.ts",
+      "default": "./src/machines/*.ts"
+    },
+    "./components/*": {
+      "types": "./src/components/*.ts",
+      "import": "./src/components/*.ts",
+      "default": "./src/components/*.ts"
+    },
     "./package.json": "./package.json",
     "./guardian/*": {
       "types": "./src/guardian/*.ts",

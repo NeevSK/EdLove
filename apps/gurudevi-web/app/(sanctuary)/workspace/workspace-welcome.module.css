@@ -1,0 +1,381 @@
+.welcomeHub {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  animation: stepFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes stepFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stepperBar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.stepPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(122, 28, 32, 0.08);
+  color: #7a1c20;
+}
+
+.stepProgress {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stepDot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: all 0.25s ease;
+}
+
+.stepDotActive {
+  background: #7a1c20;
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(122, 28, 32, 0.15);
+}
+
+.stepDotDone {
+  background: #2e7d32;
+  color: #fff;
+}
+
+.stepDotUpcoming {
+  background: #e0deda;
+  color: #777;
+}
+
+.stepLine {
+  width: 28px;
+  height: 2px;
+  background: #ddd;
+}
+
+.stepLineActive {
+  background: #7a1c20;
+}
+
+.stepCard {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(250, 248, 244, 0.92));
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 24px;
+  padding: clamp(1.5rem, 3.5vw, 2.75rem);
+  box-shadow:
+    0 16px 36px -12px rgba(90, 70, 30, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.stepHeading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.stepTitle {
+  font-family: Georgia, serif;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-weight: 700;
+  color: #1f1d1a;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.stepSubtitle {
+  color: #5a554c;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 680px;
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.fieldLabel {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #2b2823;
+}
+
+.fieldHint {
+  font-size: 0.85rem;
+  color: #716b61;
+  margin: 0;
+}
+
+.textInput {
+  padding: 0.85rem 1.1rem;
+  font-size: 1.05rem;
+  border: 1.5px solid #d4c8b6;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #1f1d1a;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.textInput:focus {
+  outline: none;
+  border-color: #7a1c20;
+  box-shadow: 0 0 0 3px rgba(122, 28, 32, 0.15);
+}
+
+.handlePrefixGroup {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.handlePrefix {
+  padding: 0.85rem 0.9rem;
+  background: #ece7de;
+  border: 1.5px solid #d4c8b6;
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+  font-weight: 700;
+  color: #7a1c20;
+  font-size: 1.05rem;
+}
+
+.handleInput {
+  border-radius: 0 12px 12px 0;
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.optionCard {
+  border: 1.5px solid #d8cfc0;
+  border-radius: 16px;
+  padding: 1.15rem;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+}
+
+.optionCard:hover {
+  border-color: #9a5b2d;
+  background: #faf8f5;
+  transform: translateY(-2px);
+}
+
+.optionCardSelected {
+  border-color: #7a1c20;
+  background: rgba(122, 28, 32, 0.03);
+  box-shadow: 0 0 0 3px rgba(122, 28, 32, 0.12);
+}
+
+.optionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.optionIcon {
+  font-size: 1.5rem;
+}
+
+.optionRadio {
+  width: 18px;
+  height: 18px;
+  accent-color: #7a1c20;
+}
+
+.optionTitle {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #1f1d1a;
+  margin: 0;
+}
+
+.optionDesc {
+  font-size: 0.84rem;
+  color: #655f54;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.actionsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.primaryAction {
+  padding: 0.95rem 1.75rem;
+  background: #7a1c20;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 18px -4px rgba(122, 28, 32, 0.35);
+  text-decoration: none;
+}
+
+.primaryAction:hover {
+  background: #601418;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px -4px rgba(122, 28, 32, 0.45);
+}
+
+.secondaryAction {
+  padding: 0.95rem 1.4rem;
+  background: transparent;
+  color: #554e42;
+  border: 1.5px solid #d4c8b6;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.secondaryAction:hover {
+  background: #f4eee3;
+  color: #1f1d1a;
+}
+
+.tertiaryLink {
+  color: #7a1c20;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.tertiaryLink:hover {
+  text-decoration: underline;
+}
+
+/* Step 3: Success Visual Credentials */
+.credentialBox {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2rem;
+  align-items: center;
+  background: #ffffff;
+  border: 1.5px solid #d4c8b6;
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 680px) {
+  .credentialBox {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+.qrContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem;
+  background: #fbfaf8;
+  border-radius: 16px;
+  border: 1px solid #e5ded3;
+}
+
+.credentialDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.badgeHandle {
+  display: inline-block;
+  background: #7a1c20;
+  color: #fff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  align-self: flex-start;
+}
+
+.linkBox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  background: #f4f0e8;
+  border-radius: 10px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #3b362e;
+  word-break: break-all;
+}
+
+.copyBtn {
+  padding: 0.5rem 0.85rem;
+  background: #1f1d1a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.copyBtn:hover {
+  background: #3a3630;
+}

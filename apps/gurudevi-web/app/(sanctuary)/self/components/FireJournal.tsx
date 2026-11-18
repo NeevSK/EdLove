@@ -63,7 +63,7 @@ export function FireJournal({
         <p className={styles.eyebrow}>
           {t('fireJournal.title') ? `Self · ${t('fireJournal.title')}` : 'Self · Fire Journal'}
         </p>
-        <h1 id="self-floor-title">
+        <h1 id="fire-journal-floor-title">
           {isReview
             ? 'Reflecting on what was set free.'
             : isPlan

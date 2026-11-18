@@ -276,7 +276,13 @@ const contentViolations = rows.flatMap((r) => {
   const found = banned.filter((k) => Number(r.counts[k]) > 0).map((k) => `${k}=${Number(r.counts[k])}`);
   return found.length ? [{ file: r.file, tier: r.folderTier, found }] : [];
 });
-fs.writeFileSync(path.join(ROOT, 'reports/tier-content.json'), `${JSON.stringify({ rows, duplicates, contentViolations }, null, 1)}\n`);
+try {
+  fs.writeFileSync(path.join(ROOT, 'reports/tier-content.json'), `${JSON.stringify({ rows, duplicates, contentViolations }, null, 1)}\n`);
+} catch (err) {
+  if (!process.argv.includes('--summary-json')) {
+    throw err;
+  }
+}
 if (process.argv.includes('--summary-json')) {
   console.log(JSON.stringify({ contentViolations: contentViolations.length }));
   process.exit(0);

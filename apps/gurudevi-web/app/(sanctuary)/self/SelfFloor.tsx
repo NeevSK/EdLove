@@ -29,6 +29,7 @@ import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPre
 import type { FloorAtmosphereKind } from '../components/FloorAtmosphere';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
+import { RoomAperture } from '../components/RoomAperture';
 import { DateTimeCombo } from '@repo/ui/components/web';
 import { timeGreeting } from '../../../lib/timeGreeting';
 import { TaskStrip } from '../components/TaskStrip';
@@ -638,39 +639,41 @@ export function SelfFloor({
             tasks={workbench.state.tasks}
           />
 
-          {showOverview ? (
-            <div className={styles.featureContentIn} key="self-home">
-              <SelfOverview
-                isArrangeMode={isArrangeMode}
-                displayName={displayName}
-                phase={canvas.phase}
-                groupOrder={canvas.groupOrder}
-                floorSectionOrder={selfFurnitureOrder}
-                manifestAll={canvas.sortedManifestAll}
-                onOpenFeature={openFeature}
-                onOpenFireJournal={openFireJournal}
-                pinnedFeatures={canvas.pinnedFeatures}
-                pinnedIds={quickAccess.pinnedIds}
-                usage={quickAccess.usage}
-                onTogglePin={quickAccess.togglePin}
-                fireJournalId={fireJournalFeature.id}
-                temporalIntent={coordinates.intent}
-                selectedDate={coordinates.date}
-                primaryRole={primaryRole}
-                otherRoles={capacities}
-                userId={accountId}
-                isExplore={isExplore}
-              />
-            </div>
-          ) : (
-            <div
-              className={styles.featureContentIn}
-              data-layout-mode={canvas.layoutMode}
-              key={focusedTask?.taskKey ?? 'self-feature'}
-            >
-              <div className={styles.activePracticeStage}>{practiceContent}</div>
-            </div>
-          )}
+          <RoomAperture kind="book">
+            {showOverview ? (
+              <div className={styles.featureContentIn} key="self-home">
+                <SelfOverview
+                  isArrangeMode={isArrangeMode}
+                  displayName={displayName}
+                  phase={canvas.phase}
+                  groupOrder={canvas.groupOrder}
+                  floorSectionOrder={selfFurnitureOrder}
+                  manifestAll={canvas.sortedManifestAll}
+                  onOpenFeature={openFeature}
+                  onOpenFireJournal={openFireJournal}
+                  pinnedFeatures={canvas.pinnedFeatures}
+                  pinnedIds={quickAccess.pinnedIds}
+                  usage={quickAccess.usage}
+                  onTogglePin={quickAccess.togglePin}
+                  fireJournalId={fireJournalFeature.id}
+                  temporalIntent={coordinates.intent}
+                  selectedDate={coordinates.date}
+                  primaryRole={primaryRole}
+                  otherRoles={capacities}
+                  userId={accountId}
+                  isExplore={isExplore}
+                />
+              </div>
+            ) : (
+              <div
+                className={styles.featureContentIn}
+                data-layout-mode={canvas.layoutMode}
+                key={focusedTask?.taskKey ?? 'self-feature'}
+              >
+                <div className={styles.activePracticeStage}>{practiceContent}</div>
+              </div>
+            )}
+          </RoomAperture>
 
           <DailySadhanaModal
             isOpen={showSadhanaModal}

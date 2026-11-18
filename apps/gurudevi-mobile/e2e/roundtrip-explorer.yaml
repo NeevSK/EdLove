@@ -1,0 +1,110 @@
+appId: app.gurudevi.mobile
+---
+# ==============================================================================
+# Gurudevi Mobile Bidirectional State-Graph & Round-Trip Flow (Maestro E2E)
+# Grounded in: docs/architecture/interaction-tree-and-e2e-testing-standard.md
+# Tests: Forward actions, reverse Back buttons, modal dismissals, and tab return
+# Compatible with: Expo SDK 58 / React Native 0.88 New Architecture
+# ==============================================================================
+
+- launchApp:
+    clearState: true
+
+# ------------------------------------------------------------------------------
+# 1. Entry & Splash Assertion
+# ------------------------------------------------------------------------------
+- assertVisible:
+    text: ".*Gurudevi.*|.*Sanctuary.*|.*Welcome.*"
+    timeout: 10000
+
+# ------------------------------------------------------------------------------
+# 2. Welcome Flow Bidirectional Round-Trip Test (Step 1 -> Step 2 -> Back -> Forward)
+# ------------------------------------------------------------------------------
+- runFlow:
+    when:
+      visible: ".*Hello.*|.*Welcome.*"
+    commands:
+      # Step 1 -> Step 2
+      - tapOn:
+          text: ".*One more thing.*|.*Continue.*"
+      - assertVisible:
+          text: ".*Wander freely.*|.*Choose your perspective.*"
+          timeout: 4000
+
+      # Reverse Edge: Test Back Button (Step 2 -> Step 1)
+      - tapOn:
+          text: ".*Back.*|.*←.*"
+      - assertVisible:
+          text: ".*Hello.*|.*Welcome.*"
+          timeout: 4000
+
+      # Return forward (Step 1 -> Step 2 -> Step 3)
+      - tapOn:
+          text: ".*One more thing.*|.*Continue.*"
+      - tapOn:
+          text: ".*Choose your perspective.*"
+      - assertVisible:
+          text: ".*What brings you here.*|.*role.*"
+          timeout: 4000
+
+      # Reverse Edge on Step 3: Test Back Button (Step 3 -> Step 2)
+      - tapOn:
+          text: ".*Back.*|.*←.*"
+      - assertVisible:
+          text: ".*Wander freely.*"
+          timeout: 4000
+
+      # Re-enter Step 3
+      - tapOn:
+          text: ".*Choose your perspective.*"
+
+      # Select Role Card
+      - tapOn:
+          text: ".*Teacher.*"
+          optional: true
+
+      # Enter Guest Showroom
+      - tapOn:
+          text: ".*Enter Guest House.*|.*Explore.*"
+      - assertVisible:
+          text: ".*Self.*|.*Workspace.*|.*Overview.*"
+          timeout: 8000
+
+# ------------------------------------------------------------------------------
+# 3. Tab Bar Bidirectional Navigation & Reconstitution
+# ------------------------------------------------------------------------------
+# Self -> Workspace -> Back to Self
+- tapOn:
+    id: "tab-workspace"
+    optional: true
+- assertVisible:
+    text: ".*Workspace.*|.*Attendance.*|.*Classes.*"
+    timeout: 5000
+
+- tapOn:
+    id: "tab-self"
+    optional: true
+- assertVisible:
+    text: ".*Self.*"
+    timeout: 5000
+
+# Self -> Library -> Back to Self
+- tapOn:
+    id: "tab-library"
+    optional: true
+- assertVisible:
+    text: ".*Library.*|.*Atlas.*|.*Books.*"
+    timeout: 5000
+
+- tapOn:
+    id: "tab-self"
+    optional: true
+
+# ------------------------------------------------------------------------------
+# 4. Sheet / Modal Presentation & Clean Dismissal
+# ------------------------------------------------------------------------------
+# Test back gesture / dismiss
+- back
+- assertVisible:
+    text: ".*Gurudevi.*|.*Self.*"
+    timeout: 4000

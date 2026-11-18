@@ -167,7 +167,8 @@
     "check:ui-boundaries": "node scripts/check-ui-boundaries.mjs",
     "skills:audit": "node scripts/sync-upstream-skills.mjs --audit",
     "skills:sync": "node scripts/sync-upstream-skills.mjs --sync",
-    "skills:doctor": "node scripts/skill-doctor.mjs"
+    "skills:doctor": "node scripts/skill-doctor.mjs",
+    "audit:spec-pipeline": "pnpm exec openspec --version > nul && pnpm exec tsx --tsconfig packages/core/tsconfig.json scripts/pjc.ts check && pnpm exec likec4 validate docs/architecture/model && pnpm exec spectral --version > nul && node scripts/route-catalog.mjs --check"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.5",
@@ -233,7 +234,11 @@
     "typescript": "7.1.0-beta",
     "typescript-eslint": "8.72.1",
     "vercel": "^65.11.0",
-    "wrangler": "^4.158.0"
+    "wrangler": "^4.158.0",
+    "@fission-ai/openspec": "^2.0.0",
+    "@stoplight/spectral-cli": "^6.17.1",
+    "@statelyai/agent": "^1.1.6",
+    "@xstate/graph": "^3.0.4"
   },
   "packageManager": "pnpm@12.16.1",
   "engines": {

@@ -9,6 +9,10 @@ const analyticsApi = vi.hoisted(() => ({
 
 vi.mock('@repo/admin/analytics/api', () => ({ multiTenantAnalyticsAPI: analyticsApi }));
 
+vi.mock('@repo/ui/components/native', () => ({
+  AppHeader: () => null,
+}));
+
 vi.mock('@repo/ui/components/GlobalHeader', async () => {
   const React = await import('react');
   const { Text } = await import('react-native');

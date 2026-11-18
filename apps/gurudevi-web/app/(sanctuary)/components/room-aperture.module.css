@@ -1,0 +1,89 @@
+.apertureContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Doorway (Workspace / Campus) */
+.doorwayIn {
+  animation: doorwayOpen 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes doorwayOpen {
+  from {
+    opacity: 0.4;
+    transform: scale(0.985) translateY(4px);
+    filter: blur(1.5px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* Book Unclasp (Self / Life Wellbeing) */
+.bookIn {
+  animation: bookUnclasp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: center left;
+}
+
+@keyframes bookUnclasp {
+  from {
+    opacity: 0.3;
+    transform: rotateY(-3deg) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: rotateY(0deg) scale(1);
+  }
+}
+
+/* Forest Canopy Dawn (Community / Human Sangha) */
+.canopyIn {
+  animation: canopyDawn 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes canopyDawn {
+  from {
+    opacity: 0.3;
+    transform: translateY(-6px);
+    filter: brightness(1.08);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: brightness(1);
+  }
+}
+
+/* Archive Shelf (Library / Curricula) */
+.archiveIn {
+  animation: archiveSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes archiveSlide {
+  from {
+    opacity: 0.3;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Verger Hardware & Reduced Motion Override: Instant 60ms fade, zero transforms */
+:global([data-verger-reduced-motion="true"]) .doorwayIn,
+:global([data-verger-reduced-motion="true"]) .bookIn,
+:global([data-verger-reduced-motion="true"]) .canopyIn,
+:global([data-verger-reduced-motion="true"]) .archiveIn {
+  animation: instantFade 0.08s ease forwards !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+@keyframes instantFade {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}

@@ -23,7 +23,7 @@ type AccountSelfProcedureInputs = Readonly<{
 }>;
 
 function apiOrigin(): string | null {
-  const value = process.env.NEXT_PUBLIC_API_URL?.trim();
+  const value = (process.env.VITE_API_URL || process.env.NEXT_PUBLIC_API_URL)?.trim();
   if (!value) return null;
   assertSecureApiUrl(value);
   return value.replace(/\/+$/, '');

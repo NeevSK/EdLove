@@ -68,8 +68,9 @@ export function useAuthority(): Authority {
         context.userId ? getDecision(subject as string, action as string) : 'no_decision',
         action as string,
         subject as string,
+        context.isLocalOnly,
       ),
-    [context.userId, getDecision],
+    [context.userId, context.isLocalOnly, getDecision],
   );
   const cannot = useCallback((action: Action, subject: Subject) => !can(action, subject), [can]);
 

@@ -204,17 +204,21 @@
 }
 .headerBadge {
   position: absolute;
-  top: -0.15rem;
-  right: -0.15rem;
-  min-width: 1rem;
-  padding: 0.1rem 0.2rem;
+  top: -0.2rem;
+  right: -0.2rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1.5px solid var(--w-ground);
   border-radius: 999px;
-  background: var(--w-lamp);
-  color: var(--w-on-lamp);
-  font-size: 0.6rem;
-  font-weight: 700;
-  line-height: 1.1;
+  background: var(--w-lamp-deep, var(--w-action));
+  color: var(--w-ground, #fff);
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1;
   text-align: center;
 }
 .exploreBanner {

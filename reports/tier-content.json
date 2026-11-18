@@ -422,13 +422,13 @@
    "file": "packages/admin/src/api.ts",
    "package": "packages/admin",
    "folderTier": null,
-   "shape": "empty",
-   "lines": 1,
+   "shape": "runtime",
+   "lines": 73,
    "counts": {
     "types": 0,
-    "consts": 0,
-    "constructs": 0,
-    "ambient": 0,
+    "consts": 1,
+    "constructs": 1,
+    "ambient": 1,
     "schemas": 0,
     "functions": 0,
     "functionLines": 0,
@@ -439,13 +439,34 @@
     "reexports": 0,
     "jsx": false
    },
-   "exports": [],
+   "exports": [
+    "institutionsAPI"
+   ],
    "unions": [],
    "importers": {
-    "prod": 0,
-    "tests": 0
+    "prod": 3,
+    "tests": 4
    },
-   "imports": [],
+   "imports": [
+    {
+     "to": "packages/core/src/auth.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/api/v1/client.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/api/v1/contract.ts",
+     "typeOnly": true,
+     "toShape": "runtime",
+     "toTier": "T2"
+    }
+   ],
    "outside": []
   },
   {
@@ -671,7 +692,7 @@
    "package": "packages/admin",
    "folderTier": null,
    "shape": "barrel",
-   "lines": 13,
+   "lines": 29,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -684,7 +705,7 @@
     "errorClasses": 0,
     "mutable": 0,
     "sideEffects": 0,
-    "reexports": 12,
+    "reexports": 15,
     "jsx": false
    },
    "exports": [],
@@ -762,6 +783,24 @@
     },
     {
      "to": "packages/admin/src/components/principal/PrincipalSetupWizard.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "packages/admin/src/components/school/SchoolConnectionWelcome.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "packages/admin/src/components/school/InviteCodeManager.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "packages/admin/src/components/school/SchoolSettingsSheet.tsx",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": null
@@ -1535,6 +1574,263 @@
     }
    ],
    "outside": [
+    "react-native"
+   ]
+  },
+  {
+   "file": "packages/admin/src/components/school/index.ts",
+   "package": "packages/admin",
+   "folderTier": null,
+   "shape": "barrel",
+   "lines": 16,
+   "counts": {
+    "types": 0,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 3,
+    "jsx": false
+   },
+   "exports": [],
+   "unions": [],
+   "importers": {
+    "prod": 0,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/admin/src/components/school/SchoolConnectionWelcome.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "packages/admin/src/components/school/InviteCodeManager.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "packages/admin/src/components/school/SchoolSettingsSheet.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "packages/admin/src/components/school/InviteCodeManager.tsx",
+   "package": "packages/admin",
+   "folderTier": null,
+   "shape": "runtime",
+   "lines": 463,
+   "counts": {
+    "types": 3,
+    "consts": 2,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 1,
+    "functionLines": 418,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": true
+   },
+   "exports": [
+    "InviteRole",
+    "InviteCodeManagerProps",
+    "InviteCodeManager"
+   ],
+   "unions": [
+    {
+     "name": "InviteRole",
+     "union": "'GUARD'|'STAFF'|'STUDY'|'TEACH'"
+    }
+   ],
+   "importers": {
+    "prod": 2,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/logic/utils/QRBuilder.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/ui/src/qr/QRCodeGenerator.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T6"
+    },
+    {
+     "to": "packages/ui/src/utils/haptics.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T6"
+    },
+    {
+     "to": "packages/admin/src/api.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    }
+   ],
+   "outside": [
+    "expo-clipboard",
+    "react",
+    "react-native"
+   ]
+  },
+  {
+   "file": "packages/admin/src/components/school/SchoolConnectionWelcome.tsx",
+   "package": "packages/admin",
+   "folderTier": null,
+   "shape": "runtime",
+   "lines": 452,
+   "counts": {
+    "types": 1,
+    "consts": 1,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 1,
+    "functionLines": 406,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 1,
+    "reexports": 0,
+    "jsx": true
+   },
+   "exports": [
+    "SchoolConnectionWelcomeProps",
+    "SchoolConnectionWelcome"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/logic/utils/QRBuilder.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T2"
+    },
+    {
+     "to": "packages/core/src/logic/schemas/school.schema.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/ui/src/components/native/index.ts",
+     "typeOnly": false,
+     "toShape": "barrel",
+     "toTier": "T6"
+    },
+    {
+     "to": "packages/ui/src/icons.ts",
+     "typeOnly": false,
+     "toShape": "barrel",
+     "toTier": "T6"
+    },
+    {
+     "to": "packages/ui/src/qr/QRCodeGenerator.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T6"
+    },
+    {
+     "to": "packages/admin/src/machines/schoolProvisioningMachine.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "packages/admin/src/machines/schoolProvisioningMachine.ts",
+     "typeOnly": true,
+     "toShape": "runtime",
+     "toTier": null
+    }
+   ],
+   "outside": [
+    "react",
+    "react-native",
+    "expo-clipboard"
+   ]
+  },
+  {
+   "file": "packages/admin/src/components/school/SchoolSettingsSheet.tsx",
+   "package": "packages/admin",
+   "folderTier": null,
+   "shape": "runtime",
+   "lines": 367,
+   "counts": {
+    "types": 3,
+    "consts": 2,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 1,
+    "functionLines": 302,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": true
+   },
+   "exports": [
+    "SchoolLevel",
+    "GuardianPolicy",
+    "SchoolSettingsSheetProps",
+    "SchoolSettingsSheet"
+   ],
+   "unions": [
+    {
+     "name": "SchoolLevel",
+     "union": "'k12'|'other'|'preSchool'|'primary'|'secondary'|'university'|'vocational'"
+    },
+    {
+     "name": "GuardianPolicy",
+     "union": "'manual_approval'|'open'|'strict_document'"
+    }
+   ],
+   "importers": {
+    "prod": 2,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/ui/src/utils/haptics.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T6"
+    },
+    {
+     "to": "packages/admin/src/api.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    }
+   ],
+   "outside": [
+    "react",
     "react-native"
    ]
   },
@@ -2422,7 +2718,7 @@
    "package": "packages/admin",
    "folderTier": null,
    "shape": "barrel",
-   "lines": 8,
+   "lines": 10,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -2435,13 +2731,13 @@
     "errorClasses": 0,
     "mutable": 0,
     "sideEffects": 0,
-    "reexports": 6,
+    "reexports": 8,
     "jsx": false
    },
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 0,
+    "prod": 1,
     "tests": 1
    },
    "imports": [
@@ -2449,6 +2745,12 @@
      "to": "packages/admin/src/components/index.ts",
      "typeOnly": false,
      "toShape": "barrel",
+     "toTier": null
+    },
+    {
+     "to": "packages/admin/src/api.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
      "toTier": null
     },
     {
@@ -2465,6 +2767,12 @@
     },
     {
      "to": "packages/admin/src/machines/principalSetupMachine.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "packages/admin/src/machines/schoolProvisioningMachine.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": null
@@ -2650,6 +2958,74 @@
      "typeOnly": false,
      "toShape": "contract+logic",
      "toTier": "T4"
+    }
+   ],
+   "outside": [
+    "xstate",
+    "zod"
+   ]
+  },
+  {
+   "file": "packages/admin/src/machines/schoolProvisioningMachine.ts",
+   "package": "packages/admin",
+   "folderTier": null,
+   "shape": "runtime",
+   "lines": 284,
+   "counts": {
+    "types": 6,
+    "consts": 1,
+    "constructs": 3,
+    "ambient": 0,
+    "schemas": 1,
+    "functions": 8,
+    "functionLines": 63,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "SchoolProvisioningContextSchema",
+    "SchoolProvisioningContext",
+    "initialSchoolProvisioningContext",
+    "ProvisionSchoolInput",
+    "ProvisionSchoolResult",
+    "checkSchoolHandle",
+    "provisionSchool",
+    "schoolProvisioningMachine",
+    "SchoolProvisioningMachine",
+    "SchoolProvisioningActor",
+    "createSchoolProvisioningActor",
+    "resolveSchoolDraftKey",
+    "saveSchoolDraftSnapshot",
+    "restoreSchoolDraftSnapshot",
+    "clearSchoolDraftSnapshot"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 4,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/effect/Errors.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/lib/storage.adapter.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T3"
+    },
+    {
+     "to": "packages/core/src/logic/schemas/school.schema.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T0"
     }
    ],
    "outside": [
@@ -8598,7 +8974,7 @@
      "toTier": null
     },
     {
-     "to": "packages/classroom/src/machines/schoolProvisioningMachine.ts",
+     "to": "packages/admin/src/machines/schoolProvisioningMachine.ts",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": null
@@ -8979,74 +9355,6 @@
    ],
    "outside": [
     "effect",
-    "xstate",
-    "zod"
-   ]
-  },
-  {
-   "file": "packages/classroom/src/machines/schoolProvisioningMachine.ts",
-   "package": "packages/classroom",
-   "folderTier": null,
-   "shape": "runtime",
-   "lines": 252,
-   "counts": {
-    "types": 5,
-    "consts": 1,
-    "constructs": 3,
-    "ambient": 0,
-    "schemas": 1,
-    "functions": 8,
-    "functionLines": 63,
-    "classes": 0,
-    "errorClasses": 0,
-    "mutable": 0,
-    "sideEffects": 0,
-    "reexports": 0,
-    "jsx": false
-   },
-   "exports": [
-    "SchoolProvisioningContextSchema",
-    "SchoolProvisioningContext",
-    "initialSchoolProvisioningContext",
-    "ProvisionSchoolInput",
-    "ProvisionSchoolResult",
-    "checkSchoolHandle",
-    "provisionSchool",
-    "schoolProvisioningMachine",
-    "SchoolProvisioningMachine",
-    "SchoolProvisioningActor",
-    "createSchoolProvisioningActor",
-    "resolveSchoolDraftKey",
-    "saveSchoolDraftSnapshot",
-    "restoreSchoolDraftSnapshot",
-    "clearSchoolDraftSnapshot"
-   ],
-   "unions": [],
-   "importers": {
-    "prod": 1,
-    "tests": 1
-   },
-   "imports": [
-    {
-     "to": "packages/core/src/effect/Errors.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T0"
-    },
-    {
-     "to": "packages/core/src/lib/storage.adapter.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T3"
-    },
-    {
-     "to": "packages/core/src/logic/schemas/school.schema.ts",
-     "typeOnly": false,
-     "toShape": "contract",
-     "toTier": "T0"
-    }
-   ],
-   "outside": [
     "xstate",
     "zod"
    ]
@@ -25774,7 +26082,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 6,
+    "prod": 7,
     "tests": 7
    },
    "imports": [
@@ -25807,13 +26115,13 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 117,
+   "lines": 218,
    "counts": {
-    "types": 5,
+    "types": 18,
     "consts": 3,
     "constructs": 1,
     "ambient": 0,
-    "schemas": 4,
+    "schemas": 17,
     "functions": 0,
     "functionLines": 0,
     "classes": 0,
@@ -25831,13 +26139,39 @@
     "SyncGrant",
     "AccountDeletion",
     "AccountDeletion",
+    "ProvisionSchoolInput",
+    "ProvisionSchoolInput",
+    "ProvisionSchoolResult",
+    "ProvisionSchoolResult",
+    "HandleAvailableInput",
+    "HandleAvailableInput",
+    "HandleAvailableResult",
+    "HandleAvailableResult",
+    "UpdateInstitutionInput",
+    "UpdateInstitutionInput",
+    "UpdateInstitutionResult",
+    "UpdateInstitutionResult",
+    "CreateInviteCodeInput",
+    "CreateInviteCodeInput",
+    "InviteCodeItem",
+    "InviteCodeItem",
+    "CreateInviteCodeResult",
+    "CreateInviteCodeResult",
+    "ListInviteCodesInput",
+    "ListInviteCodesInput",
+    "ListInviteCodesResult",
+    "ListInviteCodesResult",
+    "RevokeInviteCodeInput",
+    "RevokeInviteCodeInput",
+    "RevokeInviteCodeResult",
+    "RevokeInviteCodeResult",
     "appContract",
     "AppContract",
     "AppContractClient"
    ],
    "unions": [],
    "importers": {
-    "prod": 15,
+    "prod": 17,
     "tests": 5
    },
    "imports": [
@@ -25845,6 +26179,12 @@
      "to": "packages/core/src/logic/schemas/edloveUuidV8.ts",
      "typeOnly": false,
      "toShape": "contract+logic",
+     "toTier": "T0"
+    },
+    {
+     "to": "packages/core/src/logic/schemas/school.schema.ts",
+     "typeOnly": false,
+     "toShape": "contract",
      "toTier": "T0"
     }
    ],
@@ -26194,7 +26534,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 14,
+    "prod": 15,
     "tests": 6
    },
    "imports": [
@@ -28659,15 +28999,15 @@
    "package": "packages/core",
    "folderTier": "T3",
    "shape": "contract+logic",
-   "lines": 55,
+   "lines": 67,
    "counts": {
     "types": 0,
     "consts": 0,
     "constructs": 0,
     "ambient": 0,
     "schemas": 1,
-    "functions": 2,
-    "functionLines": 48,
+    "functions": 3,
+    "functionLines": 60,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -28688,6 +29028,7 @@
    "outside": [
     "node:fs",
     "node:path",
+    "yaml",
     "zod"
    ]
   },
@@ -28696,7 +29037,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 307,
+   "lines": 318,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -28732,15 +29073,15 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "runtime",
-   "lines": 115,
+   "lines": 139,
    "counts": {
     "types": 0,
     "consts": 0,
     "constructs": 0,
     "ambient": 0,
     "schemas": 0,
-    "functions": 1,
-    "functionLines": 114,
+    "functions": 2,
+    "functionLines": 139,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -28749,6 +29090,7 @@
     "jsx": false
    },
    "exports": [
+    "formatJourneyStatechart",
     "inspectHierarchyJourney"
    ],
    "unions": [],
@@ -39328,7 +39670,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 7,
+    "prod": 8,
     "tests": 1
    },
    "imports": [],
@@ -39668,7 +40010,7 @@
    "package": "packages/core",
    "folderTier": "T2",
    "shape": "contract+logic",
-   "lines": 175,
+   "lines": 177,
    "counts": {
     "types": 3,
     "consts": 2,
@@ -39676,7 +40018,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 3,
-    "functionLines": 114,
+    "functionLines": 116,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -40030,7 +40372,7 @@
    "package": "packages/core",
    "folderTier": "T5",
    "shape": "contract+logic",
-   "lines": 95,
+   "lines": 96,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -40038,7 +40380,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 61,
+    "functionLines": 62,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -40758,7 +41100,7 @@
     }
    ],
    "importers": {
-    "prod": 2,
+    "prod": 3,
     "tests": 1
    },
    "imports": [
@@ -44318,7 +44660,7 @@
    "package": "packages/core",
    "folderTier": "T0",
    "shape": "contract",
-   "lines": 135,
+   "lines": 142,
    "counts": {
     "types": 7,
     "consts": 0,
@@ -44352,7 +44694,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 7,
+    "prod": 9,
     "tests": 1
    },
    "imports": [
@@ -45159,7 +45501,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 4,
+    "prod": 6,
     "tests": 0
    },
    "imports": [
@@ -51304,7 +51646,7 @@
    "package": "packages/core",
    "folderTier": "T0",
    "shape": "contract",
-   "lines": 18,
+   "lines": 19,
    "counts": {
     "types": 2,
     "consts": 1,
@@ -51328,7 +51670,7 @@
    "unions": [
     {
      "name": "CivicRoleId",
-     "union": "'guardian'|'student'|'teacher'"
+     "union": "'guardian'|'principal'|'student'|'teacher'"
     }
    ],
    "importers": {
@@ -65324,7 +65666,7 @@
    "package": "packages/platform-mcp",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 144,
+   "lines": 165,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -68718,7 +69060,7 @@
    "package": "packages/self",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 171,
+   "lines": 167,
    "counts": {
     "types": 1,
     "consts": 0,
@@ -68726,7 +69068,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 144,
+    "functionLines": 140,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -69289,7 +69631,7 @@
    "package": "packages/self",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 163,
+   "lines": 159,
    "counts": {
     "types": 2,
     "consts": 0,
@@ -69297,7 +69639,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 143,
+    "functionLines": 139,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -81266,7 +81608,7 @@
     }
    ],
    "importers": {
-    "prod": 7,
+    "prod": 8,
     "tests": 1
    },
    "imports": [],
@@ -83576,8 +83918,8 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 134,
-    "tests": 6
+    "prod": 135,
+    "tests": 8
    },
    "imports": [
     {
@@ -94746,6 +95088,52 @@
    ],
    "outside": [
     "react-native"
+   ]
+  },
+  {
+   "file": "packages/ui/src/components/TutiiLiving.tsx",
+   "package": "packages/ui",
+   "folderTier": "T6",
+   "shape": "runtime",
+   "lines": 290,
+   "counts": {
+    "types": 1,
+    "consts": 2,
+    "constructs": 3,
+    "ambient": 2,
+    "schemas": 0,
+    "functions": 1,
+    "functionLines": 220,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": true
+   },
+   "exports": [
+    "TutiiLivingProps",
+    "TutiiLiving"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/ui/src/components/mascotTypes.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": "T6"
+    }
+   ],
+   "outside": [
+    "expo-image",
+    "react",
+    "react-native",
+    "react-native-reanimated",
+    "react-native-worklets"
    ]
   },
   {
@@ -105926,8 +106314,8 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 218,
-    "tests": 12
+    "prod": 219,
+    "tests": 13
    },
    "imports": [],
    "outside": [
@@ -105958,8 +106346,8 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 218,
-    "tests": 12
+    "prod": 219,
+    "tests": 13
    },
    "imports": [
     {
@@ -105995,8 +106383,8 @@
    "exports": [],
    "unions": [],
    "importers": {
-    "prod": 218,
-    "tests": 12
+    "prod": 219,
+    "tests": 13
    },
    "imports": [],
    "outside": [
@@ -106008,7 +106396,7 @@
    "package": "packages/ui",
    "folderTier": "T6",
    "shape": "barrel",
-   "lines": 116,
+   "lines": 118,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -106021,7 +106409,7 @@
     "errorClasses": 0,
     "mutable": 0,
     "sideEffects": 0,
-    "reexports": 68,
+    "reexports": 70,
     "jsx": false
    },
    "exports": [],
@@ -106213,6 +106601,18 @@
     },
     {
      "to": "packages/ui/src/components/FireflyMascot.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T6"
+    },
+    {
+     "to": "packages/ui/src/components/TutiiLiving.tsx",
+     "typeOnly": true,
+     "toShape": "runtime",
+     "toTier": "T6"
+    },
+    {
+     "to": "packages/ui/src/components/TutiiLiving.tsx",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T6"
@@ -107252,8 +107652,8 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
-    "tests": 0
+    "prod": 5,
+    "tests": 2
    },
    "imports": [
     {
@@ -113570,8 +113970,8 @@
     }
    ],
    "importers": {
-    "prod": 87,
-    "tests": 49
+    "prod": 89,
+    "tests": 51
    },
    "imports": [],
    "outside": [
@@ -121680,7 +122080,7 @@
    "package": "apps/gurudevi-mobile",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 104,
+   "lines": 115,
    "counts": {
     "types": 0,
     "consts": 1,
@@ -121688,7 +122088,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 86,
+    "functionLines": 96,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -121705,6 +122105,12 @@
     "tests": 1
    },
    "imports": [
+    {
+     "to": "packages/admin/src/index.ts",
+     "typeOnly": false,
+     "toShape": "barrel",
+     "toTier": null
+    },
     {
      "to": "packages/core/src/logic/index.ts",
      "typeOnly": false,
@@ -134996,15 +135402,15 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 284,
+   "lines": 354,
    "counts": {
     "types": 1,
     "consts": 0,
     "constructs": 0,
-    "ambient": 11,
+    "ambient": 18,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 267,
+    "functionLines": 337,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -135599,7 +136005,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 662,
+   "lines": 723,
    "counts": {
     "types": 2,
     "consts": 1,
@@ -135607,7 +136013,7 @@
     "ambient": 2,
     "schemas": 0,
     "functions": 3,
-    "functionLines": 636,
+    "functionLines": 695,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -135685,6 +136091,18 @@
     },
     {
      "to": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "apps/gurudevi-web/app/(sanctuary)/components/RoomAperture.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "apps/gurudevi-web/app/(sanctuary)/components/TutiiConciergeHub.tsx",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": null
@@ -136976,6 +137394,46 @@
      "toTier": "T0"
     }
    ],
+   "outside": [
+    "react"
+   ]
+  },
+  {
+   "file": "apps/gurudevi-web/app/(sanctuary)/components/RoomAperture.tsx",
+   "package": "apps/gurudevi-web",
+   "folderTier": null,
+   "shape": "runtime",
+   "lines": 39,
+   "counts": {
+    "types": 2,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 1,
+    "functionLines": 29,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": true
+   },
+   "exports": [
+    "RoomApertureKind",
+    "RoomAperture"
+   ],
+   "unions": [
+    {
+     "name": "RoomApertureKind",
+     "union": "'archive'|'book'|'canopy'|'doorway'"
+    }
+   ],
+   "importers": {
+    "prod": 3,
+    "tests": 0
+   },
+   "imports": [],
    "outside": [
     "react"
    ]
@@ -138335,6 +138793,43 @@
      "toTier": "T3"
     }
    ],
+   "outside": [
+    "react"
+   ]
+  },
+  {
+   "file": "apps/gurudevi-web/app/(sanctuary)/components/TutiiConciergeHub.tsx",
+   "package": "apps/gurudevi-web",
+   "folderTier": null,
+   "shape": "runtime",
+   "lines": 206,
+   "counts": {
+    "types": 3,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 1,
+    "functionLines": 173,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": true
+   },
+   "exports": [
+    "ConciergeOption",
+    "ConciergeStep",
+    "TutiiConciergeHubProps",
+    "TutiiConciergeHub"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 0
+   },
+   "imports": [],
    "outside": [
     "react"
    ]
@@ -140338,15 +140833,15 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 336,
+   "lines": 343,
    "counts": {
     "types": 2,
     "consts": 1,
     "constructs": 2,
-    "ambient": 0,
+    "ambient": 3,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 295,
+    "functionLines": 301,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -140366,6 +140861,12 @@
     "tests": 0
    },
    "imports": [
+    {
+     "to": "apps/gurudevi-web/lib/host-routing.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": null
+    },
     {
      "to": "packages/core/src/api/sandboxDataset.ts",
      "typeOnly": false,
@@ -140864,7 +141365,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 1799,
+   "lines": 1801,
    "counts": {
     "types": 0,
     "consts": 4,
@@ -140872,7 +141373,7 @@
     "ambient": 19,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 1722,
+    "functionLines": 1724,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -141469,7 +141970,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 188,
+   "lines": 193,
    "counts": {
     "types": 1,
     "consts": 2,
@@ -141477,7 +141978,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 165,
+    "functionLines": 170,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -142461,7 +142962,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 1161,
+   "lines": 1227,
    "counts": {
     "types": 3,
     "consts": 4,
@@ -142469,7 +142970,7 @@
     "ambient": 5,
     "schemas": 0,
     "functions": 7,
-    "functionLines": 1039,
+    "functionLines": 1104,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -142540,6 +143041,12 @@
     },
     {
      "to": "apps/gurudevi-web/app/(sanctuary)/self/components/ContourCohortDeck.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "apps/gurudevi-web/app/(sanctuary)/components/TutiiConciergeHub.tsx",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": null
@@ -143043,7 +143550,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 728,
+   "lines": 731,
    "counts": {
     "types": 1,
     "consts": 2,
@@ -143051,7 +143558,7 @@
     "ambient": 9,
     "schemas": 0,
     "functions": 3,
-    "functionLines": 614,
+    "functionLines": 616,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -143166,6 +143673,12 @@
     },
     {
      "to": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "apps/gurudevi-web/app/(sanctuary)/components/RoomAperture.tsx",
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": null
@@ -143520,15 +144033,15 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 259,
+   "lines": 265,
    "counts": {
     "types": 2,
     "consts": 0,
     "constructs": 0,
-    "ambient": 5,
+    "ambient": 7,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 241,
+    "functionLines": 246,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -143551,6 +144064,12 @@
     "tests": 0
    },
    "imports": [
+    {
+     "to": "apps/gurudevi-web/lib/host-routing.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": null
+    },
     {
      "to": "apps/gurudevi-web/lib/surface-urls.ts",
      "typeOnly": false,
@@ -144077,15 +144596,15 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 132,
+   "lines": 186,
    "counts": {
     "types": 1,
-    "consts": 0,
+    "consts": 1,
     "constructs": 0,
-    "ambient": 0,
+    "ambient": 6,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 122,
+    "functionLines": 132,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -144102,6 +144621,12 @@
     "tests": 0
    },
    "imports": [
+    {
+     "to": "apps/gurudevi-web/lib/host-routing.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": null
+    },
     {
      "to": "packages/core/src/api/planBridge.ts",
      "typeOnly": false,
@@ -144130,15 +144655,15 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 721,
+   "lines": 755,
    "counts": {
     "types": 1,
     "consts": 1,
     "constructs": 0,
-    "ambient": 2,
+    "ambient": 6,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 695,
+    "functionLines": 723,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -144155,6 +144680,12 @@
     "tests": 0
    },
    "imports": [
+    {
+     "to": "apps/gurudevi-web/lib/host-routing.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": null
+    },
     {
      "to": "packages/core/src/api/planBridge.ts",
      "typeOnly": false,
@@ -144178,6 +144709,104 @@
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T2"
+    },
+    {
+     "to": "apps/gurudevi-web/app/(sanctuary)/workspace/plan/planFloorFixtures.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    }
+   ],
+   "outside": [
+    "react"
+   ]
+  },
+  {
+   "file": "apps/gurudevi-web/app/(sanctuary)/workspace/plan/planFloorFixtures.ts",
+   "package": "apps/gurudevi-web",
+   "folderTier": null,
+   "shape": "runtime",
+   "lines": 101,
+   "counts": {
+    "types": 3,
+    "consts": 3,
+    "constructs": 0,
+    "ambient": 3,
+    "schemas": 0,
+    "functions": 0,
+    "functionLines": 0,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "PlanGradeClass",
+    "PlanEvent",
+    "PlanSettings",
+    "SAMPLE_GRADE_CLASSES",
+    "SAMPLE_EVENTS",
+    "SAMPLE_SETTINGS"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/logic/modes/schedule.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": "T2"
+    }
+   ],
+   "outside": []
+  },
+  {
+   "file": "apps/gurudevi-web/app/(sanctuary)/workspace/school/CommercialSchoolCreationModal.tsx",
+   "package": "apps/gurudevi-web",
+   "folderTier": null,
+   "shape": "runtime",
+   "lines": 286,
+   "counts": {
+    "types": 1,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 2,
+    "functionLines": 277,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": true
+   },
+   "exports": [
+    "CommercialSchoolCreationModal",
+    "EstablishedSchoolBanner"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 2,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "apps/gurudevi-web/lib/domain/adapters/school/school.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "apps/gurudevi-web/lib/domain/ports/school.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": null
     }
    ],
    "outside": [
@@ -144189,7 +144818,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 736,
+   "lines": 785,
    "counts": {
     "types": 2,
     "consts": 0,
@@ -144197,7 +144826,7 @@
     "ambient": 2,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 720,
+    "functionLines": 765,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -144235,6 +144864,12 @@
      "to": "apps/gurudevi-web/lib/domain/ports/school.port.ts",
      "typeOnly": true,
      "toShape": "contract",
+     "toTier": null
+    },
+    {
+     "to": "apps/gurudevi-web/app/(sanctuary)/workspace/school/CommercialSchoolCreationModal.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
      "toTier": null
     }
    ],
@@ -144764,15 +145399,15 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 1375,
+   "lines": 1472,
    "counts": {
     "types": 3,
     "consts": 2,
     "constructs": 0,
-    "ambient": 6,
+    "ambient": 11,
     "schemas": 0,
     "functions": 6,
-    "functionLines": 1299,
+    "functionLines": 1392,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -144915,6 +145550,30 @@
      "toTier": null
     },
     {
+     "to": "apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceUnboundWelcomeHub.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "apps/gurudevi-web/app/(sanctuary)/components/RoomAperture.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "apps/gurudevi-web/app/(sanctuary)/workspace/school/CommercialSchoolCreationModal.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "apps/gurudevi-web/lib/domain/ports/school.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": null
+    },
+    {
      "to": "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
      "typeOnly": false,
      "toShape": "runtime",
@@ -144996,6 +145655,54 @@
    "outside": [
     "@tanstack/react-router",
     "react"
+   ]
+  },
+  {
+   "file": "apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceUnboundWelcomeHub.tsx",
+   "package": "apps/gurudevi-web",
+   "folderTier": null,
+   "shape": "runtime",
+   "lines": 533,
+   "counts": {
+    "types": 1,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 2,
+    "schemas": 0,
+    "functions": 1,
+    "functionLines": 517,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": true
+   },
+   "exports": [
+    "WorkspaceUnboundWelcomeHub"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 0
+   },
+   "imports": [
+    {
+     "to": "apps/gurudevi-web/lib/domain/adapters/school/school.adapter.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "apps/gurudevi-web/lib/domain/ports/school.port.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": null
+    }
+   ],
+   "outside": [
+    "react",
+    "@tanstack/react-router"
    ]
   },
   {
@@ -146358,7 +147065,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 5,
     "tests": 1
    },
    "imports": [
@@ -147149,7 +147856,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 4,
+    "prod": 7,
     "tests": 0
    },
    "imports": [],
@@ -147307,7 +148014,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 165,
+   "lines": 166,
    "counts": {
     "types": 2,
     "consts": 6,
@@ -147767,7 +148474,7 @@
     }
    ],
    "importers": {
-    "prod": 4,
+    "prod": 9,
     "tests": 2
    },
    "imports": [],
@@ -149066,7 +149773,7 @@
     "types": 2,
     "consts": 0,
     "constructs": 0,
-    "ambient": 1,
+    "ambient": 2,
     "schemas": 0,
     "functions": 3,
     "functionLines": 97,
@@ -149824,15 +150531,15 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 33,
+   "lines": 35,
    "counts": {
     "types": 1,
     "consts": 0,
     "constructs": 0,
-    "ambient": 6,
+    "ambient": 8,
     "schemas": 0,
     "functions": 2,
-    "functionLines": 28,
+    "functionLines": 30,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -153372,7 +154079,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 28,
+   "lines": 29,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -153987,7 +154694,7 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 52,
+   "lines": 33,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -153995,7 +154702,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 1,
-    "functionLines": 37,
+    "functionLines": 18,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -154182,15 +154889,15 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 51,
+   "lines": 29,
    "counts": {
     "types": 0,
-    "consts": 3,
+    "consts": 1,
     "constructs": 1,
     "ambient": 0,
     "schemas": 0,
-    "functions": 2,
-    "functionLines": 25,
+    "functions": 1,
+    "functionLines": 17,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -154207,6 +154914,12 @@
     "tests": 0
    },
    "imports": [
+    {
+     "to": "packages/core/src/logic/places/workspaceCatalog.ts",
+     "typeOnly": false,
+     "toShape": "contract",
+     "toTier": "T2"
+    },
     {
      "to": "apps/gurudevi-web/app/(sanctuary)/workspace/school/SchoolFloor.tsx",
      "typeOnly": false,
@@ -154863,7 +155576,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 0,
+    "prod": 1,
     "tests": 0
    },
    "imports": [
@@ -155034,6 +155747,66 @@
    ]
   },
   {
+   "file": "apps/gurudevi-web/spa/surface/devSurface.tsx",
+   "package": "apps/gurudevi-web",
+   "folderTier": null,
+   "shape": "runtime",
+   "lines": 58,
+   "counts": {
+    "types": 0,
+    "consts": 3,
+    "constructs": 0,
+    "ambient": 2,
+    "schemas": 0,
+    "functions": 2,
+    "functionLines": 25,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "Surface",
+    "sources",
+    "commands",
+    "accountHome"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 0,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "apps/gurudevi-web/lib/host-routing.ts",
+     "typeOnly": false,
+     "toShape": "contract+logic",
+     "toTier": null
+    },
+    {
+     "to": "apps/gurudevi-web/spa/surface/account.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "apps/gurudevi-web/spa/surface/explore.tsx",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
+    },
+    {
+     "to": "apps/gurudevi-web/spa/surface/sources.ts",
+     "typeOnly": true,
+     "toShape": "contract",
+     "toTier": null
+    }
+   ],
+   "outside": []
+  },
+  {
    "file": "apps/gurudevi-web/spa/surface/explore.tsx",
    "package": "apps/gurudevi-web",
    "folderTier": null,
@@ -155062,7 +155835,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 0,
+    "prod": 1,
     "tests": 2
    },
    "imports": [
@@ -155309,7 +156082,7 @@
    ],
    "unions": [],
    "importers": {
-    "prod": 3,
+    "prod": 4,
     "tests": 2
    },
    "imports": [
@@ -155456,12 +156229,12 @@
    "package": "apps/gurudevi-web",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 129,
+   "lines": 157,
    "counts": {
     "types": 0,
     "consts": 0,
     "constructs": 0,
-    "ambient": 11,
+    "ambient": 20,
     "schemas": 0,
     "functions": 1,
     "functionLines": 51,
@@ -155834,7 +156607,7 @@
    "package": "apps/sanctuary-api",
    "folderTier": null,
    "shape": "contract+logic",
-   "lines": 116,
+   "lines": 119,
    "counts": {
     "types": 3,
     "consts": 1,
@@ -155842,7 +156615,7 @@
     "ambient": 0,
     "schemas": 0,
     "functions": 4,
-    "functionLines": 90,
+    "functionLines": 93,
     "classes": 0,
     "errorClasses": 0,
     "mutable": 0,
@@ -156162,7 +156935,7 @@
    "package": "apps/sanctuary-api",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 91,
+   "lines": 131,
    "counts": {
     "types": 0,
     "consts": 0,
@@ -156185,7 +156958,7 @@
    "unions": [],
    "importers": {
     "prod": 3,
-    "tests": 3
+    "tests": 4
    },
    "imports": [
     {
@@ -156193,6 +156966,12 @@
      "typeOnly": false,
      "toShape": "runtime",
      "toTier": "T2"
+    },
+    {
+     "to": "apps/sanctuary-api/src/institutions/institutions.ts",
+     "typeOnly": false,
+     "toShape": "runtime",
+     "toTier": null
     },
     {
      "to": "apps/sanctuary-api/src/platform.ts",
@@ -156316,11 +157095,58 @@
    "outside": []
   },
   {
+   "file": "apps/sanctuary-api/src/institutions/institutions.ts",
+   "package": "apps/sanctuary-api",
+   "folderTier": null,
+   "shape": "runtime",
+   "lines": 340,
+   "counts": {
+    "types": 0,
+    "consts": 0,
+    "constructs": 0,
+    "ambient": 0,
+    "schemas": 0,
+    "functions": 7,
+    "functionLines": 328,
+    "classes": 0,
+    "errorClasses": 0,
+    "mutable": 0,
+    "sideEffects": 0,
+    "reexports": 0,
+    "jsx": false
+   },
+   "exports": [
+    "checkHandleAvailable",
+    "provisionInstitution",
+    "updateInstitution",
+    "createInviteCode",
+    "listInviteCodes",
+    "revokeInviteCode"
+   ],
+   "unions": [],
+   "importers": {
+    "prod": 1,
+    "tests": 1
+   },
+   "imports": [
+    {
+     "to": "packages/core/src/api/v1/contract.ts",
+     "typeOnly": true,
+     "toShape": "runtime",
+     "toTier": "T2"
+    }
+   ],
+   "outside": [
+    "@orpc/server",
+    "node:crypto"
+   ]
+  },
+  {
    "file": "apps/sanctuary-api/src/modules/catalog.ts",
    "package": "apps/sanctuary-api",
    "folderTier": null,
    "shape": "runtime",
-   "lines": 202,
+   "lines": 294,
    "counts": {
     "types": 8,
     "consts": 7,

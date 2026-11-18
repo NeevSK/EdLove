@@ -7,6 +7,7 @@ export const Route = createFileRoute('/_app/self')({
   head: () => ({ meta: [{ title: 'Self | Gurudevi Sanctuary' }] }),
   validateSearch: z.object({
     practice: z.enum(['breath', 'journal']).optional().catch(undefined),
+    intro: z.string().optional().catch(undefined),
   }),
   component: SelfScreen,
 });

@@ -379,7 +379,7 @@ function measureMetrics() {
   };
 }
 
-function main() {
+async function main() {
   const isUpdate = process.argv.includes('--update');
 
   console.log('\n>>> Polymath Architectural Ratchet Gate <<<');
@@ -471,7 +471,13 @@ function main() {
   }
 
   if (isUpdate) {
-    writeFileSync(RATCHET_FILE, JSON.stringify(updated, null, 2) + '\n');
+    try {
+      writeFileSync(RATCHET_FILE, JSON.stringify(updated, null, 2) + '\n');
+    } catch {
+      const tmpFile = RATCHET_FILE + '.tmp';
+      writeFileSync(tmpFile, JSON.stringify(updated, null, 2) + '\n');
+      execSync(`powershell -Command "Move-Item -Force '${tmpFile}' '${RATCHET_FILE}'"`);
+    }
     console.log('\n[PASS] Ratchet ceilings successfully locked into tooling/ratchet.json!');
   } else if (canRatchetDown) {
     console.log('\n[PASS] Metrics have improved! Run `node scripts/ratchet.mjs --update` to lock in the new lower ceiling.');

@@ -14,6 +14,8 @@
     "lint:biome": "node ../../scripts/scoped-biome.mjs",
     "lint:eslint": "eslint .",
     "check-types": "tsc --noEmit",
+    "test:routes": "node scripts/state-graph-crawler.mjs --mode=smoke --evidence-level G4",
+    "test:tree": "node scripts/state-graph-crawler.mjs --evidence-level G4",
     "test:g1:self-floor": "node ../../scripts/run-and-report.mjs --cmd \"vitest run tests/integration/selfFloor.test.tsx\" --name \"apps_gurudevi-web-test_g1_self_floor\" --evidence-level G1",
     "test:g1:self-journal": "node ../../scripts/run-and-report.mjs --cmd \"vitest run tests/integration/selfFloor.test.tsx\" --name \"apps_gurudevi-web-test_g1_self_floor\" --evidence-level G1",
     "test:g1:workspace-practice": "node ../../scripts/run-and-report.mjs --cmd \"vitest run lib/workspace/attendance.test.ts tests/integration/workspacePractice.test.tsx\" --name \"apps_gurudevi-web-test_g1_workspace_practice\" --evidence-level G1",
@@ -22,7 +24,9 @@
     "test:e2e:ui": "node ../../scripts/run-and-report.mjs --cmd \"playwright test --ui\" --name \"apps_gurudevi-web-test_e2e_ui\" --evidence-level G4",
     "test:e2e:headed": "node ../../scripts/run-and-report.mjs --cmd \"playwright test --headed\" --name \"apps_gurudevi-web-test_e2e_headed\" --evidence-level G4",
     "test:e2e:mobile": "node ../../scripts/run-and-report.mjs --cmd \"playwright test --project=mobile-chrome --project=mobile-safari\" --name \"apps_gurudevi-web-test_e2e_mobile\" --evidence-level G4",
-    "test:e2e:desktop": "node ../../scripts/run-and-report.mjs --cmd \"playwright test --project=desktop-chrome\" --name \"apps_gurudevi-web-test_e2e_desktop\" --evidence-level G4"
+    "test:e2e:desktop": "node ../../scripts/run-and-report.mjs --cmd \"playwright test --project=desktop-chrome\" --name \"apps_gurudevi-web-test_e2e_desktop\" --evidence-level G4",
+    "test:flows": "node scripts/agentic-flow-runner.mjs --all",
+    "audit:pjc-coverage": "node ../../scripts/audit-pjc-bidirectional-coverage.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -48,6 +52,9 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@browserbasehq/stagehand": "^4.4.0",
+    "@midscene/web": "^1.18.1",
     "@playwright/test": "^1.64.1",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
@@ -63,6 +70,7 @@
     "dotenv": "^18.0.9",
     "eslint": "^10.14.0",
     "postcss": "^8.5.32",
+    "puppeteer-core": "^25.17.0",
     "tailwindcss": "4.3.4",
     "typescript": "7.1.0-beta",
     "vite": "8.3.5",

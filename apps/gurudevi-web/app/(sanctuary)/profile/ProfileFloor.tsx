@@ -1112,6 +1112,7 @@ export function ProfileFloor({
                       >
                         <select
                           className={styles.formInput}
+                          aria-label="Link Platform"
                           style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem' }}
                           value={newLinkPlatform}
                           onChange={(e) => setNewLinkPlatform(e.target.value)}
@@ -1125,6 +1126,7 @@ export function ProfileFloor({
                         <input
                           type="url"
                           placeholder="https://..."
+                          aria-label="Link URL"
                           className={styles.formInput}
                           style={{
                             flex: 1,

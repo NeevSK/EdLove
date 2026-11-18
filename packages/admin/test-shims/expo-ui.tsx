@@ -12,5 +12,6 @@ export const LinearGradient = host('LinearGradient');
 export const Path = host('Path');
 export const Rect = host('Rect');
 export const Svg = host('Svg');
+export const GlassView = host('GlassView');
 
 export default LinearGradient;

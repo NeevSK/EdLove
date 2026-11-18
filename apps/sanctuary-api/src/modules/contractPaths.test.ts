@@ -16,10 +16,19 @@ describe('contract paths', () => {
     expect(procedurePaths(appContract)).toEqual([
       'authority.refreshSnapshot',
       'identity.createInitialBond',
+      'identity.deletion.cancel',
+      'identity.deletion.request',
+      'identity.deletion.status',
       'identity.entry',
       'identity.scopes',
       'identity.session',
-      'identity.syncCredentials',
+      'identity.syncGrant',
+      'ops.institutions.createInviteCode',
+      'ops.institutions.handleAvailable',
+      'ops.institutions.listInviteCodes',
+      'ops.institutions.provision',
+      'ops.institutions.revokeInviteCode',
+      'ops.institutions.update',
     ]);
   });
 

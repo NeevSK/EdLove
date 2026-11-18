@@ -90,7 +90,7 @@ export function TeacherWorkspaceFloor({
                 <span className={styles.pulseDot} />
                 Period 2 · In Session
               </span>
-              <span style={{ fontSize: '0.8rem', color: 'var(--w-ink-muted)' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--w-ink-soft, #475569)' }}>
                 08:45 AM - 09:30 AM
               </span>
             </div>

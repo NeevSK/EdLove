@@ -31,22 +31,29 @@ export const SchoolSchema = makeModelSchema('School')
  * (private, international, tuition) are created by their owner. More kinds, such as a
  * sanctuary, join this list when they exist. Not stored on `School` yet: the model has no column.
  */
-export const SchoolKindSchema = z.enum(['institutional', 'commercial']);
+export const SchoolKindSchema = z.enum([
+  'institutional',
+  'commercial',
+  'higher_ed',
+  'not_for_profit',
+  'sanctuary',
+]);
 export type SchoolKind = z.infer<typeof SchoolKindSchema>;
 
 /**
  * The stage of schooling a school covers, within its kind: one list for every path that
- * collects it (the union of what the provisioning and principal setup machines used). Stored
- * in `School.type`, a free-text column.
+ * collects it. Stored in `School.type`, a free-text column.
  */
 export const SchoolLevelSchema = z.enum([
-  'k12',
+  'pre_school',
   'primary',
   'secondary',
-  'mixed',
-  'vocational',
+  'collegiate',
+  'k12',
   'higher_ed',
-  // From principal setup's list; may move to `SchoolKindSchema` when sanctuary becomes a kind.
+  'vocational',
+  'tuition_center',
+  'mixed',
   'sanctuary',
 ]);
 export type SchoolLevel = z.infer<typeof SchoolLevelSchema>;

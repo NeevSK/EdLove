@@ -74,6 +74,27 @@ export class ScoutService {
     }
 
     try {
+      const c4Path = path.resolve('docs/architecture/model/gurudevi.c4');
+      const c4Grep = runCommand('rg', [
+        '-i',
+        '-C',
+        '2',
+        query,
+        c4Path,
+      ]);
+      const c4Matches = c4Grep.stdout.trim();
+      if (c4Matches) {
+        report.highlights?.push({
+          title: 'LikeC4 Architecture Model Matches',
+          content: c4Matches,
+          language: 'likec4',
+        });
+      }
+    } catch {
+      // No architecture matches found
+    }
+
+    try {
       const grepResult = runCommand('rg', [
         '--line-number',
         '--column',

@@ -55,6 +55,17 @@ const journeyStep = z.strictObject({
   title: z.string().min(1),
   interaction: z.string().min(1),
   terminal: z.boolean(),
+  purpose: z.enum([
+    'on_ramp',
+    'input_form',
+    'preview_confirm',
+    'sub_detail',
+    'terminal_success',
+  ]).optional(),
+  presentation: z.strictObject({
+    compact: z.enum(['push', 'sheet', 'modal', 'panel', 'replace']).optional(),
+    regular: z.enum(['push', 'sheet', 'modal', 'panel', 'replace']).optional(),
+  }).optional(),
   links,
 });
 const journeyTransition = z.strictObject({

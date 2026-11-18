@@ -502,21 +502,23 @@ under each value.
   (L7) carries the PJC transition ID whose feedback it renders. A check can then report PJC
   transitions with no runtime implementation, and runtime steps with no spec.
 
-## 6. School creation: resolved (2026-11-13)
+## 6. School creation & connection: resolved (2026-11-17)
 
 **The main path is connecting, not creating** (Neev). Institutional schools (government and the
 like) already exist in the national registry (`EduSchool`, with the official classification in
 `constants/SriLankanSchools.ts`). A principal chooses one and asks to connect, or accepts an
 invitation, and the request waits for review: PJC `feature:admin.school_connection`. Creating a
-school from scratch is the secondary path, for commercial schools (private, international, tuition).
+school from scratch is the secondary path, for commercial schools (private, international, tuition,
+higher-ed, and sanctuaries).
 
 | Piece | State |
 | --- | --- |
-| One contract (`core/logic/schemas/school.schema.ts`) | `SchoolKindSchema` (institutional, commercial; more, such as sanctuary, when they exist) and `SchoolLevelSchema` (the union of both machines' lists, Neev's choice). Both machines use it; neither keeps its own enum. Kind has no `School` column yet (L0) |
-| `classroom/machines/schoolProvisioningMachine.ts` | The commercial creation machine. Runs its own server calls through two ports (`checkHandle`, `provision`). Creation is **one** server command, with the school, the founder bond and the group made together; the idempotency key is made once per submission and reused on retry. Until v1 admits `school.handleAvailable` and `school.provision`, it fails as not admitted: no direct database writes. Before, nothing ever checked the handle, and the runner made three separate client writes |
+| One contract (`core/logic/schemas/school.schema.ts`) | `SchoolKindSchema` (`institutional`, `commercial`, `higher_ed`, `not_for_profit`, `sanctuary`) and `SchoolLevelSchema` (`pre_school`, `primary`, `secondary`, `collegiate`, `k12`, `higher_ed`, `vocational`, `tuition_center`, `mixed`, `sanctuary`). Both machines and API contracts use it; neither keeps its own enum. |
+| `admin/machines/schoolProvisioningMachine.ts` | The commercial creation machine. Relocated to `@repo/admin` (where school management belongs, cleanly eliminating circular dependencies; re-exported from `@repo/classroom`). Runs its own server calls through two ports (`checkHandle`, `provision`). Creation is **one** atomic server command, with the school, the founder bond and the group made together; the idempotency key is made once per submission and reused on retry. In-flight checks cancel cleanly on field edits. |
+| `admin/components/school/SchoolConnectionWelcome.tsx` | Sovereign welcome surface mounted when a signed-in account visits the workspace without an active school role. Offers clear pathways: National School Registry search/connect, Independent & Studio establishment form (driven by `schoolProvisioningMachine`), and return to personal sanctuary. |
+| `sanctuary-api/institutions/institutions.ts` | Implements v1 Sanctuary API procedures `ops.institutions.handleAvailable` (checks uniqueness across `schools.handle`) and `ops.institutions.provision` (atomic transaction across `schools`, `bonds`, and `community_groups` with savepoints and idempotency check). |
 | `admin/machines/principalSetupMachine.ts` | Kept separate (Neev). It collects a profile and shows "activated" without creating anything; it is not reached from any app |
 | `core/hooks/useSchoolCreation.ts` | Kept for later (Neev): the draft's location, demographics and grade fields aren't in the `School` model; the registry (`EduSchool`) holds them for institutional schools |
-| Owed (API, Neev) | v1: registry search, connection request and invitation accept (the main path); `school.handleAvailable` and `school.provision` (commercial) |
 
 ## 6a. Machines audit (2026-11-13)
 

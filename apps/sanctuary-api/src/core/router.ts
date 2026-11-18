@@ -1,6 +1,14 @@
 import { implement, ORPCError } from '@orpc/server';
 import { appContract } from '@repo/core/api/v1/contract';
 import type { PoolClient } from 'pg';
+import {
+  checkHandleAvailable,
+  createInviteCode,
+  listInviteCodes,
+  provisionInstitution,
+  revokeInviteCode,
+  updateInstitution,
+} from '../institutions/institutions';
 import type { Platform } from '../platform';
 import {
   cancelAccountDeletion,
@@ -86,5 +94,37 @@ export const router = api.router({
         signal ?? AbortSignal.timeout(5000),
       ),
     ),
+  },
+  ops: {
+    institutions: {
+      handleAvailable: api.ops.institutions.handleAvailable.handler(({ input, context, signal }) =>
+        asAccount(context, signal, (db) => checkHandleAvailable(db, input)),
+      ),
+      provision: api.ops.institutions.provision.handler(({ input, context, signal }) =>
+        asAccount(context, signal, (db) =>
+          provisionInstitution(db, context.identity.accountId, input),
+        ),
+      ),
+      update: api.ops.institutions.update.handler(({ input, context, signal }) =>
+        asAccount(context, signal, (db) =>
+          updateInstitution(db, context.identity.accountId, input),
+        ),
+      ),
+      createInviteCode: api.ops.institutions.createInviteCode.handler(({ input, context, signal }) =>
+        asAccount(context, signal, (db) =>
+          createInviteCode(db, context.identity.accountId, input),
+        ),
+      ),
+      listInviteCodes: api.ops.institutions.listInviteCodes.handler(({ input, context, signal }) =>
+        asAccount(context, signal, (db) =>
+          listInviteCodes(db, context.identity.accountId, input),
+        ),
+      ),
+      revokeInviteCode: api.ops.institutions.revokeInviteCode.handler(({ input, context, signal }) =>
+        asAccount(context, signal, (db) =>
+          revokeInviteCode(db, context.identity.accountId, input),
+        ),
+      ),
+    },
   },
 });
