@@ -192,3 +192,6 @@ apps/gurudevi-mobile/reports/
 
 # World fonts built by scripts/fonts/build-world-fonts.py that do not ship yet
 .world-fonts/
+
+.vercel
+.env*
