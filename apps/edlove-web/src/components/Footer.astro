@@ -2,62 +2,84 @@
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="py-8 mt-12 bg-[var(--color-midnightInk)] text-[var(--color-warmPaper)]/90 border-t border-white/5">
+<footer class="py-16 mt-20 bg-[var(--color-primaryInk)] text-[var(--color-warmPaper)] border-t border-white/10">
     <div class="sanctuary-container">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-20">
-            <!-- Brand Part: Icon Only -->
-            <div class="md:col-span-4 space-y-10">
-                <span class="text-4xl">🕊️</span>
-                <p class="font-serif text-2xl text-[var(--color-warmPaper)]/60 leading-relaxed italic">
-                    "Nurturing the soul of learning."
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16">
+            <!-- Brand Part -->
+            <div class="md:col-span-4 space-y-6">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">&#128330;&#65039;</span>
+                    <span class="font-heading text-2xl font-bold tracking-tight text-[var(--color-warmPaper)]">EdLove</span>
+                </div>
+                <p class="font-serif text-lg text-[var(--color-warmPaper)] leading-relaxed italic">
+                    "Giving love to the next generation, for flourishing in their environment and developing themselves."
                 </p>
+                <div class="pt-1 text-sm font-medium text-[var(--color-warmPaper)]/80">
+                    Not-for-profit &middot; Non-governmental
+                </div>
             </div>
 
-            <!-- Links Grid -->
-            <div class="md:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-8">
+            <!-- Constellation Links Grid -->
+            <div class="md:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+                <!-- Foundation -->
                 <div>
-                    <span class="font-sans text-sm uppercase tracking-[0.2em] font-bold text-[var(--color-gold)] mb-8 block">Exploration</span>
-                    <ul class="space-y-4">
-                        <li><a href="/focus" class="font-serif text-lg text-[var(--color-warmPaper)]/70 hover:text-[var(--color-gold)] transition-colors">Our Focus</a></li>
-                        <li><a href="/cosmos" class="font-serif text-lg text-[var(--color-warmPaper)]/70 hover:text-[var(--color-gold)] transition-colors">Cosmos</a></li>
-                        <li><a href="/vision" class="font-serif text-lg text-[var(--color-warmPaper)]/70 hover:text-[var(--color-gold)] transition-colors">Vision</a></li>
-                        <li><a href="/library" class="font-serif text-lg text-[var(--color-warmPaper)]/70 hover:text-[var(--color-gold)] transition-colors">Library</a></li>
+                    <span class="font-heading text-sm font-bold text-[#E5B54F] mb-6 block">Foundation</span>
+                    <ul class="space-y-3">
+                        <li><a href="/foundation" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Epistemic Core</a></li>
+                        <li><a href="/about" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="/team" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Our Team</a></li>
+                        <li><a href="/contact" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Contact</a></li>
                     </ul>
                 </div>
 
+                <!-- EdResearch -->
                 <div>
-                     <span class="font-sans text-sm uppercase tracking-[0.2em] font-bold text-[var(--color-gold)] mb-8 block">Sanctuary</span>
-                     <ul class="space-y-4">
-                         <li><a href="/community" class="font-serif text-lg text-[var(--color-warmPaper)]/70 hover:text-[var(--color-gold)] transition-colors">Sangha</a></li>
-                         <li><a href="/resources" class="font-serif text-lg text-[var(--color-warmPaper)]/70 hover:text-[var(--color-gold)] transition-colors">Resources</a></li>
-                         <li><a href="https://gurudevi.edlove.org" target="_blank" rel="noopener noreferrer" class="font-serif text-lg text-[var(--color-warmPaper)]/70 hover:text-[var(--color-gold)] transition-colors">Gurudevi</a></li>
-                     </ul>
+                    <span class="font-heading text-sm font-bold text-[#E5B54F] mb-6 block">EdResearch</span>
+                    <ul class="space-y-3">
+                        <li><a href="/research" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Two Orders</a></li>
+                        <li><a href="/research/cosmos" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Cosmos</a></li>
+                        <li><a href="/research/sri-lanka" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Sri Lanka</a></li>
+                        <li><a href="/research/library" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Library</a></li>
+                        <li><a href="/resources" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Resources</a></li>
+                    </ul>
                 </div>
 
-                <div class="col-span-2 md:col-span-1">
-                     <span class="font-sans text-sm uppercase tracking-[0.2em] font-bold text-[var(--color-gold)] mb-8 block">Presence</span>
-                     <div class="flex gap-6">
-                        <a href="/library" class="text-[var(--color-warmPaper)]/40 hover:text-[var(--color-gold)] transition-colors">Library</a>
-                        <a href="/feed.xml" class="text-[var(--color-warmPaper)]/40 hover:text-[var(--color-gold)] transition-colors">RSS</a>
-                     </div>
+                <!-- EdCare -->
+                <div>
+                    <span class="font-heading text-sm font-bold text-[#E5B54F] mb-6 block">EdCare</span>
+                    <ul class="space-y-3">
+                        <li><a href="/care" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Outward Giving</a></li>
+                        <li><a href="/care#edkind" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">EdKind</a></li>
+                        <li><a href="/care#edlife" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">EdLife</a></li>
+                        <li><a href="/care/sangha" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">The Sangha</a></li>
+                    </ul>
+                </div>
+
+                <!-- EdTech & Presence -->
+                <div>
+                    <span class="font-heading text-sm font-bold text-[#E5B54F] mb-6 block">EdTech & Writing</span>
+                    <ul class="space-y-3">
+                        <li><a href="/tech" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Convivial Tools</a></li>
+                        <li><a href="/tech/innovations" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">200 Innovations</a></li>
+                        <li><a href="/tech/gurudevi" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Gurudevi Sanctuary</a></li>
+                        <li><a href="/journal" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Journal</a></li>
+                        <li><a href="/feed.xml" class="font-serif text-[15px] text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">RSS</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
 
-        <div class="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-end gap-8">
-            <div class="flex flex-col gap-3 scale-90 md:scale-100 origin-left">
-                <a href="https://intuituilabs.edlove.org" target="_blank" rel="noopener noreferrer" class="font-sans text-xs uppercase tracking-[0.3em] font-bold text-[var(--color-gold)] drop-shadow-[0_0_8px_rgba(231,203,22,0.4)] hover:opacity-80 transition-opacity">
-                    built with 💖 Intuitui Labs
-                </a>
-                <p class="font-sans text-xs uppercase tracking-[0.2em] font-medium text-[var(--color-warmPaper)]/40">
-                    © {currentYear} EdLove Platform • Colombo, Sri Lanka
-                </p>
-            </div>
-            <div class="flex gap-8 pb-1">
-                 <a href="/privacy" class="font-sans text-xs uppercase tracking-[0.2em] font-medium text-[var(--color-warmPaper)]/40 hover:text-[var(--color-warmPaper)]">Privacy</a>
-                 <a href="/terms" class="font-sans text-xs uppercase tracking-[0.2em] font-medium text-[var(--color-warmPaper)]/40 hover:text-[var(--color-warmPaper)]">Terms</a>
+        <div class="mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <p class="font-heading text-sm font-medium text-[var(--color-warmPaper)]/90">
+                &copy; {currentYear} EdLove Foundation
+            </p>
+            <div class="flex flex-wrap gap-6 pb-1">
+                 <a href="/about" class="font-heading text-sm font-medium text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">About</a>
+                 <a href="/team" class="font-heading text-sm font-medium text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Team</a>
+                 <a href="/contact" class="font-heading text-sm font-medium text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Contact</a>
+                 <a href="/privacy" class="font-heading text-sm font-medium text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Privacy</a>
+                 <a href="/terms" class="font-heading text-sm font-medium text-[var(--color-warmPaper)]/90 hover:text-white transition-colors">Terms</a>
             </div>
         </div>
     </div>
-
 </footer>

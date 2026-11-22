@@ -21,17 +21,17 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.12",
-    "@astrojs/sitemap": "^3.7.4",
-    "@astrojs/starlight": "^0.42.9",
-    "@astrojs/svelte": "^9.1.2",
+    "@astrojs/sitemap": "^3.7.6",
+    "@astrojs/starlight": "^0.43.1",
+    "@astrojs/svelte": "^9.1.6",
     "@intuitui-labs/a11y-gate": "^0.2.0",
     "@repo/editorial": "workspace:*",
-    "@tailwindcss/vite": "^4.3.4",
+    "@tailwindcss/vite": "^4.3.5",
     "@types/three": "^0.187.0",
-    "astro": "^7.4.5",
+    "astro": "^7.4.13",
     "pagefind": "^1.6.0",
-    "svelte": "^5.57.3",
-    "tailwindcss": "4.3.4",
+    "svelte": "^5.59.1",
+    "tailwindcss": "4.3.5",
     "three": "^0.187.0",
     "typescript": "7.1.0-beta"
   },
@@ -39,9 +39,9 @@
     "@astrojs/ts-content-mapper": "0.2.0",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "eslint": "^10.14.0",
+    "eslint": "^10.15.0",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "5.1.0"
+    "vitest": "5.1.1"
   },
   "_originalScripts": {
     "dev": "pnpm exec astro dev",

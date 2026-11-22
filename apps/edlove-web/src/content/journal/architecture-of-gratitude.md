@@ -11,8 +11,8 @@ language: "en"
 topics: [gift-economy, thuthimal, teacher-patronage, reciprocal-care, economics]
 publishDate: 2026-09-02
 readingTime: 4
-canonicalUrl: "https://gurudevi.edlove.org/journal/architecture-of-gratitude"
-source: "https://gurudevi.edlove.org/journal/architecture-of-gratitude"
+canonicalUrl: "https://edlove.org/journal/architecture-of-gratitude"
+source: "https://edlove.org/journal/architecture-of-gratitude"
 license: "CC BY-SA 4.0"
 distribution:
   channels: [rss, linkedin]

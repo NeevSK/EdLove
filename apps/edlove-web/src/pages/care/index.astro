@@ -1,0 +1,138 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CinematicBackground from '../../components/CinematicBackground.astro';
+import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
+import { absoluteUrl } from '../../lib/site';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'EdCare — EdLove Foundation',
+  description: 'EdCare is the arm of EdLove that gives outward: EdKind (material support) and EdLife (human development).',
+  url: absoluteUrl('/care'),
+};
+---
+
+<Layout 
+  title="EdCare — EdLove Foundation"
+  description="EdCare is the outward giving arm of EdLove Foundation: EdKind (material support) and EdLife (human development)."
+  structuredData={structuredData}
+>
+  <div class="relative min-h-screen text-[var(--color-primaryInk)] pt-32 pb-32 overflow-hidden">
+    <CinematicBackground />
+
+    <article class="sanctuary-container relative z-10 max-w-4xl mx-auto px-6 sm:px-8 space-y-24">
+      
+      <!-- Minimalist Header in Pure Typographic Presence -->
+      <header class="pt-8 sm:pt-14 space-y-6 text-center animate-fade-in-up">
+        <h1 class="text-4xl sm:text-6xl md:text-7xl font-serif font-light text-[var(--color-primaryInk)] tracking-tight leading-[1.08]">
+          Giving Outward.
+        </h1>
+
+        <p class="font-serif italic text-xl sm:text-2xl text-[var(--color-mutedInk)] leading-relaxed max-w-2xl mx-auto">
+          &ldquo;One criterion: EdKind changes what you have; EdLife changes what you can do.&rdquo;
+        </p>
+      </header>
+
+      <!-- The Core Distinction (Integrated Editorial Flow) -->
+      <section class="border-y border-[var(--color-primaryInk)]/12 py-16 space-y-12 animate-fade-in-up delay-100">
+        <div class="prose-drop-cap font-serif text-xl sm:text-2xl text-[var(--color-primaryInk)] leading-[1.75] space-y-6">
+          <p>
+            Giving is often ruined by condescension or transaction: a donor demands naming rights, a foundation imposes compliance metrics, or charity creates perpetual dependency. EdLove approaches giving not as philanthropy, but as reciprocal stewardship of life.
+          </p>
+          <p class="text-lg sm:text-xl text-[var(--color-secondaryInk)] leading-relaxed">
+            EdCare is the arm that reaches outward to the world. It holds two distinct modes, separated by a single, rigorous ontological criterion:
+          </p>
+        </div>
+
+        <!-- The Two Modes Detailed (2-Column Architectural Split) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 pt-4">
+          
+          <!-- EdKind -->
+          <div id="edkind" class="space-y-4 border-t-2 border-[var(--color-gold)] pt-6 scroll-mt-28">
+            <div class="flex items-center justify-between text-sm font-heading">
+              <span class="font-semibold text-[var(--color-gold)] uppercase tracking-wider">Mode I &middot; Material Solidarity</span>
+              <span class="text-[var(--color-mutedInk)]">What one has</span>
+            </div>
+
+            <h2 class="text-2xl sm:text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+              EdKind
+            </h2>
+
+            <p class="font-serif text-base sm:text-lg text-[var(--color-secondaryInk)] leading-relaxed">
+              <em>In kind</em> is the ancient term for non-cash giving: tangible goods, food, books, desks, solar infrastructure, and essential equipment. Etymologically, <em>kind</em> grows from the Old English <em>gecynd</em> and <em>gecynde</em>—meaning "nature, origin, kin."
+            </p>
+
+            <p class="font-serif text-base sm:text-lg text-[var(--color-secondaryInk)] leading-relaxed">
+              EdKind gives in kind; it connects those with abundance to those facing scarcity with zero bureaucracy and maximum dignity. Goods and their physical logistics belong strictly to EdKind.
+            </p>
+          </div>
+
+          <!-- EdLife -->
+          <div id="edlife" class="space-y-4 border-t-2 border-[var(--color-gold)] pt-6 scroll-mt-28">
+            <div class="flex items-center justify-between text-sm font-heading">
+              <span class="font-semibold text-[var(--color-gold)] uppercase tracking-wider">Mode II &middot; Human Development</span>
+              <span class="text-[var(--color-mutedInk)]">What one can do</span>
+            </div>
+
+            <h2 class="text-2xl sm:text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+              EdLife
+            </h2>
+
+            <p class="font-serif text-base sm:text-lg text-[var(--color-secondaryInk)] leading-relaxed">
+              EdLife is the work of human becoming: mentoring, teaching, cultivating, and grooming teachers and learners into their fullest agency. This is not charity—it is deep, relational developmental labor.
+            </p>
+
+            <p class="font-serif text-base sm:text-lg text-[var(--color-secondaryInk)] leading-relaxed">
+              Where services teach or build human capacity, they belong to EdLife. EdKind alters the material baseline; EdLife expands the horizon of what human beings can accomplish together.
+            </p>
+          </div>
+
+        </div>
+
+        <blockquote class="my-8 p-8 border-l-4 border-[var(--color-gold)] bg-white/40 space-y-2">
+          <span class="text-sm font-heading font-bold text-[var(--color-secondaryInk)] uppercase tracking-wider block">The Boundary Principle</span>
+          <p class="font-serif text-lg text-[var(--color-primaryInk)] leading-relaxed">
+            In-kind giving frequently touches services. Under the canonical EdLove boundary: <strong class="text-[var(--color-primaryInk)]">services that teach belong to EdLife; physical goods and their logistics belong to EdKind.</strong> EdKind gives in kind; EdLife gives in capacity.
+          </p>
+        </blockquote>
+      </section>
+
+      <!-- Connected Surfaces -->
+      <section class="space-y-10">
+        <div class="space-y-2">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">Living Manifestations</span>
+          <h2 class="text-3xl sm:text-4xl font-heading font-bold text-[var(--color-primaryInk)]">
+            Community &amp; Non-Extractive Models
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 border-t border-b border-[var(--color-primaryInk)]/12 sm:divide-x sm:divide-[var(--color-primaryInk)]/12">
+          <a href="/care/sangha" class="group p-8 space-y-4 hover:bg-white/40 transition-colors">
+            <span class="text-sm font-heading font-semibold text-[var(--color-gold)] block">Human Gathering</span>
+            <h4 class="font-heading font-bold text-2xl text-[var(--color-primaryInk)] group-hover:text-[var(--color-secondaryInk)] transition-colors">The Sangha</h4>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">
+              Circles of trust, educator fellowship, and decentralized communities honoring education as a form of love.
+            </p>
+          </a>
+
+          <div class="p-8 space-y-4">
+            <span class="text-sm font-heading font-semibold text-[var(--color-gold)] block">Living Solidarity</span>
+            <h4 class="font-heading font-bold text-2xl text-[var(--color-primaryInk)]">EdKind &amp; EdLife Praxis</h4>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">
+              Direct, unbureaucratic material aid (EdKind) and human developmental capacity (EdLife) flowing directly to classrooms. Looking for the <a href="/tech/innovations" class="font-semibold text-[var(--color-primaryInk)] underline hover:text-[var(--color-secondaryInk)]">200 Global Innovations Archive &rarr;</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Provenance -->
+      <ProvenanceColophon 
+        version="Canonical EdCare v1.0"
+        canonicalUrl="https://edlove.org/care"
+        readingTime={3}
+        customNote="EdCare arm of EdLove Foundation. Governed by the canonical criterion of material transfer vs. human developmental capacity."
+      />
+    </article>
+  </div>
+</Layout>

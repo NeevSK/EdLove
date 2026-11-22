@@ -1,0 +1,130 @@
+---
+import { getCollection, render } from 'astro:content';
+import { absoluteUrl } from '../../../lib/site';
+import Layout from '../../../layouts/Layout.astro';
+import CinematicBackground from '../../../components/CinematicBackground.astro';
+import ExpandableContent from '../../../components/ExpandableContent.astro';
+
+const libraryEntries = await getCollection('library', ({ data }) => !data.draft);
+
+const thinkers = libraryEntries
+  .filter((e) => e.data.category === 'thinker')
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+const frameworks = libraryEntries
+  .filter((e) => e.data.category === 'framework')
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+const stories = libraryEntries
+  .filter((e) => e.data.category === 'story')
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Pedagogical Library & Epistemic Core | EdResearch · EdLove',
+  description:
+    'A browsable library of thinkers, frameworks, and stories shaping the educational transformation ecosystem, including the living treatise on Teaning.',
+  url: absoluteUrl('/research/library'),
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: libraryEntries.map((entry, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: entry.data.title,
+      url: absoluteUrl(`/research/library/${entry.id}`),
+    })),
+  },
+};
+---
+
+<Layout
+    title="Pedagogical Library & Epistemic Core | EdResearch"
+    description="Explore the epistemic core of EdResearch through thinkers, frameworks, stories, and practical educational wisdom."
+    structuredData={structuredData}
+    canonicalUrl="https://edlove.org/research/library"
+>
+    <CinematicBackground />
+
+    <main class="relative z-10 pb-24 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
+        <!-- Header: The Core -->
+        <section class="text-center space-y-6 mb-24 pt-12 animate-fade-in-up">
+            <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--color-gold)] block">
+                Arm I &middot; Epistemic Core
+            </span>
+            <div class="space-y-4">
+                <h1 class="text-5xl md:text-7xl font-heading font-bold text-[var(--color-primaryInk)] leading-none tracking-tight">The Pedagogical Library</h1>
+                <p class="font-serif text-2xl text-[var(--color-mutedInk)] max-w-3xl mx-auto leading-relaxed italic">
+                    "Where we explore the temporal dimensions of wisdom. From ancient history to the future of cognition and the relational flow of Teaning."
+                </p>
+            </div>
+        </section>
+
+        <!-- Dynamic Collection -->
+        <section class="max-w-4xl mx-auto space-y-24">
+            <nav aria-label="Library articles" class="grid gap-4 md:grid-cols-2">
+                {libraryEntries.map((entry) => (
+                    <a href={`/research/library/${entry.id}`} class="group rounded-2xl border border-[var(--color-primaryInk)]/12 bg-white/50 p-6 transition hover:border-[var(--color-secondaryInk)] hover:bg-white shadow-xs">
+                        <span class="block text-xs font-mono font-bold uppercase tracking-widest text-[var(--color-gold)]">{entry.data.category.replace('-', ' ')}</span>
+                        <span class="mt-2 block font-heading text-xl font-bold text-[var(--color-primaryInk)] group-hover:text-[var(--color-secondaryInk)]">{entry.data.title}</span>
+                        {entry.data.subtitle && (
+                            <span class="mt-1 block font-serif text-sm text-[var(--color-mutedInk)] line-clamp-2">{entry.data.subtitle}</span>
+                        )}
+                        <span class="mt-3 block text-sm font-heading font-bold text-[var(--color-secondaryInk)]">Read entry &rarr;</span>
+                    </a>
+                ))}
+            </nav>
+            
+            <!-- Thinkers -->
+            <div class="space-y-8">
+                <h2 class="font-heading text-3xl font-bold text-[var(--color-primaryInk)] border-b border-[var(--color-primaryInk)]/12 pb-4">Thinkers</h2>
+                <div class="space-y-6">
+                    {thinkers.map(async (entry) => {
+                        const { Content } = await render(entry);
+                        return (
+                            <ExpandableContent title={entry.data.title} subtitle={entry.data.subtitle} icon={entry.data.icon}>
+                                <div class="py-6 space-y-6 text-[var(--color-secondaryInk)] prose prose-slate max-w-none">
+                                    <Content />
+                                </div>
+                            </ExpandableContent>
+                        );
+                    })}
+                </div>
+            </div>
+
+            <!-- Frameworks -->
+            <div class="space-y-8">
+                <h2 class="font-heading text-3xl font-bold text-[var(--color-primaryInk)] border-b border-[var(--color-primaryInk)]/12 pb-4">Frameworks &amp; Treatises</h2>
+                <div class="space-y-6">
+                    {frameworks.map(async (entry) => {
+                        const { Content } = await render(entry);
+                        return (
+                            <ExpandableContent title={entry.data.title} subtitle={entry.data.subtitle} icon={entry.data.icon}>
+                                <div class="py-6 space-y-6 text-[var(--color-secondaryInk)] prose prose-slate max-w-none">
+                                    <Content />
+                                </div>
+                            </ExpandableContent>
+                        );
+                    })}
+                </div>
+            </div>
+
+            <!-- Stories -->
+            {stories.length > 0 && (
+                <div class="space-y-8">
+                    <h2 class="font-heading text-3xl font-bold text-[var(--color-primaryInk)] border-b border-[var(--color-primaryInk)]/12 pb-4">Stories</h2>
+                    <div class="space-y-6">
+                        {stories.map(async (entry) => {
+                            const { Content } = await render(entry);
+                            return (
+                                <ExpandableContent title={entry.data.title} subtitle={entry.data.subtitle} icon={entry.data.icon}>
+                                    <div class="py-6 space-y-6 text-[var(--color-secondaryInk)] prose prose-slate max-w-none">
+                                        <Content />
+                                    </div>
+                                </ExpandableContent>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+        </section>
+    </main>
+</Layout>

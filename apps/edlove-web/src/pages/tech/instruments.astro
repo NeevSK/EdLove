@@ -1,0 +1,107 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CinematicBackground from '../../components/CinematicBackground.astro';
+import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
+import { absoluteUrl } from '../../lib/site';
+
+const instruments = [
+  {
+    id: 'kolibri',
+    title: 'Kolibri (Learning Equality)',
+    tag: 'Offline LMS',
+    desc: 'An open-source educational platform designed to provide offline access to a wide range of educational materials in resource-constrained classrooms.',
+    license: 'MIT / Open Source',
+  },
+  {
+    id: 'kiwix',
+    title: 'Kiwix Offline Knowledge Mirror',
+    tag: 'Planetary Mirror',
+    desc: 'Allows students and educators without stable internet connectivity to browse Wikipedia, Project Gutenberg, and open scientific libraries locally via compressed ZIM archives.',
+    license: 'GPLv3 / Open Source',
+  },
+  {
+    id: 'rachel',
+    title: 'RACHEL (World Possible)',
+    tag: 'Classroom Micro-Server',
+    desc: 'Remote Area Community Hotspot for Education and Learning: an integrated offline package delivering rich digital libraries to rural and disconnected schools.',
+    license: 'Open Access',
+  },
+  {
+    id: 'iiab',
+    title: 'Internet-in-a-Box (IIAB)',
+    tag: 'Local Hardware Stack',
+    desc: 'Turns low-cost microcomputers (Raspberry Pi, mini PCs) into autonomous classroom intranet hubs serving learning materials without requiring cellular or satellite data.',
+    license: 'Open Source',
+  },
+  {
+    id: 'foondamate',
+    title: 'Foondamate Low-Bandwidth Assistant',
+    tag: 'Low-Bandwidth Learning',
+    desc: 'Lightweight learning assistance over basic chat and messaging protocols, drastically lowering the data barrier for students in connectivity-limited environments.',
+    license: 'Social Enterprise',
+  },
+];
+---
+
+<Layout
+  title="Offline Learning Instruments | EdTech · EdLove"
+  description="A curated catalog of local-first software, micro-servers, and offline learning instruments designed for schools and classrooms with intermittent or zero internet connectivity."
+  canonicalUrl="https://edlove.org/tech/instruments"
+>
+  <CinematicBackground />
+
+  <main class="relative z-10 pb-24 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
+    <!-- Breadcrumb -->
+    <nav class="max-w-4xl mx-auto mb-6 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[var(--color-gold)]">
+      <a href="/tech" class="hover:underline">EdTech</a>
+      <span>/</span>
+      <span class="text-[var(--color-primaryInk)]">Offline Instruments</span>
+    </nav>
+
+    <header class="py-12 sm:py-16 text-center max-w-4xl mx-auto space-y-4">
+      <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--color-gold)] block">
+        Hardware &amp; Local-First Systems
+      </span>
+      <h1 class="font-heading text-4xl sm:text-6xl font-bold text-[var(--color-primaryInk)] tracking-tight">
+        Offline Learning Instruments
+      </h1>
+      <p class="font-serif italic text-lg sm:text-xl text-[var(--color-mutedInk)] max-w-2xl mx-auto leading-relaxed">
+        Tools and local-first software that operate reliably without continuous internet connection—providing schools and educators with accessible, high-quality knowledge resources.
+      </p>
+    </header>
+
+    <section class="max-w-4xl mx-auto space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {instruments.map((inst) => (
+          <div class="p-8 rounded-3xl bg-white/60 border border-[var(--color-primaryInk)]/10 space-y-4 shadow-xs hover:border-[var(--color-secondaryInk)] transition-colors">
+            <div class="flex items-center justify-between text-xs font-mono">
+              <span class="px-2.5 py-1 rounded-full bg-[var(--color-gold)]/10 text-[var(--color-gold)] font-bold">
+                {inst.tag}
+              </span>
+              <span class="text-[var(--color-mutedInk)]">{inst.license}</span>
+            </div>
+            <h3 class="font-heading text-xl font-bold text-[var(--color-primaryInk)]">
+              {inst.title}
+            </h3>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">
+              {inst.desc}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div class="pt-12">
+        <ProvenanceColophon
+          cadence="living-document"
+          author="EdLove Tech Working Group"
+          createdDate={new Date('2026-09-01')}
+          updatedDate={new Date('2026-11-22')}
+          version="Offline Instruments v2.0"
+          canonicalUrl="https://edlove.org/tech/instruments"
+          readingTime={3}
+          customNote="Curated catalog of offline-first educational software and open-source hardware tools."
+        />
+      </div>
+    </section>
+  </main>
+</Layout>

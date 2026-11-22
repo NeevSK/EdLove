@@ -1,10 +1,10 @@
 ---
 import { getCollection, render } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
-import CinematicBackground from '../../components/CinematicBackground.astro';
-import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
-import ReadingProgressBar from '../../components/ReadingProgressBar.astro';
-import { absoluteUrl } from '../../lib/site';
+import Layout from '../../../layouts/Layout.astro';
+import CinematicBackground from '../../../components/CinematicBackground.astro';
+import ProvenanceColophon from '../../../components/ProvenanceColophon.astro';
+import ReadingProgressBar from '../../../components/ReadingProgressBar.astro';
+import { absoluteUrl } from '../../../lib/site';
 
 export async function getStaticPaths() {
   const entries = await getCollection('innovations', ({ data }) => !data.draft);
@@ -13,11 +13,11 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const canonical = absoluteUrl(`/innovations/${entry.id}`);
+const canonical = absoluteUrl(`/tech/innovations/${entry.id}`);
 ---
 
 <Layout
-  title={`${entry.data.title} | EdLove Innovation Dossier`}
+  title={`${entry.data.title} | Global EdTech Atlas · EdLove`}
   description={`Comprehensive research and architecture dossier on ${entry.data.title}.`}
   canonicalUrl={canonical}
 >
@@ -25,17 +25,19 @@ const canonical = absoluteUrl(`/innovations/${entry.id}`);
   <CinematicBackground />
 
   <main class="relative z-10 pb-24 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
-    <article class="max-w-[76ch] mx-auto pt-6 sm:pt-10">
+    <article class="max-w-[76ch] mx-auto pt-6 sm:pt-10 space-y-6">
       <!-- Breadcrumb Navigation -->
-      <nav class="mb-6 flex items-center gap-2 text-xs font-mono text-[var(--color-midnightInk)]/60">
-        <a href="/innovations" class="hover:text-[var(--color-gold)] transition-colors">← All Innovation Dossiers</a>
+      <nav class="mb-6 flex items-center gap-2 text-xs font-mono text-[var(--color-primaryInk)]/60">
+        <a href="/tech" class="hover:underline">EdTech</a>
         <span>/</span>
-        <span class="text-[var(--color-gold)] font-bold">#{entry.id}</span>
+        <a href="/tech/innovations" class="hover:underline">Global EdTech Atlas</a>
+        <span>/</span>
+        <span class="truncate text-[var(--color-primaryInk)] font-bold">#{entry.id}</span>
       </nav>
 
       <header class="mb-10 space-y-4">
         <div class="flex items-center gap-2 text-[11px] font-heading uppercase tracking-[0.25em] font-bold text-[var(--color-gold)]">
-          <span>EdLove Innovation Archive</span>
+          <span>Global EdTech Atlas</span>
           <span>•</span>
           <span class="font-mono">{entry.id.split('-')[0]}</span>
         </div>

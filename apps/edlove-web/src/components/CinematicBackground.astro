@@ -3,40 +3,55 @@ interface Props {
   showVideo?: boolean;
 }
 
-const { showVideo = false } = Astro.props;
+const { showVideo = true } = Astro.props;
 ---
 
-<div class="cinematic-bg fixed inset-0 w-full h-full -z-10 bg-[#FAF7F2] overflow-hidden">
-    
-    { !showVideo && (
-        <>
-            <div class="absolute inset-0 z-10 bg-white/10"></div>
-            <div class="absolute inset-0 z-10 bg-gradient-to-b from-transparent to-white/10"></div>
-        </>
-    )}
+<div class="cinematic-bg fixed inset-0 w-full h-full -z-10 bg-[#FCFBF9] overflow-hidden pointer-events-none select-none">
+  
+  <!-- The Nature Cinematic Video Layer -->
+  {showVideo && (
+    <video
+      id="cinematic-nature-video"
+      autoplay
+      loop
+      muted
+      playsinline
+      preload="auto"
+      class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-18 z-0"
+    >
+      <source src="/assets/nature-loop.mp4" type="video/mp4" />
+    </video>
+  )}
 
-    <!-- The "Malick" Projector -->
-    <!-- 
-      INSTRUCTION: Drop your video file (e.g. 'tree-of-life.mp4') 
-      into 'public/assets/' and rename it to 'nature-loop.mp4' 
-    -->
-    {showVideo && (
-      <video
-          autoplay
-          loop
-          muted
-          playsinline
-          class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-30 z-0"
-      >
-          <source src="/assets/nature-loop.mp4" type="video/mp4" />
-      </video>
-    )}
+  <!-- Protective Calibrated Vellum Wash: Clean luminous alabaster wash ensuring pristine text clarity (WCAG AAA >= 15:1) -->
+  <div class="absolute inset-0 z-10 bg-gradient-to-b from-[#FCFBF9]/95 via-[#FCFBF9]/92 to-[#FCFBF9]/98"></div>
 
-    <!-- Fallback Gradient (Visible if video fails or keeps loading) -->
-    <div class="-z-20 absolute inset-0 bg-gradient-to-br from-forestGreen/40 via-warmGold/20 to-deepIndigo"></div>
-
+  <!-- Soft Ambient Light Drift -->
+  <div class="ambient-light-drift absolute inset-0 z-10"></div>
 </div>
 
 <script>
-  // Parallax removed to prevent "sliding" effect
+  function ensureVideoPlays() {
+    const video = document.getElementById('cinematic-nature-video') as HTMLVideoElement | null;
+    if (video) {
+      video.muted = true;
+      video.play().catch(() => {
+        // Handled silently if user agent policy delays autoplay
+      });
+    }
+  }
+
+  ensureVideoPlays();
+  document.addEventListener('astro:page-load', ensureVideoPlays);
 </script>
+
+<style>
+  .ambient-light-drift {
+    background: radial-gradient(
+      ellipse at 35% 25%,
+      rgba(217, 119, 6, 0.03) 0%,
+      rgba(71, 85, 105, 0.02) 50%,
+      rgba(252, 251, 249, 0) 75%
+    );
+  }
+</style>

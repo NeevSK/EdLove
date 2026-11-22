@@ -1,0 +1,225 @@
+---
+import { absoluteUrl } from '../../lib/site';
+import Layout from '../../layouts/Layout.astro';
+import CinematicBackground from '../../components/CinematicBackground.astro';
+import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'EdLove Foundation — Education is a Form of Love',
+  description: 'The foundational philosophy, theories, and vision of EdLove: Education is a form of love.',
+  url: absoluteUrl('/foundation'),
+  author: {
+    '@type': 'Organization',
+    name: 'EdLove Foundation',
+  },
+};
+---
+
+<Layout
+  title="EdLove Foundation — Education is a Form of Love"
+  description="EdLove is a not-for-profit educational foundation: Education is a form of love — giving love to the next generation so they may flourish."
+  structuredData={structuredData}
+>
+  <div class="relative min-h-screen text-[var(--color-primaryInk)] pt-32 pb-32 overflow-hidden">
+    <CinematicBackground />
+
+    <article class="sanctuary-container relative z-10 max-w-4xl mx-auto px-6 sm:px-8 space-y-24">
+      
+      <!-- Minimalist Header in Pure Typographic Presence -->
+      <header class="pt-8 sm:pt-14 space-y-6 text-center animate-fade-in-up">
+        <h1 class="text-4xl sm:text-6xl md:text-7xl font-serif font-light text-[var(--color-primaryInk)] tracking-tight leading-[1.08]">
+          Education is a Form of Love.
+        </h1>
+
+        <p class="font-serif italic text-xl sm:text-2xl text-[var(--color-mutedInk)] leading-relaxed max-w-2xl mx-auto">
+          &ldquo;Giving love to the next generation, for flourishing in their environment and developing themselves.&rdquo;
+        </p>
+      </header>
+
+      <!-- The Opening Reflection (Integrated Editorial Flow) -->
+      <section class="border-y border-[var(--color-primaryInk)]/12 py-16 space-y-8 animate-fade-in-up delay-100">
+        <div class="prose-drop-cap font-serif text-xl sm:text-2xl text-[var(--color-primaryInk)] leading-[1.75] space-y-6">
+          <p>
+            Education is not an industry. It is not an economic extraction engine, a credential machine, or a software market. At its deepest, most biological, and most ancient root&mdash;education is a form of love.
+          </p>
+          <p class="text-lg sm:text-xl text-[var(--color-secondaryInk)] leading-relaxed">
+            This love is what a bird does patiently teaching fledglings the physics of flight. What an elephant elder does leading the herd across forgotten migratory drought paths. What a grandmother does passing memories, hearth recipes, and ancestral languages to a child. What an educator does when staying past the bell simply because one young human being needed to be seen, listened to, and understood.
+          </p>
+          <p class="text-lg sm:text-xl text-[var(--color-secondaryInk)] leading-relaxed">
+            It is intimate: it demands presence, attention, and mutual vulnerability. It is demanding, real, and all too often rendered invisible by industrial metrics. It is fundamental: any civilization that reduces education to a balance sheet inevitably collapses.
+          </p>
+        </div>
+
+        <blockquote class="my-10 p-8 sm:p-10 border-l-4 border-[var(--color-gold)] bg-white/40 space-y-3">
+          <p class="text-2xl sm:text-3xl font-serif font-light italic text-[var(--color-primaryInk)] leading-snug">
+            &ldquo;EdLove exists because education is a form of love, and the modern world has largely forgotten this. When we remember, everything transforms.&rdquo;
+          </p>
+          <cite class="block text-sm font-heading font-bold text-[var(--color-secondaryInk)] not-italic uppercase tracking-wider">
+            &mdash; EdLove Foundation Statement of Intent
+          </cite>
+        </blockquote>
+
+        <p class="font-serif text-lg sm:text-xl text-[var(--color-secondaryInk)] leading-relaxed">
+          This is the genesis of our name: <strong class="text-[var(--color-primaryInk)]">Ed + Love = Education + Love</strong>. Not as a fragile sentiment, but as an ontological recognition. When education is executed with excellence, it is an act of pure, transformative love.
+        </p>
+      </section>
+
+      <!-- The Three Ontological Anchors -->
+      <section id="philosophy" class="space-y-10 scroll-mt-28">
+        <div class="space-y-2">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">Philosophical Constitution</span>
+          <h2 class="text-3xl sm:text-4xl font-heading font-bold text-[var(--color-primaryInk)]">
+            The Three Ontological Anchors
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4">
+          <div class="space-y-4 border-t-2 border-[var(--color-gold)] pt-6">
+            <div class="space-y-1.5">
+              <span class="text-sm font-heading font-semibold text-[var(--color-gold)] block tracking-wide">A. N. Whitehead</span>
+              <h3 class="text-2xl font-heading font-bold text-[var(--color-primaryInk)] leading-snug">Process Philosophy</h3>
+            </div>
+            <p class="font-serif text-base sm:text-lg text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+              Reality is not composed of inert, static substances or rigid, isolated subjects. It is continuous relational flow, genesis, and unfolding in time. Learning cannot be carved into standardized modular blocks without killing the life of the organism.
+            </p>
+          </div>
+
+          <div class="space-y-4 border-t-2 border-[var(--color-gold)] pt-6">
+            <div class="space-y-1.5">
+              <span class="text-sm font-heading font-semibold text-[var(--color-gold)] block tracking-wide">Roy Bhaskar</span>
+              <h3 class="text-2xl font-heading font-bold text-[var(--color-primaryInk)] leading-snug">Critical Realism</h3>
+            </div>
+            <p class="font-serif text-base sm:text-lg text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+              The world is ontologically stratified. We do not mistake the <em>empirical</em> (the exam score, the dashboard metric) for the <em>actual</em> events, nor the actual events for the <em>real</em> generative mechanisms—the structural realities that determine educational outcomes.
+            </p>
+          </div>
+
+          <div class="space-y-4 border-t-2 border-[var(--color-gold)] pt-6">
+            <div class="space-y-1.5">
+              <span class="text-sm font-heading font-semibold text-[var(--color-gold)] block tracking-wide">Ivan Illich</span>
+              <h3 class="text-2xl font-heading font-bold text-[var(--color-primaryInk)] leading-snug">Convivial Tools</h3>
+            </div>
+            <p class="font-serif text-base sm:text-lg text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+              We reject industrial tools that transform teachers into machine tenders and turn students into passive consumers. We build and advocate for <em>convivial tools</em>—instruments that guarantee personal autonomy, invite reciprocal collaboration, and leave room for human stillness.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Theoretical Apparatus -->
+      <section id="theories" class="border-y border-[var(--color-primaryInk)]/12 py-16 space-y-10 scroll-mt-28">
+        <div class="space-y-3">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">Theoretical Convergence</span>
+          <h2 class="text-3xl sm:text-4xl font-heading font-bold text-[var(--color-primaryInk)]">
+            Convergence on Engineering &amp; Mechanism
+          </h2>
+          <p class="font-serif italic text-lg sm:text-xl text-[var(--color-mutedInk)] max-w-2xl leading-relaxed">
+            EdLove synthesizes multiple disciplinary streams. Systems theory, thermodynamics, and cybernetics converge directly on <strong>engineering as mechanism</strong>: the disciplined translation of profound ideas into durable, lived realities.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 pt-4">
+          <div class="space-y-2 border-l border-[var(--color-primaryInk)]/15 pl-5">
+            <h4 class="font-heading font-bold text-lg text-[var(--color-primaryInk)]">Systems Theory</h4>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">Holistic relational feedback dynamics, nested classroom and family ecosystems.</p>
+          </div>
+
+          <div class="space-y-2 border-l border-[var(--color-primaryInk)]/15 pl-5">
+            <h4 class="font-heading font-bold text-lg text-[var(--color-primaryInk)]">Thermodynamics &amp; Entropy</h4>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">Dissipative cognitive structures, energy conservation, negentropy in human learning.</p>
+          </div>
+
+          <div class="space-y-2 border-l border-[var(--color-primaryInk)]/15 pl-5">
+            <h4 class="font-heading font-bold text-lg text-[var(--color-primaryInk)]">Cybernetics</h4>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">Second-order reflexivity, observing systems, and adaptive feedback loops.</p>
+          </div>
+
+          <div class="space-y-2 border-l border-[var(--color-primaryInk)]/15 pl-5">
+            <h4 class="font-heading font-bold text-lg text-[var(--color-primaryInk)]">Psychoanalysis</h4>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">Unconscious relational dynamics, attachment, and the teacher-student transference.</p>
+          </div>
+
+          <div class="space-y-2 border-l border-[var(--color-primaryInk)]/15 pl-5">
+            <h4 class="font-heading font-bold text-lg text-[var(--color-primaryInk)]">Political Economy</h4>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">Capital concentration, shadow tuition extraction, and structural resource disparity.</p>
+          </div>
+
+          <div class="space-y-2 border-l border-[var(--color-primaryInk)]/15 pl-5">
+            <h4 class="font-heading font-bold text-lg text-[var(--color-primaryInk)]">Sociology</h4>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">Institutional reproduction, cultural capital, and the collective memory of schools.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- The Constellation Structure -->
+      <section class="space-y-10">
+        <div class="space-y-2">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">The Constellation Arms</span>
+          <h2 class="text-3xl sm:text-4xl font-heading font-bold text-[var(--color-primaryInk)]">
+            How EdLove Manifests in the World
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 border-t border-b border-[var(--color-primaryInk)]/12 md:divide-x md:divide-[var(--color-primaryInk)]/12">
+          <a href="/research" class="group p-8 flex flex-col justify-between space-y-6 hover:bg-white/40 transition-colors">
+            <div class="space-y-4">
+              <div class="space-y-1.5">
+                <span class="text-sm font-heading font-semibold text-[var(--color-gold)] block">Arm I &middot; Inquiry</span>
+                <h3 class="font-heading font-bold text-2xl text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors leading-snug">EdResearch</h3>
+              </div>
+              <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+                Research on education (first order) and meta-research on education research in Sri Lanka (second order). Unveiling structural realities, shadow economies, and the living relation (Teaning).
+              </p>
+            </div>
+            <div class="inline-flex items-center gap-2 min-h-[44px] text-sm font-heading font-bold text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors">
+              <span>Enter inquiry</span>
+              <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
+            </div>
+          </a>
+
+          <a href="/care" class="group p-8 flex flex-col justify-between space-y-6 hover:bg-white/40 transition-colors">
+            <div class="space-y-4">
+              <div class="space-y-1.5">
+                <span class="text-sm font-heading font-semibold text-[var(--color-gold)] block">Arm II &middot; Stewardship</span>
+                <h3 class="font-heading font-bold text-2xl text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors leading-snug">EdCare</h3>
+              </div>
+              <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+                Outward giving governed by one criterion: <strong>EdKind</strong> shifts what one <em>has</em> (material solidarity); <strong>EdLife</strong> nurtures what one <em>can do</em> (developmental grooming).
+              </p>
+            </div>
+            <div class="inline-flex items-center gap-2 min-h-[44px] text-sm font-heading font-bold text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors">
+              <span>Explore stewardship</span>
+              <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
+            </div>
+          </a>
+
+          <a href="/tech" class="group p-8 flex flex-col justify-between space-y-6 hover:bg-white/40 transition-colors">
+            <div class="space-y-4">
+              <div class="space-y-1.5">
+                <span class="text-sm font-heading font-semibold text-[var(--color-gold)] block">Arm III &middot; Artifact</span>
+                <h3 class="font-heading font-bold text-2xl text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors leading-snug">EdTech</h3>
+              </div>
+              <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+                Convivial, non-extractive technological instruments designed for human dignity, stillness, and educator autonomy—operating as design interventions and research artifacts.
+              </p>
+            </div>
+            <div class="inline-flex items-center gap-2 min-h-[44px] text-sm font-heading font-bold text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors">
+              <span>Discover instruments</span>
+              <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Provenance Colophon -->
+      <ProvenanceColophon 
+        version="Canonical Constellation v1.0"
+        canonicalUrl="https://edlove.org/foundation"
+        readingTime={4}
+        customNote="EdLove Constellation — Canonical Structure (22 Nov 2026). Definitive statement of EdLove Foundation philosophy and architecture."
+      />
+    </article>
+  </div>
+</Layout>

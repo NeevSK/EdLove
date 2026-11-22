@@ -1,0 +1,138 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CinematicBackground from '../../components/CinematicBackground.astro';
+import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
+import { absoluteUrl } from '../../lib/site';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'EdTech — Technology in Education · EdLove Foundation',
+  description: 'EdTech is Arm III of EdLove Foundation: exploring purposeful technology usage in education, curating the Global EdTech Atlas, and stewarding Gurudevi with Intuitui Labs.',
+  url: absoluteUrl('/tech'),
+};
+---
+
+<Layout 
+  title="EdTech — Technology in Education · EdLove Foundation"
+  description="EdTech is Arm III of EdLove Foundation: exploring purposeful technology usage in education, curating the Global EdTech Atlas, and stewarding Gurudevi with Intuitui Labs."
+  structuredData={structuredData}
+>
+  <div class="relative min-h-screen text-[var(--color-primaryInk)] pt-32 pb-32 overflow-hidden">
+    <CinematicBackground />
+
+    <article class="sanctuary-container relative z-10 max-w-4xl mx-auto px-6 sm:px-8 space-y-24">
+      
+      <!-- Minimalist Header in Pure Typographic Presence -->
+      <header class="pt-8 sm:pt-14 space-y-6 text-center animate-fade-in-up">
+        <h1 class="text-4xl sm:text-6xl md:text-7xl font-serif font-light text-[var(--color-primaryInk)] tracking-tight leading-[1.08]">
+          Technology in Education.
+        </h1>
+
+        <p class="font-serif italic text-xl sm:text-2xl text-[var(--color-mutedInk)] leading-relaxed max-w-2xl mx-auto">
+          &ldquo;Purposeful, calm digital instruments supporting teachers and the living classroom.&rdquo;
+        </p>
+      </header>
+
+      <!-- The Core Understanding of EdTech (Integrated Editorial Flow) -->
+      <section class="border-y border-[var(--color-primaryInk)]/12 py-16 space-y-8 animate-fade-in-up delay-100">
+        <div class="prose-drop-cap font-serif text-xl sm:text-2xl text-[var(--color-primaryInk)] leading-[1.75] space-y-6">
+          <p>
+            Technology in education is not an end in itself; it is a tool in service of human learning and relational development. When thoughtfully designed, technology eases administrative friction, makes knowledge accessible across geographical and economic barriers, and preserves a teacher’s time and energy for what matters most: direct human connection with students.
+          </p>
+          <p class="text-lg sm:text-xl text-[var(--color-secondaryInk)] leading-relaxed">
+            EdTech focuses on calm, respectful, and reliable technology usage: software that operates offline by default, protects learner privacy, avoids unnecessary distraction, and honors the autonomy of both educators and students.
+          </p>
+        </div>
+
+        <blockquote class="my-8 p-8 border-l-4 border-[var(--color-gold)] bg-white/40 space-y-2">
+          <span class="text-sm font-heading font-bold text-[var(--color-secondaryInk)] uppercase tracking-wider block">The Convivial Principle</span>
+          <p class="font-serif text-lg text-[var(--color-primaryInk)] leading-relaxed">
+            Following Ivan Illich, a convivial tool is one that enhances personal energy and personal imagination, giving users the freedom to enrich their environment rather than constraining them to predetermined institutional routines.
+          </p>
+        </blockquote>
+      </section>
+
+      <!-- Living Artifacts & Platforms -->
+      <section class="space-y-10">
+        <div class="space-y-2">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">Platforms &amp; Atlas</span>
+          <h2 class="text-3xl sm:text-4xl font-heading font-bold text-[var(--color-primaryInk)]">
+            Active Platforms &amp; Global Map
+          </h2>
+          <p class="font-serif text-lg text-[var(--color-secondaryInk)]">
+            EdTech embodies its work through empirical cataloging, dedicated software engineering, and offline hardware solutions.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 border-t border-b border-[var(--color-primaryInk)]/12 sm:divide-x sm:divide-[var(--color-primaryInk)]/12">
+          <a href="/tech/innovations" class="group p-8 space-y-4 hover:bg-white/40 transition-colors">
+            <div class="space-y-1.5">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--color-gold)]">Global Map</span>
+              <h4 class="font-heading font-bold text-xl text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors leading-snug">Global EdTech Atlas</h4>
+            </div>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+              A worldwide map and catalog of available educational technologies, open-source learning platforms, and local-first software.
+            </p>
+            <span class="text-sm font-heading font-semibold text-[var(--color-primaryInk)] group-hover:translate-x-1 inline-flex items-center gap-1 transition-transform">
+              Explore Atlas &rarr;
+            </span>
+          </a>
+
+          <a href="/tech/gurudevi" class="group p-8 space-y-4 hover:bg-white/40 transition-colors">
+            <div class="space-y-1.5">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--color-gold)]">Flagship Platform</span>
+              <h4 class="font-heading font-bold text-xl text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors leading-snug">Gurudevi</h4>
+            </div>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+              An offline-first, local-first platform built for teachers and classrooms—an EdLove initiative built by Intuitui Labs.
+            </p>
+            <span class="text-sm font-heading font-semibold text-[var(--color-primaryInk)] group-hover:translate-x-1 inline-flex items-center gap-1 transition-transform">
+              Discover Gurudevi &rarr;
+            </span>
+          </a>
+
+          <a href="/tech/instruments" class="group p-8 space-y-4 hover:bg-white/40 transition-colors">
+            <div class="space-y-1.5">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--color-gold)]">Offline Solutions</span>
+              <h4 class="font-heading font-bold text-xl text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors leading-snug">Offline Instruments</h4>
+            </div>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+              Curated hardware kits, micro-servers, and local knowledge mirrors designed for schools with limited or zero internet connectivity.
+            </p>
+            <span class="text-sm font-heading font-semibold text-[var(--color-primaryInk)] group-hover:translate-x-1 inline-flex items-center gap-1 transition-transform">
+              View Instruments &rarr;
+            </span>
+          </a>
+        </div>
+      </section>
+
+      <!-- The Epistemic Feedback Loop -->
+      <section class="border-b border-[var(--color-primaryInk)]/12 pb-16 space-y-6">
+        <div class="space-y-3">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">Epistemic Synthesis</span>
+          <h3 class="text-2xl sm:text-4xl font-heading font-bold text-[var(--color-primaryInk)]">
+            Research informs the craft. Field usage returns truth to theory.
+          </h3>
+          <p class="font-serif text-lg sm:text-xl text-[var(--color-secondaryInk)] leading-relaxed">
+            The core feedback loop connects the constellation: <strong>research informs technological craft, and deployed software returns authentic field evidence to research.</strong> EdLove holds the educational philosophy and research intent, while Intuitui Labs provides the engineering and systems architecture to build reliable solutions.
+          </p>
+        </div>
+
+        <div class="pt-6">
+          <ProvenanceColophon
+            cadence="living-document"
+            author="EdLove Foundation & Intuitui Labs"
+            createdDate={new Date('2026-08-01')}
+            updatedDate={new Date('2026-11-22')}
+            version="EdTech Architecture v2.0"
+            canonicalUrl="https://edlove.org/tech"
+            readingTime={4}
+            customNote="Official statement of the technological philosophy, global atlas, and software initiatives of the EdLove Foundation."
+          />
+        </div>
+      </section>
+
+    </article>
+  </div>
+</Layout>

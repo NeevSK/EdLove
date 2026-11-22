@@ -4,24 +4,35 @@ export function GET() {
   const body = `# ${SITE_NAME}
 > ${SITE_DESCRIPTION}
 
-The EdLove Foundation is the apex educational transformation ecosystem connecting philosophy, 200 global innovations, pedagogical canon, and empirical field research.
+EdLove is a not-for-profit, non-governmental organisation (registration pending) contributing to education in an honest, truthful manner: giving love to the next generation, for flourishing in their environment and developing themselves.
 
-## Core Epistemic Commons
-- [Vision & Philosophy](${SITE_URL}/vision): Educational philosophy, non-extractive technology, and the Convivial Limit.
-- [200 Educational Innovations](${SITE_URL}/innovations): Curated global directory of 200 transformative learning practices.
-- [Cosmos Paradigms](${SITE_URL}/cosmos): Six holistic educational paradigms spanning self, ecological, and societal learning.
-- [Pedagogical Canon](${SITE_URL}/library): Foundational texts, teaching methods, and open educational resources.
-- [Ceylon Research Atlas](${SITE_URL}/sri-lanka): Empirical field research, school mapping, and district-level educational indicators.
-- [Gurudevi Sanctuary](${SITE_URL}/gurudevi): The relational education support system and teacher sanctuary in Sri Lanka.
+## The Constellation Architecture
+- [Foundation](${SITE_URL}/foundation): Status, Vision, Meaning (Ed + Love), Definition of Education, Process Philosophy (Whitehead), Critical Realism (Bhaskar), Conviviality (Illich), and theoretical apparatus converging on Engineering (Mechanism).
+- [EdResearch](${SITE_URL}/research): Arm 01. Two orders: research on education (first order), and meta-research on education research in Sri Lanka (second order).
+  - [Cosmos Paradigms](${SITE_URL}/cosmos): Six pedagogical paradigms (Biological, Industrial, Montessori, Democratic, Unschooling, Indigenous).
+  - [Sri Lanka Ground Realities](${SITE_URL}/sri-lanka): Government schooling, shadow tuition economies, and structural resource discrepancies.
+  - [Epistemic Library](${SITE_URL}/library): Teaning framework, pedagogical thinkers, and open resources.
+  - [Resources & Global Gallery](${SITE_URL}/resources): Comparative educational practices and patterns.
+- [EdCare](${SITE_URL}/care): Arm 02. Outward giving governed by one criterion:
+  - EdKind: Material support (what one has), goods, non-cash giving, logistics.
+  - EdLife: Human development (what one can do), teaching, mentoring, capacity building.
+  - [Gift & Mutual Aid Archive](${SITE_URL}/innovations): Non-extractive educational mutual aid models.
+  - [The Sangha](${SITE_URL}/community): Trust circles and collective educator stewardship.
+- [EdTech](${SITE_URL}/tech): Arm 03. Technology usage in education:
+  - Three Roles: Design science intervention, pedagogical & ethical vehicle, and research artefact feeding back into EdResearch.
+  - [Global EdTech Atlas](${SITE_URL}/tech/innovations): Worldwide map and catalog of available educational technologies and open-source learning systems.
+  - [Gurudevi Platform](${SITE_URL}/tech/gurudevi): Flagship educational platform built for teachers and classrooms.
+  - Builder: Intuitui Labs (https://intuituilabs.studio).
+  - Canonical Phrasing: Gurudevi, an EdLove initiative, built by Intuitui Labs.
 
-## Canonical Resources
-- [Home](${SITE_URL}/): Foundation portal and epistemic overview.
-- [Journal](${SITE_URL}/journal): Essays and pedagogical field notes.
-- [Community](${SITE_URL}/community): Educator circles and civic partnerships.
-- [Resources](${SITE_URL}/resources): Tools, guides, and curriculum toolkits.
-
-## Complete Context & LLM Ingestion
-- [Full Context Corpus](${SITE_URL}/llms-full.txt): Complete aggregated markdown text of all public essays, research summaries, and paradigm definitions for single-request LLM ingestion.
+## Canonical Portals & Web Presence
+- [EdLove Foundation](${SITE_URL}/): Foundation portal and constellation overview.
+- [Gurudevi Public](https://gurudevi.app): Public home of the digital teacher sanctuary.
+- [Gurudevi Explore](https://explore.gurudevi.app): No-auth museum version for research feedback.
+- [Gurudevi Sanctuary](https://sanctuary.gurudevi.app): Authenticated educator workspace.
+- [Intuitui Labs](https://intuituilabs.studio): Technology firm and engineering partner.
+- [Personal Site & v1 Archive](https://neevsk.intuituilabs.studio/v1): Full foundational philosophical and theoretical archive.
+- [Journal](${SITE_URL}/journal): Long-form essays, Teaning papers, and field notes.
 
 ## Machine-Readable Endpoints
 - [XML Sitemap Index](${SITE_URL}/sitemap-index.xml): Master XML sitemap index.
@@ -29,7 +40,7 @@ The EdLove Foundation is the apex educational transformation ecosystem connectin
 - [Journal RSS Feed](${SITE_URL}/journal/feed.xml): RSS 2.0 syndication feed.
 
 ## Ethical AI & Citation Policy
-Public educational knowledge on edlove.org is licensed for open academic reference and search engine citation (search=yes, ai-input=yes). Mass scraping for uncredited model training without attribution is not granted (ai-train=no).
+Public educational knowledge on edlove.org is licensed for open academic reference and search engine citation (search=yes, ai-input=yes).
 `;
 
   return new Response(body, {

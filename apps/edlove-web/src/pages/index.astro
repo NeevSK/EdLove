@@ -7,59 +7,151 @@ import FloatingParticles from '../components/FloatingParticles.astro';
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'AboutPage',
-  name: 'EdLove',
+  name: 'EdLove Foundation',
   description:
-    'EdLove is the educational transformation ecosystem reimagining education with love through philosophy, care, local context, resources, community, and the epistemic core.',
+    'EdLove is a not-for-profit educational foundation: Education is a form of love — giving love to the next generation, for flourishing in their environment and developing themselves.',
   url: absoluteUrl('/'),
-  about: {
-    '@type': 'Thing',
-    name: 'Educational Transformation',
-  },
 };
 ---
 
 <Layout
-  title="EdLove | The Educational Transformation Ecosystem"
-  description="EdLove is a digital sanctuary for educational transformation, connecting philosophy, Sri Lankan ground realities, Gurudevi, resources, community, and the epistemic core."
+  title="EdLove Foundation — Education is a Form of Love"
+  description="Education is not an industry or a factory. Education is a form of love: giving love to the next generation so they may flourish in their environment and unfold who they are."
   structuredData={structuredData}
 >
-  <div class="relative z-10 min-h-[calc(100vh-var(--spacing-nav-height))] flex flex-col justify-center items-center px-[var(--space-4)] overflow-hidden">
-    <!-- Cinematic Background Video/Gradient -->
-    <CinematicBackground showVideo={true} />
+  <div class="relative z-10 min-h-[calc(100vh-var(--spacing-nav-height))] text-[var(--color-primaryInk)] pt-28 pb-24">
+    <!-- Clean Luminous Alabaster Cinematic Backdrop -->
+    <CinematicBackground />
     <FloatingParticles />
 
-    <div class="max-w-6xl w-full text-center space-y-[var(--space-6)] animate-fade-in-up">
+    <div class="sanctuary-container relative z-10 max-w-5xl mx-auto px-6 sm:px-8 space-y-28">
       
-      <div class="space-y-[var(--space-3)]">
-        <h1 class="text-6xl md:text-8xl font-heading font-bold text-[var(--color-midnightInk)] leading-none tracking-tighter opacity-90">
-          EdLove
+      <!-- Majestic Quiet Presence Hero (Unboxed, Pure Typographic Field) -->
+      <section class="text-center pt-8 sm:pt-14 md:pt-20 space-y-8 animate-fade-in-up">
+        <h1 class="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-serif font-light tracking-tight text-[var(--color-primaryInk)] leading-[1.04]">
+          Education is <br class="hidden sm:inline" />
+          <span class="italic font-normal text-[var(--color-secondaryInk)]">a form of love.</span>
         </h1>
-        <p class="font-body italic text-xl md:text-3xl text-[var(--color-midnightInk)]/60 tracking-wide max-w-2xl mx-auto">
-           Reimagining Education, <span class="text-[var(--color-gold)] font-bold not-italic">With Love.</span>
+
+        <p class="font-serif italic text-2xl sm:text-3xl text-[var(--color-mutedInk)] max-w-3xl mx-auto leading-relaxed pt-2">
+          &ldquo;Giving love to the next generation, for flourishing in their environment and developing themselves.&rdquo;
         </p>
-      </div>
+      </section>
 
-      <div class="flex flex-col sm:flex-row flex-wrap gap-[var(--space-3)] justify-center items-center pt-[var(--space-4)]">
-        <!-- Call to Action -->
-        <a href="/cosmos" class="group relative px-8 py-3.5 bg-[var(--color-midnightInk)] text-[var(--color-warmPaper)] rounded-full overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-2xl w-full sm:w-auto">
-          <span class="relative z-10 font-heading text-xs font-bold uppercase tracking-[0.2em] group-hover:tracking-[0.3em] transition-all duration-500">Enter Cosmos</span>
-          <div class="absolute inset-0 bg-[var(--color-gold)] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out"></div>
-        </a>
+      <!-- The Triad: The Three Arms of the Constellation (Architectural Triptych Gateway) -->
+      <section class="space-y-12">
+        <div class="max-w-2xl space-y-3">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">The Architecture</span>
+          <h2 class="text-3xl sm:text-5xl font-heading font-bold tracking-tight text-[var(--color-primaryInk)]">
+            Three Arms &middot; One Living Sanctuary
+          </h2>
+          <p class="font-serif italic text-lg sm:text-xl text-[var(--color-mutedInk)] leading-relaxed">
+            Each arm inherits the same philosophical core, working in concert to bridge pure theory, active giving, and grounded practice.
+          </p>
+        </div>
 
-        <!-- Focus Link -->
-        <a href="/focus" class="group relative px-8 py-3.5 bg-white/40 hover:bg-white/80 text-[var(--color-midnightInk)] border border-[var(--color-midnightInk)]/15 rounded-full overflow-hidden transition-all duration-500 hover:scale-105 hover:border-[var(--color-gold)] shadow-xs hover:shadow-lg w-full sm:w-auto">
-          <span class="font-heading text-xs font-bold uppercase tracking-[0.2em] group-hover:text-[var(--color-gold)] transition-colors duration-300">Our Focus</span>
-        </a>
-        
-        <!-- Vision Link -->
-        <a href="/vision" class="group flex items-center gap-3 px-6 py-3.5 transition-all duration-300">
-           <span class="w-6 h-px bg-[var(--color-midnightInk)]/30 group-hover:w-12 transition-all duration-500"></span>
-           <span class="font-body text-base italic text-[var(--color-midnightInk)]/70 group-hover:text-[var(--color-midnightInk)]">Our Vision</span>
-        </a>
-      </div>
+        <!-- Integrated Triptych Grid with Hairline Dividers -->
+        <div class="grid grid-cols-1 md:grid-cols-3 border-t border-b border-[var(--color-primaryInk)]/12 md:divide-x md:divide-[var(--color-primaryInk)]/12">
+          
+          <!-- EdResearch -->
+          <div class="group p-8 sm:p-10 flex flex-col justify-between space-y-8 hover:bg-white/40 transition-colors duration-300">
+            <div class="space-y-6">
+              <div class="flex items-center justify-between text-sm font-heading">
+                <span class="font-semibold text-[var(--color-gold)] tracking-wide">01 &middot; Epistemic Inquiry</span>
+                <span class="text-[var(--color-mutedInk)]">Two Orders</span>
+              </div>
+              <h3 class="text-2xl sm:text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+                <a href="/research" class="hover:text-[var(--color-secondaryInk)] transition-colors">EdResearch</a>
+              </h3>
+              <p class="font-serif text-base sm:text-lg text-[var(--color-secondaryInk)] leading-relaxed">
+                Operating at two orders: first-order research into the relational flow of teaching and learning, and second-order meta-research exposing the structural realities of schooling.
+              </p>
+            </div>
+
+            <div class="pt-4 border-t border-[var(--color-primaryInk)]/10">
+              <a href="/research" class="inline-flex items-center justify-between w-full text-sm font-heading font-bold text-[var(--color-primaryInk)] hover:text-[var(--color-secondaryInk)] transition-colors">
+                <span>Enter Research Hub</span>
+                <span>&rarr;</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- EdCare -->
+          <div class="group p-8 sm:p-10 flex flex-col justify-between space-y-8 hover:bg-white/40 transition-colors duration-300">
+            <div class="space-y-6">
+              <div class="flex items-center justify-between text-sm font-heading">
+                <span class="font-semibold text-[var(--color-gold)] tracking-wide">02 &middot; Outward Stewardship</span>
+                <span class="text-[var(--color-mutedInk)]">Kind &amp; Life</span>
+              </div>
+              <h3 class="text-2xl sm:text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+                <a href="/care" class="hover:text-[var(--color-secondaryInk)] transition-colors">EdCare</a>
+              </h3>
+              <p class="font-serif text-base sm:text-lg text-[var(--color-secondaryInk)] leading-relaxed">
+                Outward stewardship separated by one clear criterion: <strong class="font-semibold text-[var(--color-primaryInk)]">EdKind</strong> shifts what one <em>has</em> through material solidarity; <strong class="font-semibold text-[var(--color-primaryInk)]">EdLife</strong> cultivates what one <em>can do</em>.
+              </p>
+            </div>
+
+            <div class="pt-4 border-t border-[var(--color-primaryInk)]/10">
+              <a href="/care" class="inline-flex items-center justify-between w-full text-sm font-heading font-bold text-[var(--color-primaryInk)] hover:text-[var(--color-secondaryInk)] transition-colors">
+                <span>Explore Stewardship Hub</span>
+                <span>&rarr;</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- EdTech -->
+          <div class="group p-8 sm:p-10 flex flex-col justify-between space-y-8 hover:bg-white/40 transition-colors duration-300">
+            <div class="space-y-6">
+              <div class="flex items-center justify-between text-sm font-heading">
+                <span class="font-semibold text-[var(--color-gold)] tracking-wide">03 &middot; Technology &amp; Tools</span>
+                <span class="text-[var(--color-mutedInk)]">Digital Pedagogy</span>
+              </div>
+              <h3 class="text-2xl sm:text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+                <a href="/tech" class="hover:text-[var(--color-secondaryInk)] transition-colors">EdTech</a>
+              </h3>
+              <p class="font-serif text-base sm:text-lg text-[var(--color-secondaryInk)] leading-relaxed">
+                Exploring purposeful technology usage in education—curating a global atlas of educational technologies and stewarding Gurudevi, built in partnership with Intuitui Labs.
+              </p>
+            </div>
+
+            <div class="pt-4 border-t border-[var(--color-primaryInk)]/10">
+              <a href="/tech" class="inline-flex items-center justify-between w-full text-sm font-heading font-bold text-[var(--color-primaryInk)] hover:text-[var(--color-secondaryInk)] transition-colors">
+                <span>Explore Technology Hub</span>
+                <span>&rarr;</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- The Living Harmony (Unboxed Literary Synthesis & Bridge to Foundation) -->
+      <section class="py-12 border-b border-[var(--color-primaryInk)]/12 space-y-8">
+        <div class="max-w-3xl space-y-4">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">The Living Harmony</span>
+          <h3 class="text-3xl sm:text-5xl font-heading font-bold text-[var(--color-primaryInk)] tracking-tight leading-tight">
+            Inquiry illuminates giving. <br class="hidden sm:inline" />
+            Practice returns truth to theory.
+          </h3>
+          <p class="font-serif text-lg sm:text-xl text-[var(--color-secondaryInk)] leading-relaxed pt-2">
+            The three arms of EdLove do not operate in isolation. Critical field research directly informs where care and resources must flow, while lived practice continuously grounds our theoretical understanding of learning and human flourishing.
+          </p>
+        </div>
+
+        <div class="pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div class="text-lg font-serif italic text-[var(--color-mutedInk)]">
+            A sanctuary for the soul of education.
+          </div>
+          <a 
+            href="/foundation" 
+            class="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-[var(--color-primaryInk)] text-white hover:bg-[var(--color-secondaryInk)] transition-all duration-300 font-heading text-sm font-semibold tracking-wide shadow-md"
+          >
+            <span>Read Foundation Manifesto</span>
+            <span>&rarr;</span>
+          </a>
+        </div>
+      </section>
 
     </div>
-
-    <!-- Scroll Invitation -->
   </div>
 </Layout>

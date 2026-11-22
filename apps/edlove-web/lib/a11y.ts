@@ -36,6 +36,41 @@ export {
 };
 
 /**
+ * Alpha-blend a foreground color over a background color
+ */
+export function blendHexWithAlpha(fgHex: string, alpha: number, bgHex: string): string {
+  const fgRgb = hexToRgb(fgHex);
+  const bgRgb = hexToRgb(bgHex);
+  const a = Math.max(0, Math.min(1, alpha));
+
+  const blendedR = Math.round(fgRgb.r * a + bgRgb.r * (1 - a));
+  const blendedG = Math.round(fgRgb.g * a + bgRgb.g * (1 - a));
+  const blendedB = Math.round(fgRgb.b * a + bgRgb.b * (1 - a));
+
+  return rgbToHex({ r: blendedR, g: blendedG, b: blendedB });
+}
+
+/**
+ * Evaluates multi-layer composited contrast (e.g. text with alpha inside a translucent card container)
+ */
+export function evaluateCompositedContrast(
+  textHex: string,
+  textAlpha: number,
+  containerHex: string,
+  containerAlpha: number,
+  baseSurfaceHex: string,
+): { apca: ApcaEvaluation; effectiveContainer: string; effectiveText: string } {
+  // 1. Compute container color blended over the underlying surface
+  const effectiveContainer = blendHexWithAlpha(containerHex, containerAlpha, baseSurfaceHex);
+  // 2. Compute text color blended over the effective container
+  const effectiveText = blendHexWithAlpha(textHex, textAlpha, effectiveContainer);
+  // 3. Evaluate perceptual contrast between the text and the container
+  const apca = evaluateApca(effectiveText, effectiveContainer);
+
+  return { apca, effectiveContainer, effectiveText };
+}
+
+/**
  * Standard Dual-Governance Contrast Checker
  * Returns true if both legal baseline (WCAG 2.2 AA) and perceptual (APCA) criteria pass.
  */

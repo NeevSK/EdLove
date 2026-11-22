@@ -1,0 +1,206 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CinematicBackground from '../../components/CinematicBackground.astro';
+import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
+import { absoluteUrl, ORGANIZATION } from '../../lib/site';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: 'Contact EdLove Foundation',
+  description: 'Connect with EdLove Foundation for research, fellowship, teacher circles, and material solidarity.',
+  url: absoluteUrl('/contact'),
+};
+
+const contactChannels = [
+  {
+    title: 'General & Fellowship',
+    email: 'hello@edlove.org',
+    badge: 'Foundation Office',
+    desc: 'For general inquiries, civic partnerships, institutional correspondence, and invitations to speak or collaborate.',
+    emoji: '🕊️',
+  },
+  {
+    title: 'EdResearch & Diagnostics',
+    email: 'research@edlove.org',
+    badge: 'Epistemic Inquiry',
+    desc: 'For academic inquiries, methodological audits, data contributions to the Sri Lanka School Atlas, or monograph citations.',
+    emoji: '📜',
+  },
+  {
+    title: 'EdCare & Solidarity Commons',
+    email: 'care@edlove.org',
+    badge: 'Outward Giving',
+    desc: 'For coordinating direct in-kind material aid (EdKind) for rural schools or joining regional teacher restorative circles (The Sangha).',
+    emoji: '📦',
+  },
+  {
+    title: 'EdTech & Convivial Instruments',
+    email: 'tech@edlove.org',
+    badge: 'Convivial Artifacts',
+    desc: 'For questions regarding the Gurudevi teacher sanctuary, offline distribution kits, and open-source local-first learning instruments.',
+    emoji: '⚡',
+  },
+];
+---
+
+<Layout
+  title="Contact Us — EdLove Foundation"
+  description="Connect with EdLove Foundation. Inquiries for research partnerships, teacher sanghas, material solidarity, and convivial technology."
+  structuredData={structuredData}
+>
+  <div class="relative min-h-screen text-[var(--color-primaryInk)] pt-32 pb-32 overflow-hidden">
+    <CinematicBackground />
+
+    <article class="sanctuary-container relative z-10 max-w-4xl mx-auto px-6 sm:px-8 space-y-24">
+      
+      <!-- Minimalist Header in Pure Typographic Presence -->
+      <header class="pt-8 sm:pt-14 space-y-6 text-center animate-fade-in-up">
+        <h1 class="text-4xl sm:text-6xl md:text-7xl font-serif font-light text-[var(--color-primaryInk)] tracking-tight leading-[1.08]">
+          Connect with Us.
+        </h1>
+
+        <p class="font-serif italic text-xl sm:text-2xl text-[var(--color-mutedInk)] leading-relaxed max-w-2xl mx-auto">
+          &ldquo;Our doors are open to researchers, educators, community elders, and all who honor education as a form of love.&rdquo;
+        </p>
+      </header>
+
+      <!-- Location & Physical Grounding -->
+      <section class="border-y border-[var(--color-primaryInk)]/12 py-16 space-y-8 animate-fade-in-up delay-100">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div class="space-y-4">
+            <span class="text-xs font-mono font-bold text-[var(--color-gold)] uppercase tracking-wider block">
+              Physical Grounding
+            </span>
+            <h2 class="text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+              Anchored in Sri Lanka
+            </h2>
+            <p class="font-serif text-base sm:text-lg text-[var(--color-secondaryInk)] leading-relaxed">
+              EdLove Foundation operates out of Colombo, Sri Lanka, with field research and teacher circle fellowships extending across Western, Central, Southern, and Uva provinces.
+            </p>
+            <div class="pt-2 text-sm font-mono text-[var(--color-mutedInk)]">
+              <strong class="text-[var(--color-primaryInk)] font-semibold">Location:</strong> Colombo, Sri Lanka<br />
+              <strong class="text-[var(--color-primaryInk)] font-semibold">Jurisdiction:</strong> Democratic Socialist Republic of Sri Lanka
+            </div>
+          </div>
+
+          <div class="bg-[#FCFBF9] border border-[var(--color-primaryInk)]/12 p-8 rounded-2xl shadow-xs space-y-6 flex flex-col justify-between">
+            <div class="space-y-4">
+              <div class="space-y-1.5">
+                <span class="text-xs font-mono font-bold text-[var(--color-gold)] uppercase tracking-wider block">
+                  Primary Contact
+                </span>
+                <h3 class="text-2xl font-heading font-bold text-[var(--color-primaryInk)] leading-snug">
+                  Direct Human Correspondence
+                </h3>
+              </div>
+              <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+                We use no automated customer service bots or algorithmic ticketing queues. Every email is read and personally answered by a member of our stewardship council.
+              </p>
+            </div>
+            <div class="pt-2">
+              <a 
+                href="mailto:hello@edlove.org" 
+                class="inline-flex items-center gap-2 min-h-[44px] py-2 font-mono text-base font-bold text-[var(--color-primaryInk)] hover:text-[var(--color-gold)] underline transition-colors"
+              >
+                <span>hello@edlove.org</span>
+                <span>&rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Specialized Dedicated Channels -->
+      <section class="space-y-10">
+        <div class="space-y-2">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">Dedicated Inquiries</span>
+          <h2 class="text-3xl sm:text-4xl font-heading font-bold text-[var(--color-primaryInk)]">
+            Channels of Connection
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+          {contactChannels.map((c) => (
+            <div class="bg-[#FCFBF9] border border-[var(--color-primaryInk)]/12 p-8 rounded-2xl shadow-xs space-y-6 flex flex-col justify-between hover:border-[var(--color-gold)]/40 transition-colors">
+              <div class="space-y-4">
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-3xl">{c.emoji}</span>
+                    <span class="text-xs font-mono font-semibold text-[var(--color-gold)] uppercase tracking-wider">
+                      {c.badge}
+                    </span>
+                  </div>
+                  <h3 class="text-2xl font-heading font-bold text-[var(--color-primaryInk)] leading-snug">
+                    {c.title}
+                  </h3>
+                </div>
+
+                <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+                  {c.desc}
+                </p>
+              </div>
+
+              <div class="pt-2 border-t border-[var(--color-primaryInk)]/10">
+                <a 
+                  href={`mailto:${c.email}`} 
+                  class="inline-flex items-center gap-2 min-h-[44px] py-2 font-mono text-sm font-bold text-[var(--color-primaryInk)] hover:text-[var(--color-gold)] underline transition-colors"
+                >
+                  <span>{c.email}</span>
+                  <span>&rarr;</span>
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Frequently Asked Questions / Principles of Collaboration -->
+      <section class="border-t border-[var(--color-primaryInk)]/12 pt-16 space-y-8">
+        <div class="space-y-2">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">Principles</span>
+          <h2 class="text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+            How We Collaborate
+          </h2>
+        </div>
+
+        <div class="space-y-6 pt-2">
+          <div class="p-6 bg-white/70 border border-[var(--color-primaryInk)]/10 rounded-xl space-y-2">
+            <h4 class="font-heading font-bold text-lg text-[var(--color-primaryInk)]">
+              Do you accept unsolicited donation offers?
+            </h4>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">
+              Yes, for unconditional in-kind material solidarity (EdKind) such as learning books, solar infrastructure, or hardware grants that directly serve classrooms without commercial tracking or advertising requirements.
+            </p>
+          </div>
+
+          <div class="p-6 bg-white/70 border border-[var(--color-primaryInk)]/10 rounded-xl space-y-2">
+            <h4 class="font-heading font-bold text-lg text-[var(--color-primaryInk)]">
+              Can teachers join the Sangha circles?
+            </h4>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">
+              Absolutely. Any educator teaching in a government, provincial, private, or community setting is welcome to participate in our restorative circles with complete confidentiality and zero fees.
+            </p>
+          </div>
+
+          <div class="p-6 bg-white/70 border border-[var(--color-primaryInk)]/10 rounded-xl space-y-2">
+            <h4 class="font-heading font-bold text-lg text-[var(--color-primaryInk)]">
+              Can researchers access raw school and budget data?
+            </h4>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">
+              Yes. All our published research monographs and public field datasets are open-access under Creative Commons licenses (CC BY-SA 4.0) to empower independent civic researchers.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Provenance Colophon -->
+      <ProvenanceColophon 
+        version="Foundation Contact v1.0"
+        canonicalUrl="https://edlove.org/contact"
+        readingTime={2}
+        customNote="Official communications and correspondence desk of EdLove Foundation."
+      />
+    </article>
+  </div>
+</Layout>

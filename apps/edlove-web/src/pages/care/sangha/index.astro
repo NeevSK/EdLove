@@ -1,29 +1,29 @@
 ---
 import { getCollection, render } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
-import CinematicBackground from '../../components/CinematicBackground.astro';
-import ExpandableContent from '../../components/ExpandableContent.astro';
-import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
+import Layout from '../../../layouts/Layout.astro';
+import CinematicBackground from '../../../components/CinematicBackground.astro';
+import ExpandableContent from '../../../components/ExpandableContent.astro';
+import ProvenanceColophon from '../../../components/ProvenanceColophon.astro';
 
 const communityEntries = await getCollection('community', ({ data }) => !data.draft);
 communityEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 ---
 
-<Layout title="The Sangha | EdLove">
+<Layout title="The Sangha & Educator Circles | EdCare · EdLove" canonicalUrl="https://edlove.org/care/sangha">
     <CinematicBackground />
 
     <div class="relative z-10 pb-24 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
         <!-- Header: The Sangha -->
         <section class="text-center space-y-12 mb-32 animate-fade-in-up">
-            <div class="space-y-4">
-                <span class="font-heading text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-gold)] opacity-60">Domain V</span>
-                <h1 class="text-6xl md:text-8xl font-heading font-bold text-[var(--color-midnightInk)] leading-none">The Sangha</h1>
+            <div class="space-y-4 pt-12">
+                <span class="font-heading text-xs uppercase tracking-[0.3em] font-bold text-[var(--color-gold)]">Arm II &middot; EdCare &middot; Mode II</span>
+                <h1 class="text-6xl md:text-8xl font-heading font-bold text-[var(--color-primaryInk)] leading-none">The Sangha</h1>
             </div>
 
             <div class="h-px w-24 bg-[var(--color-gold)]/30 mx-auto"></div>
 
-            <p class="font-body text-2xl text-[var(--color-midnightInk)]/50 max-w-2xl mx-auto leading-relaxed italic">
-                "A horizontal network of trust. <br/> We heal and grow in community."
+            <p class="font-serif text-2xl text-[var(--color-mutedInk)] max-w-2xl mx-auto leading-relaxed italic">
+                "A horizontal network of trust. We heal, support teachers, and grow in community."
             </p>
 
             <div class="pt-4">
@@ -33,7 +33,7 @@ communityEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
                     createdDate={new Date('2026-08-01')}
                     updatedDate={new Date('2026-09-01')}
                     version="Guild Atlas v1.0"
-                    canonicalUrl="https://edlove.org/community"
+                    canonicalUrl="https://edlove.org/care/sangha"
                     readingTime={3}
                     customNote="Living directory of community nodes, working groups, and global educational fellows."
                 />

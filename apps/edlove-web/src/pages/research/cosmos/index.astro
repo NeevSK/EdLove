@@ -1,22 +1,22 @@
 ---
 import { getCollection, render } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
-import CosmicParticles from '../../components/CosmicParticles.astro';
-import ExpandableContent from '../../components/ExpandableContent.astro';
-import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
+import Layout from '../../../layouts/Layout.astro';
+import CosmicParticles from '../../../components/CosmicParticles.astro';
+import ExpandableContent from '../../../components/ExpandableContent.astro';
+import ProvenanceColophon from '../../../components/ProvenanceColophon.astro';
 
 const cosmosEntries = await getCollection('cosmos', ({ data }) => !data.draft);
 cosmosEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 ---
 
-<Layout title="The Paradigm Cosmos | EdLove" theme="cosmic">
+<Layout title="The Paradigm Cosmos | EdResearch · EdLove" theme="cosmic" canonicalUrl="https://edlove.org/research/cosmos">
     <CosmicParticles />
 
     <div class="relative z-10 pb-32 sanctuary-container">
         <!-- Header: The Mapping -->
         <section class="text-center space-y-12 mb-32 animate-fade-in-up">
             <div class="space-y-4 pt-16">
-                <span class="font-heading text-[10px] uppercase tracking-[0.5em] font-bold text-[var(--color-gold)] opacity-80">Domain I: The Infinite Stream</span>
+                <span class="font-heading text-[10px] uppercase tracking-[0.5em] font-bold text-[var(--color-gold)] opacity-80">Arm I · EdResearch · Order I</span>
                 <h1 class="text-5xl md:text-7xl font-heading font-bold text-white leading-none tracking-tighter">The Paradigm Cosmos</h1>
             </div>
 
@@ -32,6 +32,7 @@ cosmosEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
                     author="EdLove Philosophy & History Working Group"
                     createdDate={new Date('2026-08-01')}
                     version="Canonical Map"
+                    canonicalUrl="https://edlove.org/research/cosmos"
                     customNote="Perennial philosophy. Maps historical educational paradigms from antiquity to the future of cognition."
                 />
             </div>
@@ -78,9 +79,9 @@ cosmosEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
                                         </div>
 
                                         <div class="pt-6">
-                                            <a href={`/cosmos/${entry.id}`} class="inline-flex items-center gap-2 text-[var(--color-gold)] hover:gap-4 transition-all duration-300">
+                                            <a href={`/research/cosmos/${entry.id}`} class="inline-flex items-center gap-2 text-[var(--color-gold)] hover:gap-4 transition-all duration-300">
                                                 <span class="text-xs uppercase tracking-widest font-bold">Deep Dive into {entry.data.title}</span>
-                                                <span class="text-xl">→</span>
+                                                <span class="text-xl">&rarr;</span>
                                             </a>
                                         </div>
                                     </div>
