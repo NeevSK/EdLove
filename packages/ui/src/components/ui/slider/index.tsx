@@ -1,10 +1,10 @@
-import RNSlider, { type SliderProps as RNSliderProps } from '@react-native-community/slider';
+import SliderComponent, { type SliderProps as RNSliderProps } from '@expo/ui/community/slider';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { tokens } from '@repo/ui/tokens';
 import React from 'react';
 import { styled } from 'react-native-css';
 
-const StyledSlider = styled(RNSlider as React.ComponentType<any>);
+const StyledSlider = styled(SliderComponent as React.ComponentType<any>);
 
 /**
  * Slider Component

@@ -216,7 +216,6 @@
       "expo-sqlite",
       "expo-video",
       "expo-notifications",
-      "@react-native-community/datetimepicker",
       [
         "expo-build-properties",
         {

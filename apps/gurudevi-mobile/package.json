@@ -89,11 +89,8 @@
     "@powersync/react-native": "2.4.1",
     "@powersync/web": "2.7.0",
     "@react-native-async-storage/async-storage": "3.1.1",
-    "@react-native-community/datetimepicker": "9.3.0",
     "@react-native-community/netinfo": "12.0.1",
-    "@react-native-community/slider": "5.2.2",
     "@react-native-masked-view/masked-view": "0.3.2",
-    "@react-native-picker/picker": "2.12.4",
     "@react-native-segmented-control/segmented-control": "2.5.9",
     "@react-native-vector-icons/lucide": "14.0.0",
     "@repo/accounting": "workspace:*",
@@ -119,7 +116,6 @@
     "@sentry/react-native": "8.36.0",
     "@shopify/flash-list": "2.3.3",
     "@shopify/react-native-skia": "^3.11.0",
-    "@stripe/stripe-react-native": "0.85.1",
     "@supabase/postgrest-js": "2.119.2",
     "@supabase/supabase-js": "^2.119.2",
     "@swmansion/react-native-bottom-sheet": "1.1.0",
@@ -212,7 +208,6 @@
     "i18next": "^27.2.2",
     "ieee754": "1.2.1",
     "invariant": "^2.2.4",
-    "isomorphic-webcrypto": "^2.3.8",
     "jpeg-js": "^0.4.4",
     "jsqr": "^1.4.0",
     "lottie-react-native": "~7.5.1",
@@ -347,7 +342,12 @@
         "react-native-pager-view",
         "react-native-keyboard-controller",
         "react-native-skia",
-        "@shopify/react-native-skia"
+        "@shopify/react-native-skia",
+        "react",
+        "react-dom",
+        "@shopify/flash-list",
+        "react-native-svg",
+        "@react-native-segmented-control/segmented-control"
       ]
     },
     "agent-cli": {

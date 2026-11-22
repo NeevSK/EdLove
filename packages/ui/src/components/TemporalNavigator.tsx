@@ -14,9 +14,13 @@ import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
  */
 const loadDateTimePicker = () => {
   try {
-    return require('@react-native-community/datetimepicker').default;
+    return require('@expo/ui/community/datetime-picker').default;
   } catch {
-    return null;
+    try {
+      return require('@react-native-community/datetimepicker').default;
+    } catch {
+      return null;
+    }
   }
 };
 

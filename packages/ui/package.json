@@ -918,7 +918,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@intuitui-labs/a11y-gate": "^0.2.0",
-    "@react-native-community/slider": "5.2.2",
+    "@expo/ui": "~58.0.29",
     "@repo/core": "workspace:*",
     "@repo/verger-react": "workspace:*",
     "@swmansion/react-native-bottom-sheet": "1.1.0",

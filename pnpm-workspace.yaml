@@ -114,6 +114,8 @@ publicHoistPattern:
 dedupePeerDependents: true
 
 overrides:
+  "@unimodules/core": '-'
+  "@unimodules/react-native-adapter": '-'
   # Hono 5 everywhere (owner, 2026-11-11). Dev tools that declare ^4 (MCP SDK 1.26+, @modelcontextprotocol/node,
   # ZenStack CLI, promptfoo) are forced onto it; each was smoke-tested. See docs/architecture/dependencies.md.
   hono: '5.0.0-rc.1'

@@ -1,6 +1,5 @@
 import { Button, Notice, Surface, Text } from '@repo/ui/components/native';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
-import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RoomPage } from '@/components/shell/RoomPage';
@@ -15,20 +14,9 @@ export function DemoFeeScreen() {
     setLoading(true);
     setError(null);
     try {
-      // Initialize payment sheet with demo amount
-      const { error } = await initPaymentSheet({
-        paymentIntentClientSecret: 'pi_demo_secret_demo', // would come from backend
-        merchantDisplayName: 'Gurudevi Demo',
-        style: 'automatic',
-      });
-      if (error) throw error;
-
-      const { error: presentError } = await presentPaymentSheet();
-      if (presentError) throw presentError;
-
-      // Record in accounting
-      // await recordFeeTransaction(userId, 1000);
-      showToast({ message: 'Demo payment completed successfully.', type: 'success' });
+      // Payments are processed on web per architectural decision (web-only checkout)
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      showToast({ message: 'Demo payment simulated successfully.', type: 'success' });
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Payment failed');
     } finally {
