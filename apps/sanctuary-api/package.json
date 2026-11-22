@@ -18,26 +18,26 @@
     "test:socket": "node ../../scripts/run-and-report.mjs --cmd \"vitest run src/__tests__/node-server.test.ts --reporter=default --reporter=json --outputFile.json=../../reports/evidence/G2.sanctuary-api-sockets.json\" --name apps_sanctuary-api-sockets --evidence-level G2"
   },
   "dependencies": {
-    "@hono/node-server": "^2.1.6",
-    "@orpc/client": "2.0.0-beta.50",
-    "@orpc/contract": "2.0.0-beta.50",
-    "@orpc/server": "2.0.0-beta.50",
+    "@hono/node-server": "^2.1.11",
+    "@orpc/client": "2.0.0-beta.52",
+    "@orpc/contract": "2.0.0-beta.52",
+    "@orpc/server": "2.0.0-beta.52",
     "@repo/core": "workspace:*",
     "@repo/policies": "workspace:*",
-    "effect": "^4.1.4",
+    "effect": "^4.1.5",
     "hono": "5.0.0-rc.1",
-    "jose": "6.2.15",
+    "jose": "6.2.18",
     "pg": "^8.23.1",
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.6.5",
+    "@biomejs/biome": "^2.6.8",
     "@types/pg": "^8.23.1",
-    "@vitest/coverage-v8": "^5.1.0",
+    "@vitest/coverage-v8": "^5.1.1",
     "cross-env": "^10.1.0",
     "tsup": "^9.0.0",
     "tsx": "^4.23.15",
     "typescript": "7.1.0-beta",
-    "vitest": "5.1.0"
+    "vitest": "5.1.1"
   }
 }

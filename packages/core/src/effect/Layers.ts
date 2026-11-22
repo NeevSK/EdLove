@@ -42,13 +42,11 @@ export const EntitlementLive = Layer.effect(
 );
 
 /** The signed permission snapshot, read and checked from the local PowerSync database. */
-export const PermissionSnapshotLive = Layer.effect(
-  PermissionSnapshotPort,
-  Effect.orDie(
-    Effect.tryPromise(() =>
-      import('@repo/core/adapters/powersync/permissionSnapshot.adapter').then(
-        (m) => m.powerSyncPermissionSnapshots,
-      ),
-    ),
-  ),
-);
+export const PermissionSnapshotLive = Layer.succeed(PermissionSnapshotPort, {
+  read: async (userId, scopeId) => {
+    const { powerSyncPermissionSnapshots } = await import(
+      '@repo/core/adapters/powersync/permissionSnapshot.adapter'
+    );
+    return powerSyncPermissionSnapshots.read(userId, scopeId);
+  },
+});

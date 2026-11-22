@@ -37,7 +37,15 @@ try {
     '--exclude=ios/build',
     '--exclude=ios/Pods',
     '--exclude=docs',
-    '--exclude=reports'
+    '--exclude=reports',
+    '--exclude=.tmp*',
+    '--exclude=.agents',
+    '--exclude=.claude',
+    '--exclude=.codex',
+    '--exclude=.cursor',
+    '--exclude=output',
+    '--exclude=*.txt',
+    '--exclude=*.log'
   ].join(' ');
 
   const syncCmd = `rsync -avq ${excludes} ${WSL_SOURCE}/ ${WSL_TARGET}/`;

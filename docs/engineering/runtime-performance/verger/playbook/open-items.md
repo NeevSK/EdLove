@@ -40,13 +40,17 @@ Read before any phase. Mark an item resolved with its commit and evidence; never
 
 ## Found in the 2026-10-29 consolidation (need Naveen's decision)
 
-- `apps/gurudevi-mobile/modules/runtime-pressure` (the old governor's native module) is still
-  autolinked: its `OnCreate` registers memory-trim and thermal listeners on every launch, but no
-  JavaScript reads it. `verger-android` senses both. Removing it needs sign-off (Deletion Veto).
-- `apps/gurudevi-mobile/src/boot/runtimePressureRecovery.ts` and `runtimeGovernorTelemetry.ts`
-  are imported only by their own tests; candidates for retirement with the module above.
-- The Android binding rewritten on Expo Modules API 2.0 is now in this checkout, but its Gradle compile and 48 JVM cases were
-  run in the isolated worktree only; re-run `pnpm verger:android-jvm` here before release.
+- **Resolved 2026-11-22 (Naveen Deletion Veto sign-off):** Retired `apps/gurudevi-mobile/modules/runtime-pressure`
+  (old governor's native module) so it no longer autolinks or registers duplicate memory-trim and thermal listeners.
+  Verified with `pnpm verger:check` (`ALL_PASS=1`) and mobile `tsc` (0 broken references).
+- **Resolved 2026-11-22 (Naveen Deletion Veto sign-off):** Retired `apps/gurudevi-mobile/src/boot/runtimePressureRecovery.ts`,
+  `runtimeGovernorTelemetry.ts`, and their two architecture unit tests alongside `modules/runtime-pressure`.
+- **Resolved 2026-11-22:** Verified the Expo Modules API 2.0 Android binding in this checkout against
+  `expo-modules-core@58.0.30` / `expo-modules-v2-gradle-plugin:0.2.7` / Gradle 9.4.1:
+  `pnpm verger:android-jvm` passed 42/42 (WSL Linux, API 36 `android.jar`) and
+  `.\gradlew.bat :repo-verger-android:testDebugUnitTest` passed 48 executed / 49 total (0 failures, 0 errors;
+  7/7 in `VergerModuleBindingTest`, 1 OS-gated skip in `ThreadCpuSamplerTest` on Windows without `/proc`).
+  Does not replace a rebuilt physical-device client run.
 - Uncommitted startup/splash edits in the `verger-android-v2` worktree (EntryShell,
   EntryStartupBoundary, SessionRouteGate, EntryLoadingSurface) are not verger work and were not
   brought in.

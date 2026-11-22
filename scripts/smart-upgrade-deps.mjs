@@ -124,6 +124,9 @@ const tazeScanCmd = [
   '-r',
   '--json',
   '--no-node-version',
+  '--ignore-paths',
+  '"**/.tmp-worktrees/**,**/native-capabilities/**"',
+  ...(isAudit ? ['-l'] : []),
   ...(exclusions.length > 0 ? ['--exclude', `"${exclusions.join(',')}"`] : []),
 ];
 
@@ -156,6 +159,8 @@ const minors = new Map();
 const patches = new Map();
 
 for (const pkg of packages) {
+  const rel = pkg.relative || '';
+  if (rel.startsWith('.tmp-worktrees/') || rel.startsWith('native-capabilities/')) continue;
   const deps = pkg.resolved || [];
   for (const dep of deps) {
     if (!dep.targetVersion || dep.currentVersion === dep.targetVersion) continue;

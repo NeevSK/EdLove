@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 3
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Check Keep-Alive Configuration
         id: check_config

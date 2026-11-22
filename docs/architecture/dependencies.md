@@ -51,17 +51,15 @@ packages have matured.
 
 | Package | Held at | Why | Re-check when |
 | --- | --- | --- | --- |
-| `@op-engineering/op-sqlite`, `@journeyapps/wa-sqlite`, `@powersync/*`, `expo-sqlite` | Current | Owner decision. These move together with the sync work | Sync connector is rebuilt |
-| `supabase` CLI | 2.x | Owner decision. 3.0 is a new major | Deliberate CLI migration |
+| `@op-engineering/op-sqlite`, `@journeyapps/wa-sqlite`, `@powersync/*`, `expo-sqlite` | Current | Owner decision. These move together with the sync work (`@powersync/react-native` also requires `op-sqlite <19.0.0`) | Sync connector is rebuilt |
 | `@babel/*` | 7.x | See [Babel 8](#babel-8) | Metro depends on `@babel/core ^8` |
-| `@react-native-async-storage/async-storage` | 2.2.0 | Expo SDK 58 expects exactly this. 3.x renames APIs and needs a device test because it holds auth data | Expo SDK moves, or a planned migration |
 | `@sentry/browser` | 10.x | `@sentry/react-native` is built on the 10 line; v11 would put two Sentry cores in one tree | `@sentry/react-native` moves to 11 |
 | `react-native-web` | 0.21 | Latest, and pulled in by Expo. Brings `inline-style-prefixer`, which looks old but is its latest (last published 2024) | RN Web is retired |
 | TypeScript 6 alias | `overrides` | ESLint (typescript-eslint and `eslint-plugin-sonarjs`) and ZenStack tooling need the TS 6 API. Everything else is on 7. Without the sonarjs alias, ESLint crashes on every file (`TypeFlags` undefined) | Those tools support 7 |
 
 Duplicates that remain come from tools, not the app: `eas-cli` brings older `@expo/*` packages,
 `vercel` brings its own `esbuild`, `rolldown` and `@types/node`, and `@rozenite/ui` brings older
-`lucide-react` and `tailwindcss`.
+`lucide-react` and `tailwindcss`. `devalue`, `glob`, and `katex` are pinned via `pnpm-workspace.yaml` `overrides` (pulled by `astro`/`svelte`, `@expo/config`/`jest`/`rimraf`, and `react-native-enriched-markdown`/`remark-math` respectively).
 
 ## Hono 5 everywhere
 

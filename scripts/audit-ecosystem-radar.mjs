@@ -178,6 +178,36 @@ function collectAllMonorepoDependencies() {
     } catch {}
   }
 
+  // Also scan pnpm-workspace.yaml overrides (catches override-only transitive pins like devalue, glob, katex)
+  const wsYamlPath = path.join(ROOT_DIR, 'pnpm-workspace.yaml');
+  if (existsSync(wsYamlPath)) {
+    try {
+      const wsLines = readFileSync(wsYamlPath, 'utf8').split(/\r?\n/);
+      let inOverrides = false;
+      for (const line of wsLines) {
+        if (/^overrides:\s*$/.test(line.trimEnd())) {
+          inOverrides = true;
+          continue;
+        }
+        if (inOverrides && /^[a-zA-Z]/.test(line)) {
+          inOverrides = false;
+          continue;
+        }
+        if (!inOverrides) continue;
+        const m = line.match(/^\s*(['"]?)([^'":\s]+)\1\s*:\s*(['"]?)([^'"\s#]+)\3/);
+        if (!m) continue;
+        const [, , name, , rawVer] = m;
+        if (name.includes('>') || rawVer === '*' || rawVer.startsWith('link:') || rawVer.startsWith('npm:')) continue;
+        if (!allDeps.has(name)) {
+          allDeps.set(name, { name, versions: new Map() });
+        }
+        const item = allDeps.get(name);
+        if (!item.versions.has(rawVer)) item.versions.set(rawVer, []);
+        item.versions.get(rawVer).push('pnpm-workspace.yaml (overrides)');
+      }
+    } catch {}
+  }
+
   return allDeps;
 }
 

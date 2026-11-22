@@ -121,7 +121,7 @@ jobs:
           EOF
           
           # Apply all migrations
-          pnpm supabase db reset --linked
+          pnpm supabase db reset --remote --yes
         env:
           SUPABASE_URL: http://localhost:5432
           SUPABASE_SERVICE_ROLE_KEY: postgres
