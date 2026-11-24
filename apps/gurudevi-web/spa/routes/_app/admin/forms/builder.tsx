@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { FormBuilderFloor } from '../../../../../app/(sanctuary)/admin/forms/builder/FormBuilderFloor';
 import { useSession } from '../../../../surface/session';
 
 export const Route = createFileRoute('/_app/admin/forms/builder')({
-  head: () => ({ meta: [{ title: 'Form Builder | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Form Builder | Gurudevi App' }] }),
   component: AdminFormsBuilderScreen,
 });
 

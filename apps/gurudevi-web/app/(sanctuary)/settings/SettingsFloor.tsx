@@ -1,11 +1,14 @@
 import type { WorkspaceAppearanceMotion } from '@repo/core/types';
-import type { WorldId } from '@repo/ui/theme';
-import { WorldPicker } from '@repo/ui/components/web';
-import { Link } from '@tanstack/react-router';
+import { DEFAULT_WORLD, type WorldId } from '@repo/ui/theme';
+import { Button, Dialog, Notice, WorldPicker } from '@repo/ui/components/web';
+import { Link, useRouter } from '@tanstack/react-router';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { AccountDeletion } from '@repo/core/api/v1/contract';
 import type { FidelityPreference } from '@repo/core/verger';
 import React, { useEffect, useState } from 'react';
 import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { useWebFidelity, writeWebFidelity } from '../../../lib/runtime/webFidelity';
+import { executeSovereignSignOut } from '../../../lib/sanctuary/signOut';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
 import {
   getClientConsentStatus,
@@ -15,6 +18,313 @@ import {
 import { useTranslation } from '../../../lib/i18n';
 import { useWorldTheme } from '../../../lib/theme/useWorldTheme';
 import styles from './settings.module.css';
+
+function statusText(request: AccountDeletion): string {
+  if (request.status === 'pending_verification')
+    return 'Your deletion request is pending verification under PDPA statutory review.';
+  if (request.status === 'scheduled')
+    return 'Your deletion request is scheduled for permanent processing.';
+  if (request.status === 'cancelled')
+    return 'Your deletion request was cancelled.';
+  return `Deletion request status: ${request.status}.`;
+}
+
+function SanctuaryConnectedDangerZoneBox({ displayName }: { displayName: string }) {
+  const { sources, commands } = useRouter().options.context;
+  const queryClient = useQueryClient();
+  const source = sources.accountDeletion();
+  const request = useQuery(source);
+  const change = useMutation({
+    mutationFn: (action: 'request' | 'cancel') =>
+      action === 'request' ? commands.requestAccountDeletion() : commands.cancelAccountDeletion(),
+    onSuccess: (next) => {
+      queryClient.setQueryData(source.queryKey, next);
+      void queryClient.invalidateQueries({ queryKey: source.queryKey });
+    },
+  });
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const current = change.data ?? request.data ?? null;
+  const canCancel = current?.status === 'pending_verification' || current?.status === 'scheduled';
+  const submitting = change.isPending;
+
+  return (
+    <div className={styles.dangerBox}>
+      <div className={styles.dangerBoxHeader}>
+        <h3 className={styles.dangerBoxTitle}>Permanent Account Deletion Review</h3>
+        {canCancel && (
+          <span
+            style={{
+              padding: '0.2rem 0.65rem',
+              borderRadius: '999px',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              background: 'color-mix(in srgb, var(--w-danger, #b3261e) 15%, transparent)',
+              color: 'var(--w-danger, #b3261e)',
+              border: '1px solid var(--w-danger, #b3261e)',
+            }}
+          >
+            ● Deletion Requested
+          </span>
+        )}
+      </div>
+
+      <p className={styles.dangerBoxText}>
+        Requesting deletion begins a protected 30-day review under PDPA No. 9 of 2022. It does not erase your account
+        immediately; institutional academic, attendance, and safeguarding records bonded to real school entities are
+        retained as required by Sri Lankan national education law.{' '}
+        <a
+          href="https://gurudevi.app/delete-account"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'var(--w-ink, #131e27)', textDecoration: 'underline', fontWeight: 600 }}
+        >
+          Read the statutory Right to Erasure protocol ↗
+        </a>
+      </p>
+
+      {request.isPending && (
+        <p style={{ fontSize: '0.8rem', color: 'var(--w-ink-subtle, #5c5042)' }} role="status">
+          Checking account deletion status…
+        </p>
+      )}
+
+      {change.isError && (
+        <Notice
+          tone="danger"
+          title="Action Failed"
+          message="We could not update your deletion request. Please try again."
+        />
+      )}
+
+      {current && (
+        <Notice
+          tone={canCancel ? 'danger' : 'neutral'}
+          title="Protected Review Status"
+          message={statusText(current)}
+        />
+      )}
+
+      <div className={styles.dangerActionFooter}>
+        {canCancel ? (
+          <Button
+            variant="secondary"
+            label={submitting ? 'Cancelling…' : 'Cancel Deletion Request'}
+            loading={submitting}
+            onClick={() => change.mutate('cancel')}
+          />
+        ) : (
+          <Button
+            variant="danger"
+            label={submitting ? 'Submitting…' : 'Request Account Deletion'}
+            disabled={request.isPending || submitting}
+            loading={submitting}
+            onClick={() => setConfirmOpen(true)}
+          />
+        )}
+      </div>
+
+      <Dialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Request Permanent Account Deletion?"
+        description={`Are you sure you want to request permanent deletion for ${displayName}? This will queue your account for statutory review under Sri Lanka PDPA No. 9 of 2022. You can cancel this request anytime before the review completes.`}
+        actions={
+          <>
+            <Button
+              variant="quiet"
+              label="Keep Account"
+              onClick={() => setConfirmOpen(false)}
+            />
+            <Button
+              variant="danger"
+              label="Yes, Request Deletion"
+              loading={submitting}
+              onClick={() => {
+                setConfirmOpen(false);
+                change.mutate('request');
+              }}
+            />
+          </>
+        }
+      />
+    </div>
+  );
+}
+
+function SanctuaryStaticDangerZoneBox({ displayName }: { displayName: string }) {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [requested, setRequested] = useState(false);
+
+  return (
+    <div className={styles.dangerBox}>
+      <h3 className={styles.dangerBoxTitle}>Permanent Account Deletion Review</h3>
+      <p className={styles.dangerBoxText}>
+        Requesting deletion begins a protected review under PDPA No. 9 of 2022. It does not erase your account
+        immediately; institutional academic, attendance, and safeguarding records are retained as required by national law.
+      </p>
+
+      {requested && (
+        <Notice
+          tone="danger"
+          title="Deletion Requested"
+          message="Your request has been queued for protected statutory verification."
+        />
+      )}
+
+      <div className={styles.dangerActionFooter}>
+        {requested ? (
+          <Button
+            variant="secondary"
+            label="Cancel Deletion Request"
+            onClick={() => setRequested(false)}
+          />
+        ) : (
+          <Button
+            variant="danger"
+            label="Request Account Deletion"
+            onClick={() => setConfirmOpen(true)}
+          />
+        )}
+      </div>
+
+      <Dialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Request Permanent Account Deletion?"
+        description={`Are you sure you want to request permanent deletion for ${displayName}? This initiates a statutory review under PDPA No. 9 of 2022.`}
+        actions={
+          <>
+            <Button
+              variant="quiet"
+              label="Keep Account"
+              onClick={() => setConfirmOpen(false)}
+            />
+            <Button
+              variant="danger"
+              label="Yes, Request Deletion"
+              onClick={() => {
+                setConfirmOpen(false);
+                setRequested(true);
+              }}
+            />
+          </>
+        }
+      />
+    </div>
+  );
+}
+
+function ExploreDangerZoneBox() {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  function handleWipe() {
+    try {
+      window.sessionStorage?.clear();
+      const exploreKeys = Object.keys(window.localStorage).filter((k) =>
+        k.startsWith('gurudevi') || k.includes('explore') || k.includes('appearance') || k.includes('mode'),
+      );
+      for (const key of exploreKeys) {
+        window.localStorage.removeItem(key);
+      }
+    } catch {
+      // Storage unavailable in strict private mode
+    }
+    window.location.replace('/welcome');
+  }
+
+  return (
+    <div className={styles.dangerBox}>
+      <div className={styles.dangerBoxHeader}>
+        <h3 className={styles.dangerBoxTitle}>Wipe Local Sandbox & Offline Cache</h3>
+        <span className={styles.sessionBadge}>Zero Server Data</span>
+      </div>
+      <p className={styles.dangerBoxText}>
+        In Guest House mode, no credentials or database records exist on our servers. You can completely wipe all locally
+        saved sandbox reflections, attendance experiments, and offline preferences from this browser.
+      </p>
+
+      <div className={styles.dangerActionFooter}>
+        <Button
+          variant="danger"
+          label="Wipe Local Sandbox Data"
+          onClick={() => setConfirmOpen(true)}
+        />
+      </div>
+
+      <Dialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Wipe Local Sandbox Data?"
+        description="This will clear all demo journal entries, local attendance marks, and theme settings from this browser's temporary storage, returning you to the clean Welcome screen."
+        actions={
+          <>
+            <Button
+              variant="quiet"
+              label="Cancel"
+              onClick={() => setConfirmOpen(false)}
+            />
+            <Button
+              variant="danger"
+              label="Wipe & Exit Guest House"
+              onClick={() => {
+                setConfirmOpen(false);
+                handleWipe();
+              }}
+            />
+          </>
+        }
+      />
+    </div>
+  );
+}
+
+interface DangerZoneProps {
+  isExplore?: boolean;
+  displayName: string;
+}
+
+function DangerZoneSection({ isExplore, displayName }: DangerZoneProps) {
+  let hasRouterAndClient = false;
+  try {
+    const router = useRouter();
+    if (typeof router?.options?.context?.sources?.accountDeletion === 'function') {
+      hasRouterAndClient = true;
+    }
+  } catch {
+    hasRouterAndClient = false;
+  }
+
+  return (
+    <section className={styles.dangerZoneSection} aria-labelledby="danger-zone-title">
+      <div className={styles.dangerBoxHeader}>
+        <h2 className={styles.dangerTitle} id="danger-zone-title">
+          <span aria-hidden="true">⚠️</span>
+          <span>Danger Zone</span>
+        </h2>
+        <span
+          className={styles.capacityBadge}
+          style={{ borderColor: 'var(--w-danger, #b3261e)', color: 'var(--w-danger, #b3261e)' }}
+        >
+          {isExplore ? 'Guest Sandbox' : 'Irrevocable Actions'}
+        </span>
+      </div>
+      <p className={styles.dangerDescription}>
+        {isExplore
+          ? 'Manage destructive local sandbox actions and wipe temporary browser artifacts.'
+          : 'Actions here carry permanent or legal retention consequences under the Sri Lanka Personal Data Protection Act (PDPA No. 9 of 2022).'}
+      </p>
+
+      {isExplore ? (
+        <ExploreDangerZoneBox />
+      ) : hasRouterAndClient ? (
+        <SanctuaryConnectedDangerZoneBox displayName={displayName} />
+      ) : (
+        <SanctuaryStaticDangerZoneBox displayName={displayName} />
+      )}
+    </section>
+  );
+}
 
 interface SettingsFloorProps {
   displayName: string;
@@ -45,6 +355,36 @@ export function SettingsFloor({
   const [pushNotifications, setPushNotifications] = useState(true);
   const [dailyReflections, setDailyReflections] = useState(true);
   const [communityAlerts, setCommunityAlerts] = useState(true);
+
+  // Safe Session Actions state
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState<string | null>(null);
+  const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
+  const [isExitGuestDialogOpen, setIsExitGuestDialogOpen] = useState(false);
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    setSignOutError(null);
+    try {
+      await executeSovereignSignOut('/');
+    } catch (cause) {
+      setIsSigningOut(false);
+      setSignOutError(
+        cause instanceof Error
+          ? cause.message
+          : 'We could not complete sign out. Please try again before leaving this device.',
+      );
+    }
+  };
+
+  const handleResetAppearance = () => {
+    setWorld(DEFAULT_WORLD);
+    setMode('system');
+    handleMotionChange('subtle');
+    handleFidelityChange('auto');
+    setSavedNotification('Appearance restored to neutral default.');
+    setTimeout(() => setSavedNotification(null), 3000);
+  };
 
   // Remote sync for authenticated accounts
   const syncPreferenceToCloud = async (updates: Record<string, unknown>) => {
@@ -279,6 +619,7 @@ export function SettingsFloor({
   return (
     <SanctuaryFloorCanvas domain="settings" titleId="settings-title" breadcrumb="Settings · Preferences">
       <div className={styles.container}>
+        <h1 id="settings-title" className={styles.srOnly}>Sanctuary Settings</h1>
         {isExplore && (
           <div
             style={{
@@ -594,34 +935,115 @@ export function SettingsFloor({
           </div>
         </section>
 
-        {/* Profile & Capacity Summary */}
-        <section className={styles.settingSection}>
+        {/* Account Perspective & Safe Session Actions */}
+        <section className={styles.settingSection} style={{ gridColumn: '1 / -1' }}>
           <h2 className={styles.sectionTitle}>
             <span>👤</span>
-            <span>Account & Institutional Perspective</span>
+            <span>Account & Active Session</span>
           </h2>
           <p className={styles.sectionDescription}>
-            Signed in as <strong>{displayName}</strong>
-            {capacity ? ` in active capacity: ${capacity}.` : '.'}
+            Manage your authenticated identity, active institutional perspective, and safe session controls for this browser.
           </p>
-          {capacity && (
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <span
-                style={{
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: '999px',
-                  background: 'var(--color-paper, #f7f2e8)',
-                  border: '1px solid var(--color-line, rgba(104, 94, 85, 0.2))',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  color: 'var(--color-ink, #131e27)',
-                }}
-              >
-                {capacity}
-              </span>
+
+          <div className={styles.accountCard}>
+            <div className={styles.accountIdentity}>
+              <div className={styles.accountAvatar} aria-hidden="true">
+                {displayName ? displayName.charAt(0).toUpperCase() : 'G'}
+              </div>
+              <div className={styles.accountDetails}>
+                <div className={styles.accountName}>
+                  Signed in as <strong>{displayName}</strong>
+                  {capacity ? ` in active capacity: ${capacity}.` : '.'}
+                </div>
+                <div className={styles.accountBadges}>
+                  {capacity && <span className={styles.capacityBadge}>{capacity}</span>}
+                  <span className={styles.sessionBadge}>
+                    {isExplore ? '🌿 Guest Explorer Lens' : '🛡️ Authenticated Sanctuary Session'}
+                  </span>
+                  {accountId && <span className={styles.accountIdText}>ID: {accountId}</span>}
+                </div>
+              </div>
             </div>
+
+            <div className={styles.safeActionsRow}>
+              {isExplore ? (
+                <Button
+                  variant="secondary"
+                  label="Exit Guest House"
+                  onClick={() => setIsExitGuestDialogOpen(true)}
+                />
+              ) : (
+                <Button
+                  variant="secondary"
+                  label={isSigningOut ? 'Signing out…' : 'Sign out of this device'}
+                  loading={isSigningOut}
+                  onClick={() => setIsSignOutDialogOpen(true)}
+                />
+              )}
+              <Button
+                variant="quiet"
+                label="Restore Default Appearance"
+                onClick={handleResetAppearance}
+              />
+            </div>
+          </div>
+
+          {signOutError && (
+            <Notice
+              tone="danger"
+              title="Sign out incomplete"
+              message={signOutError}
+            />
           )}
+
+          <Dialog
+            open={isSignOutDialogOpen}
+            onClose={() => setIsSignOutDialogOpen(false)}
+            title="Sign out of Gurudevi?"
+            description="This will securely end your session on this device and clear temporary browser cache. Your cloud data, school enrollments, and journal records remain safely synchronized."
+            actions={
+              <>
+                <Button
+                  variant="quiet"
+                  label="Stay Signed In"
+                  onClick={() => setIsSignOutDialogOpen(false)}
+                />
+                <Button
+                  variant="primary"
+                  label="Sign Out"
+                  loading={isSigningOut}
+                  onClick={() => {
+                    setIsSignOutDialogOpen(false);
+                    void handleSignOut();
+                  }}
+                />
+              </>
+            }
+          />
+
+          <Dialog
+            open={isExitGuestDialogOpen}
+            onClose={() => setIsExitGuestDialogOpen(false)}
+            title="Exit Guest House?"
+            description="Return to the Gurudevi Welcome screen. Your offline guest preferences will remain saved on this device."
+            actions={
+              <>
+                <Button
+                  variant="quiet"
+                  label="Stay Here"
+                  onClick={() => setIsExitGuestDialogOpen(false)}
+                />
+                <Button
+                  variant="primary"
+                  label="Return to Welcome"
+                  onClick={() => {
+                    setIsExitGuestDialogOpen(false);
+                    window.location.replace('/welcome');
+                  }}
+                />
+              </>
+            }
+          />
         </section>
 
         {/* Sensory Acoustics & Quiet Mode */}
@@ -809,6 +1231,9 @@ export function SettingsFloor({
             </div>
           </div>
         </section>
+
+        {/* Danger Zone: Protected & Irrevocable Operations */}
+        <DangerZoneSection isExplore={isExplore} displayName={displayName} />
       </div>
     </div>
     </SanctuaryFloorCanvas>

@@ -6,6 +6,8 @@
   margin: 0 auto;
   padding: 1.5rem;
   font-family: inherit;
+  container-name: atlas-floor;
+  container-type: inline-size;
 }
 
 .header {
@@ -14,7 +16,7 @@
 }
 
 .eyebrow {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-gold-deep, #9a5b2d);
@@ -48,7 +50,7 @@
 }
 
 .roleBarLabel {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   font-weight: 700;
   color: var(--color-ink, #2d261e);
   text-transform: uppercase;
@@ -65,12 +67,13 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.6rem 1rem;
+  min-height: 48px;
+  padding: 0.6rem 1.15rem;
   border-radius: 0.5rem;
   border: 1px solid var(--color-border, #d9cec2);
   background: #ffffff;
   color: var(--color-ink, #2d261e);
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
@@ -94,9 +97,9 @@
 }
 
 .roleSummaryBox {
-  font-size: 0.85rem;
+  font-size: 0.9375rem;
   color: var(--color-ink-muted, #665b52);
-  padding: 0.5rem 0.75rem;
+  padding: 0.6rem 0.85rem;
   background: rgba(255, 255, 255, 0.6);
   border-radius: 0.4rem;
   border-left: 3px solid var(--color-gold-deep, #9a5b2d);
@@ -113,8 +116,9 @@
 .searchInput {
   flex: 1;
   min-width: 280px;
+  min-height: 48px;
   padding: 0.65rem 1rem;
-  font-size: 0.95rem;
+  font-size: 16px;
   border: 1px solid var(--color-border, #d9cec2);
   border-radius: 0.5rem;
   background: #ffffff;
@@ -134,14 +138,17 @@
 }
 
 .categoryButton {
-  padding: 0.35rem 0.75rem;
-  font-size: 0.8rem;
+  padding: 0.45rem 0.85rem;
+  min-height: 44px;
+  font-size: 0.875rem;
   font-weight: 600;
   border-radius: 1rem;
   border: 1px solid var(--color-border, #d9cec2);
   background: #ffffff;
   color: var(--color-ink-muted, #665b52);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
 }
 
 .categoryButtonActive {
@@ -160,16 +167,20 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: #ffffff;
+  background: var(--paper-light, #ffffff);
   border: 1px solid var(--color-border, #e5dcd1);
+  border-top: 1px solid color-mix(in srgb, var(--color-gold-deep, #9a5b2d) 24%, var(--color-border, #e5dcd1));
   border-radius: 0.75rem;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-gold-deep, #9a5b2d) 14%, transparent),
+              0 2px 8px rgba(45, 38, 30, 0.04);
   padding: 1.25rem;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .screenCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-gold-deep, #9a5b2d) 28%, transparent),
+              0 8px 20px rgba(45, 38, 30, 0.08);
   border-color: #d1c0b0;
 }
 
@@ -188,10 +199,10 @@
 }
 
 .categoryBadge {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 0.15rem 0.45rem;
+  padding: 0.2rem 0.55rem;
   border-radius: 0.25rem;
   background: var(--color-paper-light, #fbf7f0);
   border: 1px solid var(--color-border, #e5dcd1);
@@ -207,7 +218,7 @@
 }
 
 .cardJob {
-  font-size: 0.88rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--color-ink-muted, #665b52);
   margin: 0;
@@ -215,15 +226,15 @@
 }
 
 .cardDesc {
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   color: var(--color-ink-muted, #7a6e63);
   margin: 0.5rem 0;
   line-height: 1.45;
 }
 
 .legacyNote {
-  font-size: 0.75rem;
-  padding: 0.35rem 0.55rem;
+  font-size: 0.875rem;
+  padding: 0.45rem 0.65rem;
   background: #faf7f2;
   border: 1px dashed #d9cec2;
   border-radius: 0.35rem;
@@ -247,10 +258,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1rem;
+  min-height: 48px;
+  padding: 0.6rem 1.15rem;
   background: var(--color-gold-deep, #9a5b2d);
   color: #ffffff;
-  font-size: 0.88rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   text-decoration: none;
   border-radius: 0.4rem;
@@ -263,12 +275,74 @@
 }
 
 .mobileRouteTag {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-family: monospace;
   color: #7a6e63;
   word-break: break-all;
-  padding: 0.2rem 0.4rem;
+  padding: 0.25rem 0.5rem;
   background: #f5f2ed;
   border-radius: 0.25rem;
+}
+
+/* ─── 4-Gear Container Degradation (UI Kit & Intentional UI) ─── */
+@container atlas-floor (max-width: 519px) {
+  /* Gear 2: Single-column stack & full-width search */
+  .filterBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .searchInput {
+    min-width: 100%;
+    width: 100%;
+  }
+
+  .screenGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .openLink {
+    min-height: 48px;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@container atlas-floor (max-width: 379px) {
+  /* Gear 1: Vertical touch ergonomics, strict >= 48px touch targets */
+  .container {
+    padding: 1rem 0.75rem;
+    gap: 1.25rem;
+  }
+
+  .roleBar {
+    padding: 0.85rem;
+  }
+
+  .rolePill {
+    min-height: 48px;
+    padding: 0.5rem 0.85rem;
+  }
+
+  .categoryButton {
+    min-height: 44px;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .screenCard {
+    padding: 1rem;
+  }
+}
+
+@container atlas-floor (max-width: 319px) {
+  /* Gear 0: Ultra-narrow fallback */
+  .title {
+    font-size: 1.6rem;
+  }
+
+  .screenCard {
+    padding: 0.75rem;
+  }
 }
 

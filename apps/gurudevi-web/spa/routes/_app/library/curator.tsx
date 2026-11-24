@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { CuratorReviewDesk } from '../../../../app/(sanctuary)/library/curator/CuratorReviewDesk';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/library/curator')({
-  head: () => ({ meta: [{ title: 'Curator Studio | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Curator Studio | Gurudevi App' }] }),
   component: LibraryCuratorScreen,
 });
 

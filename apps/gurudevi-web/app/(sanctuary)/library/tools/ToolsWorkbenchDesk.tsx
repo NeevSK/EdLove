@@ -206,10 +206,10 @@ export function ToolsWorkbenchDesk({ displayName }: Readonly<ToolsWorkbenchDeskP
             value={activeTool}
             onChange={setActiveTool}
             options={[
-              { value: 'spreadsheet', label: 'Spreadsheet Grid' },
-              { value: 'ocr', label: 'OCR Vision' },
-              { value: 'compiler', label: 'Study Packet' },
-              { value: 'export', label: 'Cloud Export' },
+              { value: 'spreadsheet', label: '📊 Spreadsheet Grid' },
+              { value: 'ocr', label: '👁️ OCR Vision' },
+              { value: 'compiler', label: '📦 Study Packet' },
+              { value: 'export', label: '💾 Cloud Export' },
             ]}
           />
         </div>

@@ -12,8 +12,8 @@ import { useSession } from './session';
  */
 export function FloorGate({ children }: Readonly<{ children: ReactNode }>) {
   const { pathname } = useLocation();
-  const { capacity } = useSession();
+  const { capacity, surface } = useSession();
   const feature = workspaceFeatureAt(pathname);
-  if (feature && !isOnWorkspaceFloor(capacity, feature.id)) return <GoTo to="/workspace" />;
+  if (surface !== 'explore' && feature && !isOnWorkspaceFloor(capacity, feature.id)) return <GoTo to="/workspace" />;
   return children;
 }

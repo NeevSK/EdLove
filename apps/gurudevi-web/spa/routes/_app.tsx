@@ -1,3 +1,5 @@
+import { WEB_MEDIA_ADAPTERS } from '../../lib/media/WebMediaAdapters';
+import { MediaAdapters } from '@repo/ui/components/web';
 import { GoTo } from '../surface/navigation';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, Outlet, useLocation } from '@tanstack/react-router';
@@ -58,9 +60,11 @@ function Frame({ session }: { readonly session: Session }) {
       activeCapacity={session.capacity}
       unreadNotifications={unreadCount(notifications)}
     >
-      <FloorGate>
-        <Outlet />
-      </FloorGate>
+      <MediaAdapters adapters={WEB_MEDIA_ADAPTERS}>
+        <FloorGate>
+          <Outlet />
+        </FloorGate>
+      </MediaAdapters>
     </SanctuaryShell>
   );
 }

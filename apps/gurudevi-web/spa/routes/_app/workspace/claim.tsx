@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { ClaimSpotFloor } from '../../../../app/(sanctuary)/workspace/claim/ClaimSpotFloor';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/claim')({
-  head: () => ({ meta: [{ title: 'Claim My Student Spot | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Claim My Student Spot | Gurudevi App' }] }),
   component: WorkspaceClaimScreen,
 });
 

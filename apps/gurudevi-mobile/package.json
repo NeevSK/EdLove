@@ -79,6 +79,7 @@
     "@expo/fingerprint": "~0.21.10",
     "@expo/metro-runtime": "~58.0.17",
     "@expo/ui": "~58.0.29",
+    "@intuitui-labs/a11y-gate": "link:C:/projects/packages/a11y-gate",
     "@journeyapps/wa-sqlite": "^1.7.2",
     "@legendapp/list": "3.7.3",
     "@lottiefiles/dotlottie-react": "^0.22.3",

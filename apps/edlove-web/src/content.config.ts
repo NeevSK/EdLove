@@ -59,6 +59,7 @@ const journal = defineCollection({
     contentKind: z
       .enum(['original', 'curated', 'licensed', 'guest', 'translation'])
       .default('original'),
+    arm: z.enum(['foundation', 'research', 'care', 'tech']).optional(),
     authorId: z.string().optional(),
     author: z.string().default('EdLove'),
     scribe: z.string().default('Antigravity'),

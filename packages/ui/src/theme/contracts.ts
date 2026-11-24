@@ -125,6 +125,8 @@ export interface CardContract {
   /** An image or illustration; the card clips it to its corners. */
   media?: ReactNode;
   icon?: ComponentType<KitIconProps>;
+  /** Central emoji or glyph illustration (rendered in place of icon) */
+  emoji?: string;
   selected?: boolean;
   disabled?: boolean;
 }
@@ -278,6 +280,24 @@ export interface DocumentContract {
   /** Shown when no adapter can draw this kind, and on failure. */
   onOpenElsewhere?: () => void;
 }
+
+/** Interactive H5P package rendered by an app-supplied host adapter. */
+export interface H5pAdapterProps {
+  /** Extracted H5P package base URL (ending in `/`) or `.h5p` pack identifier. */
+  packageUrl: string;
+  /** Optional shared libraries base URL. */
+  librariesUrl?: string;
+  /** Optional saved H5P state JSON string. */
+  previousState?: string;
+  /** Accessible title for the embedded player frame. */
+  title?: string;
+  onReady?: () => void;
+  onXapi?: (statement: unknown) => void;
+  onStateChange?: (state: string) => void;
+  onError?: (message: string) => void;
+}
+
+export type H5pContract = H5pAdapterProps;
 
 /**
  * A rating or agreement scale (Likert, 1–5 stars, 0–10). One choice from

@@ -1,8 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { ClassroomInvitation } from '../../../app/(sanctuary)/c/[code]/ClassroomInvitation';
 
 export const Route = createFileRoute('/c/$code')({
-  head: () => ({ meta: [{ title: 'Classroom Invitation | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Classroom Invitation | Gurudevi App' }] }),
   component: ClassroomInvitationScreen,
 });
 

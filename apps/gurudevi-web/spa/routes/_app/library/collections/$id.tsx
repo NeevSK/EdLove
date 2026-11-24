@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { CollectionShelfDesk } from '../../../../../app/(sanctuary)/library/collections/[id]/CollectionShelfDesk';
 import { useSession } from '../../../../surface/session';
 
 export const Route = createFileRoute('/_app/library/collections/$id')({
-  head: () => ({ meta: [{ title: 'Collection Details | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Collection Details | Gurudevi App' }] }),
   component: LibraryCollectionsIdScreen,
 });
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   calculateApca,
+  DUAL_STANDARD_DOCTRINE,
   evaluateApca,
   evaluateCompositedContrast,
   evaluateWcag,
@@ -18,23 +19,24 @@ import {
  * - Strict Veto on Low-Contrast Yellows for Text
  */
 
-describe('Rigorous WCAG 3.0 / APCA & Dual-Standard Contrast Quality Gate', () => {
-  const surfaces = {
-    warmPaper: '#FAF7F2',
-    alabasterVellum: '#FCFBF9', // New serene, non-yellow high-luminance canvas
-    pureWhite: '#FFFFFF',
-    creamSilence: '#F7F2E8',
-    darkInk: '#0f172a',
-  };
+const surfaces = {
+  warmPaper: '#FAF7F2',
+  alabasterVellum: '#FCFBF9', // New serene, non-yellow high-luminance canvas
+  pureWhite: '#FFFFFF',
+  creamSilence: '#F7F2E8',
+  darkInk: '#0f172a',
+};
 
-  const inkTokens = {
-    primaryInk: '#0f172a', // Deepest obsidian slate ink
-    secondaryInk: '#1e293b', // Deep twilight slate ink
-    mutedInk: '#334155', // Authoritative slate ink for metadata
-    forbiddenYellow: '#E7CB16', // Low-contrast yellow (prohibited for text)
-    goldenRadiance: '#E5B54F', // Accent for dark surfaces
-    sacredWhite: '#FCFBF9', // Inverse text on dark cards
-  };
+const inkTokens = {
+  primaryInk: '#0f172a', // Deepest obsidian slate ink
+  secondaryInk: '#1e293b', // Deep twilight slate ink
+  mutedInk: '#334155', // Authoritative slate ink for metadata
+  forbiddenYellow: '#E7CB16', // Low-contrast yellow (prohibited for text)
+  goldenRadiance: '#E5B54F', // Accent for dark surfaces
+  sacredWhite: '#FCFBF9', // Inverse text on dark cards
+};
+
+describe('Rigorous WCAG 3.0 / APCA & Dual-Standard Contrast Quality Gate', () => {
 
   it('enforces WCAG 3 / APCA body text criteria (|Lc| >= 75) on light surfaces', () => {
     // 1. Primary ink on warm paper
@@ -177,7 +179,7 @@ describe('@intuitui-labs/a11y-gate Comprehensive Gate & Adversarial SRE Suite', 
         role: 'body',
       },
       hotspots: {
-        fieldModalities: ['text-typing', 'tap-pill', 'segmented-picker', 'slider'],
+        fieldModalities: ['text-typing', 'tap-pill', 'picker-search', 'scrubbing-slider'],
         minAdqThreshold: 0.35,
         maxConsecutiveMonotonyThreshold: 3,
       },
@@ -251,5 +253,26 @@ describe('@intuitui-labs/a11y-gate Comprehensive Gate & Adversarial SRE Suite', 
         e.includes('Touch hit target (32px) is below the physical 44px thumb contact floor'),
       ),
     ).toBe(true);
+  });
+
+  it('strictly validates Dual-Standard Governance: WCAG 2.2 Statutory Baseline vs WCAG 3 Sovereign Adopted Standard', () => {
+    expect(DUAL_STANDARD_DOCTRINE.baselineCompliance).toContain('WCAG 2.2');
+    expect(DUAL_STANDARD_DOCTRINE.adoptedStandard).toContain('WCAG 3.0');
+
+    // 1. Statutory Compliance Baseline: WCAG 2.2 AA (>= 4.5:1 normal body, >= 3.0:1 large)
+    const wcagPrimary = evaluateWcag(inkTokens.primaryInk, surfaces.alabasterVellum);
+    expect(wcagPrimary.ratio).toBeGreaterThanOrEqual(DUAL_STANDARD_DOCTRINE.thresholds.baseline.normalTextContrast);
+    expect(wcagPrimary.passesAaNormal).toBe(true);
+
+    // 2. Sovereign Adopted Standard: WCAG 3.0 / APCA (|Lc| >= 75 body, |Lc| >= 60 large)
+    const apcaPrimary = evaluateApca(inkTokens.primaryInk, surfaces.alabasterVellum);
+    expect(apcaPrimary.absLc).toBeGreaterThanOrEqual(DUAL_STANDARD_DOCTRINE.thresholds.adopted.bodyTextLc);
+    expect(apcaPrimary.passesBodyText).toBe(true);
+
+    // 3. Accent Gold strictly satisfies WCAG 2.2 AA baseline while reaching APCA large/UI tier on dark canvas
+    const wcagGold = evaluateWcag(inkTokens.goldenRadiance, surfaces.darkInk);
+    expect(wcagGold.ratio).toBeGreaterThanOrEqual(DUAL_STANDARD_DOCTRINE.thresholds.baseline.largeTextContrast);
+    const apcaGoldDark = evaluateApca(inkTokens.goldenRadiance, surfaces.darkInk);
+    expect(apcaGoldDark.absLc).toBeGreaterThanOrEqual(DUAL_STANDARD_DOCTRINE.thresholds.adopted.largeTextLc);
   });
 });

@@ -1,4 +1,4 @@
-import { LivingGround } from '@repo/ui/components/web';
+﻿import { LivingGround } from '@repo/ui/components/web';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { GatewayFooter } from '../../../app/(sanctuary)/components/GatewayFooter';
 import { GatewayHeader } from '../../../app/(sanctuary)/components/GatewayHeader';
@@ -6,7 +6,7 @@ import { OnboardingForm } from '../../../app/(sanctuary)/onboarding/OnboardingFo
 import styles from '../../../app/(sanctuary)/onboarding/onboarding.module.css';
 
 export const Route = createFileRoute('/_account/onboarding')({
-  head: () => ({ meta: [{ title: 'Meet Tutii | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Meet Tutii | Gurudevi App' }] }),
   component: OnboardingScreen,
 });
 

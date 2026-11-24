@@ -45,6 +45,11 @@
       "import": "./src/content/body/index.ts",
       "default": "./src/content/body/index.ts"
     },
+    "./content/import": {
+      "types": "./src/content/import/index.ts",
+      "import": "./src/content/import/index.ts",
+      "default": "./src/content/import/index.ts"
+    },
     "./content": {
       "types": "./src/content/index.ts",
       "import": "./src/content/index.ts",
@@ -117,12 +122,15 @@
     "expo-image-manipulator": "~58.0.16",
     "expo-router": "~58.0.32",
     "fflate": "^0.8.3",
+    "mammoth": "^1.13.0",
     "nativewind": "5.0.0-rc.1",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.5.438",
     "react-i18next": "^18.0.3",
     "react-native-gifted-charts": "^1.4.83",
     "react-native-maps": "1.29.11",
+    "rehype-parse": "^9.0.1",
+    "rehype-remark": "^10.0.1",
     "remark-directive": "4.0.0",
     "remark-frontmatter": "5.0.0",
     "remark-gfm": "4.0.1",

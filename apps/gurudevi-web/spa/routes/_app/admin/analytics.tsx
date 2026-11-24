@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { EnhancedAnalyticsFloor } from '../../../../app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/admin/analytics')({
-  head: () => ({ meta: [{ title: 'Institutional Analytics | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Institutional Analytics | Gurudevi App' }] }),
   component: AdminAnalyticsScreen,
 });
 

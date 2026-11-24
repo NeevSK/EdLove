@@ -169,15 +169,14 @@ export function SanctuaryShell({
   }, [router]);
   const quickAccessOptions = useMemo(
     () =>
-      quickAccessDestinations.filter(
-        (destination) =>
-          (!isExploreMode || destination.explore) && isOfferedTo(activeCapacity, destination.link.to),
+      quickAccessDestinations.filter((destination) =>
+        isExploreMode ? destination.explore : isOfferedTo(activeCapacity, destination.link.to),
       ),
     [activeCapacity, isExploreMode],
   );
   const [quickAccessIds, setQuickAccessIds] = useState<QuickAccessId[]>(() =>
     isExploreMode
-      ? ['my-attendance', 'breathing']
+      ? ['my-attendance', 'breathing', 'fire-journal', 'library-map', 'tutii-dm']
       : ['my-attendance', 'breathing', 'submissions', 'community-forest'],
   );
   const [quickAccessEditorOpen, setQuickAccessEditorOpen] = useState(false);
@@ -809,6 +808,7 @@ export function SanctuaryShell({
 
       <CommandPalette
         capacity={activeCapacity}
+        isExplore={isExploreMode}
         isOpen={commandPaletteOpen}
         onClose={() => setCommandPaletteOpen(false)}
       />

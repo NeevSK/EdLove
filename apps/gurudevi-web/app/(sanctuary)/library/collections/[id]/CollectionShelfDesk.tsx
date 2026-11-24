@@ -168,7 +168,7 @@ export function CollectionShelfDesk({ id, displayName }: Readonly<CollectionShel
             className={styles.bookmarkBtn}
             onClick={handleToggleBookmark}
           >
-            {bookmarked ? '★ Bookmarked' : '☆ Bookmark Collection'}
+            {bookmarked ? '🔖 Saved to Desk' : '🔖 Bookmark Collection'}
           </button>
         </div>
 

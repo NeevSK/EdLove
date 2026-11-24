@@ -44,6 +44,7 @@ import { WorkspaceUnboundWelcomeHub } from './WorkspaceUnboundWelcomeHub';
 import { RoomAperture } from '../components/RoomAperture';
 import { CommercialSchoolCreationModal } from './school/CommercialSchoolCreationModal';
 import type { SchoolProfileData } from '@/lib/domain/ports/school.port';
+import { CANONICAL_ANANDA_PROFILE } from '../../../lib/domain/adapters/school/school.adapter';
 import schoolStyles from './school/school.module.css';
 import styles from './workspace.module.css';
 import {
@@ -152,6 +153,7 @@ export function WorkspaceFloor({
     } catch {
       // Safe fallback
     }
+    if (mode === 'explore') return CANONICAL_ANANDA_PROFILE;
     return null;
   });
 
@@ -159,6 +161,7 @@ export function WorkspaceFloor({
   const forceNoSchool = urlParams?.get('noSchool') === 'true';
 
   const hasSchool = !forceNoSchool && Boolean(
+    mode === 'explore' ||
     createdSchoolProfile ||
     (scope?.entityId &&
      scope.entityId !== 'default-school' &&

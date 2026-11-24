@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { ToolsWorkbenchDesk } from '../../../../app/(sanctuary)/library/tools/ToolsWorkbenchDesk';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/library/tools')({
-  head: () => ({ meta: [{ title: 'Knowledge Tools | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Knowledge Tools | Gurudevi App' }] }),
   component: LibraryToolsScreen,
 });
 

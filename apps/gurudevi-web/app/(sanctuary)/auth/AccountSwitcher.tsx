@@ -100,7 +100,7 @@ export function AccountSwitcher({
         </div>
       ) : null}
 
-      <div style={{ fontSize: '13px', fontWeight: 600, color: '#7a6e5f' }}>
+      <div style={{ fontSize: '14px', fontWeight: 600, color: '#7a6e5f' }}>
         Select your profile on this computer:
       </div>
 
@@ -152,7 +152,7 @@ export function AccountSwitcher({
         <div className={styles.pinGateModal} role="dialog" aria-modal="true">
           <div className={styles.pinCard}>
             <h3 className={styles.pinTitle}>{t('auth.enterPin')}</h3>
-            <p style={{ fontSize: '13px', color: '#7a6e5f', margin: 0 }}>
+            <p style={{ fontSize: '14px', color: '#7a6e5f', margin: 0 }}>
               Unlock {selectedPinAccount.displayName} on this device.
             </p>
             <input
@@ -168,7 +168,7 @@ export function AccountSwitcher({
               placeholder="••••"
             />
             {pinError ? (
-              <span style={{ fontSize: '12px', color: '#dc2626' }}>{pinError}</span>
+              <span style={{ fontSize: '13px', color: '#dc2626' }}>{pinError}</span>
             ) : null}
             <div className={styles.actionRow}>
               <button

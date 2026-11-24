@@ -133,7 +133,19 @@ const SELF_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
   },
 ];
 
-export type SelfPractice = 'breath' | 'journal';
+export type SelfPractice =
+  | 'breath'
+  | 'journal'
+  | 'mood'
+  | 'pulse'
+  | 'sleep'
+  | 'prep'
+  | 'goals'
+  | 'seeds'
+  | 'joy'
+  | 'gratitude'
+  | 'decisions'
+  | 'rhythm';
 
 export function SelfFloor({
   accountId,
@@ -445,10 +457,29 @@ export function SelfFloor({
 
   // Opens on each new request, including from a shortcut while Self is already showing.
   useEffect(() => {
+    if (!practice) return;
     if (practice === 'breath') {
       openFeature(requiredFeature('breath_guide'));
     } else if (practice === 'journal') {
       openFireJournal();
+    } else {
+      const featureIdMap: Record<string, string> = {
+        mood: 'mood_lotus',
+        pulse: 'daily_pulse',
+        sleep: 'sleep_tracker',
+        prep: 'tomorrow_prep',
+        goals: 'personal_goals',
+        seeds: 'wisdom_seeds',
+        joy: 'joy_jar',
+        gratitude: 'gratitude_glimmers',
+        decisions: 'decisions',
+        rhythm: 'daily_rhythm',
+      };
+      const targetId = featureIdMap[practice];
+      if (targetId) {
+        const feat = SELF_FEATURE_MANIFEST.all.find((candidate) => candidate.id === targetId);
+        if (feat) openFeature(feat);
+      }
     }
   }, [practice]);
 

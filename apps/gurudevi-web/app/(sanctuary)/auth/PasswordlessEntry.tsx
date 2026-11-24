@@ -110,12 +110,26 @@ export function PasswordlessEntry({
     const identity = await runtime.bootstrapIdentity();
     const isAnonymousGuest =
       identity.status === 'authenticated' && identity.session.user.is_anonymous === true;
-    const authResult = isAnonymousGuest
+    let authResult = isAnonymousGuest
       ? await runtime.client.auth.linkIdentity({ provider, options: { redirectTo: callbackUrl() } })
       : await runtime.client.auth.signInWithOAuth({
           provider,
           options: { redirectTo: callbackUrl() },
         });
+
+    if (authResult.error && isAnonymousGuest) {
+      const msg = `${authResult.error?.message ?? ''} ${(authResult.error as any)?.code ?? ''}`.toLowerCase();
+      if (
+        msg.includes('already') ||
+        (authResult.error as any)?.code === 'link_identity_failed' ||
+        (authResult.error as any)?.code === 'same_identity'
+      ) {
+        authResult = await runtime.client.auth.signInWithOAuth({
+          provider,
+          options: { redirectTo: callbackUrl() },
+        });
+      }
+    }
     const { data, error: authError } = authResult;
     if (authError) {
       setPending(null);

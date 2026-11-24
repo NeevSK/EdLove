@@ -83,6 +83,45 @@ describe('Library browser boundary helpers', () => {
     expect(filterBrowserResources(list, 'biology', 'All')[0]?.id).toBe('r2');
   });
 
+  it('matches shelf categories using aliased formats and subtypes', () => {
+    const list = [
+      {
+        id: 'r-pedagogy',
+        title: 'Mindfulness in Teaching',
+        description: 'Contemplative guide',
+        type: 'pedagogy',
+        url: 'https://example.com/guide.pdf',
+        subjects: ['Pedagogy'],
+        verified: true,
+      },
+      {
+        id: 'r-worksheet',
+        title: 'Microclimate Observation',
+        description: 'Wetland lab',
+        type: 'worksheet',
+        format: 'lab',
+        url: 'https://example.com/lab.pdf',
+        subjects: ['Science'],
+        verified: true,
+      },
+      {
+        id: 'r-map',
+        title: 'Tank Cascade Topology',
+        description: 'Hydraulic map',
+        type: 'map',
+        format: 'infographic',
+        url: 'https://example.com/map.png',
+        subjects: ['Engineering'],
+        verified: true,
+      },
+    ];
+
+    expect(filterBrowserResources(list, '', 'pdf')).toHaveLength(1);
+    expect(filterBrowserResources(list, '', 'pdf')[0]?.id).toBe('r-pedagogy');
+    expect(filterBrowserResources(list, '', 'worksheet')).toHaveLength(1);
+    expect(filterBrowserResources(list, '', 'map')).toHaveLength(1);
+  });
+
   it('isolates guest bookmarks safely in browser storage', () => {
     const bookmarks = getGuestBookmarks();
     expect(bookmarks).toBeInstanceOf(Set);

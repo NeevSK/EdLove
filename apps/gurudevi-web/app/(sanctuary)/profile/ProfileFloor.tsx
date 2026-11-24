@@ -889,8 +889,8 @@ export function ProfileFloor({
                             marginTop: '0.75rem',
                           }}
                         >
-                          <Link
-                            to={resolveSurfaceUrl('sanctuary', '/sign-in')}
+                          <a
+                            href={resolveSurfaceUrl('sanctuary', '/sign-in')}
                             style={{
                               padding: '0.35rem 0.85rem',
                               borderRadius: '999px',
@@ -904,7 +904,7 @@ export function ProfileFloor({
                             }}
                           >
                             Go to Sanctuary ↗
-                          </Link>
+                          </a>
                           <button
                             type="button"
                             onClick={() => setIsGuidanceModalOpen(true)}
@@ -921,8 +921,8 @@ export function ProfileFloor({
                           >
                             Step into Sanctuary (Create Account) ↗
                           </button>
-                          <Link
-                            to="/welcome"
+                          <a
+                            href={resolveSurfaceUrl('explore', '/')}
                             style={{
                               padding: '0.35rem 0.85rem',
                               borderRadius: '999px',
@@ -934,7 +934,7 @@ export function ProfileFloor({
                             }}
                           >
                             Guest House →
-                          </Link>
+                          </a>
                           <Link
                             to="/community"
                             style={{
@@ -991,7 +991,7 @@ export function ProfileFloor({
                     <p className={styles.readOnly} role="note">
                       {isExplore
                         ? 'Guest sandbox mode. All reflections and notes are stored locally.'
-                        : 'Verified identity secured by Gurudevi Sanctuary.'}
+                        : 'Verified identity secured by Gurudevi App.'}
                     </p>
 
                     {/* Dynamic Profile Calibration Progress */}

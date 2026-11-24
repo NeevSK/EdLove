@@ -54,6 +54,18 @@ describe('routeManifest & deepLinkPolicyPipeline (G0 Contract & Pure Logic Tests
       expect(result).toBe('https://gurudevi.app/auth/callback?code=test-code');
     });
 
+    it('succeeds for valid Cloudflare Pages preview deployments and localhost subdomains', async () => {
+      const previewResult = await Effect.runPromise(
+        validateDeepLinkEffect('https://preview-123.gurudevi-web.pages.dev/auth/complete?code=test-code'),
+      );
+      expect(previewResult).toBe('https://preview-123.gurudevi-web.pages.dev/auth/complete?code=test-code');
+
+      const localResult = await Effect.runPromise(
+        validateDeepLinkEffect('http://sanctuary.localhost:3000/auth/complete?code=test-code'),
+      );
+      expect(localResult).toBe('http://sanctuary.localhost:3000/auth/complete?code=test-code');
+    });
+
     it('fails with DeepLinkLengthError on overlong URLs (> 8192 chars)', async () => {
       const longUrl = 'gurudevi://auth/callback?' + 'a'.repeat(8200);
       const exit = await Effect.runPromiseExit(validateDeepLinkEffect(longUrl));

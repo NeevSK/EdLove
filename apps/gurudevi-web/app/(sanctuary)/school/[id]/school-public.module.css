@@ -58,7 +58,7 @@
 
 .brandText p {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: #6b635b;
   font-weight: 500;
 }
@@ -73,9 +73,10 @@
 .navBtn {
   background: transparent;
   border: none;
-  padding: 0.5rem 0.85rem;
+  min-height: 44px;
+  padding: 0.5rem 0.95rem;
   border-radius: 8px;
-  font-size: 0.88rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: #554f47;
   cursor: pointer;
@@ -98,11 +99,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  min-height: 44px;
   background: #1f1d1a;
   color: #ffffff;
-  padding: 0.55rem 1.1rem;
+  padding: 0.55rem 1.2rem;
   border-radius: 10px;
-  font-size: 0.88rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   text-decoration: none;
   white-space: nowrap;

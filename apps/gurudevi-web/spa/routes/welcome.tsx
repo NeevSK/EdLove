@@ -1,4 +1,4 @@
-import { GoTo, ReturnTo } from '../surface/navigation';
+﻿import { GoTo, ReturnTo } from '../surface/navigation';
 import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { safeReturnPath } from '../../app/(sanctuary)/auth/routeSafety';
@@ -6,7 +6,7 @@ import { WelcomeStage } from '../../app/(sanctuary)/welcome/WelcomeStage';
 import { useAccess } from '../surface/access';
 
 export const Route = createFileRoute('/welcome')({
-  head: () => ({ meta: [{ title: 'Welcome | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Welcome | Gurudevi App' }] }),
   validateSearch: z.object({ returnTo: z.string().optional() }),
   component: WelcomeScreen,
 });

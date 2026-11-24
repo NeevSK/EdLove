@@ -1,6 +1,55 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import CinematicBackground from '../components/CinematicBackground.astro';
+import {
+  calculateApca,
+  evaluateApca,
+  evaluateWcag,
+  getWcagContrastRatio,
+  getDeltaE,
+  hexToRgb,
+  rgbToHex,
+  computeProportionalLeading,
+  computeProportionalTracking,
+  computeProportionalWordSpacing,
+  computeProportionalContainerSpacing,
+  evaluateReadingMeasure,
+  generateFluidClamp,
+  isValidSpatialQuantum,
+  PSYCHOPHYSICAL_RATIOS,
+  auditAdaptiveDensity,
+  auditTypographicMicroAttributes,
+} from '../tokens';
+
+const bodyLeading = computeProportionalLeading(16, 'body');
+const bodyTracking = computeProportionalTracking(16);
+const bodyWordSpacing = computeProportionalWordSpacing(16);
+const readingMeasure = evaluateReadingMeasure(65);
+const primaryContrast = evaluateApca('#0f172a', '#FCFBF9');
+const secondaryContrast = evaluateApca('#1e293b', '#FCFBF9');
+const wcagEvaluation = evaluateWcag('#0f172a', '#FCFBF9');
+const primaryRgb = hexToRgb('#0f172a');
+const bgRgb = hexToRgb('#FCFBF9');
+const wcagRatio = getWcagContrastRatio(primaryRgb, bgRgb);
+const deltaE = getDeltaE(primaryRgb, hexToRgb('#1e293b'));
+const containerSpacing = computeProportionalContainerSpacing(16);
+const fluidHeading = generateFluidClamp({ minSizePx: 28, maxSizePx: 48, minViewportPx: 375, maxViewportPx: 1200 });
+const densityAudit = auditAdaptiveDensity({
+  mode: 'balanced',
+  touchEnvelopePx: 48,
+  visualHeightPx: 48,
+  paddingPx: 16,
+});
+const microAudit = auditTypographicMicroAttributes([
+  {
+    role: 'body',
+    fontSizePx: 16,
+    trackingEm: bodyTracking.idealEm,
+    leadingRatio: bodyLeading.idealRatio,
+    wordSpacingPx: bodyWordSpacing.idealPx,
+  },
+]);
+const is16Quantum = isValidSpatialQuantum(16);
 
 const targetQuote = 'Theoretical formulation of learning as a three-way dynamic between Teacher, Learner, and Living Knowledge. Resolves the teacher-learner dichotomy through "Teaning" and reciprocal attunement.';
 
@@ -19,23 +68,23 @@ const specimens = [
     cardSpacing: 'space-y-3',
     summaryClass: 'font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed',
     verdict: 'Cluttered: Letters like "tt", "un", "em", "en", "ro", "ch" collide. Tight 12px card gap causes visual congestion.',
-    apcaScore: '92.1 Lc',
+    apcaScore: `${Math.round(secondaryContrast.absLc * 10) / 10} Lc`,
   },
   {
     id: 'calibrated-lora-decluttered',
-    name: '02 · Calibrated Lora (+0.022em Tracking & 1.75 Leading)',
+    name: `02 · Calibrated Lora (+${bodyTracking.idealEm}em Tracking & ${bodyLeading.idealRatio} Leading)`,
     badge: 'Decluttered Lora',
-    fontLabel: 'Lora, 16px, letter-spacing: +0.022em, line-height: 1.75',
+    fontLabel: `Lora, 16px, letter-spacing: +${bodyTracking.idealEm}em, line-height: ${bodyLeading.idealRatio}`,
     fontFamily: '"Lora", Georgia, serif',
     fontSize: '1rem', // 16px
     fontWeight: '400',
-    letterSpacing: '0.022em',
-    lineHeight: '1.75',
+    letterSpacing: `${bodyTracking.idealEm}em`,
+    lineHeight: `${bodyLeading.idealRatio}`,
     color: 'var(--color-primaryInk)',
     cardSpacing: 'space-y-5',
     summaryClass: 'font-serif text-base text-[var(--color-primaryInk)]',
     verdict: 'Transformed: Individual letterforms breathe freely. Word boundaries and serifs separate crisply without colliding.',
-    apcaScore: '98.4 Lc',
+    apcaScore: `${Math.round(primaryContrast.absLc * 10) / 10} Lc`,
   },
   {
     id: 'calibrated-inter-editorial',
@@ -92,23 +141,18 @@ const specimens = [
   title="Letter-Spacing & Typography Calibration Lab — EdLove"
   description="Side-by-side live calibration of letter-spacing, line-height, and card rhythm to resolve visual crowding."
 >
-  <!-- Dedicated Google Fonts imports -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" slot="head" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin slot="head" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&family=Fira+Code:wght@400;500;600&display=swap"
-    rel="stylesheet"
-    slot="head"
-  />
-
   <style is:global>
     .font-newsreader {
-      font-family: 'Newsreader', Georgia, serif;
+      font-family: "Newsreader Variable", Georgia, serif;
       font-optical-sizing: auto;
     }
-    .font-literata {
-      font-family: 'Literata', Georgia, serif;
+    .font-fraunces {
+      font-family: "Fraunces Variable", Georgia, serif;
       font-optical-sizing: auto;
+      font-variation-settings: "SOFT" 65, "opsz" 72;
+    }
+    .font-geist {
+      font-family: "Geist Variable", -apple-system, sans-serif;
     }
   </style>
 
@@ -122,13 +166,62 @@ const specimens = [
         <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--color-gold)] block">
           Optical De-Cluttering &amp; Letter-Spacing Calibration Lab
         </span>
-        <h1 class="text-3xl sm:text-5xl font-heading font-bold text-[var(--color-primaryInk)] tracking-tight">
-          Letter-Spacing &amp; Density Calibration
+        <h1 class="text-3xl sm:text-5xl font-display font-normal text-[var(--color-primaryInk)] tracking-tight">
+          Typeface &amp; Density Calibration
         </h1>
-        <p class="font-serif italic text-lg sm:text-xl text-[var(--color-mutedInk)] leading-relaxed">
-          The user identified the exact root cause: with default <code class="text-sm font-mono bg-black/5 px-1.5 py-0.5 rounded">letter-spacing: 0</code> and tight card padding, letters optically collide into an overcrowded block. Below is the side-by-side proof and live calibration studio.
+        <p class="font-text italic text-lg sm:text-xl text-[var(--color-mutedInk)] leading-relaxed">
+          Self-hosted variable fonts (<code class="text-sm font-mono bg-black/5 px-1.5 py-0.5 rounded">Fraunces + Newsreader + Geist + Noto Sinhala/Tamil</code>) with zero third-party requests, side-by-side optical calibration, and trilingual script specimens.
         </p>
       </header>
+
+      <!-- TRILINGUAL & EDITORIAL SYSTEM SPECIMEN -->
+      <section class="bg-white/85 border border-[var(--color-primaryInk)]/12 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--color-primaryInk)]/10 pb-4">
+          <div>
+            <span class="text-xs font-ui font-semibold uppercase tracking-widest text-[var(--color-gold)] block">
+              Active Self-Hosted System (Zero CDN)
+            </span>
+            <h2 class="text-2xl font-display font-normal text-[var(--color-primaryInk)]">
+              Fraunces &middot; Newsreader &middot; Geist &middot; Noto Si/Ta
+            </h2>
+          </div>
+          <span class="text-xs font-ui bg-[var(--color-primaryInk)] text-white px-3 py-1 rounded-full font-medium">
+            Active on Home
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-5 rounded-xl bg-[#fcfbf9] border border-[var(--color-primaryInk)]/10 space-y-3">
+            <span class="text-xs font-ui font-semibold uppercase tracking-wider text-[var(--color-gold)]">English · Display &amp; Text</span>
+            <p class="font-fraunces text-2xl text-[var(--color-primaryInk)] leading-tight">
+              Education is <span class="italic">a form of love.</span>
+            </p>
+            <p class="font-newsreader text-[17px] text-[var(--color-secondaryInk)] leading-[1.72]">
+              Giving love to the next generation, for flourishing in their environment and developing themselves.
+            </p>
+          </div>
+
+          <div lang="si" class="p-5 rounded-xl bg-[#fcfbf9] border border-[var(--color-primaryInk)]/10 space-y-3">
+            <span class="text-xs font-ui font-semibold uppercase tracking-wider text-[var(--color-gold)]">සිංහල · Noto Serif Sinhala</span>
+            <p class="text-xl font-semibold text-[var(--color-primaryInk)] leading-snug">
+              අධ්‍යාපනය යනු ආදරයේ එක් ආකාරයකි.
+            </p>
+            <p class="text-base text-[var(--color-secondaryInk)]">
+              ඊළඟ පරම්පරාවට ඔවුන්ගේ පරිසරය තුළ සශ්‍රීක වීමටත් තමන්වම ගොඩනඟා ගැනීමටත් ආදරය ලබා දීමයි.
+            </p>
+          </div>
+
+          <div lang="ta" class="p-5 rounded-xl bg-[#fcfbf9] border border-[var(--color-primaryInk)]/10 space-y-3">
+            <span class="text-xs font-ui font-semibold uppercase tracking-wider text-[var(--color-gold)]">தமிழ் · Noto Serif Tamil</span>
+            <p class="text-xl font-semibold text-[var(--color-primaryInk)] leading-snug">
+              கல்வி என்பது அன்பின் ஒரு வடிவமாகும்.
+            </p>
+            <p class="text-base text-[var(--color-secondaryInk)]">
+              அடுத்த தலைமுறையினர் தங்கள் சூழலில் செழித்து வளரவும் தங்களை மேம்படுத்தவும் அன்பை வழங்குவதே கல்வி.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <!-- LIVE INTERACTIVE ADJUSTER STUDIO (Client-Side Reactive) -->
       <section class="bg-[#FCFBF9] border-2 border-[var(--color-gold)]/40 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">

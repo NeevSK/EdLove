@@ -160,11 +160,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.2rem 0.5rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 9999px;
   background: #ffffff;
   border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--color-ink, #131e27);
 }
 
@@ -173,10 +173,13 @@
   border: none;
   color: #b91c1c;
   cursor: pointer;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
+  min-height: 44px;
+  min-width: 44px;
   padding: 0;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
 }
 
 .schemaViewer {
@@ -185,7 +188,7 @@
   background: #1a1614;
   color: #ded8cf;
   font-family: monospace;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   overflow-x: auto;
   max-height: 18rem;
   border: 1px solid rgba(255, 255, 255, 0.1);

@@ -52,9 +52,9 @@
 }
 
 .itemCountBadge {
-  font-size: 0.68rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  padding: 0.12rem 0.45rem;
+  padding: 0.15rem 0.5rem;
   border-radius: 9999px;
   background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
   color: var(--w-lamp, #e2c37a);
@@ -74,7 +74,7 @@
 }
 
 .sortLabel {
-  font-size: 0.65rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--ink-soft, rgba(255, 255, 255, 0.4));
   text-transform: uppercase;
@@ -83,9 +83,10 @@
 }
 
 .sortPill {
-  padding: 0.18rem 0.5rem;
+  min-height: 44px;
+  padding: 0.25rem 0.65rem;
   border-radius: 9999px;
-  font-size: 0.68rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
   border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
@@ -171,13 +172,13 @@
 }
 
 .categoryCount {
-  font-size: 0.65rem;
+  font-size: 0.8125rem;
   color: var(--ink-soft, rgba(255, 255, 255, 0.4));
   font-variant-numeric: tabular-nums;
 }
 
 .collapseChevron {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--ink-soft, rgba(255, 255, 255, 0.4));
   line-height: 1;
 }
@@ -225,9 +226,9 @@
 }
 
 .itemBadge {
-  font-size: 0.62rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  padding: 0.08rem 0.32rem;
+  padding: 0.12rem 0.4rem;
   border-radius: 0.25rem;
   background: color-mix(in srgb, var(--w-lamp, #e2c37a) 18%, transparent);
   color: var(--w-lamp, #e2c37a);
@@ -241,17 +242,18 @@
   gap: 0.5rem;
   padding: 2rem 1rem;
   color: var(--ink-soft, rgba(255, 255, 255, 0.5));
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   text-align: center;
 }
 
 .clearSearchBtn {
   background: transparent;
   border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
-  padding: 0.25rem 0.6rem;
+  min-height: 44px;
+  padding: 0.35rem 0.75rem;
   border-radius: 0.4rem;
   color: var(--w-lamp, #e2c37a);
-  font-size: 0.72rem;
+  font-size: 0.875rem;
   cursor: pointer;
 }
 

@@ -1,4 +1,4 @@
-import { GoTo, ReturnTo } from '../../surface/navigation';
+﻿import { GoTo, ReturnTo } from '../../surface/navigation';
 import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { AccountRecoveryFloor } from '../../../app/(sanctuary)/account-recovery/AccountRecoveryFloor';
@@ -7,7 +7,7 @@ import { safeReturnPath } from '../../../app/(sanctuary)/auth/routeSafety';
 import { useAccess } from '../../surface/access';
 
 export const Route = createFileRoute('/_account/account-recovery')({
-  head: () => ({ meta: [{ title: 'Account Status & Recovery | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Account Status & Recovery | Gurudevi App' }] }),
   validateSearch: z.object({ returnTo: z.string().optional(), mode: z.string().optional() }),
   component: AccountRecoveryScreen,
 });

@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { VideoPlayerDesk } from '../../../../../app/(sanctuary)/library/video/[videoId]/VideoPlayerDesk';
 import { useSession } from '../../../../surface/session';
 
 export const Route = createFileRoute('/_app/library/video/$videoId')({
-  head: () => ({ meta: [{ title: 'Video Lecture | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Video Lecture | Gurudevi App' }] }),
   component: LibraryVideoVideoIdScreen,
 });
 

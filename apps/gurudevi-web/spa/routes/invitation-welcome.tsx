@@ -1,8 +1,8 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
+﻿import { createFileRoute, redirect } from '@tanstack/react-router';
 import { z } from 'zod';
 
 export const Route = createFileRoute('/invitation-welcome')({
-  head: () => ({ meta: [{ title: 'Classroom Invitation | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Classroom Invitation | Gurudevi App' }] }),
   validateSearch: z.object({ code: z.string().optional(), inviteCode: z.string().optional() }),
   beforeLoad: ({ search }) => {
     const code = (search.code || search.inviteCode)?.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 32);

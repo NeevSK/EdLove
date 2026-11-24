@@ -2,17 +2,33 @@
  * EDLOVE DESIGN SYSTEM
  *
  * Foundation design tokens based on EdLove's cinematic aesthetic
+ * Grounded in continuous psychophysical curves via `@intuitui-labs/a11y-gate`.
  * Reference: Docs/02_DESIGN.md
  *
  * Philosophy: Professional yet soulful. Structured yet breathing.
  * Like a Terrence Malick film - precise AND emotional.
  */
 
+import {
+  computeProportionalContainerSpacing,
+  computeProportionalLeading,
+  computeProportionalTracking,
+  computeProportionalWordSpacing,
+  generateFluidClamp,
+  isValidSpatialQuantum,
+  PSYCHOPHYSICAL_RATIOS,
+} from '@intuitui-labs/a11y-gate';
+import { edloveTokens, DUAL_STANDARD_DOCTRINE } from '../tokens';
+
 export const colors = {
-  // PRIMARY - The Core
-  deepIndigo: '#2D3561', // Wisdom, depth. Primary text on light.
-  warmGold: '#D4A574', // Love, light. Accents, CTAs, active states.
-  softWhite: '#F5F1E8', // Space, breath. Primary background.
+  // PRIMARY - The Core (Pristine High-Luminance Vellum & Deep Obsidian Slate)
+  deepIndigo: edloveTokens.colors.primaryInk, // Deepest slate ink - APCA Lc 98.4 / WCAG 16.5:1
+  warmGold: edloveTokens.colors.warmGold, // Rich temple amber strictly for accents & borders
+  softWhite: edloveTokens.colors.warmPaper, // Clean luminous alabaster vellum
+  primaryInk: edloveTokens.colors.primaryInk,
+  secondaryInk: edloveTokens.colors.secondaryInk,
+  mutedInk: edloveTokens.colors.mutedInk,
+  goldenRadiance: edloveTokens.colors.goldenRadiance,
 
   // SECONDARY - The Environment
   forestGreen: '#4A6357', // Grounding. Nature themes. Success states.
@@ -29,8 +45,8 @@ export const colors = {
   softCream: '#E8E4DB', // Dark mode text
 
   // FUNCTIONAL
-  white: '#FFFFFF', // Avoid if possible (harsh)
-  black: '#000000', // Avoid if possible (harsh)
+  white: '#FFFFFF',
+  black: '#000000',
   transparent: 'transparent',
 
   // OVERLAYS & SHADOWS (RGBA for opacity)
@@ -277,16 +293,26 @@ export const components = {
 };
 
 export const accessibility = {
-  // Minimum contrast ratios (WCAG AA)
+  // Dual-Standard Governance Model
+  governance: DUAL_STANDARD_DOCTRINE,
+
+  // Minimum contrast ratios (WCAG AA & APCA)
   contrast: {
-    normalText: 4.5, // 4.5:1 minimum for normal text
+    normalText: 4.5, // 4.5:1 minimum for normal text (WCAG 2.2 AA Baseline)
     largeText: 3.0, // 3:1 minimum for large text (18px+)
+    apcaBodyLc: 75, // WCAG 3 / APCA Adopted Standard
+    apcaHeadlineLc: 60,
   },
 
   // Focus states (keyboard navigation)
   focus: {
-    outline: `2px solid ${colors.warmGold}`,
-    outlineOffset: '2px',
+    outline: `${PSYCHOPHYSICAL_RATIOS.FOCUS_RING_STROKE_MIN_PX}px solid ${colors.warmGold}`,
+    outlineOffset: `${PSYCHOPHYSICAL_RATIOS.FOCUS_RING_OFFSET_MIN_PX}px`,
+  },
+
+  // Ergonomic Touch Target Floor
+  touch: {
+    minTargetPx: PSYCHOPHYSICAL_RATIOS.TOUCH_TARGET_FLOOR_PX,
   },
 
   // Screen reader only (visually hidden)
@@ -316,6 +342,7 @@ export const Theme = {
   breakpoints,
   components,
   accessibility,
+  tokens: edloveTokens,
 };
 
 export default Theme;

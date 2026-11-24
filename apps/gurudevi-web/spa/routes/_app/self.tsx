@@ -1,12 +1,28 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { SelfFloor } from '../../../app/(sanctuary)/self/SelfFloor';
 import { useSession } from '../../surface/session';
 
 export const Route = createFileRoute('/_app/self')({
-  head: () => ({ meta: [{ title: 'Self | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Self | Gurudevi App' }] }),
   validateSearch: z.object({
-    practice: z.enum(['breath', 'journal']).optional().catch(undefined),
+    practice: z
+      .enum([
+        'breath',
+        'journal',
+        'mood',
+        'pulse',
+        'sleep',
+        'prep',
+        'goals',
+        'seeds',
+        'joy',
+        'gratitude',
+        'decisions',
+        'rhythm',
+      ])
+      .optional()
+      .catch(undefined),
     intro: z.string().optional().catch(undefined),
   }),
   component: SelfScreen,

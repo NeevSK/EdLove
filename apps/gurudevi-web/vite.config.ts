@@ -65,11 +65,14 @@ export default defineConfig(({ mode }) => {
     process.env.VITE_SUPABASE_URL ??
     process.env.NEXT_PUBLIC_SUPABASE_URL ??
     process.env.EXPO_PUBLIC_SUPABASE_URL ??
+    process.env.SUPABASE_URL ??
     '';
   const supabaseKey =
     process.env.VITE_SUPABASE_PUBLISHABLE_KEY ??
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+    process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
     process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ??
+    process.env.SUPABASE_ANON_KEY ??
     '';
   const apiUrl =
     process.env.VITE_API_URL ??
@@ -84,6 +87,11 @@ export default defineConfig(({ mode }) => {
   return {
     root,
     publicDir: path.resolve(__dirname, 'public'),
+    server: {
+      host: '0.0.0.0',
+      port: 3000,
+      strictPort: true,
+    },
     plugins: [
       hostFiles(
         explore
@@ -147,6 +155,12 @@ export default defineConfig(({ mode }) => {
       'process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY': JSON.stringify(explore ? '' : supabaseKey),
       'process.env.NEXT_PUBLIC_API_URL': JSON.stringify(explore ? '' : apiUrl),
       'process.env.NEXT_PUBLIC_SUPPORT_FORM_ACTION': JSON.stringify(supportAction),
+
+      // Doppler / Expo aliases
+      'process.env.EXPO_PUBLIC_SUPABASE_URL': JSON.stringify(explore ? '' : supabaseUrl),
+      'process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY': JSON.stringify(explore ? '' : supabaseKey),
+      'process.env.EXPO_PUBLIC_API_URL': JSON.stringify(explore ? '' : apiUrl),
+      'process.env.SUPABASE_URL': JSON.stringify(explore ? '' : supabaseUrl),
     },
     build: {
       outDir: path.resolve(__dirname, explore ? 'dist-explore' : 'dist-sanctuary'),

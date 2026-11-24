@@ -173,7 +173,7 @@ export const validateDeepLinkEffect = (
 
     if (parsed.protocol === 'https:') {
       if (
-        ALLOWED_WEB_HOSTS.has(parsed.hostname) &&
+        (ALLOWED_WEB_HOSTS.has(parsed.hostname) || parsed.hostname.endsWith('.pages.dev')) &&
         startsWithPathPrefix(parsed.pathname, ALLOWED_WEB_PATH_PREFIXES)
       ) {
         return url;
@@ -189,7 +189,9 @@ export const validateDeepLinkEffect = (
 
     if (
       parsed.protocol === 'http:' &&
-      (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') &&
+      (parsed.hostname === 'localhost' ||
+        parsed.hostname === '127.0.0.1' ||
+        parsed.hostname.endsWith('.localhost')) &&
       startsWithPathPrefix(parsed.pathname, ALLOWED_WEB_PATH_PREFIXES)
     ) {
       return url;

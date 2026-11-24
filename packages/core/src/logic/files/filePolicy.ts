@@ -9,7 +9,14 @@ import { type FileKind, fileKindOf } from '@repo/core/logic/files/fileKind';
  * can be changed here. The others are what the code already used (2026-11-13).
  */
 
-export type FilePurpose = 'avatar' | 'wallpaper' | 'submission' | 'scan' | 'attachment';
+export type FilePurpose =
+  | 'avatar'
+  | 'wallpaper'
+  | 'submission'
+  | 'scan'
+  | 'attachment'
+  | 'library_resource'
+  | 'h5p_package';
 
 /** How an image is prepared on the device before it is kept or sent. */
 export interface ImagePreparation {
@@ -88,6 +95,17 @@ export const FILE_POLICY: Readonly<Record<FilePurpose, FilePolicy>> = {
   attachment: {
     maxFiles: 10,
     image: { quality: 0.7, crop: false },
+  },
+  library_resource: {
+    accept: ['pdf', 'document', 'slides', 'markdown', 'text', 'image', 'audio', 'video'],
+    maxBytes: 100 * MB,
+    maxFiles: 10,
+    image: { quality: 0.85, crop: false },
+  },
+  h5p_package: {
+    accept: ['archive'],
+    maxBytes: 150 * MB,
+    maxFiles: 1,
   },
 };
 

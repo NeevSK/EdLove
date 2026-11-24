@@ -1,5 +1,5 @@
-import { Link } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
+import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { LivingGround } from '@repo/ui/components/web';
 import { GatewayFooter } from '../components/GatewayFooter';
 import { GatewayHeader } from '../components/GatewayHeader';
@@ -22,10 +22,10 @@ export function AuthFrame({
 
       <GatewayHeader
         extraActions={
-          <Link className={styles.backLink} to="/welcome">
+          <a className={styles.backLink} href={resolveSurfaceUrl('explore', '/')}>
             <span>Guest House</span>
             <span aria-hidden="true">→</span>
-          </Link>
+          </a>
         }
       />
 

@@ -128,8 +128,8 @@ export function LibraryAtlasDesk({ displayName, capacity }: Readonly<LibraryAtla
             value={viewMode}
             onChange={setViewMode}
             options={[
-              { value: 'physical', label: 'Learning Centers' },
-              { value: 'cosmos', label: 'Knowledge Cosmos' },
+              { value: 'physical', label: '🏛️ Learning Centers' },
+              { value: 'cosmos', label: '🌌 Knowledge Cosmos' },
             ]}
           />
 
@@ -173,7 +173,7 @@ export function LibraryAtlasDesk({ displayName, capacity }: Readonly<LibraryAtla
                       c.digitalHub ? 'Digital Hub' : 'Print Archive'
                     }`}
                     shape="tile"
-                    icon={MapPin}
+                    emoji="🏛️"
                   />
                 </div>
               ))}

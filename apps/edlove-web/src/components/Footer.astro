@@ -1,5 +1,15 @@
 ---
+import {
+  computeProportionalLeading,
+  computeProportionalTracking,
+  evaluateApca,
+  evaluateWcag,
+} from '../tokens';
+
 const currentYear = new Date().getFullYear();
+const footerContrast = evaluateApca('#FCFBF9', '#0f172a');
+const footerLeading = computeProportionalLeading(15, 'body').idealRatio;
+const footerTracking = computeProportionalTracking(15).idealEm;
 ---
 
 <footer class="py-16 mt-20 bg-[var(--color-primaryInk)] text-[var(--color-warmPaper)] border-t border-white/10">

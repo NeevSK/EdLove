@@ -94,7 +94,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
-  font-size: 0.78rem;
+  font-size: 0.875rem;
 }
 
 .toggleButtonGroup {
@@ -105,23 +105,25 @@
 }
 
 .miniPill {
-  padding: 0.22rem 0.55rem;
+  min-height: 44px;
+  padding: 0.25rem 0.65rem;
   border-radius: 9999px;
   border: 1px solid var(--w-line);
   background: transparent;
   color: var(--w-ink-soft);
-  font-size: 0.74rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
 }
 
 .miniPillActive {
-  padding: 0.22rem 0.55rem;
+  min-height: 44px;
+  padding: 0.25rem 0.65rem;
   border-radius: 9999px;
   border: 1px solid color-mix(in srgb, var(--w-lamp) 60%, transparent);
   background: color-mix(in srgb, var(--w-lamp) 18%, transparent);
   color: var(--w-lamp);
-  font-size: 0.74rem;
+  font-size: 0.8125rem;
   font-weight: 700;
 }
 
@@ -159,7 +161,7 @@
 
 .hearthEyebrow {
   margin: 0;
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -181,7 +183,7 @@
   border-radius: 9999px;
   background: color-mix(in srgb, var(--w-lamp) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--w-lamp) 30%, transparent);
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--w-lamp);
 }
@@ -195,24 +197,26 @@
 }
 
 .filterBtn {
-  padding: 0.35rem 0.8rem;
+  min-height: 44px;
+  padding: 0.35rem 0.85rem;
   border-radius: 9999px;
   border: 1px solid var(--w-line);
   background: var(--w-surface-raised-bg);
   color: var(--w-ink-soft);
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .filterBtnActive {
-  padding: 0.35rem 0.8rem;
+  min-height: 44px;
+  padding: 0.35rem 0.85rem;
   border-radius: 9999px;
   border: 1px solid var(--w-lamp);
   background: var(--w-lamp);
   color: var(--w-ground);
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   font-weight: 700;
   cursor: default;
 }
@@ -389,7 +393,7 @@
 }
 
 .cohortMeta {
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -457,7 +461,7 @@
 }
 
 .topPebbleLabel {
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -493,6 +497,6 @@
   border-radius: 0.85rem;
   background: color-mix(in srgb, var(--w-focus) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--w-focus) 30%, transparent);
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   color: var(--w-ink);
 }

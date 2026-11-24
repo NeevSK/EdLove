@@ -64,3 +64,48 @@ button[class*="tabBtn"][class*="active"] {
 [data-mode="dark"] button[class*="tabBtn"][class*="active"] {
   color: var(--color-primary) !important;
 }
+
+/* ==========================================================================
+   Mobile-First Continuum: Universal Input Zoom Trap Prevention (iOS Safari Floor)
+   Guarantees that no form input anywhere in Gurudevi Web ever triggers destructive
+   viewport zooming on mobile iOS Safari, and ensures Sinhala/Tamil clarity.
+   ========================================================================== */
+input,
+textarea,
+select,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+input[type="search"],
+input[type="url"] {
+  font-size: max(16px, 1rem) !important;
+}
+
+/* ==========================================================================
+   Mobile-First Continuum: Touch Target Floor & Safe Area Protection
+   Enforces 44px (WCAG 2.2) and 48px (Sanctuary strict) tap targets on touchscreens.
+   ========================================================================== */
+@media (pointer: coarse), (hover: none) {
+  button:not([data-chip]),
+  [role="button"]:not([data-chip]),
+  .gd-button,
+  a[class*="Button"],
+  a[class*="btn"],
+  button[class*="tabBtn"],
+  button[class*="tabButton"],
+  nav[class*="tabBar"] button,
+  nav[class*="tabsNav"] button {
+    min-height: max(44px, var(--w-touch-target-min, 44px));
+  }
+
+  /* Microcopy legibility floor on mobile screens */
+  small,
+  span[class*="caption"],
+  span[class*="meta"],
+  p[class*="meta"],
+  span[class*="hint"] {
+    min-font-size: 13px;
+  }
+}

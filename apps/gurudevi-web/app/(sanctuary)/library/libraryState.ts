@@ -67,6 +67,16 @@ export function classifyLibraryFailure(
     : 'error';
 }
 
+const SHELF_CATEGORY_TYPES: Record<string, readonly string[]> = {
+  lesson: ['lesson'],
+  video: ['video', 'movie_trailer'],
+  pdf: ['pdf', 'doc', 'reading', 'pedagogy', 'manuscript'],
+  worksheet: ['worksheet', 'lab', 'practice'],
+  past_paper: ['past_paper'],
+  map: ['map', 'infographic', 'topology'],
+  guide: ['guide', 'tech_guide'],
+};
+
 /** Pure filter function for library resources across categories, query and sorting */
 export function filterBrowserResources(
   resources: readonly BrowserLibraryResource[],
@@ -78,7 +88,17 @@ export function filterBrowserResources(
   let list = resources;
 
   if (category && category !== 'All' && category !== 'saved') {
-    list = list.filter((r) => r.type?.toLowerCase() === category.toLowerCase());
+    const catLower = category.toLowerCase();
+    const allowedTypes = SHELF_CATEGORY_TYPES[catLower];
+    list = list.filter((r) => {
+      const typeLower = (r.type ?? '').toLowerCase();
+      const formatLower = (r.format ?? '').toLowerCase();
+      if (typeLower === catLower || formatLower === catLower) return true;
+      if (allowedTypes && (allowedTypes.includes(typeLower) || allowedTypes.includes(formatLower))) {
+        return true;
+      }
+      return false;
+    });
   }
 
   if (q) {

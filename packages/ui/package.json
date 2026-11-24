@@ -917,7 +917,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@intuitui-labs/a11y-gate": "^0.2.0",
+    "@intuitui-labs/a11y-gate": "link:C:/projects/packages/a11y-gate",
     "@expo/ui": "~58.0.29",
     "@repo/core": "workspace:*",
     "@repo/verger-react": "workspace:*",

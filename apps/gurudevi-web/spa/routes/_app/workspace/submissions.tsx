@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { SubmissionsFloor } from '../../../../app/(sanctuary)/workspace/submissions/SubmissionsFloor';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/submissions')({
-  head: () => ({ meta: [{ title: 'Submissions | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Submissions | Gurudevi App' }] }),
   component: WorkspaceSubmissionsScreen,
 });
 

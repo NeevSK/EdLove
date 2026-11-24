@@ -1,7 +1,15 @@
 ---
 import { MAIN_NAV_LINKS, type NavLink } from '../lib/site';
+import {
+  computeProportionalTracking,
+  PSYCHOPHYSICAL_RATIOS,
+  evaluateApca,
+} from '../tokens';
 
 const links: NavLink[] = MAIN_NAV_LINKS;
+const navTracking = computeProportionalTracking(15).idealEm;
+const navContrast = evaluateApca('#0f172a', '#FCFBF9');
+const minTouchTarget = PSYCHOPHYSICAL_RATIOS.TOUCH_TARGET_FLOOR_PX;
 ---
 
 <header class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[95%] max-w-5xl transition-all duration-300 pointer-events-none" id="main-header">

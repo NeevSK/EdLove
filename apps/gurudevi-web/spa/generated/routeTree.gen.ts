@@ -34,6 +34,7 @@ import { Route as DevVergerLabRouteImport } from './../routes/_dev/verger-lab'
 import { Route as CCodeRouteImport } from './../routes/c/$code'
 import { Route as AccountAuthCallbackRouteImport } from './../routes/_account/auth/callback'
 import { Route as AccountAuthCompleteRouteImport } from './../routes/_account/auth/complete'
+import { Route as AccountAuthConfirmRouteImport } from './../routes/_account/auth/confirm'
 import { Route as AppAdminAnalyticsRouteImport } from './../routes/_app/admin/analytics'
 import { Route as AppAdminDocumentsRouteImport } from './../routes/_app/admin/documents'
 import { Route as AppAdminFounderRouteImport } from './../routes/_app/admin/founder'
@@ -202,6 +203,11 @@ const AccountAuthCallbackRoute = AccountAuthCallbackRouteImport.update({
 const AccountAuthCompleteRoute = AccountAuthCompleteRouteImport.update({
   id: '/auth/complete',
   path: '/auth/complete',
+  getParentRoute: () => AccountRoute,
+} as any)
+const AccountAuthConfirmRoute = AccountAuthConfirmRouteImport.update({
+  id: '/auth/confirm',
+  path: '/auth/confirm',
   getParentRoute: () => AccountRoute,
 } as any)
 const AppAdminAnalyticsRoute = AppAdminAnalyticsRouteImport.update({
@@ -465,6 +471,7 @@ export interface FileRoutesByFullPath {
   '/c/$code': typeof CCodeRoute
   '/auth/callback': typeof AccountAuthCallbackRoute
   '/auth/complete': typeof AccountAuthCompleteRoute
+  '/auth/confirm': typeof AccountAuthConfirmRoute
   '/admin/analytics': typeof AppAdminAnalyticsRoute
   '/admin/documents': typeof AppAdminDocumentsRoute
   '/admin/founder': typeof AppAdminFounderRoute
@@ -536,6 +543,7 @@ export interface FileRoutesByTo {
   '/c/$code': typeof CCodeRoute
   '/auth/callback': typeof AccountAuthCallbackRoute
   '/auth/complete': typeof AccountAuthCompleteRoute
+  '/auth/confirm': typeof AccountAuthConfirmRoute
   '/admin/analytics': typeof AppAdminAnalyticsRoute
   '/admin/documents': typeof AppAdminDocumentsRoute
   '/admin/founder': typeof AppAdminFounderRoute
@@ -611,6 +619,7 @@ export interface FileRoutesById {
   '/c/$code': typeof CCodeRoute
   '/_account/auth/callback': typeof AccountAuthCallbackRoute
   '/_account/auth/complete': typeof AccountAuthCompleteRoute
+  '/_account/auth/confirm': typeof AccountAuthConfirmRoute
   '/_app/admin/analytics': typeof AppAdminAnalyticsRoute
   '/_app/admin/documents': typeof AppAdminDocumentsRoute
   '/_app/admin/founder': typeof AppAdminFounderRoute
@@ -684,6 +693,7 @@ export interface FileRouteTypes {
     | '/c/$code'
     | '/auth/callback'
     | '/auth/complete'
+    | '/auth/confirm'
     | '/admin/analytics'
     | '/admin/documents'
     | '/admin/founder'
@@ -755,6 +765,7 @@ export interface FileRouteTypes {
     | '/c/$code'
     | '/auth/callback'
     | '/auth/complete'
+    | '/auth/confirm'
     | '/admin/analytics'
     | '/admin/documents'
     | '/admin/founder'
@@ -829,6 +840,7 @@ export interface FileRouteTypes {
     | '/c/$code'
     | '/_account/auth/callback'
     | '/_account/auth/complete'
+    | '/_account/auth/confirm'
     | '/_app/admin/analytics'
     | '/_app/admin/documents'
     | '/_app/admin/founder'
@@ -1069,6 +1081,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/complete'
       fullPath: '/auth/complete'
       preLoaderRoute: typeof AccountAuthCompleteRouteImport
+      parentRoute: typeof AccountRoute
+    }
+    '/_account/auth/confirm': {
+      id: '/_account/auth/confirm'
+      path: '/auth/confirm'
+      fullPath: '/auth/confirm'
+      preLoaderRoute: typeof AccountAuthConfirmRouteImport
       parentRoute: typeof AccountRoute
     }
     '/_app/admin/analytics': {
@@ -1411,6 +1430,7 @@ interface AccountRouteChildren {
   AccountSignInRoute: typeof AccountSignInRoute
   AccountAuthCallbackRoute: typeof AccountAuthCallbackRoute
   AccountAuthCompleteRoute: typeof AccountAuthCompleteRoute
+  AccountAuthConfirmRoute: typeof AccountAuthConfirmRoute
 }
 
 const AccountRouteChildren: AccountRouteChildren = {
@@ -1421,6 +1441,7 @@ const AccountRouteChildren: AccountRouteChildren = {
   AccountSignInRoute: AccountSignInRoute,
   AccountAuthCallbackRoute: AccountAuthCallbackRoute,
   AccountAuthCompleteRoute: AccountAuthCompleteRoute,
+  AccountAuthConfirmRoute: AccountAuthConfirmRoute,
 }
 
 const AccountRouteWithChildren =

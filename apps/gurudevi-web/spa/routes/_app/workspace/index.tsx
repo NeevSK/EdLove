@@ -1,11 +1,11 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+﻿import { createFileRoute, Link } from '@tanstack/react-router';
 import { z } from 'zod';
 import { WorkspaceFloor } from '../../../../app/(sanctuary)/workspace/WorkspaceFloor';
 import { Notice } from '../../../surface/Notice';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/')({
-  head: () => ({ meta: [{ title: 'Workspace | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Workspace | Gurudevi App' }] }),
   validateSearch: z.object({
     task: z.enum(['attendance']).optional().catch(undefined),
     classroom: z.string().optional(),

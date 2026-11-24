@@ -116,7 +116,7 @@
 }
 
 .kindTag {
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -127,7 +127,7 @@
 }
 
 .statusTag {
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -185,11 +185,11 @@
 }
 
 .subEntity {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: #8c827a;
 }
 
 .dateText {
   color: #8c827a;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
 }

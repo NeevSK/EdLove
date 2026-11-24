@@ -72,6 +72,7 @@ export {
 } from './Media/Capture';
 export { DocumentView, type DocumentViewProps } from './Media/DocumentView';
 export { FILE_CARD_ENGLISH, FileCard, type FileCardProps } from './Media/FileCard';
+export { H5pView, type H5pViewProps } from './Media/H5pView';
 export { Markdown, type MarkdownProps } from './Media/Markdown';
 export { Media, type MediaProps } from './Media/Media';
 export { RichTextEditor, type RichTextEditorProps } from './Media/RichTextEditor';

@@ -157,7 +157,7 @@ export function BadgeSheetFloor({ mode, subjectId }: BadgeSheetFloorProps) {
                 <div className={styles.badgeCardHeader}>
                   <div className={styles.schoolCrestRow}>
                     <span className={styles.crestIcon}>🏛️</span>
-                    <h2 className={styles.schoolName}>Gurudevi Sanctuary</h2>
+                    <h2 className={styles.schoolName}>Gurudevi App</h2>
                   </div>
                   <span className={styles.badgeTypePill}>Student Pass</span>
                 </div>

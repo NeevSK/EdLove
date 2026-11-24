@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { ClassroomDetailFloor } from '../../../../../app/(sanctuary)/workspace/classroom/[id]/ClassroomDetailFloor';
 import { useSession } from '../../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/classroom/$id')({
-  head: () => ({ meta: [{ title: 'Classroom Hub | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Classroom Hub | Gurudevi App' }] }),
   component: ClassroomScreen,
 });
 

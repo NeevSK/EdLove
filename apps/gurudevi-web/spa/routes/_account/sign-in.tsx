@@ -1,11 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { AuthFrame } from '../../../app/(sanctuary)/auth/AuthFrame';
 import { safeReturnPath } from '../../../app/(sanctuary)/auth/routeSafety';
 import { SignInFlow } from '../../../app/(sanctuary)/auth/SignInFlow';
 
 export const Route = createFileRoute('/_account/sign-in')({
-  head: () => ({ meta: [{ title: 'Sign in | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Sign in | Gurudevi App' }] }),
   validateSearch: z.object({
     returnTo: z.string().optional(),
     reason: z.literal('sign-out-incomplete').optional().catch(undefined),
@@ -20,7 +20,7 @@ function SignInScreen() {
   const isSignUp = intent === 'signup';
   return (
     <AuthFrame
-      title={isSignUp ? 'Join Gurudevi Sanctuary' : 'Teach. Learn. Reflect.'}
+      title={isSignUp ? 'Join Gurudevi App' : 'Teach. Learn. Reflect.'}
       description={
         isSignUp
           ? 'Create your calm, secure personal sanctuary held safely on your device.'

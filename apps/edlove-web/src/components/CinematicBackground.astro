@@ -3,55 +3,17 @@ interface Props {
   showVideo?: boolean;
 }
 
-const { showVideo = true } = Astro.props;
+// Keep prop signature for backwards compatibility across inner pages,
+// without eagerly downloading a 2.8MB video behind an opaque wash.
+const { showVideo: _showVideo = false } = Astro.props;
 ---
 
-<div class="cinematic-bg fixed inset-0 w-full h-full -z-10 bg-[#FCFBF9] overflow-hidden pointer-events-none select-none">
-  
-  <!-- The Nature Cinematic Video Layer -->
-  {showVideo && (
-    <video
-      id="cinematic-nature-video"
-      autoplay
-      loop
-      muted
-      playsinline
-      preload="auto"
-      class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-18 z-0"
-    >
-      <source src="/assets/nature-loop.mp4" type="video/mp4" />
-    </video>
-  )}
-
-  <!-- Protective Calibrated Vellum Wash: Clean luminous alabaster wash ensuring pristine text clarity (WCAG AAA >= 15:1) -->
-  <div class="absolute inset-0 z-10 bg-gradient-to-b from-[#FCFBF9]/95 via-[#FCFBF9]/92 to-[#FCFBF9]/98"></div>
-
-  <!-- Soft Ambient Light Drift -->
-  <div class="ambient-light-drift absolute inset-0 z-10"></div>
+<div
+  class="cinematic-bg fixed inset-0 w-full h-full -z-10 bg-[#FCFBF9] overflow-hidden pointer-events-none select-none"
+  aria-hidden="true"
+>
+  <div
+    class="absolute inset-0"
+    style="background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(229, 181, 79, 0.08) 0%, rgba(252, 251, 249, 0) 70%), radial-gradient(ellipse 60% 40% at 85% 90%, rgba(74, 99, 87, 0.06) 0%, rgba(252, 251, 249, 0) 70%);"
+  ></div>
 </div>
-
-<script>
-  function ensureVideoPlays() {
-    const video = document.getElementById('cinematic-nature-video') as HTMLVideoElement | null;
-    if (video) {
-      video.muted = true;
-      video.play().catch(() => {
-        // Handled silently if user agent policy delays autoplay
-      });
-    }
-  }
-
-  ensureVideoPlays();
-  document.addEventListener('astro:page-load', ensureVideoPlays);
-</script>
-
-<style>
-  .ambient-light-drift {
-    background: radial-gradient(
-      ellipse at 35% 25%,
-      rgba(217, 119, 6, 0.03) 0%,
-      rgba(71, 85, 105, 0.02) 50%,
-      rgba(252, 251, 249, 0) 75%
-    );
-  }
-</style>

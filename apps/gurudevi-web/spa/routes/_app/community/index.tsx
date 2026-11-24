@@ -1,11 +1,11 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+﻿import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { CommunityFeedFloor } from '../../../../app/(sanctuary)/community/CommunityFeedFloor';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/community/')({
-  head: () => ({ meta: [{ title: 'Community | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Community | Gurudevi App' }] }),
   validateSearch: z.object({
     inviteCode: z.string().optional(),
     pillar: z.enum(['feed', 'groups', 'messages']).optional().catch(undefined),

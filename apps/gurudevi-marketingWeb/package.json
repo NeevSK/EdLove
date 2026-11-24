@@ -25,7 +25,7 @@
     "@astrojs/sitemap": "^3.7.6",
     "@astrojs/svelte": "^9.1.6",
     "@astrojs/vercel": "^11.0.22",
-    "@intuitui-labs/a11y-gate": "^0.2.0",
+    "@intuitui-labs/a11y-gate": "link:C:/projects/packages/a11y-gate",
     "@repo/editorial": "workspace:*",
     "@tailwindcss/vite": "^4.3.5",
     "astro": "^7.4.13",

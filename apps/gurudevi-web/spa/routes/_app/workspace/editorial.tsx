@@ -1,11 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { EditorialCommonsFloor } from '../../../../app/(sanctuary)/workspace/editorial/EditorialCommonsFloor';
 import { EditorialFloor } from '../../../../app/(sanctuary)/workspace/editorial/EditorialFloor';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/editorial')({
-  head: () => ({ meta: [{ title: 'Editorial Commons | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Editorial Commons | Gurudevi App' }] }),
   validateSearch: z.object({ view: z.enum(['commons']).optional().catch(undefined) }),
   component: WorkspaceEditorialScreen,
 });

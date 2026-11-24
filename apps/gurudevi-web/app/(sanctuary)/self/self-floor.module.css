@@ -1,6 +1,8 @@
 .floor {
   min-height: 100%;
   padding: clamp(1.25rem, 5vw, 5rem);
+  container-name: self-floor;
+  container-type: inline-size;
   background:
     radial-gradient(
       circle at 88% 6%,
@@ -141,10 +143,13 @@
   margin: 0.75rem 0 1.5rem;
   padding: 0.5rem 0.85rem;
   border: 1px solid var(--line);
+  border-top: 1px solid color-mix(in srgb, var(--color-sanctuary-saffron, #a85022) 28%, var(--line));
   border-radius: 999px;
   background: color-mix(in srgb, var(--paper-light) 75%, transparent);
+  background-image: radial-gradient(120% 100% at 50% 20%, color-mix(in srgb, var(--w-glow, #fff) 15%, transparent), transparent);
   backdrop-filter: blur(12px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-sanctuary-saffron, #a85022) 16%, transparent),
+              0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
 .atmosphereToolbarGroup {
@@ -358,8 +363,12 @@
   position: relative;
   display: grid;
   gap: 0.65rem;
-  border-radius: 0.75rem;
-  padding: 0.5rem;
+  border-radius: 0.95rem;
+  padding: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--color-sanctuary-saffron, #a85022) 20%, var(--line));
+  background: color-mix(in srgb, var(--paper-light) 40%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-sanctuary-saffron, #a85022) 12%, transparent);
   transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
   touch-action: pan-y;
 }
@@ -1604,6 +1613,47 @@
   gap: 0.85rem;
   max-width: 28rem;
   box-sizing: border-box;
+}
+
+/* ─── 4-Gear Container Degradation (UI Kit & Intentional UI) ─── */
+@container self-floor (max-width: 519px) {
+  /* Gear 2: Balanced single-column flow */
+  .catalogZones {
+    grid-template-columns: 1fr;
+  }
+
+  .atmosphereToolbar {
+    border-radius: 1.1rem;
+    padding: 0.65rem;
+  }
+}
+
+@container self-floor (max-width: 379px) {
+  /* Gear 1: Vertical stacking, ergonomic tap targets */
+  .floor {
+    padding: 1rem 0.65rem;
+  }
+
+  .catalogGrid {
+    justify-content: center;
+  }
+
+  .atmosphereToolbarGroup {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@container self-floor (max-width: 319px) {
+  /* Gear 0: Ultra-narrow fallback */
+  .pebbleTileWrapper {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .catalogZone {
+    padding: 0.5rem;
+  }
 }
 
 

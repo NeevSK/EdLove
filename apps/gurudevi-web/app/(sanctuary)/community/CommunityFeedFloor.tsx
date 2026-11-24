@@ -49,6 +49,12 @@ export function CommunityFeedFloor({
   initialIncognito?: boolean;
 }>) {
   const [activePillar, setActivePillar] = useState<CommunityPillar>(initialPillar ?? 'feed');
+
+  useEffect(() => {
+    if (initialPillar) {
+      setActivePillar(initialPillar);
+    }
+  }, [initialPillar]);
   const exploreCapacity = useExploreCapacity();
   const roleLabel =
     primaryCapacity && isExploreCapacity(primaryCapacity)

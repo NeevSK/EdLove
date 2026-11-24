@@ -104,7 +104,7 @@
 .sliderLabels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--color-ink-soft, #453c35);
 }
 
@@ -126,7 +126,7 @@
 
 .scoreLabel {
   width: 9rem;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-ink, #131e27);
 }

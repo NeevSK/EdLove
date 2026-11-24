@@ -234,11 +234,17 @@ export function typeStyle(
   lang: WorldLanguage,
   world: ResolvedWorld,
   sizeOverride?: number,
+  viewportWidth?: number,
 ): TextStyle {
   const script = lang === 'si' || lang === 'ta';
   const face = faceOf(world, t.family, lang);
   const scale = face.scale ?? 1;
-  const size = (sizeOverride ?? t.size) * scale * reading.scale;
+  let baseSize = sizeOverride ?? t.size;
+  if (!sizeOverride && viewportWidth && t.minSize && t.maxSize && t.minSize !== t.maxSize) {
+    const ratio = Math.min(1, Math.max(0, (viewportWidth - 360) / (1280 - 360)));
+    baseSize = t.minSize + ratio * (t.maxSize - t.minSize);
+  }
+  const size = baseSize * scale * reading.scale;
   const lineHeight =
     ((t.lineHeight * size) / t.size) * (script ? SCRIPT_LINE_HEIGHT : 1) * reading.lines;
   const drawn = draw(face, t, size, world.mode === 'dark');

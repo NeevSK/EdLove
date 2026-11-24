@@ -82,6 +82,7 @@ const sanctuaryRoutePrefixes = [
 const exploreAllowedPathPrefixes = [
   '/welcome',   // Landing / sign-in prompt (guest mode, no Supabase required)
   '/self',      // Demo self-reflection floor (uses localStorage only)
+  '/support',   // Multi-surface support hub & functionality guides
   '/badge.svg', // School badge (public asset)
 ] as const;
 

@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { GuardianFloor } from '../../../../app/(sanctuary)/workspace/guardian/GuardianFloor';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/guardian')({
-  head: () => ({ meta: [{ title: 'Guardian Portal | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Guardian Portal | Gurudevi App' }] }),
   component: WorkspaceGuardianScreen,
 });
 

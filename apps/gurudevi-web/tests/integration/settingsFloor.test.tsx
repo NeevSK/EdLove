@@ -30,7 +30,7 @@ describe('SettingsFloor Integration (G1 boundary / jsdom)', () => {
 
     // Check title and description
     expect(screen.getByRole('heading', { level: 1, name: /sanctuary settings/i })).toBeTruthy();
-    expect(screen.getByText(/Personalize your atmosphere/i)).toBeTruthy();
+    expect(screen.getByText(/Choose where the main destinations live/i)).toBeTruthy();
 
     // Check Navigation layout options
     expect(screen.getByRole('button', { name: /horizontal row/i })).toBeTruthy();
@@ -62,5 +62,29 @@ describe('SettingsFloor Integration (G1 boundary / jsdom)', () => {
 
     expect(screen.getByText(/Guest Preferences Active/i)).toBeTruthy();
     expect(screen.getByText(/Enter Sanctuary to Sync ↗/i)).toBeTruthy();
+  });
+
+  it('renders safe account actions including sign out and restore appearance', () => {
+    render(<SettingsFloor displayName="Aria Star" capacity="Educator" isExplore={false} />);
+
+    expect(screen.getByRole('button', { name: /sign out of this device/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /restore default appearance/i })).toBeTruthy();
+    expect(screen.getAllByText(/Educator/i).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('renders danger zone with account deletion options for sanctuary', () => {
+    render(<SettingsFloor displayName="Aria Star" capacity="Educator" isExplore={false} />);
+
+    expect(screen.getByRole('heading', { level: 2, name: /danger zone/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /request account deletion/i })).toBeTruthy();
+    expect(screen.getByText(/Sri Lanka Personal Data Protection Act/i)).toBeTruthy();
+  });
+
+  it('renders sandbox wipe in danger zone when in explore mode', () => {
+    render(<SettingsFloor displayName="Guest Explorer" capacity="Explorer" isExplore={true} />);
+
+    expect(screen.getByRole('heading', { level: 2, name: /danger zone/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /wipe local sandbox/i })).toBeTruthy();
+    expect(screen.getByText(/Guest Sandbox/i)).toBeTruthy();
   });
 });

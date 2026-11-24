@@ -9,6 +9,7 @@ import {
   Grid,
   Inline,
   Notice,
+  Pebble,
   SegmentedControl,
   Stack,
   SearchField,
@@ -16,21 +17,21 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import {
   Bookmark,
-  BookOpen,
-  Compass,
   ExternalLink,
-  FileSpreadsheet,
-  FolderHeart,
   Heart,
-  Pin,
-  PinOff,
   Share2,
-  Sparkles,
-  Video,
 } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  listLocalLibraryItems,
+  saveLocalLibraryItem,
+  type LocalLibraryItem,
+} from '../../../lib/library/localLibraryStore';
+import { useAssetOutbox } from '../../../lib/media/useAssetOutbox';
+import { fileKindOf } from '@repo/core/logic/files/fileKind';
 import { useLibraryCanvas } from '../../../lib/canvas/useLibraryCanvas';
+import { useNavigator } from '../../../lib/navigation/useNavigator';
 import { createBrowserSupabaseClient } from '../../../lib/supabase/browser';
 import { useDomainWorkbench } from '../../../lib/workbench';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
@@ -60,53 +61,210 @@ const CATALOG_TASK = {
   featureId: 'library.resource_catalog',
   route: '/library',
   title: 'Resource catalog',
-  icon: '▤',
+  icon: '📚',
   temporalBinding: { kind: 'none' },
   localStatePolicy: 'none',
 } as const;
 
-export const EXPLORE_LIBRARY_RESOURCES: readonly BrowserLibraryResource[] = getSandboxSamples<
-  any[]
->('library', 'getResources', [], []).map((r) => ({
-  id: r.id,
-  title: r.title,
-  description: r.description,
-  type: r.type,
-  verified: Boolean(r.verified),
-  subjects:
-    Array.isArray(r.subjects) && r.subjects.length > 0
-      ? r.subjects
-      : r.subject
-        ? [r.subject]
-        : ['Sanctuary'],
-  url: r.url ?? 'https://gurudevi.app',
-  format: r.format ?? null,
-  is_official: Boolean(r.is_official),
-}));
+export function libraryResourceEmoji(type?: string | null, format?: string | null): string {
+  const t = (type ?? '').toLowerCase();
+  const f = (format ?? '').toLowerCase();
+  if (t === 'video' || f === 'video' || t === 'movie_trailer') return '🎥';
+  if (t === 'pdf' || f === 'pdf' || f === 'document' || t === 'manuscript') return '📄';
+  if (t === 'worksheet' || f === 'worksheet' || t === 'lab' || t === 'practice') return '📝';
+  if (t === 'past_paper' || f === 'past_paper') return '📜';
+  if (t === 'lesson' || f === 'lesson') return '📖';
+  if (t === 'map' || f === 'map' || t === 'infographic' || t === 'topology') return '🗺️';
+  if (t === 'guide' || f === 'guide' || t === 'tech_guide' || t === 'pedagogy') return '👩‍🏫';
+  return '📖';
+}
 
-export const EXPLORE_COLLECTIONS = getSandboxSamples<any[]>(
-  'library',
-  'getCollections',
-  [],
-  [],
-).map((c) => ({
-  id: c.id,
-  name: c.name,
-  description: c.description,
-  subjects: ['Curriculum', 'Pedagogy'],
-  resource_ids: c.resource_ids,
-  is_official: true,
-}));
+/** Canonical Sri Lankan educational commons dataset — every entry points to a real, locally-downloadable file */
+export const CANONICAL_COMMONS_RESOURCES: readonly BrowserLibraryResource[] = [
+  {
+    id: 'mangroves',
+    title: 'Field Guide to Sri Lankan Mangrove Ecosystems (PDF)',
+    description:
+      '3-page illustrated field manual for coastal wetland conservation and flora identification.',
+    type: 'pdf',
+    format: 'pdf',
+    subjects: ['Biology', 'Ecology'],
+    verified: true,
+    is_official: true,
+    url: '/samples/mangroves-field-guide.pdf',
+  },
+  {
+    id: 'lesson-plan-ecology',
+    title: 'Mangrove Soil Salinity & Microclimate Lab (Word .docx)',
+    description:
+      'Editable Word worksheet for testing estuarine salinity gradients and plant adaptations.',
+    type: 'worksheet',
+    format: 'docx',
+    subjects: ['Biology', 'Chemistry'],
+    verified: true,
+    is_official: true,
+    url: '/samples/lesson-plan-ecology.docx',
+  },
+  {
+    id: 'wet-zone-flora',
+    title: 'Wet-Zone Flora & Sinharaja Canopy (PowerPoint .pptx)',
+    description:
+      'Classroom presentation deck covering emergent, canopy, and forest floor habitats.',
+    type: 'lesson',
+    format: 'pptx',
+    subjects: ['Science', 'Botany'],
+    verified: true,
+    is_official: true,
+    url: '/samples/wet-zone-flora.pptx',
+  },
+  {
+    id: 'res-contemplative-pedagogy',
+    title: 'Contemplative Pedagogy in Island Schools (Marp Slides)',
+    description:
+      'Gurudevi Markdown slide deck on stillness, inquiry, and attention in Sri Lankan classrooms.',
+    type: 'lesson',
+    format: 'slides',
+    subjects: ['Pedagogy', 'Mindfulness'],
+    verified: true,
+    is_official: true,
+    url: '/samples/contemplative-pedagogy-slides.md',
+  },
+  {
+    id: 'classical-verse',
+    title: 'Classical Sinhala Verse & Inquiry (Markdown Lesson)',
+    description:
+      'Trilingual Gurudevi Markdown lesson with Sinhala Unicode, callout notes, and meter formulas.',
+    type: 'lesson',
+    format: 'markdown',
+    subjects: ['Literature', 'Humanities'],
+    verified: true,
+    is_official: true,
+    url: '/samples/classical-sinhala-verse.md',
+  },
+  {
+    id: 'garden-path-plate',
+    title: 'Sanctuary Garden Path — Field Observation Plate (Image)',
+    description:
+      'High-resolution botanical observation plate for nature journaling and visual OCR.',
+    type: 'map',
+    format: 'image',
+    subjects: ['Environment', 'Art'],
+    verified: true,
+    is_official: true,
+    url: '/artwork/garden-path.jpg',
+  },
+  {
+    id: 'mindful-bell-audio',
+    title: 'Opening Circle Mindful Chime (Audio .wav)',
+    description:
+      '1-second resonant bell cue for opening circle transitions in quiet classrooms.',
+    type: 'guide',
+    format: 'audio',
+    subjects: ['Mindfulness', 'Classroom'],
+    verified: true,
+    is_official: true,
+    url: '/samples/mindful-bell.wav',
+  },
+  {
+    id: 'nie-external-portal',
+    title: 'National Institute of Education (NIE) Syllabus Portal (Link)',
+    description:
+      'Official external reference link to Sri Lankan national school syllabi.',
+    type: 'guide',
+    format: 'link',
+    subjects: ['Curriculum', 'Reference'],
+    verified: true,
+    is_official: true,
+    url: 'https://nie.lk',
+  },
+];
+
+export const EXPLORE_LIBRARY_RESOURCES: readonly BrowserLibraryResource[] = CANONICAL_COMMONS_RESOURCES;
+
+export const CANONICAL_COLLECTIONS = [
+  {
+    id: 'col-curriculum-core',
+    name: 'National Curriculum & Sri Lankan Pedagogy',
+    description:
+      'Foundational syllabi, educational circulars, and teacher reference materials for island schools.',
+    subjects: ['Curriculum', 'Pedagogy'],
+    resource_ids: ['res-contemplative-pedagogy', 'res-quiet-classrooms'],
+    is_official: true,
+  },
+  {
+    id: 'col-island-botany',
+    name: 'Wet-Zone Ecology & Endemic Flora',
+    description:
+      'Biological taxonomy and herbarium field guides across Sinharaja and Sri Lankan rainforest preserves.',
+    subjects: ['Biology', 'Environment'],
+    resource_ids: ['mangroves', 'intro-botany', 'v-r1'],
+    is_official: true,
+  },
+  {
+    id: 'col-classical-humanities',
+    name: 'Classical Sinhala, Tamil & Pali Epics',
+    description:
+      'Annotated translations of ancient chronicles, rock inscriptions, and ethical philosophical treatises.',
+    subjects: ['Literature', 'Philosophy'],
+    resource_ids: ['res-dialogues-truth', 'classical-verse', 'v-r2'],
+    is_official: true,
+  },
+  {
+    id: 'v-c1',
+    name: 'The Ecology of Care',
+    description: 'Foundational resources for the Sanctuary model.',
+    subjects: ['Values', 'Social-Emotional'],
+    resource_ids: ['v-r1', 'v-r2'],
+    is_official: true,
+  },
+];
+
+export const EXPLORE_COLLECTIONS = (() => {
+  const samples = getSandboxSamples<any[]>('library', 'getCollections', [], []);
+  if (Array.isArray(samples) && samples.length > 0) {
+    return samples.map((c) => ({
+      id: c.id,
+      name: c.name,
+      description: c.description,
+      subjects: ['Curriculum', 'Pedagogy'],
+      resource_ids: c.resource_ids,
+      is_official: true,
+    }));
+  }
+  return CANONICAL_COLLECTIONS;
+})();
+
+function collectionMeta(category: string): { label: string; emoji: string } {
+  const map: Record<string, { label: string; emoji: string }> = {
+    discovery: { label: 'Discovery & Search', emoji: '🧭' },
+    collections: { label: 'Curated Collections', emoji: '🗂️' },
+    tools: { label: 'Practice Tools', emoji: '🛠️' },
+    archives: { label: 'Ancient Archives', emoji: '📜' },
+  };
+  return map[category] ?? { label: category, emoji: '📚' };
+}
 
 function collectionLabel(category: string): string {
-  const map: Record<string, string> = {
-    discovery: 'Discovery & Search',
-    collections: 'Curated Collections',
-    tools: 'Practice Tools',
-    archives: 'Ancient Archives',
-  };
-  return map[category] ?? category;
+  return collectionMeta(category).label;
 }
+
+export interface WebShelfDef {
+  id: string;
+  label: string;
+  emoji: string;
+  types: readonly string[];
+}
+
+export const WEB_SHELF_DEFS: readonly WebShelfDef[] = [
+  { id: 'All', label: 'All Resources', emoji: '✨', types: [] },
+  { id: 'lesson', label: 'Lessons & Units', emoji: '📖', types: ['lesson'] },
+  { id: 'video', label: 'Films & Lectures', emoji: '🎥', types: ['video', 'movie_trailer'] },
+  { id: 'pdf', label: 'Documents & Syllabi', emoji: '📄', types: ['pdf', 'doc', 'reading', 'pedagogy'] },
+  { id: 'worksheet', label: 'Worksheets & Labs', emoji: '📝', types: ['worksheet'] },
+  { id: 'past_paper', label: 'Past Papers', emoji: '📜', types: ['past_paper'] },
+  { id: 'map', label: 'Maps & Visuals', emoji: '🗺️', types: ['map', 'infographic'] },
+  { id: 'guide', label: 'Teacher Guides', emoji: '👩‍🏫', types: ['guide', 'tech_guide'] },
+] as const;
 
 export type LibraryFloorMode = 'account' | 'explore';
 
@@ -121,6 +279,7 @@ export function LibraryFloor({
 }>) {
   const isGuestMode =
     mode === 'explore' || accountId === 'explore-guest' || accountId === 'guest';
+  const navigator = useNavigator();
   const canvas = useLibraryCanvas({
     accountId,
     enableRemoteSync: mode === 'account' && Boolean(accountId) && !isGuestMode,
@@ -145,6 +304,16 @@ export function LibraryFloor({
     }
   });
   const [endorsedIds, setEndorsedIds] = useState<Set<string>>(new Set());
+  const [localItems, setLocalItems] = useState<readonly LocalLibraryItem[]>(() =>
+    listLocalLibraryItems(),
+  );
+  const { enqueueAsset, pendingAssetCount, busy: uploadBusy } = useAssetOutbox();
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [quickAddMode, setQuickAddMode] = useState<'file' | 'link'>('file');
+  const [quickTitle, setQuickTitle] = useState('');
+  const [quickLinkUrl, setQuickLinkUrl] = useState('');
+  const quickFileInputRef = useRef<HTMLInputElement | null>(null);
+  const quickAddRef = useRef<HTMLElement | null>(null);
   const [resources, setResources] = useState<readonly BrowserLibraryResource[]>([]);
   const [status, setStatus] = useState<LibraryLoadState>('loading');
   const [notice, setNotice] = useState<string | null>(null);
@@ -397,6 +566,7 @@ export function LibraryFloor({
   return (
     <SanctuaryFloorCanvas
       appearance={canvas.appearance}
+      className={styles.floor}
       domain="library"
       furnitureItems={LIBRARY_FURNITURE_ITEMS}
       groupOrder={
@@ -423,27 +593,120 @@ export function LibraryFloor({
         onOpenOverview={returnToOverview}
       />
 
-      {catalogIsOpen ? (
-        <div className={styles.masterDetailLayout} data-layout-mode={canvas.layoutMode}>
-          <aside aria-label="Library Collections" className={styles.catalogRail}>
-            <div className={styles.catalogRailHeader}>
-              <h3 className={styles.catalogRailTitle}>Library Shelf</h3>
-              <button
-                className={styles.returnOverviewButton}
-                onClick={returnToOverview}
-                type="button"
-              >
-                Overview
-              </button>
+      <div className={styles.libraryDesktopCanvas}>
+        {/* Left Explorer Rail (Unified Frosted Glass Column) */}
+        <aside aria-label="Library Explorer Rail" className={styles.explorerRail}>
+          {/* Ambient Pulse Micro-Counters */}
+          <div className={styles.railPulseHeader} role="region" aria-label="Sanctuary Pulse Metrics">
+            <div className={styles.railPulseItem}>
+              <span className={styles.railPulseValue}>
+                {status === 'ready' && Array.isArray(resources) ? resources.length : EXPLORE_LIBRARY_RESOURCES.length}
+              </span>
+              <span className={styles.railPulseLabel}>📚 Resources</span>
             </div>
+            <div className={styles.railPulseItem}>
+              <span className={styles.railPulseValue}>
+                {Array.isArray(collections) ? collections.length : EXPLORE_COLLECTIONS.length}
+              </span>
+              <span className={styles.railPulseLabel}>🗂️ Tracks</span>
+            </div>
+            <div className={styles.railPulseItem}>
+              <span className={styles.railPulseValue}>{bookmarkedIds.size}</span>
+              <span className={styles.railPulseLabel}>🔖 Saved</span>
+            </div>
+          </div>
 
-            <section
-              aria-labelledby="rail-collections-heading"
-              className={styles.catalogRailSection}
-            >
-              <h4 id="rail-collections-heading" className={styles.catalogRailSectionTitle}>
-                Collections
-              </h4>
+          {/* Knowledge Appliances (Recessed Dock Tray) */}
+          <div>
+            <div className={styles.railSectionHeader}>
+              <span>Knowledge Appliances</span>
+              <span>⚙️</span>
+            </div>
+            <div className={styles.appliancesTray}>
+              <Pebble
+                title="Tools Hub"
+                emoji="🛠️"
+                rhythm="OCR & Data"
+                ariaLabel="Open Knowledge Tools Hub"
+                onPress={() => navigator.follow('/library/tools', 'library-appliances')}
+              />
+              <Pebble
+                title="Atlas Map"
+                emoji="🗺️"
+                rhythm="Centers"
+                ariaLabel="Open Learning Centers Atlas Map"
+                onPress={() => navigator.follow('/library/map', 'library-appliances')}
+              />
+              <Pebble
+                title="Curator"
+                emoji="✨"
+                rhythm="Studio"
+                ariaLabel="Open Living Curator Studio"
+                onPress={() => navigator.follow('/library/curator', 'library-appliances')}
+              />
+              <Pebble
+                title="Upload / Add"
+                emoji="📤"
+                rhythm={pendingAssetCount > 0 ? `${pendingAssetCount} queued` : 'Files & Links'}
+                ariaLabel="Upload a document, media file, or save a link"
+                onPress={() => {
+                  setQuickAddOpen((v) => !v);
+                  setTimeout(() => {
+                    quickAddRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 50);
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Canonical Curated Shelf Channels */}
+          <div>
+            <div className={styles.railSectionHeader}>
+              <span>Curated Channels</span>
+              <span>🗂️</span>
+            </div>
+            <ul className={styles.shelfNavList}>
+              {WEB_SHELF_DEFS.map((shelf) => {
+                const isActive = selectedCategory === shelf.id;
+                const pool = Array.isArray(resources) && resources.length > 0 ? resources : EXPLORE_LIBRARY_RESOURCES;
+                const count =
+                  shelf.id === 'All'
+                    ? pool.length
+                    : pool.filter((r) =>
+                        shelf.types.includes(r.type?.toLowerCase() || '') ||
+                        shelf.types.includes(r.format?.toLowerCase() || ''),
+                      ).length;
+
+                return (
+                  <li key={shelf.id}>
+                    <button
+                      type="button"
+                      className={`${styles.shelfNavItem} ${isActive ? styles.shelfNavItemActive : ''}`}
+                      onClick={() => {
+                        setSelectedCategory(shelf.id);
+                        openCatalog();
+                        void loadResources(query, shelf.id, selectedSort);
+                      }}
+                    >
+                      <span className={styles.shelfNavLabel}>
+                        <span aria-hidden="true">{shelf.emoji}</span>
+                        <span>{shelf.label}</span>
+                      </span>
+                      <span className={styles.shelfCountBadge}>{count}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          {/* Pinned Desks */}
+          {canvas.groupOrder.length > 0 && (
+            <div>
+              <div className={styles.railSectionHeader}>
+                <span>Pinned Desks</span>
+                <span>📌</span>
+              </div>
               <ul className={styles.catalogRailList}>
                 {canvas.groupOrder.map((category) => {
                   const isPinned = canvas.pinnedCategories.includes(category);
@@ -454,11 +717,15 @@ export function LibraryFloor({
                           className={styles.catalogRailItem}
                           onClick={() => {
                             setQuery(category === 'discovery' ? '' : category);
+                            openCatalog();
                             void loadResources(category === 'discovery' ? '' : category);
                           }}
                           type="button"
                         >
                           <span className={styles.catalogRailItemLabel}>
+                            <span aria-hidden="true" style={{ marginRight: '0.45rem' }}>
+                              {collectionMeta(category).emoji}
+                            </span>
                             {collectionLabel(category)}
                           </span>
                         </button>
@@ -472,22 +739,219 @@ export function LibraryFloor({
                           onClick={() => canvas.togglePin(category)}
                           type="button"
                         >
-                          {isPinned ? <Pin size={16} aria-hidden /> : <PinOff size={16} aria-hidden />}
+                          <span aria-hidden="true">{isPinned ? '📌' : '＋'}</span>
                         </button>
                       </div>
                     </li>
                   );
                 })}
               </ul>
-            </section>
-          </aside>
+            </div>
+          )}
 
-          <div className={styles.activeResourceStage}>
-            <div className={styles.backOverviewBar}>
-              <button className={styles.streamBackButton} onClick={returnToOverview} type="button">
-                ← Back to Overview
+          {/* Saved Desk Quick Access */}
+          {bookmarkedIds.size > 0 && (
+            <div>
+              <div className={styles.railDivider} />
+              <button
+                type="button"
+                className={`${styles.shelfNavItem} ${selectedCategory === 'saved' ? styles.shelfNavItemActive : ''}`}
+                onClick={() => {
+                  setSelectedCategory('saved');
+                  openCatalog();
+                  void loadResources(query, 'saved', selectedSort);
+                }}
+              >
+                <span className={styles.shelfNavLabel}>
+                  <span>🔖</span>
+                  <span>Saved Desk</span>
+                </span>
+                <span className={styles.shelfCountBadge}>{bookmarkedIds.size}</span>
               </button>
             </div>
+          )}
+        </aside>
+
+        {/* Right Curricular Stage */}
+        <main className={styles.curricularStage}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', marginBottom: '0.75rem' }}>
+            <Button
+              size="sm"
+              variant="primary"
+              label={quickAddOpen ? 'Close Upload Panel' : '📤 Upload File / Save Link'}
+              onClick={() => setQuickAddOpen((v) => !v)}
+            />
+            <Button
+              size="sm"
+              variant="secondary"
+              label="Full Contribute Studio →"
+              onClick={() => navigator.follow('/library/contribute', 'library-header-contribute')}
+            />
+          </div>
+          {quickAddOpen && (
+            <section
+              ref={quickAddRef}
+              aria-label="Add Document, Media, or Saved Link"
+              className={styles.catalog}
+              style={{ marginBottom: '1.5rem' }}
+            >
+              <div className={styles.sectionHeading}>
+                <h3>Add Document, Media, or Saved Link</h3>
+                <p>
+                  Files route to kind-specific storage via IndexedDB + Outbox; links save as
+                  metadata only.
+                </p>
+              </div>
+              <Stack gap="between">
+                <Inline gap="between">
+                  <SegmentedControl<'file' | 'link'>
+                    label="Resource source"
+                    value={quickAddMode}
+                    onChange={setQuickAddMode}
+                    options={[
+                      { value: 'file', label: 'Upload File (PDF, Word, PPT, Image, Video, H5P)' },
+                      { value: 'link', label: 'Save External Link' },
+                    ]}
+                  />
+                  <Button
+                    size="sm"
+                    variant="quiet"
+                    label="Full Contribute Studio →"
+                    onClick={() => navigator.follow('/library/contribute', 'library-quick-add')}
+                  />
+                </Inline>
+
+                <input
+                  type="text"
+                  placeholder="Title (optional for files, required for links)"
+                  value={quickTitle}
+                  onChange={(e) => setQuickTitle(e.target.value)}
+                  style={{
+                    padding: '0.5rem 0.75rem',
+                    borderRadius: '0.45rem',
+                    border: '1px solid rgba(104, 94, 85, 0.25)',
+                  }}
+                />
+
+                {quickAddMode === 'file' ? (
+                  <Inline gap="between">
+                    <input
+                      ref={quickFileInputRef}
+                      type="file"
+                      accept=".pdf,.docx,.pptx,.md,.markdown,.h5p,image/*,audio/*,video/*"
+                      disabled={uploadBusy}
+                      style={{ display: 'none' }}
+                      onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const kind = fileKindOf({ name: file.name, mime: file.type || undefined });
+                      const lane =
+                        kind === 'image'
+                          ? 'images'
+                          : kind === 'video' || kind === 'audio'
+                            ? 'media'
+                            : 'documents';
+                      const queued = await enqueueAsset(file, {
+                        purpose: file.name.toLowerCase().endsWith('.h5p')
+                          ? 'h5p_package'
+                          : 'library_resource',
+                        visibility: 'public',
+                        targetKind: 'library_work',
+                        title: quickTitle.trim() || file.name,
+                      });
+                      if (!queued.ok) {
+                        setNotice(queued.reason);
+                        return;
+                      }
+                      const created = saveLocalLibraryItem({
+                        id: `local-${Date.now()}`,
+                        title: quickTitle.trim() || file.name.replace(/\.[^.]+$/, ''),
+                        description: `${kind.toUpperCase()} • Routed to ${lane} storage • SHA-256 ${queued.sha256.slice(0, 8)}…`,
+                        type: kind === 'video' ? 'video' : kind === 'pdf' ? 'pdf' : 'lesson',
+                        format: file.name.toLowerCase().endsWith('.h5p') ? 'h5p' : kind,
+                        url: queued.localUri,
+                        subjects: ['Library'],
+                        verified: false,
+                        assetId: queued.assetId,
+                        sha256: queued.sha256,
+                        mime: file.type || 'application/octet-stream',
+                        fileName: file.name,
+                        storageLane: lane,
+                        syncStatus: 'queued',
+                        createdAt: Date.now(),
+                      });
+                      setLocalItems(created);
+                      setQuickTitle('');
+                      setQuickAddOpen(false);
+                      setNotice(
+                        `Added "${file.name}" (${lane} lane) to Library & queued in Outbox.`,
+                      );
+                    }}
+                  />
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      label={uploadBusy ? 'Hashing & Queuing…' : 'Choose File to Upload…'}
+                      disabled={uploadBusy}
+                      onClick={() => quickFileInputRef.current?.click()}
+                    />
+                  </Inline>
+                ) : (
+                  <Inline gap="between">
+                    <input
+                      type="url"
+                      placeholder="https://..."
+                      value={quickLinkUrl}
+                      onChange={(e) => setQuickLinkUrl(e.target.value)}
+                      style={{
+                        flex: 1,
+                        padding: '0.5rem 0.75rem',
+                        borderRadius: '0.45rem',
+                        border: '1px solid rgba(104, 94, 85, 0.25)',
+                      }}
+                    />
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      label="Save Link"
+                      onClick={() => {
+                        const safe = safeResourceUrl(quickLinkUrl.trim());
+                        if (!safe || !quickTitle.trim()) {
+                          setNotice('Provide both a title and a valid https:// or http:// URL.');
+                          return;
+                        }
+                        const created = saveLocalLibraryItem({
+                          id: `link-${Date.now()}`,
+                          title: quickTitle.trim(),
+                          description: `Saved external link • ${safe}`,
+                          type: 'guide',
+                          format: 'link',
+                          url: safe,
+                          subjects: ['Saved Links'],
+                          verified: false,
+                          storageLane: 'link_only',
+                          syncStatus: 'link_saved',
+                          createdAt: Date.now(),
+                        });
+                        setLocalItems(created);
+                        setQuickTitle('');
+                        setQuickLinkUrl('');
+                        setQuickAddOpen(false);
+                        setNotice(`Saved link "${quickTitle.trim()}" to Library.`);
+                      }}
+                    />
+                  </Inline>
+                )}
+              </Stack>
+            </section>
+          )}
+          {catalogIsOpen ? (
+            <div className={styles.activeResourceStage}>
+              <div className={styles.backOverviewBar}>
+                <button className={styles.streamBackButton} onClick={returnToOverview} type="button">
+                  ← Back to Overview
+                </button>
+              </div>
 
             <section className={styles.catalog} aria-labelledby="resource-catalog-title">
               <div className={styles.sectionHeading}>
@@ -514,13 +978,13 @@ export function LibraryFloor({
               <div className={styles.filterToolbar}>
                 <Chips label="Category filter" single className={styles.categoryRow}>
                   {[
-                    { id: 'All', label: 'All Items' },
-                    { id: 'lesson', label: 'Lessons' },
-                    { id: 'video', label: 'Lectures' },
-                    { id: 'pdf', label: 'Documents' },
-                    { id: 'worksheet', label: 'Worksheets' },
-                    { id: 'past_paper', label: 'Past Papers' },
-                    { id: 'saved', label: 'Saved Desk' },
+                    { id: 'All', label: '✨ All Items' },
+                    { id: 'lesson', label: '📖 Lessons' },
+                    { id: 'video', label: '🎥 Lectures' },
+                    { id: 'pdf', label: '📄 Documents' },
+                    { id: 'worksheet', label: '📝 Worksheets' },
+                    { id: 'past_paper', label: '📜 Past Papers' },
+                    { id: 'saved', label: '🔖 Saved Desk' },
                   ].map((cat) => (
                     <Chip
                       key={cat.id}
@@ -615,8 +1079,12 @@ export function LibraryFloor({
                                 : ''
                             }`}
                             shape="tile"
-                            icon={isVideo ? Video : BookOpen}
+                            emoji={libraryResourceEmoji(resource.type, resource.format)}
                             href={targetHref}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              navigator.follow(targetHref, 'library-resource');
+                            }}
                           />
                           <Inline gap="inside" className={styles.cardActionsInline}>
                             <Button
@@ -671,8 +1139,12 @@ export function LibraryFloor({
                                 : ''
                             }`}
                             shape="wide"
-                            icon={isVideo ? Video : BookOpen}
+                            emoji={libraryResourceEmoji(resource.type, resource.format)}
                             href={targetHref}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              navigator.follow(targetHref, 'library-resource');
+                            }}
                           />
                           <Inline gap="inside" className={styles.cardActionsInline}>
                             <Button
@@ -710,42 +1182,9 @@ export function LibraryFloor({
               ) : null}
             </section>
           </div>
-        </div>
-      ) : (
-        <>
-          <section className={styles.overview} aria-labelledby="library-overview-title">
-            <div>
-              <p className={styles.eyebrow}>
-                {isGuestMode ? 'Explore Commons · Open Sanctuary' : 'Overview · Epistemic Universe'}
-              </p>
-              <h2 id="library-overview-title">
-                {isGuestMode ? 'Public Educational Commons' : 'Curricular Library & Commons'}
-              </h2>
-              <p>
-                {isGuestMode
-                  ? 'Freely browse verified Sri Lankan syllabi, textbooks, and lectures without requiring an account.'
-                  : 'Search verified curriculum materials, open original manuscripts, and explore island knowledge centers.'}
-              </p>
-            </div>
-            <div className={styles.overviewAside}>
-              <p className={styles.count}>
-                {status === 'ready' && Array.isArray(resources) ? resources.length : '—'}
-              </p>
-              <p>resources currently available</p>
-              <button onClick={openCatalog} type="button">
-                Search Catalog
-              </button>
-            </div>
-            {status === 'loading' ? <p role="status">Connecting to your Library…</p> : null}
-            {notice ? (
-              <div className={styles.state} role="status">
-                <p>{notice}</p>
-              </div>
-            ) : null}
-          </section>
-
-          <div className={styles.shelvesContainer}>
-            {/* Featured Manuscript Hero Banner with Canonical Card */}
+        ) : (
+          <>
+            {/* Modern Editorial Hero Showcase */}
             {(() => {
               const hero =
                 resources.find((r) => r.id === 'mangroves') ??
@@ -760,21 +1199,28 @@ export function LibraryFloor({
               const isBookmarked = bookmarkedIds.has(hero.id);
 
               return (
-                <div className={styles.heroSection}>
-                  <Card
-                    title={hero.title}
-                    meta={`Featured Artifact • ${hero.subjects?.[0] || 'Curriculum'}${
-                      hero.verified ? ' • Verified' : ''
-                    } — ${hero.description || 'Verified pedagogical field guide and curricular specification.'}`}
-                    shape="wide"
-                    size="lg"
-                    icon={isVideo ? Video : BookOpen}
-                    href={targetHref}
-                  />
-                  <Inline gap="inside" className={styles.cardActionsInline} style={{ marginTop: '0.75rem' }}>
+                <div className={styles.heroShowcase}>
+                  <div className={styles.heroShowcaseBadge}>
+                    <span>✧</span>
+                    <span>FEATURED STUDY GUIDE</span>
+                  </div>
+                  <div>
+                    <h2 className={styles.heroShowcaseTitle}>{hero.title}</h2>
+                    <p className={styles.heroShowcaseDescription}>
+                      {hero.description || 'Verified pedagogical field guide and curricular specification across the Sanctuary Commons.'}
+                    </p>
+                  </div>
+                  <div className={styles.heroShowcaseActions}>
+                    <button
+                      type="button"
+                      className={styles.heroPrimaryAction}
+                      onClick={() => navigator.follow(targetHref, 'library-hero')}
+                    >
+                      <span>{isVideo ? 'Watch Lecture 🎥' : 'Start Reading 📖'}</span>
+                    </button>
                     <Button
                       size="sm"
-                      variant="secondary"
+                      variant={isBookmarked ? 'primary' : 'secondary'}
                       label={isBookmarked ? 'Saved to Desk' : 'Save to Desk'}
                       icon={Bookmark}
                       onClick={() => toggleBookmark(hero.id)}
@@ -785,8 +1231,8 @@ export function LibraryFloor({
                       label="Share"
                       icon={Share2}
                       onClick={() => {
-                        if (typeof navigator !== 'undefined' && navigator.clipboard) {
-                          void navigator.clipboard.writeText(
+                        if (typeof window !== 'undefined' && window.navigator?.clipboard) {
+                          void window.navigator.clipboard.writeText(
                             `${window.location.origin}/library/${isVideo ? 'video' : 'reader'}/${hero.id}`,
                           );
                           setNotice('Resource link copied to clipboard!');
@@ -794,10 +1240,227 @@ export function LibraryFloor({
                         }
                       }}
                     />
-                  </Inline>
+                  </div>
                 </div>
               );
             })()}
+
+            {/* Ambient Instant Search & Format Filter Bar */}
+            <div className={styles.ambientSearchContainer}>
+              <SearchField
+                label="Search titles, topics, and descriptions"
+                placeholder="Search manuscripts, topics, or syllabi (e.g. Mangroves, Physics, Grade 10)..."
+                value={query}
+                onChange={(val) => {
+                  setQuery(val);
+                  void loadResources(val, selectedCategory, selectedSort);
+                }}
+                onSubmit={handleSearchSubmit}
+                onClear={() => {
+                  setQuery('');
+                  void loadResources('', selectedCategory, selectedSort);
+                }}
+                resultCount={status === 'ready' ? resources.length : undefined}
+              />
+
+              <div className={styles.filterToolbar}>
+                <Chips label="Category filter" single className={styles.categoryRow}>
+                  {[
+                    { id: 'All', label: '✨ All Items' },
+                    { id: 'lesson', label: '📖 Lessons' },
+                    { id: 'video', label: '🎥 Lectures' },
+                    { id: 'pdf', label: '📄 Documents' },
+                    { id: 'worksheet', label: '📝 Worksheets' },
+                    { id: 'past_paper', label: '📜 Past Papers' },
+                    { id: 'saved', label: '🔖 Saved Desk' },
+                  ].map((cat) => (
+                    <Chip
+                      key={cat.id}
+                      label={cat.label}
+                      selected={selectedCategory === cat.id}
+                      onClick={() => {
+                        setSelectedCategory(cat.id);
+                        void loadResources(query, cat.id, selectedSort);
+                      }}
+                    />
+                  ))}
+                </Chips>
+
+                <div className={styles.controlsRow}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--ink-soft)' }}>Sort:</span>
+                    <select
+                      className={styles.sortSelect}
+                      value={selectedSort}
+                      onChange={(e) => {
+                        const val = e.target.value as 'recent' | 'popular' | 'most_endorsed';
+                        setSelectedSort(val);
+                        void loadResources(query, selectedCategory, val);
+                      }}
+                    >
+                      <option value="recent">Recent</option>
+                      <option value="popular">Popular</option>
+                      <option value="most_endorsed">Endorsed</option>
+                    </select>
+                  </div>
+
+                  <SegmentedControl<'grid' | 'list'>
+                    label="Layout"
+                    value={cardLayout}
+                    onChange={setCardLayout}
+                    options={[
+                      { value: 'grid', label: 'Grid' },
+                      { value: 'list', label: 'List' },
+                    ]}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {notice ? (
+              <div className={styles.state} role="status">
+                <p>{notice}</p>
+              </div>
+            ) : null}
+
+            <div className={styles.shelvesContainer}>
+              {/* Live Filtered Results (when search query or category filter is active) */}
+              {(query.trim() || selectedCategory !== 'All') ? (
+                <section className={styles.shelfSection} aria-labelledby="filtered-results-heading">
+                  <div className={styles.shelfHeader}>
+                    <h3 id="filtered-results-heading">Filtered Manuscripts ({resources.length})</h3>
+                    <p>
+                      {query.trim() ? `Search for "${query}"` : 'Filtered by format'}
+                      {selectedCategory !== 'All' ? ` • ${selectedCategory}` : ''}
+                    </p>
+                  </div>
+                  {resources.length === 0 ? (
+                    <p className={styles.state} role="status">
+                      No educational resources match this filter. Try a broader search.
+                    </p>
+                  ) : cardLayout === 'grid' ? (
+                    <Grid min="md" gap="between" className={styles.resourceGrid}>
+                      {resources.map((resource) => {
+                        const url = safeResourceUrl(resource.url);
+                        const isVideo = resource.type?.toLowerCase() === 'video';
+                        const targetHref = isVideo
+                          ? `/library/video/${resource.id}`
+                          : `/library/reader/${resource.id}`;
+                        const isBookmarked = bookmarkedIds.has(resource.id);
+                        const isEndorsed = endorsedIds.has(resource.id);
+
+                        return (
+                          <div key={resource.id} className={styles.resourceItem}>
+                            <Card
+                              title={resource.title}
+                              meta={`${resource.type || 'Resource'}${resource.verified ? ' • Verified' : ''}${
+                                resource.subjects?.length > 0
+                                  ? ` • ${resource.subjects.slice(0, 2).join(', ')}`
+                                  : ''
+                              }`}
+                              shape="tile"
+                              emoji={libraryResourceEmoji(resource.type, resource.format)}
+                              href={targetHref}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                navigator.follow(targetHref, 'library-resource');
+                              }}
+                            />
+                            <Inline gap="inside" className={styles.cardActionsInline}>
+                              <Button
+                                size="sm"
+                                variant="quiet"
+                                label={isBookmarked ? 'Saved' : 'Save'}
+                                icon={Bookmark}
+                                onClick={() => toggleBookmark(resource.id)}
+                              />
+                              <Button
+                                size="sm"
+                                variant="quiet"
+                                label={isEndorsed ? 'Endorsed' : 'Endorse'}
+                                icon={Heart}
+                                onClick={() => toggleEndorse(resource.id)}
+                              />
+                              {url ? (
+                                <a
+                                  href={url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className={styles.externalLinkAnchor}
+                                  title="Open external source"
+                                >
+                                  <ExternalLink size={14} aria-hidden />
+                                  <span>Source</span>
+                                </a>
+                              ) : null}
+                            </Inline>
+                          </div>
+                        );
+                      })}
+                    </Grid>
+                  ) : (
+                    <Stack gap="between">
+                      {resources.map((resource) => {
+                        const url = safeResourceUrl(resource.url);
+                        const isVideo = resource.type?.toLowerCase() === 'video';
+                        const targetHref = isVideo
+                          ? `/library/video/${resource.id}`
+                          : `/library/reader/${resource.id}`;
+                        const isBookmarked = bookmarkedIds.has(resource.id);
+                        const isEndorsed = endorsedIds.has(resource.id);
+
+                        return (
+                          <div key={resource.id} className={styles.resourceItem}>
+                            <Card
+                              title={resource.title}
+                              meta={`${resource.type || 'Resource'}${resource.verified ? ' • Verified' : ''}${
+                                resource.subjects?.length > 0
+                                  ? ` • ${resource.subjects.slice(0, 2).join(', ')}`
+                                  : ''
+                              }`}
+                              shape="wide"
+                              emoji={libraryResourceEmoji(resource.type, resource.format)}
+                              href={targetHref}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                navigator.follow(targetHref, 'library-resource');
+                              }}
+                            />
+                            <Inline gap="inside" className={styles.cardActionsInline}>
+                              <Button
+                                size="sm"
+                                variant="quiet"
+                                label={isBookmarked ? 'Saved' : 'Save'}
+                                icon={Bookmark}
+                                onClick={() => toggleBookmark(resource.id)}
+                              />
+                              <Button
+                                size="sm"
+                                variant="quiet"
+                                label={isEndorsed ? 'Endorsed' : 'Endorse'}
+                                icon={Heart}
+                                onClick={() => toggleEndorse(resource.id)}
+                              />
+                              {url ? (
+                                <a
+                                  href={url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className={styles.externalLinkAnchor}
+                                  title="Open external source"
+                                >
+                                  <ExternalLink size={14} aria-hidden />
+                                  <span>Source</span>
+                                </a>
+                              ) : null}
+                            </Inline>
+                          </div>
+                        );
+                      })}
+                    </Stack>
+                  )}
+                </section>
+              ) : null}
 
             {/* Saved Desk Shelf (if items exist) */}
             {(() => {
@@ -827,8 +1490,12 @@ export function LibraryFloor({
                             title={res.title}
                             meta={`${res.type || 'Guide'}${res.verified ? ' • Verified' : ''}`}
                             shape="tile"
-                            icon={isVideo ? Video : BookOpen}
+                            emoji={libraryResourceEmoji(res.type, res.format)}
                             href={targetHref}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              navigator.follow(targetHref, 'library-resource');
+                            }}
                           />
                           <Inline gap="inside" className={styles.cardActionsInline}>
                             <Button
@@ -859,8 +1526,12 @@ export function LibraryFloor({
                       title={col.name}
                       meta={`${col.subjects?.[0] || 'Curriculum'}${col.is_official ? ' • Official' : ''} — ${col.description || 'Guided study sequence.'}`}
                       shape="tile"
-                      icon={FolderHeart}
+                      emoji="🗂️"
                       href={`/library/collections/${col.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigator.follow(`/library/collections/${col.id}`, 'library-collection');
+                      }}
                     />
                   </div>
                 ))}
@@ -874,10 +1545,12 @@ export function LibraryFloor({
                 <p>Hand-picked pedagogical manuscripts and multimedia lectures</p>
               </div>
               <Grid min="md" gap="between">
-                {(Array.isArray(resources) && resources.length > 0
-                  ? resources.slice(0, 4)
-                  : EXPLORE_LIBRARY_RESOURCES
-                ).map((res) => {
+                {[
+                  ...localItems,
+                  ...(Array.isArray(resources) && resources.length > 0
+                    ? resources.slice(0, 4)
+                    : EXPLORE_LIBRARY_RESOURCES),
+                ].map((res) => {
                   const isVideo = res.type?.toLowerCase() === 'video';
                   return (
                     <div key={res.id}>
@@ -885,63 +1558,30 @@ export function LibraryFloor({
                         title={res.title}
                         meta={`${res.type || 'Guide'}${res.verified ? ' • Verified' : ''}`}
                         shape="tile"
-                        icon={isVideo ? Video : BookOpen}
+                        emoji={libraryResourceEmoji(res.type, res.format)}
                         href={
                           isVideo
                             ? `/library/video/${res.id}`
                             : `/library/reader/${res.id}`
                         }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigator.follow(
+                            isVideo ? `/library/video/${res.id}` : `/library/reader/${res.id}`,
+                            'library-resource',
+                          );
+                        }}
                       />
                     </div>
                   );
                 })}
               </Grid>
             </section>
-
-            {/* Knowledge Tools & Spatial Map Gateway */}
-            <section className={styles.shelfSection} aria-labelledby="gateways-shelf-heading">
-              <div className={styles.shelfHeader}>
-                <h3 id="gateways-shelf-heading">Tools & Spatial Cartography</h3>
-                <p>Interactive study appliances and national learning topography</p>
-              </div>
-              <Grid min="md" gap="between">
-                <Card
-                  title="Knowledge Tools Hub"
-                  meta="Spreadsheet data grid, OCR vision extractor, study packet compiler, and offline export archive."
-                  shape="wide"
-                  size="lg"
-                  icon={FileSpreadsheet}
-                  href="/library/tools"
-                />
-                <Card
-                  title="Learning Centers & Knowledge Cosmos"
-                  meta="Explore Sri Lankan physical resource centers and topological concept cluster relationships."
-                  shape="wide"
-                  size="lg"
-                  icon={Compass}
-                  href="/library/map"
-                />
-              </Grid>
-            </section>
-
-            {/* Living Sanctuary Curator Studio Invitation */}
-            <section className={styles.shelfSection} aria-labelledby="curator-shelf-heading">
-              <div className={styles.shelfHeader}>
-                <h3 id="curator-shelf-heading">Curator Studio</h3>
-                <p>Pedagogical curation & content review</p>
-              </div>
-              <Card
-                title="Pedagogical Curation & Content Review"
-                meta="Review staged community submissions, verify curricular alignment, and resolve broken link reports."
-                shape="wide"
-                size="lg"
-                icon={Sparkles}
-                href="/library/curator"
-              />
-            </section>
           </div>
         </>
       )}
+        </main>
+      </div>
     </SanctuaryFloorCanvas>
   );
 }

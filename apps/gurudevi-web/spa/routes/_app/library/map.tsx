@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { LibraryAtlasDesk } from '../../../../app/(sanctuary)/library/map/LibraryAtlasDesk';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/library/map')({
-  head: () => ({ meta: [{ title: 'Library Map | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Library Map | Gurudevi App' }] }),
   component: LibraryMapScreen,
 });
 

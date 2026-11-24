@@ -104,7 +104,7 @@
 
 .podMeta {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   color: var(--w-ink-soft);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -208,7 +208,7 @@
 }
 
 .streamlineEyebrow {
-  font-size: 0.68rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -233,7 +233,7 @@
 }
 
 .telemetryPill {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
   padding: 0.2rem 0.55rem;
   border-radius: 9999px;
@@ -339,7 +339,7 @@
   border-radius: 0.5rem;
   background: color-mix(in srgb, var(--w-lamp) 8%, var(--w-ground));
   border: 1px solid color-mix(in srgb, var(--w-lamp) 20%, var(--w-line));
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   color: var(--w-ink-soft);
   line-height: 1.4;
   animation: fadeIn 0.2s ease-out;
@@ -447,7 +447,7 @@
 }
 
 .tileRhythm {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--w-ink-soft);
   display: flex;
   align-items: center;
@@ -652,7 +652,7 @@
 }
 
 .pebbleRhythm {
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   color: var(--w-ink-ghost, #888);
   white-space: nowrap;
   overflow: hidden;
@@ -822,7 +822,7 @@
 
 /* Counter Badge Number */
 .stickerCounter {
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   transform: translate(2px, -2px);
@@ -884,7 +884,7 @@
   gap: 0.55rem;
   padding: 0.45rem 0.75rem;
   border-radius: 0.55rem;
-  font-size: 0.76rem;
+  font-size: 0.875rem;
   font-weight: 500;
   color: var(--w-ink);
   background: transparent;
@@ -906,7 +906,7 @@
   right: 0;
   background: var(--w-ink);
   color: var(--w-ground);
-  font-size: 0.7rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   padding: 0.25rem 0.6rem;
   border-radius: 0.45rem;
@@ -923,7 +923,7 @@
   justify-content: center;
   gap: 0.35rem;
   width: 100%;
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   color: var(--w-ink-ghost, #888);
   white-space: nowrap;
   overflow: hidden;
@@ -1080,12 +1080,12 @@
 }
 
 .compactCornerStickerFace .stickerGlyph {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   transform: translate(1px, -1px);
 }
 
 .compactCornerStickerFace .stickerCounter {
-  font-size: 0.65rem;
+  font-size: 0.8125rem;
   transform: translate(1px, -1px);
 }
 
@@ -1126,7 +1126,7 @@
     font-size: 0.88rem;
   }
   .pebbleRhythm {
-    font-size: 0.68rem;
+    font-size: 0.8125rem;
   }
 }
 
@@ -1301,9 +1301,10 @@
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  padding: 0.5rem 0.75rem;
+  min-height: 44px;
+  padding: 0.5rem 0.85rem;
   border-radius: 0.5rem;
   border: 1px solid var(--w-line);
   background: var(--w-ground);

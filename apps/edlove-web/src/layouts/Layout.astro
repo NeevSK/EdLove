@@ -1,4 +1,13 @@
 ---
+import '@fontsource-variable/fraunces/full.css';
+import '@fontsource-variable/fraunces/full-italic.css';
+import '@fontsource-variable/newsreader/opsz.css';
+import '@fontsource-variable/newsreader/opsz-italic.css';
+import '@fontsource-variable/geist';
+import '@fontsource-variable/noto-serif-sinhala';
+import '@fontsource-variable/noto-serif-tamil';
+import '@fontsource-variable/noto-sans-sinhala';
+import '@fontsource-variable/noto-sans-tamil';
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import CenterModal from '../components/CenterModal.astro';
@@ -7,6 +16,12 @@ import Navigation from '../components/Navigation.astro';
 import ScrollToTop from '../components/ScrollToTop.astro';
 import SidePanel from '../components/SidePanel.astro';
 import StructuredData from '../components/StructuredData.astro';
+import {
+  computeProportionalLeading,
+  computeProportionalTracking,
+  generateFluidClamp,
+  PSYCHOPHYSICAL_RATIOS,
+} from '../tokens';
 import {
   defaultOgImage,
   canonicalUrl,
@@ -117,14 +132,30 @@ const baseStructuredData = [
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={ogImage} />
 		
-		<!-- Google Fonts: Inter (headings/sans) & Lora (body/serif) -->
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-		
 		<title>{title}</title>
 		<StructuredData data={baseStructuredData} />
 		<ClientRouter />
+
+		<!-- Living mathematical tokens from @intuitui-labs/a11y-gate -->
+		<style is:global define:vars={{
+			touchFloor: `${PSYCHOPHYSICAL_RATIOS.TOUCH_TARGET_FLOOR_PX}px`,
+			focusRingStroke: `${PSYCHOPHYSICAL_RATIOS.FOCUS_RING_STROKE_MIN_PX}px`,
+			focusRingOffset: `${PSYCHOPHYSICAL_RATIOS.FOCUS_RING_OFFSET_MIN_PX}px`,
+			proportionalLeadingBody: computeProportionalLeading(16, 'body').idealRatio,
+			proportionalTrackingBody: `${computeProportionalTracking(16).idealEm}em`,
+			proportionalTrackingHeadline: `${computeProportionalTracking(32).idealEm}em`,
+			fluidBodySize: generateFluidClamp({ minSizePx: 16, maxSizePx: 18, minViewportPx: 375, maxViewportPx: 1200 }),
+		}}>
+			:root {
+				--min-touch-target: var(--touchFloor);
+				--focus-ring-width: var(--focusRingStroke);
+				--focus-ring-offset: var(--focusRingOffset);
+			}
+			.focus-ring:focus-visible {
+				outline: var(--focusRingStroke) solid var(--color-secondaryInk);
+				outline-offset: var(--focusRingOffset);
+			}
+		</style>
 	</head>
 	<body class:list={[
 		"antialiased min-h-screen flex flex-col selection:bg-[var(--color-gold)] selection:text-[var(--color-midnightInk)]",

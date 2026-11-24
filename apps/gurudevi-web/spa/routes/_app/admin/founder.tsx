@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { FounderFloor } from '../../../../app/(sanctuary)/admin/founder/FounderFloor';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/admin/founder')({
-  head: () => ({ meta: [{ title: 'Founder Command | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Founder Command | Gurudevi App' }] }),
   component: AdminFounderScreen,
 });
 

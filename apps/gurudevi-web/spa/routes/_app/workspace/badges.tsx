@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { BadgeSheetFloor } from '../../../../app/(sanctuary)/workspace/badges/BadgeSheetFloor';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/badges')({
-  head: () => ({ meta: [{ title: 'Print Student Badges & QR Passes | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Print Student Badges & QR Passes | Gurudevi App' }] }),
   component: WorkspaceBadgesScreen,
 });
 

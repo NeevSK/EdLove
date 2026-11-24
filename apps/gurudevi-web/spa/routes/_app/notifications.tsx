@@ -1,10 +1,10 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+﻿import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { NotificationsFloor } from '../../../app/(sanctuary)/notifications/NotificationsFloor';
 import { useSession } from '../../surface/session';
 
 export const Route = createFileRoute('/_app/notifications')({
-  head: () => ({ meta: [{ title: 'Notifications | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Notifications | Gurudevi App' }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(context.sources.notifications()),
   component: NotificationsScreen,
 });

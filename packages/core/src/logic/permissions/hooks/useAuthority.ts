@@ -68,7 +68,7 @@ export function useAuthority(): Authority {
         context.userId ? getDecision(subject as string, action as string) : 'no_decision',
         action as string,
         subject as string,
-        context.isLocalOnly,
+        context.isLocalOnly ?? undefined,
       ),
     [context.userId, context.isLocalOnly, getDecision],
   );

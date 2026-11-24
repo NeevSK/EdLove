@@ -1,0 +1,695 @@
+{
+  "timestamp": "2026-11-24T14:28:25.041Z",
+  "durationMs": 6874,
+  "origin": {
+    "name": "@intuitui-labs/a11y-gate",
+    "version": "0.3.0",
+    "path": "C:/projects/packages/a11y-gate",
+    "totalSymbols": 111,
+    "subpaths": [
+      ".",
+      "./web",
+      "./mobile",
+      "./wcag3",
+      "./contrast",
+      "./cvd",
+      "./spatial",
+      "./motion",
+      "./audit",
+      "./runner",
+      "./proportional",
+      "./ratio",
+      "./tokens",
+      "./swiss-silk",
+      "./baseline",
+      "./convolutional"
+    ],
+    "domainDistribution": {
+      "Core Utilities & Primitives": 49,
+      "Psychophysical Doctrine & Gestalt": 6,
+      "Spatial Intervals & Quantum": 5,
+      "Motion & Tactile Dynamics": 3,
+      "APCA & WCAG Contrast Models": 19,
+      "Automated Screen & Component Gates": 7,
+      "Color Vision Deficiency (CVD)": 3,
+      "Ergonomics & Touch Geometry": 7,
+      "Typography & Proportional Scaling": 12
+    }
+  },
+  "consumers": [
+    {
+      "name": "apps-edlove-web",
+      "dir": "C:\\x\\apps\\edlove-web",
+      "declaredVersion": "link:C:/projects/packages/a11y-gate",
+      "versionStatus": "LINKED_LOCAL_V0.3.0",
+      "wiringTier": "TIER_4_RUNTIME_PRODUCTION",
+      "tierLabel": "Tier 4: Runtime Production",
+      "isPaperTiger": false,
+      "importSources": [
+        "@intuitui-labs/a11y-gate",
+        "../../lib/a11y"
+      ],
+      "totalFilesScanned": 130,
+      "filesWithA11y": 11,
+      "contextFileCounts": {
+        "PRODUCTION": 6,
+        "TOKEN_THEME": 1,
+        "TEST": 3,
+        "BRIDGE": 1
+      },
+      "contextSymbolHits": {
+        "production": [
+          "computeProportionalLeading",
+          "computeProportionalTracking",
+          "evaluateApca",
+          "evaluateWcag",
+          "PSYCHOPHYSICAL_RATIOS",
+          "DUAL_STANDARD_DOCTRINE",
+          "computeProportionalContainerSpacing",
+          "computeProportionalWordSpacing",
+          "generateFluidClamp",
+          "isValidSpatialQuantum",
+          "auditAdaptiveDensity",
+          "auditTypographicMicroAttributes",
+          "calculateApca",
+          "evaluateReadingMeasure",
+          "getDeltaE",
+          "getWcagContrastRatio",
+          "hexToRgb",
+          "rgbToHex"
+        ],
+        "tokenTheme": [
+          "DUAL_STANDARD_DOCTRINE",
+          "PSYCHOPHYSICAL_RATIOS",
+          "auditAdaptiveDensity",
+          "auditComprehensiveA11yGate",
+          "auditTypographicMicroAttributes",
+          "calculateApca",
+          "computeProportionalContainerSpacing",
+          "computeProportionalLeading",
+          "computeProportionalTracking",
+          "computeProportionalWordSpacing",
+          "evaluateApca",
+          "evaluateCognitiveEntropy",
+          "evaluateReadingMeasure",
+          "evaluateWcag",
+          "generateFluidClamp",
+          "getDeltaE",
+          "getWcagContrastRatio",
+          "hexToRgb",
+          "isValidSpatialQuantum",
+          "rgbToHex"
+        ],
+        "test": [
+          "PSYCHOPHYSICAL_RATIOS",
+          "auditAdaptiveDensity",
+          "auditTypographicMicroAttributes",
+          "computeProportionalContainerSpacing",
+          "computeProportionalLeading",
+          "computeProportionalTracking",
+          "computeProportionalWordSpacing",
+          "evaluateCognitiveEntropy",
+          "evaluateReadingMeasure",
+          "DUAL_STANDARD_DOCTRINE",
+          "auditComprehensiveA11yGate",
+          "calculateApca",
+          "evaluateApca",
+          "evaluateWcag",
+          "getWcagContrastRatio",
+          "generateFluidClamp",
+          "isValidSpatialQuantum"
+        ],
+        "bridge": [
+          "DUAL_STANDARD_DOCTRINE",
+          "calculateApca",
+          "evaluateApca",
+          "evaluateWcag",
+          "generateFluidClamp",
+          "getDeltaE",
+          "getWcagContrastRatio",
+          "hexToRgb",
+          "isValidSpatialQuantum",
+          "rgbToHex"
+        ]
+      },
+      "adoptedSymbols": [
+        {
+          "name": "DUAL_STANDARD_DOCTRINE",
+          "count": 12,
+          "domain": "Core Utilities & Primitives"
+        },
+        {
+          "name": "calculateApca",
+          "count": 9,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "evaluateApca",
+          "count": 27,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "evaluateWcag",
+          "count": 13,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "generateFluidClamp",
+          "count": 13,
+          "domain": "Typography & Proportional Scaling"
+        },
+        {
+          "name": "getDeltaE",
+          "count": 6,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "getWcagContrastRatio",
+          "count": 8,
+          "domain": "Psychophysical Doctrine & Gestalt"
+        },
+        {
+          "name": "hexToRgb",
+          "count": 10,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "isValidSpatialQuantum",
+          "count": 12,
+          "domain": "Spatial Intervals & Quantum"
+        },
+        {
+          "name": "rgbToHex",
+          "count": 6,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "computeProportionalLeading",
+          "count": 22,
+          "domain": "Typography & Proportional Scaling"
+        },
+        {
+          "name": "computeProportionalTracking",
+          "count": 26,
+          "domain": "Typography & Proportional Scaling"
+        },
+        {
+          "name": "PSYCHOPHYSICAL_RATIOS",
+          "count": 22,
+          "domain": "Psychophysical Doctrine & Gestalt"
+        },
+        {
+          "name": "computeProportionalContainerSpacing",
+          "count": 10,
+          "domain": "Typography & Proportional Scaling"
+        },
+        {
+          "name": "computeProportionalWordSpacing",
+          "count": 7,
+          "domain": "Typography & Proportional Scaling"
+        },
+        {
+          "name": "auditAdaptiveDensity",
+          "count": 7,
+          "domain": "Spatial Intervals & Quantum"
+        },
+        {
+          "name": "auditTypographicMicroAttributes",
+          "count": 5,
+          "domain": "Typography & Proportional Scaling"
+        },
+        {
+          "name": "evaluateReadingMeasure",
+          "count": 9,
+          "domain": "Core Utilities & Primitives"
+        },
+        {
+          "name": "auditComprehensiveA11yGate",
+          "count": 9,
+          "domain": "Automated Screen & Component Gates"
+        },
+        {
+          "name": "evaluateCognitiveEntropy",
+          "count": 4,
+          "domain": "Core Utilities & Primitives"
+        }
+      ],
+      "adoptedCount": 20,
+      "adoptionRate": 18,
+      "domainUsage": {
+        "Core Utilities & Primitives": 3,
+        "APCA & WCAG Contrast Models": 6,
+        "Typography & Proportional Scaling": 6,
+        "Psychophysical Doctrine & Gestalt": 2,
+        "Spatial Intervals & Quantum": 2,
+        "Automated Screen & Component Gates": 1
+      },
+      "unusedCount": 91,
+      "unusedHighlights": [
+        "SPATIAL_INTERVALS (Spatial Intervals & Quantum)",
+        "SPRING_PRESETS (Motion & Tactile Dynamics)",
+        "WCAG3_THRESHOLDS (APCA & WCAG Contrast Models)",
+        "auditConcentricCornerRadius (Psychophysical Doctrine & Gestalt)",
+        "auditCvdDualEncoding (Color Vision Deficiency (CVD))",
+        "auditDualStandardContrast (APCA & WCAG Contrast Models)",
+        "auditFocusRingRatio (Psychophysical Doctrine & Gestalt)",
+        "auditHarmonicAspectRatio (Psychophysical Doctrine & Gestalt)"
+      ],
+      "mobileFirstInvariants": {
+        "isCompliant": true,
+        "compliant": [],
+        "violations": []
+      }
+    },
+    {
+      "name": "@repo/ui",
+      "dir": "C:\\x\\packages\\ui",
+      "declaredVersion": "link:C:/projects/packages/a11y-gate",
+      "versionStatus": "LINKED_LOCAL_V0.3.0",
+      "wiringTier": "TIER_4_RUNTIME_PRODUCTION",
+      "tierLabel": "Tier 4: Runtime Production",
+      "isPaperTiger": false,
+      "importSources": [
+        "../src/utils/a11yUtils",
+        "@intuitui-labs/a11y-gate",
+        "@intuitui-labs/a11y-gate/mobile",
+        "@intuitui-labs/a11y-gate/wcag3",
+        "@intuitui-labs/a11y-gate/web",
+        "./a11yUtils"
+      ],
+      "totalFilesScanned": 774,
+      "filesWithA11y": 6,
+      "contextFileCounts": {
+        "PRODUCTION": 2,
+        "TOKEN_THEME": 3,
+        "TEST": 1,
+        "BRIDGE": 1
+      },
+      "contextSymbolHits": {
+        "production": [
+          "checkAccessibility",
+          "toHex"
+        ],
+        "tokenTheme": [
+          "computeProportionalLeading",
+          "computeProportionalTracking",
+          "generateFluidClamp",
+          "PSYCHOPHYSICAL_RATIOS",
+          "auditProportionalSpacing",
+          "computeProportionalContainerSpacing",
+          "computeProportionalWordSpacing"
+        ],
+        "test": [
+          "calculateApca",
+          "evaluateApca",
+          "getDeltaE",
+          "simulateCvd"
+        ],
+        "bridge": [
+          "MOBILE_A11Y_STANDARDS",
+          "hexToRgb"
+        ]
+      },
+      "adoptedSymbols": [
+        {
+          "name": "checkAccessibility",
+          "count": 2,
+          "domain": "Core Utilities & Primitives"
+        },
+        {
+          "name": "toHex",
+          "count": 3,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "computeProportionalLeading",
+          "count": 16,
+          "domain": "Typography & Proportional Scaling"
+        },
+        {
+          "name": "computeProportionalTracking",
+          "count": 23,
+          "domain": "Typography & Proportional Scaling"
+        },
+        {
+          "name": "generateFluidClamp",
+          "count": 14,
+          "domain": "Typography & Proportional Scaling"
+        },
+        {
+          "name": "calculateApca",
+          "count": 5,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "evaluateApca",
+          "count": 1,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "getDeltaE",
+          "count": 2,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "simulateCvd",
+          "count": 5,
+          "domain": "Color Vision Deficiency (CVD)"
+        },
+        {
+          "name": "PSYCHOPHYSICAL_RATIOS",
+          "count": 5,
+          "domain": "Psychophysical Doctrine & Gestalt"
+        },
+        {
+          "name": "auditProportionalSpacing",
+          "count": 2,
+          "domain": "Typography & Proportional Scaling"
+        },
+        {
+          "name": "computeProportionalContainerSpacing",
+          "count": 3,
+          "domain": "Typography & Proportional Scaling"
+        },
+        {
+          "name": "computeProportionalWordSpacing",
+          "count": 3,
+          "domain": "Typography & Proportional Scaling"
+        },
+        {
+          "name": "MOBILE_A11Y_STANDARDS",
+          "count": 1,
+          "domain": "Core Utilities & Primitives"
+        },
+        {
+          "name": "hexToRgb",
+          "count": 1,
+          "domain": "APCA & WCAG Contrast Models"
+        }
+      ],
+      "adoptedCount": 15,
+      "adoptionRate": 14,
+      "domainUsage": {
+        "Core Utilities & Primitives": 2,
+        "APCA & WCAG Contrast Models": 5,
+        "Typography & Proportional Scaling": 6,
+        "Color Vision Deficiency (CVD)": 1,
+        "Psychophysical Doctrine & Gestalt": 1
+      },
+      "unusedCount": 96,
+      "unusedHighlights": [
+        "SPATIAL_INTERVALS (Spatial Intervals & Quantum)",
+        "SPRING_PRESETS (Motion & Tactile Dynamics)",
+        "WCAG3_THRESHOLDS (APCA & WCAG Contrast Models)",
+        "auditAdaptiveDensity (Spatial Intervals & Quantum)",
+        "auditComprehensiveA11yGate (Automated Screen & Component Gates)",
+        "auditConcentricCornerRadius (Psychophysical Doctrine & Gestalt)",
+        "auditCvdDualEncoding (Color Vision Deficiency (CVD))",
+        "auditDualStandardContrast (APCA & WCAG Contrast Models)"
+      ],
+      "mobileFirstInvariants": {
+        "isCompliant": true,
+        "compliant": [
+          "48px Touch Floor Active",
+          "16px Universal Body Active (iOS Zoom Trap Safe)",
+          "Fluid Utopia Scale Active"
+        ],
+        "violations": []
+      }
+    },
+    {
+      "name": "gurudevi-mobile",
+      "dir": "C:\\x\\apps\\gurudevi-mobile",
+      "declaredVersion": "link:C:/projects/packages/a11y-gate",
+      "versionStatus": "LINKED_LOCAL_V0.3.0",
+      "wiringTier": "TIER_4_RUNTIME_PRODUCTION",
+      "tierLabel": "Tier 4: Runtime Production",
+      "isPaperTiger": false,
+      "importSources": [
+        "@repo/ui/utils/a11yUtils"
+      ],
+      "totalFilesScanned": 869,
+      "filesWithA11y": 3,
+      "contextFileCounts": {
+        "PRODUCTION": 2,
+        "TOKEN_THEME": 0,
+        "TEST": 1,
+        "BRIDGE": 0
+      },
+      "contextSymbolHits": {
+        "production": [
+          "checkAccessibility",
+          "getAPCAContrast",
+          "getAPCARating",
+          "getBestText",
+          "getRelativeLuminance",
+          "hexToRgb",
+          "toHex"
+        ],
+        "tokenTheme": [],
+        "test": [
+          "auditReactNativeScreen",
+          "checkAccessibility",
+          "checkMobileTouchTarget",
+          "evaluateApca",
+          "evaluateWcag",
+          "getApcaFontMatrix",
+          "getTouchHitSlop",
+          "simulateCvdHex"
+        ],
+        "bridge": []
+      },
+      "adoptedSymbols": [
+        {
+          "name": "checkAccessibility",
+          "count": 8,
+          "domain": "Core Utilities & Primitives"
+        },
+        {
+          "name": "getAPCAContrast",
+          "count": 10,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "getAPCARating",
+          "count": 8,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "getBestText",
+          "count": 6,
+          "domain": "Core Utilities & Primitives"
+        },
+        {
+          "name": "getRelativeLuminance",
+          "count": 10,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "hexToRgb",
+          "count": 24,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "toHex",
+          "count": 28,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "auditReactNativeScreen",
+          "count": 4,
+          "domain": "Automated Screen & Component Gates"
+        },
+        {
+          "name": "checkMobileTouchTarget",
+          "count": 3,
+          "domain": "Ergonomics & Touch Geometry"
+        },
+        {
+          "name": "evaluateApca",
+          "count": 2,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "evaluateWcag",
+          "count": 2,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "getApcaFontMatrix",
+          "count": 2,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "getTouchHitSlop",
+          "count": 2,
+          "domain": "Ergonomics & Touch Geometry"
+        },
+        {
+          "name": "simulateCvdHex",
+          "count": 4,
+          "domain": "Color Vision Deficiency (CVD)"
+        }
+      ],
+      "adoptedCount": 14,
+      "adoptionRate": 13,
+      "domainUsage": {
+        "Core Utilities & Primitives": 2,
+        "APCA & WCAG Contrast Models": 8,
+        "Automated Screen & Component Gates": 1,
+        "Ergonomics & Touch Geometry": 2,
+        "Color Vision Deficiency (CVD)": 1
+      },
+      "unusedCount": 97,
+      "unusedHighlights": [
+        "PSYCHOPHYSICAL_RATIOS (Psychophysical Doctrine & Gestalt)",
+        "SPATIAL_INTERVALS (Spatial Intervals & Quantum)",
+        "SPRING_PRESETS (Motion & Tactile Dynamics)",
+        "WCAG3_THRESHOLDS (APCA & WCAG Contrast Models)",
+        "auditAdaptiveDensity (Spatial Intervals & Quantum)",
+        "auditComprehensiveA11yGate (Automated Screen & Component Gates)",
+        "auditConcentricCornerRadius (Psychophysical Doctrine & Gestalt)",
+        "auditCvdDualEncoding (Color Vision Deficiency (CVD))"
+      ],
+      "mobileFirstInvariants": {
+        "isCompliant": true,
+        "compliant": [],
+        "violations": []
+      }
+    },
+    {
+      "name": "apps-gurudevi-marketing-web",
+      "dir": "C:\\x\\apps\\gurudevi-marketingWeb",
+      "declaredVersion": "link:C:/projects/packages/a11y-gate",
+      "versionStatus": "LINKED_LOCAL_V0.3.0",
+      "wiringTier": "TIER_4_RUNTIME_PRODUCTION",
+      "tierLabel": "Tier 4: Runtime Production",
+      "isPaperTiger": false,
+      "importSources": [
+        "@intuitui-labs/a11y-gate"
+      ],
+      "totalFilesScanned": 47,
+      "filesWithA11y": 2,
+      "contextFileCounts": {
+        "PRODUCTION": 1,
+        "TOKEN_THEME": 0,
+        "TEST": 1,
+        "BRIDGE": 0
+      },
+      "contextSymbolHits": {
+        "production": [
+          "TOUCH_TARGET_STANDARDS",
+          "calculateApca",
+          "evaluateApca",
+          "evaluateWcag",
+          "getWcagContrastRatio",
+          "hexToRgb"
+        ],
+        "tokenTheme": [],
+        "test": [
+          "TOUCH_TARGET_STANDARDS"
+        ],
+        "bridge": []
+      },
+      "adoptedSymbols": [
+        {
+          "name": "TOUCH_TARGET_STANDARDS",
+          "count": 3,
+          "domain": "Core Utilities & Primitives"
+        },
+        {
+          "name": "calculateApca",
+          "count": 3,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "evaluateApca",
+          "count": 2,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "evaluateWcag",
+          "count": 2,
+          "domain": "APCA & WCAG Contrast Models"
+        },
+        {
+          "name": "getWcagContrastRatio",
+          "count": 3,
+          "domain": "Psychophysical Doctrine & Gestalt"
+        },
+        {
+          "name": "hexToRgb",
+          "count": 6,
+          "domain": "APCA & WCAG Contrast Models"
+        }
+      ],
+      "adoptedCount": 6,
+      "adoptionRate": 5,
+      "domainUsage": {
+        "Core Utilities & Primitives": 1,
+        "APCA & WCAG Contrast Models": 4,
+        "Psychophysical Doctrine & Gestalt": 1
+      },
+      "unusedCount": 105,
+      "unusedHighlights": [
+        "PSYCHOPHYSICAL_RATIOS (Psychophysical Doctrine & Gestalt)",
+        "SPATIAL_INTERVALS (Spatial Intervals & Quantum)",
+        "SPRING_PRESETS (Motion & Tactile Dynamics)",
+        "WCAG3_THRESHOLDS (APCA & WCAG Contrast Models)",
+        "auditAdaptiveDensity (Spatial Intervals & Quantum)",
+        "auditComprehensiveA11yGate (Automated Screen & Component Gates)",
+        "auditConcentricCornerRadius (Psychophysical Doctrine & Gestalt)",
+        "auditCvdDualEncoding (Color Vision Deficiency (CVD))"
+      ],
+      "mobileFirstInvariants": {
+        "isCompliant": true,
+        "compliant": [],
+        "violations": []
+      }
+    },
+    {
+      "name": "gurudevi-web",
+      "dir": "C:\\x\\apps\\gurudevi-web",
+      "declaredVersion": "link:C:/projects/packages/a11y-gate",
+      "versionStatus": "LINKED_LOCAL_V0.3.0",
+      "wiringTier": "TIER_0_DECLARED_ONLY",
+      "tierLabel": "Tier 0: Declared Only",
+      "isPaperTiger": false,
+      "importSources": [],
+      "totalFilesScanned": 692,
+      "filesWithA11y": 0,
+      "contextFileCounts": {
+        "PRODUCTION": 0,
+        "TOKEN_THEME": 0,
+        "TEST": 0,
+        "BRIDGE": 0
+      },
+      "contextSymbolHits": {
+        "production": [],
+        "tokenTheme": [],
+        "test": [],
+        "bridge": []
+      },
+      "adoptedSymbols": [],
+      "adoptedCount": 0,
+      "adoptionRate": 0,
+      "domainUsage": {},
+      "unusedCount": 111,
+      "unusedHighlights": [
+        "PSYCHOPHYSICAL_RATIOS (Psychophysical Doctrine & Gestalt)",
+        "SPATIAL_INTERVALS (Spatial Intervals & Quantum)",
+        "SPRING_PRESETS (Motion & Tactile Dynamics)",
+        "WCAG3_THRESHOLDS (APCA & WCAG Contrast Models)",
+        "auditAdaptiveDensity (Spatial Intervals & Quantum)",
+        "auditComprehensiveA11yGate (Automated Screen & Component Gates)",
+        "auditConcentricCornerRadius (Psychophysical Doctrine & Gestalt)",
+        "auditCvdDualEncoding (Color Vision Deficiency (CVD))"
+      ],
+      "mobileFirstInvariants": {
+        "isCompliant": true,
+        "compliant": [],
+        "violations": []
+      }
+    }
+  ]
+}

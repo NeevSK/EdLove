@@ -1,6 +1,13 @@
 // Content packs: the offline unit of one version of a work. Pure apart from the hash and read
 // ports. The stored content model is in docs/architecture/domains/library/resources.md.
 export {
+  type AssetCachePolicy,
+  type CachedAssetMeta,
+  type CacheEvictionStrategy,
+  DEFAULT_ASSET_CACHE_POLICY,
+  selectEvictions,
+} from './cachePolicy';
+export {
   DEFAULT_PLAN_POLICY,
   type DeviceBudget,
   type DownloadPlan,

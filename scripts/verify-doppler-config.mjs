@@ -27,9 +27,10 @@ const required = new Set();
 
 if (scope === 'workspace' || scope === 'ci') {
   for (const name of manifest.required.mobile ?? []) required.add(name);
+  for (const name of manifest.required.web ?? []) required.add(name);
   for (const name of manifest.required.api ?? []) required.add(name);
 }
-if (scope === 'mobile' || scope === 'api') {
+if (scope === 'mobile' || scope === 'web' || scope === 'api') {
   for (const name of manifest.required[scope] ?? []) required.add(name);
 }
 

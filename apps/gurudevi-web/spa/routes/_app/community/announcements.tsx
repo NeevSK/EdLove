@@ -1,10 +1,10 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+﻿import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { AnnouncementsFloor } from '../../../../app/(sanctuary)/community/announcements/AnnouncementsFloor';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/community/announcements')({
-  head: () => ({ meta: [{ title: 'Broadcaster Updates | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Broadcaster Updates | Gurudevi App' }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(context.sources.announcements()),
   component: AnnouncementsScreen,
 });

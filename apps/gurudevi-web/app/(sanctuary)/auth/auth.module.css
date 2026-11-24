@@ -103,11 +103,12 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: #7a6e5f;
   text-decoration: none;
-  padding: 6px 14px;
+  padding: 8px 16px;
+  min-height: 44px;
   border-radius: 999px;
   border: 1.25px solid rgba(42, 35, 24, 0.14);
   background: rgba(255, 253, 248, 0.7);
@@ -351,11 +352,12 @@
   align-self: flex-start;
   background: transparent;
   border: none;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 600;
   color: #7a6e5f;
   cursor: pointer;
-  padding: 4px 0;
+  padding: 8px 0;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -385,10 +387,13 @@
   background: transparent;
   border: none;
   color: var(--color-sanctuary-saffron, #a85022);
-  font-size: 12.5px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 8px 10px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   border-radius: 6px;
   transition: opacity 0.15s ease;
 }
@@ -544,7 +549,7 @@
 }
 
 .inputLabel {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--color-charcoal-truth, #131e27);
 }
@@ -555,11 +560,12 @@
 
 .textInput {
   height: 48px;
+  min-height: 48px;
   border-radius: 16px;
   border: 1.5px solid rgba(42, 35, 24, 0.18);
   background: #ffffff;
   padding: 0 16px;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--color-charcoal-truth, #131e27);
   width: 100%;
   box-sizing: border-box;
@@ -581,10 +587,11 @@
 
 .submitBtn {
   height: 50px;
+  min-height: 50px;
   border-radius: 16px;
   background-color: #d4843a;
   color: #fffdf7;
-  font-size: 15.5px;
+  font-size: 16px;
   font-weight: 800;
   border: 1.5px solid #b06927;
   box-shadow: 0 3.5px 0 #8a4f19;
@@ -618,9 +625,9 @@
   background: rgba(40, 94, 93, 0.1);
   border: 1px solid rgba(40, 94, 93, 0.25);
   color: #1c4a49;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .errorMessage {
@@ -629,9 +636,9 @@
   background: rgba(168, 80, 34, 0.1);
   border: 1px solid rgba(168, 80, 34, 0.25);
   color: #8c3214;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .disclosureDetails {
@@ -644,11 +651,14 @@
 }
 
 .disclosureSummary {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: #7a6e5f;
   cursor: pointer;
   user-select: none;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
   transition: color 0.15s ease;
 }
 
@@ -666,10 +676,10 @@
 
 
 .magicLinkNote {
-  font-size: 12.5px;
+  font-size: 14px;
   color: #7a6e5f;
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.52;
   text-align: center;
 }
 
@@ -680,12 +690,13 @@
 .passwordSwitchBtn {
   background: none;
   border: none;
-  padding: 6px 0;
+  padding: 8px 0;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 14px;
   color: #7a6e5f;
   cursor: pointer;
   transition: all 0.12s ease;
@@ -718,10 +729,13 @@
   background: none;
   border: none;
   color: #a85022;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  padding: 0 0 8px 0;
+  padding: 8px 0;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   text-decoration: underline;
   font-family: inherit;
 }
@@ -750,7 +764,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  font-size: 12.5px;
+  font-size: 14px;
   font-weight: 600;
   color: #7a6e5f;
   flex-wrap: wrap;
@@ -765,6 +779,9 @@
   color: inherit;
   text-decoration: none;
   transition: color 0.15s ease;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .footerLinks a:hover {
@@ -773,7 +790,7 @@
 }
 
 .colophon {
-  font-size: 11.5px;
+  font-size: 13px;
   color: rgba(42, 35, 24, 0.6);
   text-align: center;
   line-height: 1.5;
@@ -785,5 +802,5 @@
 
 .metaDivider {
   opacity: 0.4;
-  font-size: 10px;
+  font-size: 12px;
 }

@@ -71,7 +71,7 @@ export function WelcomeStage(props?: WelcomeStageProps) {
               <>
                 <h1 className={styles.editorialTitle}>
                   <span className={styles.greetingLine}>Welcome to</span>
-                  <span className={styles.greetingLineThird}>Gurudevi Sanctuary.</span>
+                  <span className={styles.greetingLineThird}>Gurudevi App.</span>
                 </h1>
 
                 <p className={styles.editorialSubline}>
@@ -80,7 +80,7 @@ export function WelcomeStage(props?: WelcomeStageProps) {
                 </p>
 
                 <div className={styles.editorialActionRow}>
-                  <Link to="/sign-in" search={signInSearch} className={styles.primaryBtn} autoFocus>
+                  <Link to="/sign-in" search={signInSearch} className={styles.primaryBtn}>
                     <span>Sign in to Sanctuary</span>
                     <span aria-hidden="true">→</span>
                   </Link>
@@ -96,9 +96,10 @@ export function WelcomeStage(props?: WelcomeStageProps) {
                   >
                     <p
                       style={{
-                        fontSize: '0.85rem',
-                        color: 'var(--text-muted, #64748b)',
-                        marginBottom: '8px',
+                        fontSize: '1rem',
+                        lineHeight: 1.55,
+                        color: 'var(--w-ink-soft, #46593A)',
+                        marginBottom: '10px',
                       }}
                     >
                       ⚡ <strong>Local Dev Quick Launch</strong> (Direct role entry):
@@ -135,9 +136,12 @@ export function WelcomeStage(props?: WelcomeStageProps) {
                 <div style={{ marginTop: '16px' }}>
                   <a
                     href={resolveSurfaceUrl('explore', '/')}
+                    aria-label="Looking for the public sandbox? Visit Explore Guest House (opens in separate guest house space)"
                     style={{
-                      fontSize: '0.85rem',
-                      color: 'var(--text-muted, #64748b)',
+                      fontSize: '0.9375rem',
+                      lineHeight: 1.55,
+                      letterSpacing: '0.005em',
+                      color: 'var(--w-ink-soft, #46593A)',
                       textDecoration: 'underline',
                     }}
                   >

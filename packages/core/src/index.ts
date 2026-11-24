@@ -1,5 +1,13 @@
 /* eslint-disable import-x/export */
 // 1. Foundation (No relative dependencies)
+export { ResendEmailAdapter, type ResendEmailAdapterOptions } from '@repo/core/adapters/resendEmail.adapter';
+export type {
+  EmailAttachment,
+  IEmailPort,
+  SendEmailRequest,
+  SendEmailResponse,
+} from '@repo/core/logic/ports/email.port';
+
 
 export { accountTransition } from '@repo/core/accounts/accountTransition.coordinator';
 export {

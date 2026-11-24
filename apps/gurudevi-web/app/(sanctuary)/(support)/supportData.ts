@@ -52,7 +52,7 @@ export interface SupportContactChannel {
 
 /** What the support page tells a browser tab and a search or answer engine about itself. */
 export const SUPPORT_PAGE = {
-  title: 'Support, Guides & Contribution · Gurudevi Sanctuary',
+  title: 'Support, Guides & Contribution · Gurudevi App',
   description:
     'Comprehensive functionality guides, troubleshooting, direct support channels, and contribution pathways for Gurudevi Explore and Sanctuary web surfaces.',
 } as const;
@@ -388,7 +388,7 @@ export const SUPPORT_FAQS: FaqItem[] = [
   },
   {
     category: 'sanctuary',
-    question: 'How does a school get onboarded to Gurudevi Sanctuary?',
+    question: 'How does a school get onboarded to Gurudevi App?',
     answer:
       'School onboarding is invite-led and carefully guided. Principals or department heads write to institutional@gurudevi.lk. We arrange an initial conversation, set up your sovereign school workspace with custom vanity subdomain (e.g. schoolname.gurudevi.app), and provide hands-on teacher onboarding workshops.',
   },

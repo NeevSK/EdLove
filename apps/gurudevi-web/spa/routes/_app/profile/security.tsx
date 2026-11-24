@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { SecurityFloor } from '../../../../app/(sanctuary)/profile/security/SecurityFloor';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/profile/security')({
-  head: () => ({ meta: [{ title: 'Device Security | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Device Security | Gurudevi App' }] }),
   component: ProfileSecurityScreen,
 });
 

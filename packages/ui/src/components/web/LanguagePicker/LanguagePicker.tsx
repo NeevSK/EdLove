@@ -89,7 +89,7 @@ export function LanguagePicker({
           type="button"
           aria-haspopup="listbox"
           aria-expanded={dropdownOpen}
-          aria-label={label}
+          aria-label={`${label}: ${activeMeta.shortLabel}`}
           className="gd-lang-trigger"
           onClick={() => setDropdownOpen((prev) => !prev)}
         >

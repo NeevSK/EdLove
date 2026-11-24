@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { isOnWorkspaceFloor } from '@repo/core/logic/places/workspaceCatalog';
 import { SchoolFloor } from '../../../../app/(sanctuary)/workspace/school/SchoolFloor';
 import { useSession } from '../../../surface/session';
@@ -7,7 +7,7 @@ import { useSession } from '../../../surface/session';
 const SAMPLE_SCHOOL_ID = 'school-ananda-colombo';
 
 export const Route = createFileRoute('/_app/workspace/school')({
-  head: () => ({ meta: [{ title: 'School Profile | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'School Profile | Gurudevi App' }] }),
   component: WorkspaceSchoolScreen,
 });
 

@@ -325,6 +325,9 @@ const BASE_CSS = `
 .gd-card-meta{font-family:var(--w-card-meta-font);font-size:var(--w-card-meta-size);line-height:var(--w-card-meta-lh);color:var(--w-card-meta-color);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gd-card-media{display:block;aspect-ratio:4/3;overflow:hidden}.gd-card-media>*{width:100%;height:100%;object-fit:cover;display:block}
 .gd-card-icon{display:inline-flex;padding:var(--w-card-pad) var(--w-card-pad) 0}
+.gd-card-emoji{font-size:1.4rem;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.gd-card[data-size="lg"] .gd-card-emoji{font-size:1.75rem}
+.gd-card[data-shape="wide"] .gd-card-emoji{font-size:1.6rem}
 .gd-card[data-shape="wide"] .gd-card-body{flex-direction:row;align-items:center;gap:calc(var(--w-card-gap) * 1.5);padding:var(--w-card-pad)}.gd-card[data-shape="wide"] .gd-card-words{padding:0}.gd-card[data-shape="wide"] .gd-card-icon{padding:0}
 .gd-card[data-shape="wide"] .gd-card-media{flex:none;width:88px;height:88px;aspect-ratio:1;border-radius:var(--w-card-tile-radius)}.gd-card[data-shape="wide"][data-size="sm"] .gd-card-media{width:64px;height:64px}.gd-card[data-shape="wide"][data-size="lg"] .gd-card-media{width:112px;height:112px}
 @container (max-width: 359px){.gd-card[data-shape="wide"] .gd-card-body{flex-direction:column;align-items:stretch;padding:0}.gd-card[data-shape="wide"] .gd-card-media{width:auto;height:auto;aspect-ratio:4/3;border-radius:0}.gd-card[data-shape="wide"] .gd-card-words{padding:var(--w-card-pad)}}

@@ -104,6 +104,8 @@ export interface TypeStyle {
   italic: boolean;
   uppercase: boolean;
   color: string;
+  minSize?: number;
+  maxSize?: number;
 }
 
 export type TextRole = 'display' | 'title' | 'body' | 'label' | 'caption' | 'value';

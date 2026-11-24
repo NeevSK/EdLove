@@ -152,38 +152,50 @@ export default function AuthScreen({ onSuccess, onBack, onNavigateRecovery }: Au
       const isAnon = getSessionIdentityMode(session) === 'anonymous';
       guestSourceId = await prepareGuestConversion(session);
 
-      if (Platform.OS !== 'web') {
-        const { idToken, accessToken } = await signInWithGoogleNative();
-        let nativeResult;
+      let signedIn = false;
 
-        if (isAnon && session?.user) {
-          try {
-            nativeResult = await authAPI.linkGoogleIdentity(idToken, accessToken);
-          } catch (linkError: any) {
-            const msg = `${linkError?.message ?? ''} ${linkError?.code ?? ''}`.toLowerCase();
-            const alreadyLinked =
-              msg.includes('already') ||
-              linkError?.code === 'link_identity_failed' ||
-              linkError?.code === 'same_identity';
-            if (!alreadyLinked) throw linkError;
-            await authorizeExistingAccountTransfer(session.user.id);
+      if (Platform.OS !== 'web') {
+        try {
+          const { idToken, accessToken } = await signInWithGoogleNative();
+          let nativeResult;
+
+          if (isAnon && session?.user) {
+            try {
+              nativeResult = await authAPI.linkGoogleIdentity(idToken, accessToken);
+            } catch (linkError: any) {
+              const msg = `${linkError?.message ?? ''} ${linkError?.code ?? ''}`.toLowerCase();
+              const alreadyLinked =
+                msg.includes('already') ||
+                linkError?.code === 'link_identity_failed' ||
+                linkError?.code === 'same_identity';
+              if (!alreadyLinked) throw linkError;
+              await authorizeExistingAccountTransfer(session.user.id);
+              nativeResult = await authAPI.signInWithGoogleIdToken(idToken, accessToken);
+            }
+          } else {
+            if (guestSourceId) {
+              await authorizeExistingAccountTransfer(guestSourceId);
+            }
             nativeResult = await authAPI.signInWithGoogleIdToken(idToken, accessToken);
           }
-        } else {
-          if (guestSourceId) {
-            await authorizeExistingAccountTransfer(guestSourceId);
+
+          if (!nativeResult?.session || !nativeResult?.user) {
+            throw new Error('Native Google sign-in returned no active session.');
           }
-          nativeResult = await authAPI.signInWithGoogleIdToken(idToken, accessToken);
-        }
 
-        if (!nativeResult?.session || !nativeResult?.user) {
-          throw new Error('Native Google sign-in returned no active session.');
+          hapticSuccess();
+          await finishSignIn({ guestSourceId });
+          signedIn = true;
+        } catch (nativeError: any) {
+          console.warn(
+            '[GoogleAuth] Native One-Tap unavailable or failed; attempting browser OAuth fallback:',
+            nativeError,
+          );
         }
+      }
 
-        hapticSuccess();
-        await finishSignIn({ guestSourceId });
-      } else {
-        // Fallback for Web OAuth
+      if (!signedIn) {
+        // Fallback for Web OAuth or when native One-Tap is unavailable
         const redirectUrl = getRedirectUrl();
         const oauthOptions =
           isAnon && session?.user

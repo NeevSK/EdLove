@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { TimetableFloor } from '../../../../app/(sanctuary)/workspace/timetable/TimetableFloor';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/workspace/timetable')({
-  head: () => ({ meta: [{ title: 'Timetable | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Timetable | Gurudevi App' }] }),
   component: WorkspaceTimetableScreen,
 });
 

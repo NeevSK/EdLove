@@ -119,7 +119,7 @@ export function WorkspaceUnboundWelcomeHub({
               <span>Sanctuary Community</span>
             </div>
             <h2 className={styles.stepTitle}>
-              Welcome to Gurudevi Sanctuary, {displayName}
+              Welcome to Gurudevi App, {displayName}
             </h2>
             <p className={styles.stepSubtitle}>
               Your account is ready, but is not yet connected to a registered school or learning

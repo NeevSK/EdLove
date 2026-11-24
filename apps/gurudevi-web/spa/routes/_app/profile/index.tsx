@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { ProfileFloor } from '../../../../app/(sanctuary)/profile/ProfileFloor';
 import { useSession } from '../../../surface/session';
 
 export const Route = createFileRoute('/_app/profile/')({
-  head: () => ({ meta: [{ title: 'Profile | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Profile | Gurudevi App' }] }),
   // Hovering a link to Profile already asks where the account's deletion request stands.
   loader: ({ context }) => context.queryClient.ensureQueryData(context.sources.accountDeletion()),
   component: ProfileScreen,

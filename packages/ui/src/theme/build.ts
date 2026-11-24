@@ -7,6 +7,10 @@
  */
 
 import { alpha, contrastRatio, legible, mix, relativeLuminance } from './color';
+import {
+  computeProportionalLeading,
+  computeProportionalTracking,
+} from '@intuitui-labs/a11y-gate';
 import type {
   BoundaryKind,
   ButtonRecipe,
@@ -55,9 +59,11 @@ function type(
     lineHeight,
     color,
     weight: extra.weight ?? '400',
-    letterSpacing: extra.letterSpacing ?? 0,
+    letterSpacing: extra.letterSpacing ?? computeProportionalTracking(size).idealPx,
     italic: extra.italic ?? false,
     uppercase: extra.uppercase ?? false,
+    minSize: extra.minSize ?? size,
+    maxSize: extra.maxSize ?? size,
   };
 }
 
@@ -104,17 +110,67 @@ function buildLabel(t: WorldTokens, s: WorldStyle): TypeStyle {
 
 function buildText(t: WorldTokens, s: WorldStyle): Record<TextRole, TypeStyle> {
   return {
-    display: type('serif', 28, 33, t.ink, {
-      letterSpacing: s.display?.letterSpacing ?? -0.3,
-      weight: s.display?.weight ?? '400',
-      italic: s.display?.italic ?? false,
-      uppercase: s.display?.uppercase ?? false,
-    }),
-    title: type('serif', 20, 26, t.ink),
-    body: type('sans', 15, 22, t.ink),
+    display: type(
+      'serif',
+      32,
+      computeProportionalLeading(32, 'display').idealLineHeightPx,
+      t.ink,
+      {
+        minSize: 28,
+        maxSize: 36,
+        letterSpacing: s.display?.letterSpacing ?? computeProportionalTracking(32).idealPx,
+        weight: s.display?.weight ?? '400',
+        italic: s.display?.italic ?? false,
+        uppercase: s.display?.uppercase ?? false,
+      },
+    ),
+    title: type(
+      'serif',
+      20,
+      computeProportionalLeading(20, 'headline').idealLineHeightPx,
+      t.ink,
+      {
+        minSize: 18,
+        maxSize: 22,
+        letterSpacing: computeProportionalTracking(20).idealPx,
+      },
+    ),
+    body: type(
+      'sans',
+      16,
+      computeProportionalLeading(16, 'body').idealLineHeightPx,
+      t.ink,
+      {
+        minSize: 16,
+        maxSize: 17.5,
+        letterSpacing: computeProportionalTracking(16).idealPx,
+      },
+    ),
     label: buildLabel(t, s),
-    caption: type('serif', 14, 19, t.inkSoft, { italic: true }),
-    value: type('serif', 15, 20, t.inkSoft, { italic: true }),
+    caption: type(
+      'serif',
+      14,
+      computeProportionalLeading(14, 'caption').idealLineHeightPx,
+      t.inkSoft,
+      {
+        minSize: 13,
+        maxSize: 14,
+        italic: true,
+        letterSpacing: computeProportionalTracking(14).idealPx,
+      },
+    ),
+    value: type(
+      'serif',
+      16,
+      computeProportionalLeading(16, 'body').idealLineHeightPx,
+      t.inkSoft,
+      {
+        minSize: 15,
+        maxSize: 17,
+        italic: true,
+        letterSpacing: computeProportionalTracking(16).idealPx,
+      },
+    ),
   };
 }
 

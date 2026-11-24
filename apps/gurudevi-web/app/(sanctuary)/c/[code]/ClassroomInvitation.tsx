@@ -71,7 +71,7 @@ export function ClassroomInvitation({ code: rawCode }: Readonly<{ code: string }
             lineHeight: 1.5,
           }}
         >
-          You have been invited to join a classroom workspace in the Gurudevi Sanctuary.
+          You have been invited to join a classroom workspace in the Gurudevi App.
         </p>
 
         {cleanCode && (

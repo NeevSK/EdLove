@@ -114,14 +114,14 @@ export function CuratorReviewDesk({ displayName, capacity }: Readonly<CuratorRev
           onClick={() => setActiveTab('staging')}
           type="button"
         >
-          Community Submissions ({stagedItems.length})
+          📥 Community Submissions ({stagedItems.length})
         </button>
         <button
           className={`${styles.tabButton} ${activeTab === 'broken' ? styles.tabButtonActive : ''}`}
           onClick={() => setActiveTab('broken')}
           type="button"
         >
-          Broken Links Queue ({brokenItems.length})
+          ⚠️ Broken Links Queue ({brokenItems.length})
         </button>
       </div>
 

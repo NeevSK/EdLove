@@ -23,6 +23,7 @@ export function Card({
   size = 'md',
   media,
   icon: Glyph,
+  emoji,
   selected,
   disabled = false,
   href,
@@ -32,6 +33,10 @@ export function Card({
   const glyph = Glyph ? (
     <span className="gd-card-icon" aria-hidden>
       <Glyph size={iconSize[size === 'lg' ? 'lg' : 'md']} color="currentColor" aria-hidden />
+    </span>
+  ) : emoji ? (
+    <span className="gd-card-icon gd-card-emoji" aria-hidden>
+      {emoji}
     </span>
   ) : null;
   const body: ReactNode = (

@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
+﻿import { createFileRoute } from '@tanstack/react-router';
 import { GroupChatFloor } from '../../../../../app/(sanctuary)/community/chat/[groupId]/GroupChatFloor';
 import { useSession } from '../../../../surface/session';
 
 export const Route = createFileRoute('/_app/community/chat/$groupId')({
-  head: () => ({ meta: [{ title: 'Discussion Circle | Gurudevi Sanctuary' }] }),
+  head: () => ({ meta: [{ title: 'Discussion Circle | Gurudevi App' }] }),
   component: CommunityChatGroupIdScreen,
 });
 
