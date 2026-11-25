@@ -21,7 +21,10 @@ import type {
 } from '@repo/core/api/planBridge.orpc.contract';
 import { APIError } from '@repo/core/types/API';
 import { defaultRetryPolicy, retryTransient } from '@repo/core/utils/effect';
-import { Duration, Effect, pipe, Schema } from 'effect';
+import * as Duration from 'effect/Duration';
+import * as Effect from 'effect/Effect';
+import * as Schema from 'effect/Schema';
+import { pipe } from 'effect/Function';
 import type { z } from 'zod';
 
 export type CreatePlanEventInput = z.infer<typeof createPlanEventInputSchema>;

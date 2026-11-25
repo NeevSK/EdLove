@@ -1,6 +1,7 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import { applyUpgrades, scanDependencies } from '../../../scripts/lib/deps-engine.mjs';
 
 const rootDir = process.cwd();
 const uiDir = path.join(rootDir, 'tooling', 'portal', 'ui');
@@ -83,6 +84,8 @@ const MIME_TYPES = {
 // In-Memory NPM Version Cache (10 min TTL)
 const npmVersionCache = new Map();
 const CACHE_TTL_MS = 10 * 60 * 1000;
+let depsScanCache = { data: null, ts: 0 };
+const depsApplyJobs = new Map();
 
 const server = http.createServer(async (req, res) => {
   // Universal CORS headers for all responses
@@ -1124,6 +1127,80 @@ const server = http.createServer(async (req, res) => {
 
     res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
     res.end(JSON.stringify({ apps: result, stackLayers: STACK_LAYERS_MAP }));
+    return;
+  }
+
+  // API: Unified Dependency Scan & Radar
+  if (pathname === '/api/deps/scan') {
+    const refresh = parsedUrl.searchParams.get('refresh') === '1';
+    if (!refresh && depsScanCache.data && Date.now() - depsScanCache.ts < CACHE_TTL_MS) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(depsScanCache.data));
+      return;
+    }
+    try {
+      const data = await scanDependencies({ rootDir, includePrerelease: true });
+      depsScanCache = { data, ts: Date.now() };
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(data));
+    } catch (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
+  // API: Apply Approved Upgrades (Async Job)
+  if (pathname === '/api/deps/apply' && req.method === 'POST') {
+    let body = '';
+    req.on('data', (chunk) => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const jobId = `job_${Date.now()}`;
+        const job = { id: jobId, status: 'running', currentStep: 'Queued', logs: [], ok: null };
+        depsApplyJobs.set(jobId, job);
+
+        applyUpgrades({
+          rootDir,
+          selections: payload.selections || [],
+          exclude24h: payload.exclude24h || [],
+          onProgress: (ev) => {
+            if (ev.step) job.currentStep = `${ev.step} (${ev.status})`;
+            if (ev.log) job.logs.push(ev.log);
+          },
+        }).then((result) => {
+          job.status = result.ok ? 'passed' : 'failed';
+          job.ok = result.ok;
+          job.failedStep = result.failedStep || null;
+          depsScanCache = { data: null, ts: 0 };
+        }).catch((err) => {
+          job.status = 'failed';
+          job.ok = false;
+          job.logs.push(err.message);
+        });
+
+        res.writeHead(202, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ jobId }));
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // API: Poll Apply Job Status
+  if (pathname === '/api/deps/job') {
+    const jobId = parsedUrl.searchParams.get('id');
+    const job = depsApplyJobs.get(jobId);
+    if (!job) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Job not found' }));
+      return;
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ...job, logs: job.logs.slice(-120).join('') }));
     return;
   }
 

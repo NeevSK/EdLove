@@ -1,4 +1,7 @@
-import { Duration, Effect, Fiber, Queue } from 'effect';
+import * as Duration from 'effect/Duration';
+import * as Effect from 'effect/Effect';
+import * as Fiber from 'effect/Fiber';
+import * as Queue from 'effect/Queue';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as monitoring from '../../monitoring';
 import {

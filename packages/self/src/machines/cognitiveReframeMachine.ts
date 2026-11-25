@@ -2,7 +2,9 @@ import { StorageKeys, buildPartitionedKey } from '@repo/core/lib/storage.adapter
 import { storage } from '@repo/core/lib/storage.adapter';
 import { deriveReframeOutcome } from '@repo/core/logic/reflection';
 import type { ReframeOutcome, ReframeStepId, ThoughtEmotion, ThoughtRecord } from '@repo/core/types/reflection';
-import { Cause, Effect, Exit } from 'effect';
+import * as Cause from 'effect/Cause';
+import * as Effect from 'effect/Effect';
+import * as Exit from 'effect/Exit';
 import { createActor, createMachine, types } from 'xstate';
 import { z } from 'zod';
 

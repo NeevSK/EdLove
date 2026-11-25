@@ -1,7 +1,8 @@
 import { EntitlementPort } from '@repo/core/logic/ports/entitlement.port';
 import { GrowthPort } from '@repo/core/logic/ports/growth.port';
 import { PermissionSnapshotPort } from '@repo/core/logic/ports/permissionSnapshot.port';
-import { Effect, Layer } from 'effect';
+import * as Effect from 'effect/Effect';
+import * as Layer from 'effect/Layer';
 
 /**
  * Dependency Injection Layer composition for @repo/core.

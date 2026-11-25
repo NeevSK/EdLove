@@ -1,3 +1,4 @@
+import '@azure/core-asynciterator-polyfill'; // Required for PowerSync watched queries
 import { wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
 import { PowerSyncContext } from '@powersync/react';
 import { PowerSyncDatabase } from '@powersync/react-native';

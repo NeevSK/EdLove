@@ -66,7 +66,7 @@ describe('web auth callback bootstrap route', () => {
         sessionMode: 'unauthenticated',
         guestOnboardingIntent: true,
       }),
-    ).toMatchObject({ decision: 'public', redirectTo: null });
+    ).toMatchObject({ decision: 'onboarding', redirectTo: null });
 
     expect(
       getAuthRouteTarget({
@@ -78,7 +78,38 @@ describe('web auth callback bootstrap route', () => {
         sessionMode: 'anonymous',
         guestOnboardingIntent: true,
       }),
-    ).toMatchObject({ decision: 'public', redirectTo: null });
+    ).toMatchObject({ decision: 'onboarding', redirectTo: null });
+  });
+
+  it('never treats /onboarding as a standalone public route without auth or guest session', () => {
+    expect(isPublicBootstrapRoute('/onboarding')).toBe(false);
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasSession: false,
+        onboardingCompleted: false,
+        pathname: '/onboarding',
+        sessionMode: 'unauthenticated',
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: '/welcome' });
+  });
+
+  it('keeps an offline user with a verified profile admitted even if the access token expired', () => {
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasSession: true,
+        hasActiveAccessToken: false,
+        isOfflineWithVerifiedProfile: true,
+        hasProfileForSession: true,
+        hasProfileName: true,
+        hasActiveCapacity: true,
+        identityAvailability: 'active',
+        onboardingCompleted: true,
+        pathname: '/',
+        sessionMode: 'authenticated',
+      }),
+    ).toMatchObject({ decision: 'app', redirectTo: '/self' });
   });
 
   it('resumes a completed anonymous guest after an explicit Explore action', () => {
@@ -163,5 +194,44 @@ describe('web auth callback bootstrap route', () => {
         sessionMode: 'anonymous',
       }),
     ).toMatchObject({ decision: 'public', redirectTo: null });
+  });
+
+  it('allows an admitted device-local guest to visit /auth and /auth/callback to upgrade', () => {
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasLocalGuestSession: true,
+        hasActiveCapacity: true,
+        hasSession: false,
+        onboardingCompleted: true,
+        pathname: '/auth',
+        sessionMode: 'unauthenticated',
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: null });
+
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasLocalGuestSession: true,
+        hasActiveCapacity: true,
+        hasSession: false,
+        onboardingCompleted: true,
+        pathname: '/auth/callback',
+        sessionMode: 'unauthenticated',
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: null });
+  });
+
+  it('routes a signed-out returning device with remembered accounts to /auth', () => {
+    expect(
+      getAuthRouteTarget({
+        bootstrapReady: true,
+        hasSession: false,
+        hasRememberedAccounts: true,
+        onboardingCompleted: false,
+        pathname: '/',
+        sessionMode: 'unauthenticated',
+      }),
+    ).toMatchObject({ decision: 'public', redirectTo: '/auth' });
   });
 });

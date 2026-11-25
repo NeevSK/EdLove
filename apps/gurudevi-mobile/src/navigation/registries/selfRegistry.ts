@@ -1,3 +1,5 @@
+import { capacityNamed } from '@repo/core/logic/places/workspaceCatalog';
+import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 import {
   resolveSelfFeatureManifest,
   type SelfFeatureManifestItem,
@@ -48,22 +50,30 @@ function resolveFeatureIcon(feature: SelfFeatureManifestItem) {
   }
 }
 
+const SELF_VIEW_ROLE_BY_CAPACITY: Readonly<Record<Capacity, SelfViewRole>> = {
+  founder: 'founder',
+  coFounder: 'founder',
+  director: 'founder',
+  developer: 'founder',
+  systemEngineer: 'founder',
+  admin: 'admin',
+  principal: 'principal',
+  assistantPrincipal: 'principal',
+  gradeHead: 'principal',
+  sectionHead: 'principal',
+  teacher: 'teacher',
+  librarian: 'teacher',
+  nurse: 'teacher',
+  guardian: 'guardian',
+  parent: 'guardian',
+  student: 'student',
+  member: 'student',
+};
+
 function normalizeRole(capacity?: string | null): SelfViewRole {
-  const normalized = capacity?.toLowerCase();
-  if (normalized === 'teacher') return 'teacher';
-  if (normalized === 'student') return 'student';
-  if (normalized === 'guardian' || normalized === 'parent') return 'guardian';
-  if (
-    normalized === 'principal' ||
-    normalized === 'assistantprincipal' ||
-    normalized === 'admin' ||
-    normalized === 'gradehead' ||
-    normalized === 'sectionhead'
-  ) {
-    return normalized === 'admin' ? 'admin' : 'principal';
-  }
-  if (normalized === 'founder' || normalized === 'developer') return 'founder';
-  return 'teacher';
+  if (!capacity) return 'teacher';
+  const known = capacityNamed(capacity);
+  return known ? SELF_VIEW_ROLE_BY_CAPACITY[known] : 'teacher';
 }
 
 const copyForRole: Readonly<

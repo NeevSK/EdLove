@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { NetworkError, OfflineMutationError, UnauthorizedError } from '@repo/core/effect/Errors';
-import { Schema } from 'effect';
+import * as Schema from 'effect/Schema';
 import i18next from 'i18next';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import en from '../../logic/i18n/locales/en.json';

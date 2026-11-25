@@ -1,4 +1,4 @@
-import { Context } from 'effect';
+import * as Context from 'effect/Context';
 
 /**
  * The signed permission snapshot for one person and bond, as stored on the device.

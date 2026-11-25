@@ -22,7 +22,8 @@ import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
 import type { AuthSession } from '@repo/core/types/authSession';
 import { rehydrateScopedStores, resetScopedStores } from '@repo/core/store/resetScopedStores';
 import { APIError } from '@repo/core/types/API';
-import { Effect, Queue } from 'effect';
+import * as Effect from 'effect/Effect';
+import * as Queue from 'effect/Queue';
 
 const ACCOUNTS_REGISTRY_KEY = 'gurudevi-device-accounts';
 const ACTIVE_ACCOUNT_KEY = 'gurudevi-active-account-id';

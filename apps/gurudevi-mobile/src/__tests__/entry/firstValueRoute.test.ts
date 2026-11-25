@@ -1,29 +1,19 @@
 import { describe, expect, it } from 'vitest';
-
 import { getFirstValueRoute } from '@/entry/firstValueRoute';
 
-describe('first-value route policy', () => {
-  it.each([
-    'teacher',
-    'gradeHead',
-    'sectionHead',
-    'principal',
-    'assistantPrincipal',
-    'admin',
-    'founder',
-    'developer',
-    'guardian',
-    'parent',
-    'librarian',
-    'nurse',
-  ])('opens the existing workspace dispatcher for %s', (capacity) => {
-    expect(getFirstValueRoute(capacity)).toBe('/workspace');
+describe('getFirstValueRoute', () => {
+  it('routes every capacity to /workspace by default (dynamic overrides live in landingPolicy)', () => {
+    for (const capacity of [
+      'teacher',
+      'student',
+      'principal',
+      'founder',
+      'guardian',
+      'member',
+      null,
+      undefined,
+    ]) {
+      expect(getFirstValueRoute(capacity)).toBe('/workspace');
+    }
   });
-
-  it.each(['student', undefined, null, 'unknown'])(
-    'keeps the safe self fallback for %s',
-    (capacity) => {
-      expect(getFirstValueRoute(capacity)).toBe('/self');
-    },
-  );
 });

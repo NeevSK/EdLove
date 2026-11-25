@@ -1,24 +1,61 @@
 import { SUPPORTED_LNGS } from '@repo/core/logic/i18n/language';
 import { getLocales } from 'expo-localization';
-import i18n from 'i18next';
+import i18n, { type Resource } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import en from '@/i18n/locales/en.json';
-// Import translation files
-import si from '@/i18n/locales/si.json';
-import ta from '@/i18n/locales/ta.json';
 
 function deviceLanguage(): string {
   const code = getLocales()[0]?.languageCode;
-  return code && SUPPORTED_LNGS.includes(code as any) ? code : 'en';
+  return code && SUPPORTED_LNGS.includes(code as (typeof SUPPORTED_LNGS)[number]) ? code : 'en';
+}
+
+/**
+ * Loads non-English locale bundles on demand so cold boot only parses English
+ * plus the device's active language instead of all three locale JSON catalogs.
+ */
+function loadLocaleBundle(lng: string): Record<string, unknown> | null {
+  switch (lng) {
+    case 'si':
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      return require('@/i18n/locales/si.json') as Record<string, unknown>;
+    case 'ta':
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      return require('@/i18n/locales/ta.json') as Record<string, unknown>;
+    default:
+      return null;
+  }
+}
+
+function buildInitialResources(initialLng: string): Resource {
+  const resources: Resource = {
+    en: { translation: en },
+  };
+  if (initialLng !== 'en') {
+    const activeBundle = loadLocaleBundle(initialLng);
+    if (activeBundle) {
+      resources[initialLng] = { translation: activeBundle };
+    }
+  }
+  return resources;
 }
 
 // i18n configuration
 if (!i18n.isInitialized && !i18n.isInitializing) {
+  const initialLng = deviceLanguage();
+
+  i18n.on('languageChanged', (nextLng: string) => {
+    if (i18n.hasResourceBundle(nextLng, 'translation')) return;
+    const bundle = loadLocaleBundle(nextLng);
+    if (bundle) {
+      i18n.addResourceBundle(nextLng, 'translation', bundle, true, true);
+    }
+  });
+
   void i18n
     .use(initReactI18next) // Pass i18n down to react-i18next
     .init({
       // Detect from device (Sinhala/Tamil/English); English if unsupported.
-      lng: deviceLanguage(),
+      lng: initialLng,
 
       // Fallback language if translation missing.
       // Keep runtime fallbacks in i18n config + locale files (never inline t-key, default).
@@ -27,12 +64,8 @@ if (!i18n.isInitialized && !i18n.isInitializing) {
       // Available languages
       supportedLngs: SUPPORTED_LNGS,
 
-      // Resources (translation files)
-      resources: {
-        si: { translation: si },
-        ta: { translation: ta },
-        en: { translation: en },
-      },
+      // Resources (English fallback + active device locale only; others load on switch)
+      resources: buildInitialResources(initialLng),
 
       // Interpolation settings
       interpolation: {

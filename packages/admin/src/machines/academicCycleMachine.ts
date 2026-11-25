@@ -1,5 +1,7 @@
 import { buildPartitionedKey, storage } from '@repo/core/lib/storage.adapter';
-import { Cause, Effect, Exit } from 'effect';
+import * as Cause from 'effect/Cause';
+import * as Effect from 'effect/Effect';
+import * as Exit from 'effect/Exit';
 import { type ActorRefFrom, createActor, createMachine, types } from 'xstate';
 import { z } from 'zod';
 

@@ -41,8 +41,9 @@ describe('flow navigator / G1, real flow registry and route catalogue', () => {
       },
     );
 
-    it('shows a panel as the policy stand-in while no split layout exists', () => {
-      expect(NAVIGATION_POLICY.panels).toEqual({ mobile: false, web: false });
+    it('uses panel on mobile where split layout exists and stand-in on web', () => {
+      expect(NAVIGATION_POLICY.panels).toEqual({ mobile: true, web: false });
+      expect(presentationOf(step('sub_detail'), 'regular', 'mobile')).toBe('panel');
       expect(presentationOf(step('sub_detail'), 'regular', 'web')).toBe(
         NAVIGATION_POLICY.panelStandIn,
       );

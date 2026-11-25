@@ -1,5 +1,10 @@
 import { logBreadcrumb } from '@repo/core/monitoring';
-import { Cause, type Context, Effect, Layer, Logger, ManagedRuntime } from 'effect';
+import * as Cause from 'effect/Cause';
+import type * as Context from 'effect/Context';
+import * as Effect from 'effect/Effect';
+import * as Layer from 'effect/Layer';
+import * as Logger from 'effect/Logger';
+import * as ManagedRuntime from 'effect/ManagedRuntime';
 import { EntitlementLive, PermissionSnapshotLive } from './Layers';
 
 /**

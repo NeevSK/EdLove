@@ -38,6 +38,7 @@ import {
 import { tokens } from '@repo/ui/tokens';
 import { hapticImpact, hapticSelection, hapticSuccess } from '@repo/ui/utils/haptics';
 import * as Location from 'expo-location';
+import { useNavigation } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 
@@ -58,11 +59,23 @@ const DEFAULT_CENTER: UserLocation = {
 
 export const SchoolAtlasMapScreen: React.FC = () => {
   const mapRef = useRef<UnifiedMapViewRef | null>(null);
+  const navigation = useNavigation();
 
   // Navigation State
   const [scaleLens, setScaleLens] = useState<SpatialScaleLens>('national');
   const [metricView, setMetricView] = useState<SpatialMetricView>('theaterDelta');
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerSearchBarOptions: {
+        placeholder: 'Search schools or districts…',
+        onChangeText: (event: { nativeEvent: { text: string } }) =>
+          setSearchQuery(event.nativeEvent.text),
+        onCancelButtonPress: () => setSearchQuery(''),
+      },
+    });
+  }, [navigation]);
   const [selectedDistrictId, setSelectedDistrictId] = useState<string | null>(null);
 
   // Active selections

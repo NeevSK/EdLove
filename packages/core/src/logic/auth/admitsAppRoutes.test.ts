@@ -4,7 +4,7 @@ import { admitsAppRoutes, type RouteDecision } from './bootstrapRoutes';
 describe('admitsAppRoutes / G1', () => {
   it.each([
     ['app', true],
-    ['booting', true],
+    ['booting', false],
     ['public', false],
     ['inactive-account', false],
     ['onboarding', false],

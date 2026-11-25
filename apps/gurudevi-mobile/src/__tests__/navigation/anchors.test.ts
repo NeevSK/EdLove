@@ -14,14 +14,16 @@ const layouts = (dir: string): string[] =>
     return name === '_layout.tsx' ? [path] : [];
   });
 
+const relativePosix = (from: string, to: string) => relative(from, to).replace(/\\/g, '/');
+
 describe('navigator anchors / G0 source contract over the real route tree', () => {
   const stacks = layouts(APP).filter((file) => {
     const source = readFileSync(file, 'utf8');
-    return /<(Stack|Tabs)\b/.test(source) && !UNANCHORED.has(relative(APP, file));
+    return /<(Stack|Tabs)\b/.test(source) && !UNANCHORED.has(relativePosix(APP, file));
   });
 
   it('finds the nested navigators', () => {
-    expect(stacks.map((file) => relative(APP, file)).sort()).toEqual(
+    expect(stacks.map((file) => relativePosix(APP, file)).sort()).toEqual(
       expect.arrayContaining([
         '(tabs)/_layout.tsx',
         '(tabs)/self/_layout.tsx',
@@ -30,7 +32,7 @@ describe('navigator anchors / G0 source contract over the real route tree', () =
     );
   });
 
-  it.each(layouts(APP).map((file) => [relative(APP, file), file]))(
+  it.each(layouts(APP).map((file) => [relativePosix(APP, file), file]))(
     '%s anchors to a screen it has, if it has an overview',
     (name, file) => {
       if (UNANCHORED.has(name)) return;

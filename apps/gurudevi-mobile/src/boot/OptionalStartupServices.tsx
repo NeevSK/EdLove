@@ -19,6 +19,18 @@ const WARMUPS: readonly OptionalStartupTask[] = [
       configureGoogleOneTap();
     },
   },
+  {
+    id: 'ota-update-check',
+    run: async () => {
+      if (__DEV__) return;
+      const Updates = await import('expo-updates');
+      if (!Updates.isEnabled) return;
+      const result = await Updates.checkForUpdateAsync();
+      if (result.isAvailable) {
+        await Updates.fetchUpdateAsync();
+      }
+    },
+  },
 ];
 
 const RECLAIM_SEVERITY: Readonly<Record<VergerSnapshot['memory'],'constrained' | 'severe' | null>> = {

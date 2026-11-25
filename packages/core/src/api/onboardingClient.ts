@@ -2,7 +2,8 @@ import type { SessionContinuity } from '@repo/core/api/clientRuntime';
 import { ScopeBootstrapSchema } from '@repo/core/api/identity.orpc.contract';
 import { onboardingORPCContract } from '@repo/core/api/onboarding.orpc.contract';
 import { orpcClient } from '@repo/core/api/orpcClient';
-import { Effect, Schema } from 'effect';
+import * as Effect from 'effect/Effect';
+import * as Schema from 'effect/Schema';
 import { v7 as uuidv7 } from 'uuid';
 import { z } from 'zod';
 

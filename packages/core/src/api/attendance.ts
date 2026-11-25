@@ -3,7 +3,10 @@ import { orpcClient } from '@repo/core/api/orpcClient';
 import type { StudentAttendancePulse } from '@repo/core/api/staffManagement';
 import { APIError } from '@repo/core/types/API';
 import { defaultRetryPolicy, retryTransient } from '@repo/core/utils/effect';
-import { Duration, Effect, pipe, Schema } from 'effect';
+import * as Duration from 'effect/Duration';
+import * as Effect from 'effect/Effect';
+import * as Schema from 'effect/Schema';
+import { pipe } from 'effect/Function';
 
 class AttendanceHttpError extends Schema.TaggedError<AttendanceHttpError>()('AttendanceHttpError', {
   message: Schema.String,

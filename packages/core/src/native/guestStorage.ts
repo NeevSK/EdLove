@@ -2,7 +2,7 @@ import { GuestStorageError } from '@repo/core/effect/Errors';
 import { registerGuestLeaseDataKey } from '@repo/core/native/guestLease';
 import { getGuestScope, guestStorageKey } from '@repo/core/native/guestScope';
 import { SafeZustandStorage } from '@repo/core/native/storageWrapper';
-import { Effect } from 'effect';
+import * as Effect from 'effect/Effect';
 
 // Keys for MMKV storage
 const GUEST_TIMETABLE_KEY = () => guestStorageKey('timetable');

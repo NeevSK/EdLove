@@ -1,5 +1,5 @@
 import { ORPCError } from '@orpc/client';
-import { Effect } from 'effect';
+import * as Effect from 'effect/Effect';
 import { describe, expect, it } from 'vitest';
 import { classifyFailure } from '../../logic/failure/classifyFailure';
 import { SupabaseQueryError } from '../../adapters/supabaseIdentity.adapter';

@@ -38,7 +38,7 @@ export const NAVIGATION_POLICY = {
    * the web) that no domain has yet. Until one does, a panel is shown as this. Turn `panels` on per
    * platform when the layout exists.
    */
-  panels: { mobile: false, web: false },
+  panels: { mobile: true, web: false },
   panelStandIn: 'push' as FlowPresentation,
 
   /**

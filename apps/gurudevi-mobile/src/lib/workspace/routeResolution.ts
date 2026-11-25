@@ -117,35 +117,46 @@ export function resolveWorkspaceRoute({
     };
   }
 
-  if (resolvedCapacity.data === 'founder') {
-    return { kind: 'role-ready', target: { kind: 'founder' }, ...backgroundStatus };
+  // 2. Compile-time-exhaustive capacity floor target map (zero silent fallthroughs).
+  const WORKSPACE_ROLE_TARGET_BY_CAPACITY: Readonly<
+    Record<
+      typeof resolvedCapacity.data,
+      'founder' | 'admin' | 'section-head' | 'grade-head' | 'principal' | 'guardian' | 'student' | 'teacher'
+    >
+  > = {
+    founder: 'founder',
+    coFounder: 'founder',
+    director: 'founder',
+    developer: 'founder',
+    systemEngineer: 'founder',
+    admin: 'admin',
+    sectionHead: 'section-head',
+    gradeHead: 'grade-head',
+    principal: 'principal',
+    assistantPrincipal: 'principal',
+    guardian: 'guardian',
+    parent: 'guardian',
+    student: 'student',
+    member: 'student',
+    teacher: 'teacher',
+    librarian: 'teacher',
+    nurse: 'teacher',
+  };
+
+  const floorKind = WORKSPACE_ROLE_TARGET_BY_CAPACITY[resolvedCapacity.data];
+
+  if (
+    floorKind === 'founder' ||
+    floorKind === 'admin' ||
+    floorKind === 'section-head' ||
+    floorKind === 'grade-head' ||
+    floorKind === 'principal' ||
+    floorKind === 'guardian'
+  ) {
+    return { kind: 'role-ready', target: { kind: floorKind }, ...backgroundStatus };
   }
 
-  if (resolvedCapacity.data === 'admin') {
-    return { kind: 'role-ready', target: { kind: 'admin' }, ...backgroundStatus };
-  }
-
-  if (resolvedCapacity.data === 'sectionHead') {
-    return { kind: 'role-ready', target: { kind: 'section-head' }, ...backgroundStatus };
-  }
-
-  if (resolvedCapacity.data === 'gradeHead') {
-    return { kind: 'role-ready', target: { kind: 'grade-head' }, ...backgroundStatus };
-  }
-
-  if (resolvedCapacity.data === 'principal' || resolvedCapacity.data === 'assistantPrincipal') {
-    return { kind: 'role-ready', target: { kind: 'principal' }, ...backgroundStatus };
-  }
-
-  if (resolvedCapacity.data === 'guardian' || resolvedCapacity.data === 'parent') {
-    return { kind: 'role-ready', target: { kind: 'guardian' }, ...backgroundStatus };
-  }
-
-  if (resolvedCapacity.data === 'developer') {
-    return { kind: 'role-ready', target: { kind: 'founder' }, ...backgroundStatus };
-  }
-
-  if (resolvedCapacity.data === 'student') {
+  if (floorKind === 'student') {
     const classroomId = requestedClassroomId || contextClassroomId;
     if (!classroomId) {
       return {

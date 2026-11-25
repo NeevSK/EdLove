@@ -33,7 +33,7 @@ export function SceneWeather({ scene, width, height, rainColour }: SceneWeatherP
   const frames = useFrameCallback((info) => {
     'worklet';
     const now = info.timeSinceFirstFrame;
-    if (now - last.value >= frameMs) {
+    if (now - last.get() >= frameMs) {
       last.set(now);
       time.set(now);
     }
@@ -46,7 +46,7 @@ export function SceneWeather({ scene, width, height, rainColour }: SceneWeatherP
 
   const rain = useDerivedValue(() => {
     const path = Skia.PathBuilder.Make();
-    const t = time.value / 1000;
+    const t = time.get() / 1000;
     for (let i = 0; i < drops; i++) {
       // Two cheap hashes give each drop a lane and a speed.
       const a = Math.sin(i * 12.9898) * 43758.5453;
@@ -65,7 +65,7 @@ export function SceneWeather({ scene, width, height, rainColour }: SceneWeatherP
 
   const fireflies = useDerivedValue(() => {
     const path = Skia.PathBuilder.Make();
-    const t = time.value / 1000;
+    const t = time.get() / 1000;
     for (let i = 0; i < flies; i++) {
       const s = Math.sin(i * 91.7) * 9999.1;
       const seed = s - Math.floor(s);

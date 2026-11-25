@@ -1,6 +1,9 @@
 import { supabaseClient as defaultClient } from '@repo/core/adapters/supabaseClient';
 import { retryTransient, strictRetryPolicy } from '@repo/core/effect/Schedules';
-import { Duration, Effect, pipe, Schema } from 'effect';
+import * as Duration from 'effect/Duration';
+import * as Effect from 'effect/Effect';
+import * as Schema from 'effect/Schema';
+import { pipe } from 'effect/Function';
 import {
   AgentDatabaseError,
   AgentDomainError,

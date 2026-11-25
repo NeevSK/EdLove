@@ -3,7 +3,7 @@ import {
   APP_ROUTES,
   isValidAppRoutePath,
 } from '@repo/core/routing/routeManifest';
-import { Effect } from 'effect';
+import * as Effect from 'effect/Effect';
 import { describe, expect, it } from 'vitest';
 import {
   classifyRouteIntent,

@@ -109,10 +109,6 @@ export type {
 } from '@repo/core/logic/events/bus';
 export {
   injectWorkflowEventBridge,
-  schemas,
-  schoolAttendanceRecordedEvent,
-  schoolClassroomCreatedEvent,
-  schoolGradePublishedEvent,
   sendSchoolAttendanceRecorded,
   sendSchoolClassroomCreated,
   sendSchoolGradePublished,
@@ -123,16 +119,6 @@ export {
   sendUserCreated,
   sendUserUpdated,
   sendWellbeingMoodLogged,
-  studentOnboardedEvent,
-  studentSupportRequestedEvent,
-  studentSupportRequestedPayloadSchema,
-  syncMutationQueuedEvent,
-  systemAuditLogEvent,
-  teacherSummaryRequestedEvent,
-  teacherSummaryRequestedPayloadSchema,
-  userCreatedEvent,
-  userUpdatedEvent,
-  wellbeingMoodLoggedEvent,
 } from '@repo/core/logic/events/bus';
 export {
   ActivityPulseProvider,
@@ -226,19 +212,7 @@ export {
 
 import { z } from 'zod';
 
-export { AnalyticsEngine as formAnalytics } from '@intuitui-labs/form-builder-engine/analytics';
-export type { FormState } from '@intuitui-labs/form-builder-engine/core';
-export { FormManager } from '@intuitui-labs/form-builder-engine/core';
-export {
-  clearCustomValidators,
-  FormHydrator,
-  registerCustomValidator,
-} from '@intuitui-labs/form-builder-engine/hydration';
-export type { ValidatorRule } from '@intuitui-labs/form-builder-engine/schema';
-export { applyRule, validateRules } from '@intuitui-labs/form-builder-engine/validation';
 export { GrowthBookFeatureRolloutAdapter } from '@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter';
-export { PowerSyncFormsAdapter } from '@repo/core/adapters/powersync/forms.adapter';
-export { SupabaseFormsAdapter } from '@repo/core/adapters/supabase/forms.adapter';
 // Hexagonal Adapters
 export { SupabaseEntitlementAdapter } from '@repo/core/adapters/supabase/supabaseEntitlement.adapter';
 export * from '@repo/core/ai/contextRegistry.store';

@@ -18,6 +18,7 @@ import type { ReactNode } from 'react';
 import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollViewMarker } from 'react-native-screens';
 
 export function RoomPage({
   title,
@@ -39,36 +40,38 @@ export function RoomPage({
   // The focused field scrolls clear of the keyboard and its typing bar, or of our keypad.
   const pad = useKeypadSpace();
   return (
-    <KeyboardAwareScrollView
-      bottomOffset={64}
-      {...scroll}
-      style={{ flex: 1, backgroundColor: 'transparent' }}
-      contentContainerStyle={{
-        paddingLeft: layout.gutter + layout.edges.left + pad.left,
-        paddingRight: layout.gutter + layout.edges.right + pad.right,
-        paddingTop: layout.rhythm.top,
-        paddingBottom: insets.bottom + (layout.tabs === 'rail' ? 96 : 120) + pad.bottom,
-        gap: layout.rhythm.gap,
-        width: '100%',
-        maxWidth: layout.readable,
-        alignSelf: 'center',
-      }}
-    >
-      <Stack gap="inside">
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          <Text kind="title" style={{ flexShrink: 1 }}>
-            {title}
-          </Text>
-          {mark ? <Badge label={mark.label} tone={mark.tone ?? 'neutral'} /> : null}
-        </View>
-        {intro ? (
-          <Text kind="body" tone="soft">
-            {intro}
-          </Text>
-        ) : null}
-      </Stack>
-      {children}
-    </KeyboardAwareScrollView>
+    <ScrollViewMarker style={{ flex: 1 }} scrollEdgeEffects={{ top: 'soft', bottom: 'soft' }}>
+      <KeyboardAwareScrollView
+        bottomOffset={64}
+        {...scroll}
+        style={{ flex: 1, backgroundColor: 'transparent' }}
+        contentContainerStyle={{
+          paddingLeft: layout.gutter + layout.edges.left + pad.left,
+          paddingRight: layout.gutter + layout.edges.right + pad.right,
+          paddingTop: layout.rhythm.top,
+          paddingBottom: insets.bottom + (layout.tabs === 'rail' ? 96 : 120) + pad.bottom,
+          gap: layout.rhythm.gap,
+          width: '100%',
+          maxWidth: layout.readable,
+          alignSelf: 'center',
+        }}
+      >
+        <Stack gap="inside">
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <Text kind="title" style={{ flexShrink: 1 }}>
+              {title}
+            </Text>
+            {mark ? <Badge label={mark.label} tone={mark.tone ?? 'neutral'} /> : null}
+          </View>
+          {intro ? (
+            <Text kind="body" tone="soft">
+              {intro}
+            </Text>
+          ) : null}
+        </Stack>
+        {children}
+      </KeyboardAwareScrollView>
+    </ScrollViewMarker>
   );
 }
 

@@ -34,7 +34,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ComfortPresets } from '@/components/comfort/ComfortPresets';
 import { PreferredNameEntry } from '@/components/PreferredNameEntry';
 import { RoleCardGrid } from '@/components/RoleCardGrid';
-import { useBootstrapRouteState } from '@/entry/bootstrapRouteState';
+import {
+  useBootstrapSession,
+  useRefreshLocalGuest,
+} from '@/entry/BootstrapSessionProvider';
 import { v1Client } from '@/lib/v1Client';
 import { useNavigator } from '@repo/ui/components/native/navigation';
 
@@ -52,7 +55,8 @@ const LANGUAGES = [
 export default function OnboardingRoute() {
   const router = useNavigator();
   const { refreshProfile } = useAuth();
-  const routeState = useBootstrapRouteState('/onboarding');
+  const routeState = useBootstrapSession();
+  const refreshLocalGuest = useRefreshLocalGuest();
   const world = useWorld();
   const wt = world.tokens;
   useFloorPresence('full');
@@ -110,9 +114,12 @@ export default function OnboardingRoute() {
         });
         await completeLocalGuestOnboarding(guest.id);
         await activateLocalGuestSession(guest);
+        refreshLocalGuest();
       }
       celebrate(`Welcome, ${firstName}`);
-      router.replace('/self');
+      // Passive screen: BootstrapSessionProvider + EntryStack's Stack.Protected
+      // automatically unmount /onboarding and route to getFirstValueRoute(capacity)
+      // (or drain any pending deep link).
     } catch (error) {
       // No bond means no entry, so the person stays here and can try again.
       console.warn('[onboarding] first bond failed:', error);

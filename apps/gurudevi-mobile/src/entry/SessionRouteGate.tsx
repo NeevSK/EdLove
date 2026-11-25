@@ -6,29 +6,51 @@ import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntent.stor
 import { BrandPulse } from '@repo/ui';
 import { Mascot } from '@repo/ui/components/Mascot';
 import { useGlobalSearchParams, usePathname } from 'expo-router';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useContext, useEffect, useState } from 'react';
 import { handoffNativeSplashAfterCommit } from '@/boot/nativeSplashService';
 import { OptionalStartupServices } from '@/boot/OptionalStartupServices';
 import { recordDevelopmentTrace } from '@/boot/startupTelemetry';
-import { getBootstrapRouteTarget, useBootstrapRouteState } from '@/entry/bootstrapRouteState';
+import { BootstrapSessionContext } from '@/entry/BootstrapSessionProvider';
+import {
+  type BootstrapRouteState,
+  getBootstrapRouteTarget,
+  useBootstrapRouteState,
+} from '@/entry/bootstrapRouteState';
 import { getEntryNavigationAction } from '@/entry/entryNavigation';
 import { getEntryPresentation } from '@/entry/entryPresentation';
 import { useNavigator } from '@repo/ui/components/native/navigation';
 import { EntryAccessProvider, entryAccessFor } from '@/entry/entryAccess';
+import { getFirstValueRoute } from '@/entry/firstValueRoute';
 
-export function SessionRouteGate({
-  children,
-  appServices,
-}: {
+type SessionRouteGateProps = {
   children: ReactNode;
   appServices?: ReactNode;
-}) {
+};
+
+export function SessionRouteGate(props: SessionRouteGateProps) {
+  const sharedRouteState = useContext(BootstrapSessionContext);
+  if (sharedRouteState !== null) {
+    return <SessionRouteGateInner {...props} routeState={sharedRouteState} />;
+  }
+  return <StandaloneSessionRouteGate {...props} />;
+}
+
+function StandaloneSessionRouteGate(props: SessionRouteGateProps) {
+  const pathname = usePathname();
+  const routeState = useBootstrapRouteState(pathname);
+  return <SessionRouteGateInner {...props} routeState={routeState} />;
+}
+
+function SessionRouteGateInner({
+  children,
+  appServices,
+  routeState,
+}: SessionRouteGateProps & { routeState: BootstrapRouteState }) {
   const router = useNavigator();
   const { ground, lamp } = useWorld().tokens;
   const pathname = usePathname();
   const params = useGlobalSearchParams<{ entry?: string }>();
   const { refreshProfile } = useAuth();
-  const routeState = useBootstrapRouteState(pathname);
   const [expiredEntryWait, setExpiredEntryWait] = useState<string | null>(null);
   const isDevelopmentToolRoute =
     __DEV__ && (pathname === '/verger-lab' || pathname === '/verger-diagnostics');
@@ -82,13 +104,33 @@ export function SessionRouteGate({
       },
     });
   }, [revealEntry]);
-  const mountCloudServices =
-    presentation.kind === 'content' &&
-    presentation.mountProtectedServices &&
-    Boolean(routeState.session?.user);
+  const isAdmittedAppContent =
+    presentation.kind === 'content' && presentation.mountProtectedServices;
+  const mountCloudServices = isAdmittedAppContent && Boolean(routeState.session?.user);
 
-  // Development tools keep their own entry rules; everything else follows the gate's decision.
-  const access = entryAccessFor(isDevelopmentToolRoute ? 'app' : decision, redirectTo);
+  // Domain catalogs (@repo/self, @repo/ai, @repo/form-builder, @repo/workforce) are
+  // deferred off cold boot so /welcome, /auth and /onboarding paint first, then
+  // registered once upon admission for both authenticated users and local guests.
+  useEffect(() => {
+    if (!isAdmittedAppContent) return;
+    void import('@/boot/registerAppCatalog')
+      .then(({ registerAppCatalog }) => {
+        registerAppCatalog();
+      })
+      .catch((error: unknown) => {
+        console.warn('[entry] deferred app catalog registration unavailable:', error);
+      });
+  }, [isAdmittedAppContent]);
+
+  // Development tools keep their own entry rules; everything else follows the 5-zone guard map.
+  const isGuestSession =
+    Boolean(routeState.hasLocalGuestSession) || Boolean(routeState.session?.user?.is_anonymous);
+  const access = entryAccessFor(isDevelopmentToolRoute ? 'app' : decision, redirectTo, {
+    isGuestSession,
+    guestOnboardingIntent: pathname === '/onboarding' && params.entry === 'guest',
+    hasRememberedAccounts: routeState.hasRememberedAccounts,
+    appEntryPath: getFirstValueRoute(routeState.activeCapacity),
+  });
   const routes = <EntryAccessProvider value={access}>{children}</EntryAccessProvider>;
 
   const content = (

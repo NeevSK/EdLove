@@ -3,7 +3,11 @@ import { WorldLoading } from '@repo/ui/components/native';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { ObserveInteractiveMarker } from 'expo-observe';
 import { Suspense, useCallback } from 'react';
-import { useBootstrapRouteState } from '@/entry/bootstrapRouteState';
+import {
+  useBootstrapSession,
+  useRefreshLocalGuest,
+} from '@/entry/BootstrapSessionProvider';
+import { getFirstValueRoute } from '@/entry/firstValueRoute';
 import { WelcomeScreen } from '@/screens/WelcomeScreen';
 import { DevelopmentScreenInteractiveMarker } from '@/telemetry/DevelopmentScreenInteractiveMarker';
 import { useNavigator } from '@repo/ui/components/native/navigation';
@@ -17,7 +21,8 @@ function Fallback() {
 
 export default function WelcomeRoute() {
   const router = useNavigator();
-  const routeState = useBootstrapRouteState('/welcome');
+  const routeState = useBootstrapSession();
+  const refreshLocalGuest = useRefreshLocalGuest();
 
   const handleLogin = useCallback(() => {
     router.replace('/auth');
@@ -25,11 +30,11 @@ export default function WelcomeRoute() {
 
   const handleGuest = useCallback(() => {
     if (routeState.isLocalGuestReady) {
-      router.replace('/self');
+      router.replace(getFirstValueRoute(routeState.activeCapacity));
     } else {
       router.push('/onboarding?entry=guest');
     }
-  }, [router, routeState.isLocalGuestReady]);
+  }, [router, routeState.activeCapacity, routeState.isLocalGuestReady]);
 
   const handleStartGuest = useCallback(async () => {
     if (routeState.session?.user && routeState.session.user.is_anonymous !== true) {
@@ -42,8 +47,9 @@ export default function WelcomeRoute() {
     }
     // A guest is device-local: no server account exists until they sign in.
     await getOrCreateLocalGuestSession();
+    refreshLocalGuest();
     router.push('/onboarding?entry=guest');
-  }, [handleGuest, routeState.hasLocalGuestSession, routeState.session?.user, router]);
+  }, [handleGuest, refreshLocalGuest, routeState.hasLocalGuestSession, routeState.session, router]);
 
   return (
     <ErrorBoundary name="WelcomeRoute">

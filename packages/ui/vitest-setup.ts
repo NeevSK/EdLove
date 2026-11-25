@@ -127,9 +127,57 @@ vi.mock('react-native-gesture-handler', async (importOriginal) => {
 });
 
 // vitest-native's reanimated preset has no `interpolateColor` (living light in
-// the kit). Substitute one that lands on the end colour, as a finished timing does.
-vi.mock('react-native-reanimated', async (importOriginal) => ({
-  ...(await importOriginal<Record<string, unknown>>()),
-  interpolateColor: (value: number, input: readonly number[], output: readonly string[]) =>
-    output[value >= (input.at(-1) ?? 1) ? output.length - 1 : 0],
-}));
+// the kit) or 4.8.0 SET boundaries. Provide 4.8.0 mock mocks here.
+vi.mock('react-native-reanimated', async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+  const createBuilder = () => {
+    const builder: Record<string, unknown> = {
+      duration: () => builder,
+      delay: () => builder,
+      withInitialValues: () => builder,
+      withTargetValues: () => builder,
+      build: () => ({}),
+    };
+    return builder;
+  };
+  const React = require('react');
+  const RN = require('react-native');
+  return {
+    ...actual,
+    Text: ({ children, ...props }: { children?: unknown }) => {
+      const content = Array.isArray(children) ? children : [children];
+      return React.createElement(
+        RN.Text,
+        props,
+        ...content.map((child: any) =>
+          child && typeof child === 'object' && ('_isReanimatedSharedValue' in child || 'get' in child)
+            ? (child.get?.() ?? child.value)
+            : child
+        )
+      );
+    },
+    default: {
+      ...((actual.default as Record<string, unknown>) || {}),
+      Text: ({ children, ...props }: { children?: unknown }) => {
+        const content = Array.isArray(children) ? children : [children];
+        return React.createElement(
+          RN.Text,
+          props,
+          ...content.map((child: any) =>
+            child && typeof child === 'object' && ('_isReanimatedSharedValue' in child || 'get' in child)
+              ? (child.get?.() ?? child.value)
+              : child
+          )
+        );
+      },
+      SharedTransitionBoundary: ({ children }: { children?: unknown }) => children ?? null,
+    },
+    SharedTransitionBoundary: ({ children }: { children?: unknown }) => children ?? null,
+    FadeIn: Object.assign(actual.FadeIn || {}, {
+      withTargetValues: vi.fn(() => createBuilder()),
+      duration: vi.fn(() => ({ withTargetValues: vi.fn(() => createBuilder()) })),
+    }),
+    interpolateColor: (value: number, input: readonly number[], output: readonly string[]) =>
+      output[value >= (input.at(-1) ?? 1) ? output.length - 1 : 0],
+  };
+});

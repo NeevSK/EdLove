@@ -1,6 +1,7 @@
 import { captureException } from '@repo/core/monitoring';
 import { APIError } from '@repo/core/types/API';
-import { Effect, Fiber } from 'effect';
+import * as Effect from 'effect/Effect';
+import * as Fiber from 'effect/Fiber';
 import { type AppServices, appRuntime } from './AppRuntime';
 
 /**

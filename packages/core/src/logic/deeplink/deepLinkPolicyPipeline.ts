@@ -3,7 +3,8 @@ import { resolveQR } from '@repo/core/logic/utils/QRResolver';
 import { containsTraversal, hasUnsafeUrlText } from '@repo/core/routing/internalHref';
 import { isValidAppRoutePath } from '@repo/core/routing/routeManifest';
 import type { QRPayload } from '@repo/core/types/QRPayload';
-import { Effect, Schema } from 'effect';
+import * as Effect from 'effect/Effect';
+import * as Schema from 'effect/Schema';
 
 export const MAX_DEEP_LINK_LENGTH = 8192;
 

@@ -17,6 +17,8 @@ import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigator } from '@repo/ui/components/native/navigation';
+import { ScrollViewMarker } from 'react-native-screens';
+import { ScrollToTopGuard } from 'react-native-screens/experimental';
 
 export function PageFrame({
   title,
@@ -45,34 +47,38 @@ export function PageFrame({
           backgroundColor: t.ground,
         }}
       >
-        <AppHeader
-          title={title}
-          eyebrow={eyebrow}
-          compact
-          ruled
-          leading={{
-            kind: 'back',
-            label: 'Back',
-            onPress: () => router.back('/self'),
-          }}
-          icons={{ back: ChevronLeft as ComponentType<KitIconProps> }}
-        />
+        <ScrollToTopGuard>
+          <AppHeader
+            title={title}
+            eyebrow={eyebrow}
+            compact
+            ruled
+            leading={{
+              kind: 'back',
+              label: 'Back',
+              onPress: () => router.back('/self'),
+            }}
+            icons={{ back: ChevronLeft as ComponentType<KitIconProps> }}
+          />
+        </ScrollToTopGuard>
       </View>
-      <KeyboardAwareScrollView
-        bottomOffset={64}
-        contentContainerStyle={{
-          paddingLeft: layout.gutter + insets.left + pad.left,
-          paddingRight: layout.gutter + insets.right + pad.right,
-          paddingTop: layout.rhythm.top + 2,
-          paddingBottom: insets.bottom + 40 + pad.bottom,
-          gap: layout.rhythm.gap,
-          width: '100%',
-          maxWidth: layout.readable,
-          alignSelf: 'center',
-        }}
-      >
-        {children}
-      </KeyboardAwareScrollView>
+      <ScrollViewMarker style={{ flex: 1 }} scrollEdgeEffects={{ top: 'soft', bottom: 'automatic' }}>
+        <KeyboardAwareScrollView
+          bottomOffset={64}
+          contentContainerStyle={{
+            paddingLeft: layout.gutter + insets.left + pad.left,
+            paddingRight: layout.gutter + insets.right + pad.right,
+            paddingTop: layout.rhythm.top + 2,
+            paddingBottom: insets.bottom + 40 + pad.bottom,
+            gap: layout.rhythm.gap,
+            width: '100%',
+            maxWidth: layout.readable,
+            alignSelf: 'center',
+          }}
+        >
+          {children}
+        </KeyboardAwareScrollView>
+      </ScrollViewMarker>
     </View>
   );
 }

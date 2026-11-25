@@ -1,5 +1,6 @@
 import { normalizeAcceptedInternalRoute } from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
-import { Effect, Schema } from 'effect';
+import * as Effect from 'effect/Effect';
+import * as Schema from 'effect/Schema';
 
 export type AuthCallbackPurpose = 'sign-in' | 'sign-up' | 'recovery' | 'link-identity';
 

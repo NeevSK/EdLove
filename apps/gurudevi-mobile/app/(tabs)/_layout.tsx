@@ -25,9 +25,11 @@ import { BreathGuide } from '@repo/self/wellbeing';
 import { ActiveSubTabStrip } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import {
+  Button,
   connectionStatusOf,
+  Dialog,
+  SharedTransitionBoundary,
   Sheet,
-  Text as WText,
   useFloorPresence,
   WorldHeader,
   WorldPicker,
@@ -51,18 +53,17 @@ import {
   User,
   Users,
   Wind,
-  X,
 } from '@repo/ui/icons/native';
-import { Box, Modal, ModalContent, Pressable } from '@repo/ui/primitives';
 import { useWorld } from '@repo/ui/theme/native';
-import { tokens } from '@repo/ui/tokens';
 import { useGlobalSearchParams, usePathname } from 'expo-router';
+import { ScrollToTopGuard } from 'react-native-screens/experimental';
 import { useTranslation } from 'react-i18next';
 import { Tabs } from 'expo-router/js-tabs';
 import { type ComponentType, useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StatusBar, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSnapshotRefresh } from '@/boot/useSnapshotRefresh';
+import { useTrackLastVisitedPlace } from '@/entry/lastVisitedPlace';
 import { NativeShellTabs } from '@/components/navigation/NativeShellTabs';
 import { AssistantSheet } from '@/components/shell/AssistantSheet';
 import { RoomFab } from '@/components/shell/RoomFab';
@@ -116,9 +117,9 @@ export default function TabsLayout() {
 function TabsLayoutContent() {
   const router = useNavigator();
   const pathname = usePathname();
+  useTrackLastVisitedPlace();
   // The shell is dressed by the chosen world, like every screen inside it.
   const wornWorld = useWorld();
-  const wt = wornWorld.tokens;
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const shell = useMemo(
@@ -398,7 +399,8 @@ function TabsLayoutContent() {
       return <View style={{ paddingTop: insets.top }}>{subTabs}</View>;
     }
     return (
-      <WorldHeader
+      <ScrollToTopGuard>
+        <WorldHeader
         // Reading down shrinks the header to one quiet line; reading up brings it back.
         // A small window (split screen) keeps the header to one line.
         layout={chromeShown && !layout.tight ? headerLayout : 'compact'}
@@ -437,6 +439,7 @@ function TabsLayoutContent() {
         hud={hud}
         status={connection}
       />
+      </ScrollToTopGuard>
     );
   };
 
@@ -519,11 +522,13 @@ function TabsLayoutContent() {
       onTabPress={markTabPress}
       showLabels={shell.visibleChrome.tabLabels}
       labels={roomLabels}
+      status={connection}
     />
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <SharedTransitionBoundary isActive={true}>
+      <View style={{ flex: 1 }}>
       {/* A phone on its side gives the status bar's row back to the world, like a game. */}
       {/* The clock and battery follow the world's mode (sunlight turns a night world light). */}
       <StatusBar
@@ -712,57 +717,23 @@ function TabsLayoutContent() {
         onRedeemCode={handleRedeemInviteCode}
       />
 
-      <Modal isOpen={isBreathingOpen} onClose={() => setBreathingOpen(false)}>
-        <ModalContent style={{ backgroundColor: wt.ground }}>
-          <Box
-            style={{
-              paddingTop: shell.modal.contentPadding,
-              paddingBottom: tokens.spacing.md,
-              paddingHorizontal: shell.modal.contentPadding,
-              borderBottomWidth: 1,
-              borderBottomColor: wt.line,
-            }}
-          >
-            <Box
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <Box>
-                <WText kind="title">Breathing Reset</WText>
-                <WText kind="caption">1 minute of peace</WText>
-              </Box>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Close breathing reset"
-                accessibilityHint="Closes the breathing reset dialog"
-                onPress={() => setBreathingOpen(false)}
-                style={{
-                  width: tokens.interaction.minTouchTarget,
-                  height: tokens.interaction.minTouchTarget,
-                  borderRadius: tokens.radii.full,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: wt.sunken,
-                }}
-              >
-                <X size={18} color={wt.ink} />
-              </Pressable>
-            </Box>
-          </Box>
-          <Box
-            style={{
-              padding: shell.modal.contentPadding,
-              minHeight: shell.modal.minHeight,
-              justifyContent: 'center',
-            }}
-          >
-            <BreathGuide onComplete={() => setBreathingOpen(false)} />
-          </Box>
-        </ModalContent>
-      </Modal>
+      <Dialog
+        open={isBreathingOpen}
+        onClose={() => setBreathingOpen(false)}
+        title="Breathing Reset"
+        description="1 minute of peace"
+        actions={
+          <Button
+            variant="quiet"
+            label="Close"
+            accessibilityLabel="Close breathing reset"
+            onPress={() => setBreathingOpen(false)}
+          />
+        }
+      >
+        <BreathGuide onComplete={() => setBreathingOpen(false)} />
+      </Dialog>
     </View>
+    </SharedTransitionBoundary>
   );
 }

@@ -1,3 +1,4 @@
+import { type ConnectionStatus, Text } from '@repo/ui/components/native';
 import { alpha, mix } from '@repo/ui/theme';
 import { typeStyle, useWorldContext, useWorldMotion } from '@repo/ui/theme/native';
 import { NativeTabs } from 'expo-router/native-tabs';
@@ -29,6 +30,30 @@ export interface NativeShellTabsProps {
   badges?: Partial<Record<ShellTab, string>>;
   /** Room names in the person's language; the work room is named for their role. */
   labels?: Partial<Record<ShellTab, string>>;
+  /** Connection / sync status for the native iOS bottom accessory. */
+  status?: ConnectionStatus;
+}
+
+function SyncBottomAccessory({ status }: { status: ConnectionStatus }) {
+  const placement = NativeTabs.BottomAccessory.usePlacement();
+  const t = useWorldContext().world.tokens;
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: placement === 'inline' ? 10 : 14,
+        paddingVertical: placement === 'inline' ? 4 : 6,
+        backgroundColor: mix(t.ground, t.lamp, 0.12),
+        borderRadius: 999,
+      }}
+    >
+      <Text kind="caption" style={{ color: t.lampDeep }}>
+        {placement === 'inline' ? status.short : status.label}
+      </Text>
+    </View>
+  );
 }
 
 /**
@@ -44,6 +69,7 @@ export function NativeShellTabs({
   showLabels = true,
   badges,
   labels,
+  status,
 }: NativeShellTabsProps) {
   const { world, language } = useWorldContext();
   const { animates } = useWorldMotion();
@@ -89,6 +115,11 @@ export function NativeShellTabs({
         ))}
         <NativeTabs.Trigger name="notifications" hidden />
         <NativeTabs.Trigger name="settings" hidden />
+        {status ? (
+          <NativeTabs.BottomAccessory>
+            <SyncBottomAccessory status={status} />
+          </NativeTabs.BottomAccessory>
+        ) : null}
       </NativeTabs>
     </View>
   );

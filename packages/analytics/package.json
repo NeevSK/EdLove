@@ -54,13 +54,13 @@
     "@repo/core": "workspace:*",
     "@repo/graphics": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.108.2",
+    "@tanstack/react-query": "^5.108.4",
     "react-i18next": "^18.0.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.3.0",
+    "@types/react": "^19.3.2",
     "eslint": "^10.15.0",
     "typescript": "7.1.0-beta",
     "vite-tsconfig-paths": "^6.1.1",

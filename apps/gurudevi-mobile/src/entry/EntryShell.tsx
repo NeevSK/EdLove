@@ -38,7 +38,6 @@ import {
   handoffNativeSplashAfterCommit,
   NATIVE_SPLASH_MAX_HOLD_MS,
 } from '@/boot/nativeSplashService';
-import { OptionalStartupServices } from '@/boot/OptionalStartupServices';
 import {
   observeDevelopmentInteractions,
   observeDevelopmentTimings,
@@ -48,7 +47,10 @@ import { PersonalPreferences } from '@/boot/PersonalPreferences';
 import { WorldFonts } from '@/boot/WorldFonts';
 import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 import { AppVersionGateOverlay } from '@/components/AppVersionGateOverlay';
+import { AppLockOverlay } from '@/entry/AppLockOverlay';
 import { AuthQueryCacheBoundary } from '@/entry/AuthQueryCacheBoundary';
+import { BootstrapSessionProvider } from '@/entry/BootstrapSessionProvider';
+import { ColdPushIntentBridge } from '@/entry/ColdPushIntentBridge';
 import { GuestConversionBoundary } from '@/entry/GuestConversionBoundary';
 import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
 import { PasswordRecoveryBoundary } from '@/entry/PasswordRecoveryBoundary';
@@ -147,7 +149,6 @@ export function EntryShell() {
                 <EnvironmentProvider>
                   <FidelityProvider>
                     <GurudeviVerger>
-                      <OptionalStartupServices phase="public-ready" />
                       <WorldFonts />
                       <PersonalPreferences />
                       <CircadianProvider>
@@ -165,11 +166,15 @@ export function EntryShell() {
                                         <GuestPersistenceNotice />
                                         <GuestConversionBoundary />
                                         <PasswordRecoveryBoundary />
-                                        <SessionRouteGate
-                                          appServices={<AuthenticatedAppServices />}
-                                        >
-                                          <EntryStack />
-                                        </SessionRouteGate>
+                                        <BootstrapSessionProvider>
+                                          <ColdPushIntentBridge />
+                                          <AppLockOverlay />
+                                          <SessionRouteGate
+                                            appServices={<AuthenticatedAppServices />}
+                                          >
+                                            <EntryStack />
+                                          </SessionRouteGate>
+                                        </BootstrapSessionProvider>
                                         <SanctuaryPulseOverlay
                                           visible={isBreathingOpen}
                                           onDismiss={() => setBreathingOpen(false)}
@@ -277,22 +282,51 @@ function EntryStack() {
         contentStyle: { backgroundColor: 'transparent' },
       }}
     >
+      {/* Zone 0: Always-open routes (boot root, OAuth callback, public forms, somatic pulse, dev labs). */}
       <Stack.Screen name="index" />
-      <Stack.Screen name="welcome" />
-      <Stack.Screen name="auth" />
-      <Stack.Screen name="account-recovery" />
-      <Stack.Screen name="onboarding" />
+      <Stack.Screen name="auth/callback" />
       <Stack.Screen name="public-form/[slug]" />
-      <Stack.Screen name="verger-lab" />
-      <Stack.Screen name="verger-diagnostics" />
       <Stack.Screen name="pulse" />
+      {__DEV__ ? <Stack.Screen name="verger-lab" /> : null}
+      {__DEV__ ? <Stack.Screen name="verger-diagnostics" /> : null}
+      {__DEV__ ? <Stack.Screen name="(dev)" /> : null}
+
+      {/* Zone 1: Public & Auth routes (also open to admitted guests upgrading to a cloud account). */}
+      <Stack.Protected guard={access.publicAuthRoutes} redirectTo={access.appEntryHref as Href}>
+        <Stack.Screen name="welcome" />
+        <Stack.Screen name="auth" />
+      </Stack.Protected>
+
+      {/* Zone 2: Account recovery (inactive cloud accounts or user-initiated recovery from auth). */}
+      <Stack.Protected guard={access.recoveryRoutes} redirectTo={access.appEntryHref as Href}>
+        <Stack.Screen name="account-recovery" />
+      </Stack.Protected>
+
+      {/* Zone 3: Onboarding (unmounts automatically from back stack once completed). */}
+      <Stack.Protected guard={access.onboardingRoutes} redirectTo={access.appEntryHref as Href}>
+        <Stack.Screen name="onboarding" />
+      </Stack.Protected>
+
+      {/* Zone 4: Admitted app routes — strictly mounted when decision === 'app'. */}
       {/* Every app screen is declared here: a Stack mounts undeclared routes too, outside the guard. */}
       {/* `access.redirectTo` passed checkInternalHref; this is where it becomes the router's type. */}
       <Stack.Protected guard={access.appRoutes} redirectTo={access.redirectTo as Href}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="(modal)" options={{ presentation: 'modal' }} />
         {APP_SCREENS.map((name) => (
-          <Stack.Screen key={name} name={name} />
+          <Stack.Screen
+            key={name}
+            name={name}
+            options={
+              name === 'atlas'
+                ? {
+                    headerShown: true,
+                    title: 'School Atlas',
+                    headerBackButtonDisplayMode: 'minimal',
+                  }
+                : undefined
+            }
+          />
         ))}
       </Stack.Protected>
     </Stack>

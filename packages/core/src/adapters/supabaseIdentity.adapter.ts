@@ -18,7 +18,10 @@ import type { Bond, Perspective } from '@repo/core/logic/schemas/identity.schema
 import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 import type { User } from '@repo/core/types/User';
 import { retryTransient, strictRetryPolicy } from '@repo/core/utils/effect';
-import { Duration, Effect, pipe, Schema } from 'effect';
+import * as Duration from 'effect/Duration';
+import * as Effect from 'effect/Effect';
+import * as Schema from 'effect/Schema';
+import { pipe } from 'effect/Function';
 
 // ─── Effect helpers ──────────────────────────────────────────────
 

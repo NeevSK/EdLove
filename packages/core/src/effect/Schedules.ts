@@ -11,7 +11,8 @@
  *   import { defaultRetryPolicy, strictRetryPolicy, retryPolicy } from '@repo/core/utils/effect';
  */
 import { worthRetrying } from '@repo/core/logic/failure/classifyFailure';
-import { Duration, Schedule } from 'effect';
+import * as Duration from 'effect/Duration';
+import * as Schedule from 'effect/Schedule';
 
 /**
  * Default retry: exponential backoff at 200ms, max 3 retries (4 total attempts).

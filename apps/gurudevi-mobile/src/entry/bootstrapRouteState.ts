@@ -1,4 +1,12 @@
-import { useEntitlementQuery } from '@repo/core/hooks/useEntitlementQuery';
+import { deviceAccounts } from '@repo/core';
+import type { EntitlementReadiness } from '@repo/core/logic/ports/entitlement.port';
+import {
+  DEFAULT_LANDING_POLICY,
+  type LandingPolicyConfig,
+  type LastVisitedPlaceRecord,
+  resolveAppLandingRoute,
+} from '@repo/core/logic/places/landingPolicy';
+import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import {
   getAuthRouteTarget,
   getSessionIdentityMode,
@@ -10,15 +18,23 @@ import type { AuthSession } from '@repo/core/types/authSession';
 import { setGuestScope } from '@repo/core/native/guestScope';
 import { activateLocalGuestSession } from '@repo/core/accounts/localGuestActivation.coordinator';
 import { restoreLocalGuestSession } from '@repo/core/native/localGuestSession';
+import {
+  entitlementQueryKey,
+  isEntitlementSnapshotFresh,
+  isIdentity,
+  normalizeIdentity,
+  type QualifiedEntitlementSnapshot,
+} from '@repo/core/store/queries/entitlementQuery';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import {
   getSessionRouteReadiness,
   hasUsableOfflineCapabilitySnapshot,
 } from '@/boot/sessionRouteReadiness';
-import { getFirstValueRoute } from '@/entry/firstValueRoute';
+import { readLastVisitedPlace } from '@/entry/lastVisitedPlace';
 
 export type BootstrapRouteState = {
   hasActiveAccessToken: boolean;
@@ -33,14 +49,19 @@ export type BootstrapRouteState = {
   hasProfileName: boolean;
   principalId: string | null;
   activeCapacity?: string | null;
+  activeBondId?: string | null;
+  isOfflineWithVerifiedProfile?: boolean;
+  lastVisitedPlace?: LastVisitedPlaceRecord | null;
   isProfileForSession: boolean;
-  entitlement: Pick<
-    ReturnType<typeof useEntitlementQuery>,
-    'manifestLoaded' | 'readiness' | 'snapshotUserId'
-  >;
+  entitlement: {
+    manifestLoaded: boolean;
+    readiness: EntitlementReadiness;
+    snapshotUserId: string | null;
+  };
   isGuestRouteStateLoading?: boolean;
   hasLocalGuestSession?: boolean;
   isLocalGuestReady?: boolean;
+  hasRememberedAccounts?: boolean;
 };
 
 type LocalGuestRouteState = {
@@ -53,6 +74,7 @@ function useLocalGuestRouteState(
   session: AuthSession | null,
   onboardingCompleted: boolean,
   isSessionLoading: boolean,
+  refreshNonce: number,
 ): LocalGuestRouteState {
   const isAnonymous = getSessionIdentityMode(session) === 'anonymous';
   const [state, setState] = useState<LocalGuestRouteState>({
@@ -101,16 +123,63 @@ function useLocalGuestRouteState(
     return () => {
       active = false;
     };
-  }, [isAnonymous, isSessionLoading, onboardingCompleted, session]);
+  }, [isAnonymous, isSessionLoading, onboardingCompleted, refreshNonce, session]);
 
   return state;
+}
+
+function useRememberedAccountsPresence(session: AuthSession | null): boolean {
+  const [hasRememberedAccounts, setHasRememberedAccounts] = useState(false);
+
+  useEffect(() => {
+    if (session?.user && session.user.is_anonymous !== true) {
+      return;
+    }
+    let active = true;
+    void deviceAccounts
+      .list()
+      .then((accounts) => {
+        if (active) setHasRememberedAccounts(accounts.length > 0);
+      })
+      .catch(() => {
+        if (active) setHasRememberedAccounts(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [session]);
+
+  return hasRememberedAccounts;
+}
+
+function useLastVisitedPlaceForPrincipal(
+  principalId: string | null,
+): LastVisitedPlaceRecord | null {
+  const [record, setRecord] = useState<LastVisitedPlaceRecord | null>(null);
+
+  useEffect(() => {
+    if (!principalId) return;
+    let active = true;
+    void readLastVisitedPlace(principalId).then((loaded) => {
+      if (active) setRecord(loaded);
+    });
+    return () => {
+      active = false;
+    };
+  }, [principalId]);
+
+  return principalId ? record : null;
 }
 
 /**
  * Collects live and persisted bootstrap inputs into the one snapshot consumed
  * by the route policy. Screens should not reinterpret these sources directly.
  */
-export function useBootstrapRouteState(pathname: string): BootstrapRouteState {
+export function useBootstrapRouteState(
+  pathname: string,
+  localGuestRefreshNonce = 0,
+): BootstrapRouteState {
+  const { isOnline } = useOfflineStatus();
   const {
     identityAvailability,
     isProfileResolving,
@@ -132,22 +201,54 @@ export function useBootstrapRouteState(pathname: string): BootstrapRouteState {
   const hasLiveCapacity = Boolean(profileBelongsToSession && activeBond?.capacity);
   const activeCapacity = profileBelongsToSession ? (activeBond?.capacity ?? null) : null;
   const hasProfileName = Boolean(profileBelongsToSession && profile?.display_name?.trim());
-  const entitlement = useEntitlementQuery(
-    profileBelongsToSession ? (profile?.id ?? null) : null,
-    {
-      activeBondId: activeBond?.id ?? null,
-      activeEntityId: activeBond?.entity_id ?? null,
-      activeEntityType: activeBond?.entity_type ?? null,
-    },
-    Boolean(
-      profileBelongsToSession &&
-        entitlementScopeIsCurrent &&
-        identityAvailability === 'active' &&
-        getSessionIdentityMode(session) === 'authenticated',
-    ),
+  // Read-only lookup of any already-cached entitlement snapshot for offline return.
+  // Network entitlement hydration belongs exclusively to CapabilityHydrationProvider
+  // (post-admission inside AuthenticatedAppServices), never inside the AuthN route gate.
+  const queryClient = useQueryClient();
+  const canReadCachedEntitlement = Boolean(
+    profileBelongsToSession &&
+      profile?.id &&
+      entitlementScopeIsCurrent &&
+      identityAvailability === 'active' &&
+      getSessionIdentityMode(session) === 'authenticated',
   );
-  const { manifestLoaded, readiness, snapshotUserId } = entitlement;
-  const localGuest = useLocalGuestRouteState(session, onboardingCompleted, loading);
+  const entitlementIdentity =
+    canReadCachedEntitlement && profile?.id
+      ? normalizeIdentity(profile.id, {
+          activeBondId: activeBond?.id ?? null,
+          activeEntityId: activeBond?.entity_id ?? null,
+          activeEntityType: activeBond?.entity_type ?? null,
+        })
+      : null;
+  const cachedSnapshot = entitlementIdentity
+    ? queryClient.getQueryData<QualifiedEntitlementSnapshot>(
+        entitlementQueryKey(entitlementIdentity),
+      )
+    : undefined;
+  const validCachedSnapshot =
+    cachedSnapshot &&
+    entitlementIdentity &&
+    isIdentity(cachedSnapshot.identity, entitlementIdentity) &&
+    isEntitlementSnapshotFresh(cachedSnapshot.refreshedAt)
+      ? cachedSnapshot
+      : null;
+  const manifestLoaded = validCachedSnapshot !== null;
+  const readiness: EntitlementReadiness = validCachedSnapshot?.readiness ?? 'unknown';
+  const snapshotUserId = validCachedSnapshot?.identity.principalId ?? null;
+  const localGuest = useLocalGuestRouteState(
+    session,
+    onboardingCompleted,
+    loading,
+    localGuestRefreshNonce,
+  );
+  const hasRememberedAccounts = useRememberedAccountsPresence(session);
+  const resolvedPrincipalId = profileBelongsToSession ? (profile?.id ?? null) : null;
+  const lastVisitedPlace = useLastVisitedPlaceForPrincipal(
+    resolvedPrincipalId ?? localGuest.localGuestId,
+  );
+  const isOfflineWithVerifiedProfile = Boolean(
+    !isOnline && profileBelongsToSession && session?.user,
+  );
   const isAnonymous = getSessionIdentityMode(session) === 'anonymous';
   const hasActiveAccessToken = Boolean(
     session?.access_token &&
@@ -167,27 +268,47 @@ export function useBootstrapRouteState(pathname: string): BootstrapRouteState {
     session,
     hasLiveCapacity,
     activeCapacity,
+    activeBondId: activeBond?.id ?? null,
+    isOfflineWithVerifiedProfile,
+    lastVisitedPlace,
     hasProfileName,
-    principalId: profileBelongsToSession ? (profile?.id ?? null) : null,
+    principalId: resolvedPrincipalId,
     isProfileForSession: profileBelongsToSession,
     entitlement: { manifestLoaded, readiness, snapshotUserId },
     isGuestRouteStateLoading: (isAnonymous || session === null) && localGuest.isLoading,
     hasLocalGuestSession: Boolean(localGuest.localGuestId),
     isLocalGuestReady: localGuest.isReady,
+    hasRememberedAccounts,
   };
 }
 
 export function getBootstrapRouteTarget(
   state: BootstrapRouteState,
-  options: { guestOnboardingIntent?: boolean } = {},
+  options: {
+    guestOnboardingIntent?: boolean;
+    landingPolicy?: LandingPolicyConfig;
+    now?: number;
+  } = {},
 ) {
+  const appEntryPath = resolveAppLandingRoute(
+    {
+      activeCapacity: state.activeCapacity,
+      bondId: state.activeBondId ?? null,
+      lastVisited: state.lastVisitedPlace ?? null,
+      now: options.now ?? Date.now(),
+    },
+    options.landingPolicy ?? DEFAULT_LANDING_POLICY,
+  ).route;
+
   if (state.isGuestRouteStateLoading) {
     return getAuthRouteTarget({
       bootstrapReady: false,
       hasActiveCapacity: false,
       hasActiveAccessToken: state.hasActiveAccessToken,
+      isOfflineWithVerifiedProfile: state.isOfflineWithVerifiedProfile,
       hasSession: Boolean(state.session),
       hasLocalGuestSession: state.hasLocalGuestSession,
+      hasRememberedAccounts: state.hasRememberedAccounts,
       identityAvailability: state.identityAvailability,
       hasProfileForSession: state.isProfileForSession,
       hasProfileName: state.hasProfileName,
@@ -195,7 +316,7 @@ export function getBootstrapRouteTarget(
       pathname: state.pathname,
       sessionMode: getSessionIdentityMode(state.session),
       guestOnboardingIntent: options.guestOnboardingIntent,
-      appEntryPath: getFirstValueRoute(state.activeCapacity),
+      appEntryPath,
     });
   }
   const hasCachedCapabilities = hasUsableOfflineCapabilitySnapshot({
@@ -218,8 +339,10 @@ export function getBootstrapRouteTarget(
     bootstrapReady: readiness.routeGuardReady,
     hasActiveCapacity: readiness.hasActiveCapacity,
     hasActiveAccessToken: state.hasActiveAccessToken,
+    isOfflineWithVerifiedProfile: state.isOfflineWithVerifiedProfile,
     hasSession: Boolean(state.session),
     hasLocalGuestSession: state.hasLocalGuestSession,
+    hasRememberedAccounts: state.hasRememberedAccounts,
     identityAvailability: state.identityAvailability,
     hasProfileForSession: state.isProfileForSession,
     hasProfileName: state.hasProfileName || Boolean(state.isLocalGuestReady),
@@ -227,6 +350,6 @@ export function getBootstrapRouteTarget(
     pathname: state.pathname,
     sessionMode: getSessionIdentityMode(state.session),
     guestOnboardingIntent: options.guestOnboardingIntent,
-    appEntryPath: getFirstValueRoute(state.activeCapacity),
+    appEntryPath,
   });
 }
