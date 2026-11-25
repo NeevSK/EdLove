@@ -104,7 +104,7 @@ const STAGES: Readonly<Record<StageTier, Stage>> = {
 /** The tier verger's experience allows. */
 export function stageTierOf(budget: StageBudget): StageTier {
   const motion = budget.experience.motion;
-  if (motion === 'off') return 'bare';
+  if (motion === 'off') return budget.quality === 'essential' ? 'bare' : 'floor';
   if (budget.quality === 'essential' || budget.effectiveFidelity === 'low') return 'floor';
   if (budget.quality === 'full' && motion === 'rich') return 'rich';
   return 'middle';

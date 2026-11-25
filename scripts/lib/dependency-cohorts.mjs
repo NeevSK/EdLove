@@ -24,6 +24,10 @@ export const DEPENDENCY_COHORTS = {
       'react-native-skia': '^3.13.1',
       '@shopify/react-native-skia': '^3.13.1',
       'typescript': '7.1.0-beta',
+      // Pinned to 1.30.1: lightningcss >=1.30.2 (including 1.33.0) changes the Rust serde AST for
+      // `Specifier`, breaking react-native-css@3.1.0-rc.1 (NativeWind v5) during Metro bundling.
+      'lightningcss': '1.30.1',
+      'lightningcss-linux-x64-gnu': '1.30.1',
     },
   },
 
@@ -210,7 +214,6 @@ export const DEPENDENCY_COHORTS = {
       'eslint-plugin-oxlint': '^1.95.0',
       'eslint-plugin-react-hooks': '^7.1.1',
       'globals': '^17.14.0',
-      'lightningcss-linux-x64-gnu': '1.33.0',
       'supabase': '^3.3.0',
       '@types/jest': '^30.0.0',
       'jest': '^30.5.2',
