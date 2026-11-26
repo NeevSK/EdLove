@@ -1,0 +1,634 @@
+@prefix : <https://gurudevi.lk/ontology.owl.ttl#> .
+@prefix gd: <https://gurudevi.lk/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix schema1: <http://schema.org/> .
+@base <https://gurudevi.lk/ontology.owl.ttl> .
+
+<https://gurudevi.lk/ontology.owl.ttl> rdf:type owl:Ontology ;
+                                        dcterms:title "Shared case - Person, Bond, Authority, Institution, Enrollment" ;
+                                        rdfs:label "gurudevi_case" .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://purl.org/dc/terms/title
+dcterms:title rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2004/02/skos/core#definition
+skos:definition rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2004/02/skos/core#exactMatch
+skos:exactMatch rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2004/02/skos/core#inScheme
+skos:inScheme rdf:type owl:AnnotationProperty .
+
+
+###  https://gurudevi.lk/ontology/fixed_capacity
+gd:fixed_capacity rdf:type owl:AnnotationProperty .
+
+
+###  https://gurudevi.lk/ontology/lifecycle
+gd:lifecycle rdf:type owl:AnnotationProperty .
+
+
+###  https://gurudevi.lk/ontology/ufo
+gd:ufo rdf:type owl:AnnotationProperty .
+
+
+###  https://w3id.org/linkml/permissible_values
+linkml:permissible_values rdf:type owl:AnnotationProperty .
+
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  https://gurudevi.lk/ontology/capacity
+gd:capacity rdf:type owl:ObjectProperty ;
+            rdfs:range gd:Capacity ;
+            rdfs:label "capacity" ;
+            skos:inScheme <https://gurudevi.lk/ontology> .
+
+
+###  https://gurudevi.lk/ontology/granted_by
+gd:granted_by rdf:type owl:ObjectProperty ;
+              rdfs:range gd:Bond ;
+              rdfs:label "granted_by" ;
+              skos:inScheme <https://gurudevi.lk/ontology> .
+
+
+###  https://gurudevi.lk/ontology/institution
+gd:institution rdf:type owl:ObjectProperty ;
+               rdfs:range gd:Institution ;
+               rdfs:label "institution" ;
+               skos:inScheme <https://gurudevi.lk/ontology> ;
+               gd:ufo "mediation" .
+
+
+###  https://gurudevi.lk/ontology/person
+gd:person rdf:type owl:ObjectProperty ;
+          rdfs:range gd:Person ;
+          rdfs:label "person" ;
+          skos:inScheme <https://gurudevi.lk/ontology> ;
+          gd:ufo "mediation" .
+
+
+###  https://gurudevi.lk/ontology/power
+gd:power rdf:type owl:ObjectProperty ;
+         rdfs:range gd:Power ;
+         rdfs:label "power" ;
+         skos:inScheme <https://gurudevi.lk/ontology> .
+
+
+###  https://gurudevi.lk/ontology/state
+gd:state rdf:type owl:ObjectProperty ;
+         rdfs:range gd:BondState ;
+         rdfs:label "state" ;
+         skos:inScheme <https://gurudevi.lk/ontology> .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  https://gurudevi.lk/ontology/academic_year
+gd:academic_year rdf:type owl:DatatypeProperty ;
+                 rdfs:range xsd:integer ;
+                 rdfs:label "academic_year" ;
+                 skos:inScheme <https://gurudevi.lk/ontology> .
+
+
+###  https://gurudevi.lk/ontology/display_name
+gd:display_name rdf:type owl:DatatypeProperty ;
+                rdfs:label "display_name" ;
+                skos:inScheme <https://gurudevi.lk/ontology> .
+
+
+###  https://gurudevi.lk/ontology/grade
+gd:grade rdf:type owl:DatatypeProperty ;
+         rdfs:range [ rdf:type rdfs:Datatype ;
+                      owl:intersectionOf ( xsd:integer
+                                           [ rdf:type rdfs:Datatype ;
+                                             owl:onDatatype xsd:integer ;
+                                             owl:withRestrictions ( [ xsd:minInclusive 1
+                                                                    ]
+                                                                  )
+                                           ]
+                                           [ rdf:type rdfs:Datatype ;
+                                             owl:onDatatype xsd:integer ;
+                                             owl:withRestrictions ( [ xsd:maxInclusive 13
+                                                                    ]
+                                                                  )
+                                           ]
+                                         )
+                    ] ;
+         rdfs:label "grade" ;
+         skos:inScheme <https://gurudevi.lk/ontology> .
+
+
+###  https://gurudevi.lk/ontology/id
+gd:id rdf:type owl:DatatypeProperty ;
+      rdfs:range xsd:anyURI ;
+      rdfs:label "id" ;
+      skos:inScheme <https://gurudevi.lk/ontology> .
+
+
+###  https://gurudevi.lk/ontology/name
+gd:name rdf:type owl:DatatypeProperty ;
+        rdfs:label "name" ;
+        skos:inScheme <https://gurudevi.lk/ontology> .
+
+
+###  https://gurudevi.lk/ontology/recorded_at
+gd:recorded_at rdf:type owl:DatatypeProperty ;
+               rdfs:range xsd:dateTime ;
+               rdfs:label "recorded_at" ;
+               skos:definition "When Gurudevi learned it (transaction time)." ;
+               skos:inScheme <https://gurudevi.lk/ontology> .
+
+
+###  https://gurudevi.lk/ontology/valid_from
+gd:valid_from rdf:type owl:DatatypeProperty ;
+              rdfs:range xsd:dateTime ;
+              rdfs:label "valid_from" ;
+              skos:definition "When it became true in the world (valid time)." ;
+              skos:inScheme <https://gurudevi.lk/ontology> .
+
+
+###  https://gurudevi.lk/ontology/valid_to
+gd:valid_to rdf:type owl:DatatypeProperty ;
+            rdfs:range xsd:dateTime ;
+            rdfs:label "valid_to" ;
+            skos:definition "When it stopped being true in the world. Empty means still true." ;
+            skos:inScheme <https://gurudevi.lk/ontology> .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  https://gurudevi.lk/ontology/Authority
+gd:Authority rdf:type owl:Class ;
+             rdfs:subClassOf [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:granted_by ;
+                               owl:allValuesFrom gd:Bond
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:power ;
+                               owl:allValuesFrom gd:Power
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:granted_by ;
+                               owl:minCardinality "1"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:power ;
+                               owl:minCardinality "1"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:granted_by ;
+                               owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:power ;
+                               owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:id ;
+                               owl:allValuesFrom xsd:anyURI
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:recorded_at ;
+                               owl:allValuesFrom xsd:dateTime
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:valid_from ;
+                               owl:allValuesFrom xsd:dateTime
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:valid_to ;
+                               owl:allValuesFrom xsd:dateTime
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:id ;
+                               owl:minCardinality "1"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:recorded_at ;
+                               owl:minCardinality "1"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:valid_from ;
+                               owl:minCardinality "1"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:valid_to ;
+                               owl:minCardinality "0"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:id ;
+                               owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:recorded_at ;
+                               owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:valid_from ;
+                               owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                             ] ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty gd:valid_to ;
+                               owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                             ] ;
+             rdfs:label "Authority" ;
+             skos:definition "A power a bond grants (mark, enrol, invite...). Never outlives the bond that grants it." ;
+             skos:inScheme <https://gurudevi.lk/ontology> ;
+             gd:ufo "normative relator (UFO-C power)" .
+
+
+###  https://gurudevi.lk/ontology/Bond
+gd:Bond rdf:type owl:Class ;
+        rdfs:subClassOf [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:capacity ;
+                          owl:allValuesFrom gd:Capacity
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:institution ;
+                          owl:allValuesFrom gd:Institution
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:person ;
+                          owl:allValuesFrom gd:Person
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:state ;
+                          owl:allValuesFrom gd:BondState
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:capacity ;
+                          owl:minCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:institution ;
+                          owl:minCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:person ;
+                          owl:minCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:state ;
+                          owl:minCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:capacity ;
+                          owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:institution ;
+                          owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:person ;
+                          owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:state ;
+                          owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:id ;
+                          owl:allValuesFrom xsd:anyURI
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:recorded_at ;
+                          owl:allValuesFrom xsd:dateTime
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:valid_from ;
+                          owl:allValuesFrom xsd:dateTime
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:valid_to ;
+                          owl:allValuesFrom xsd:dateTime
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:id ;
+                          owl:minCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:recorded_at ;
+                          owl:minCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:valid_from ;
+                          owl:minCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:valid_to ;
+                          owl:minCardinality "0"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:id ;
+                          owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:recorded_at ;
+                          owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:valid_from ;
+                          owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty gd:valid_to ;
+                          owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                        ] ;
+        rdfs:label "Bond" ;
+        skos:definition "How a person joins an institution in one capacity. A relator; it exists only while both sides do." ;
+        skos:inScheme <https://gurudevi.lk/ontology> ;
+        gd:lifecycle """state: state
+within: institution
+start: invited
+transitions:
+  - {from: invited, to: active, by: accept, who: [person]}
+  - {from: invited, to: ended, by: decline, who: [person]}
+  - {from: active, to: suspended, by: suspend, who: [principal]}
+  - {from: suspended, to: active, by: restore, who: [principal]}
+  - {from: active, to: ended, by: end, who: [person, principal]}
+  - {from: suspended, to: ended, by: end, who: [principal]}
+""" ;
+        gd:ufo "relator" .
+
+
+###  https://gurudevi.lk/ontology/BondState
+gd:BondState rdf:type owl:Class ;
+             owl:equivalentClass [ rdf:type owl:Class ;
+                                   owl:unionOf ( <https://gurudevi.lk/ontology/BondState#active>
+                                                 <https://gurudevi.lk/ontology/BondState#ended>
+                                                 <https://gurudevi.lk/ontology/BondState#invited>
+                                                 <https://gurudevi.lk/ontology/BondState#suspended>
+                                               )
+                                 ] ;
+             rdfs:label "BondState" ;
+             skos:inScheme <https://gurudevi.lk/ontology> ;
+             linkml:permissible_values <https://gurudevi.lk/ontology/BondState#active> ,
+                                       <https://gurudevi.lk/ontology/BondState#ended> ,
+                                       <https://gurudevi.lk/ontology/BondState#invited> ,
+                                       <https://gurudevi.lk/ontology/BondState#suspended> .
+
+
+###  https://gurudevi.lk/ontology/Capacity
+gd:Capacity rdf:type owl:Class ;
+            owl:equivalentClass [ rdf:type owl:Class ;
+                                  owl:unionOf ( <https://gurudevi.lk/ontology/Capacity#founder>
+                                                <https://gurudevi.lk/ontology/Capacity#guardian>
+                                                <https://gurudevi.lk/ontology/Capacity#principal>
+                                                <https://gurudevi.lk/ontology/Capacity#student>
+                                                <https://gurudevi.lk/ontology/Capacity#teacher>
+                                              )
+                                ] ;
+            rdfs:label "Capacity" ;
+            skos:inScheme <https://gurudevi.lk/ontology> ;
+            linkml:permissible_values <https://gurudevi.lk/ontology/Capacity#founder> ,
+                                      <https://gurudevi.lk/ontology/Capacity#guardian> ,
+                                      <https://gurudevi.lk/ontology/Capacity#principal> ,
+                                      <https://gurudevi.lk/ontology/Capacity#student> ,
+                                      <https://gurudevi.lk/ontology/Capacity#teacher> .
+
+
+###  https://gurudevi.lk/ontology/Enrollment
+gd:Enrollment rdf:type owl:Class ;
+              rdfs:subClassOf gd:Bond ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty gd:academic_year ;
+                                owl:allValuesFrom xsd:integer
+                              ] ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty gd:grade ;
+                                owl:allValuesFrom [ rdf:type rdfs:Datatype ;
+                                                    owl:intersectionOf ( xsd:integer
+                                                                         [ rdf:type rdfs:Datatype ;
+                                                                           owl:onDatatype xsd:integer ;
+                                                                           owl:withRestrictions ( [ xsd:minInclusive 1
+                                                                                                  ]
+                                                                                                )
+                                                                         ]
+                                                                         [ rdf:type rdfs:Datatype ;
+                                                                           owl:onDatatype xsd:integer ;
+                                                                           owl:withRestrictions ( [ xsd:maxInclusive 13
+                                                                                                  ]
+                                                                                                )
+                                                                         ]
+                                                                       )
+                                                  ]
+                              ] ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty gd:academic_year ;
+                                owl:minCardinality "0"^^xsd:nonNegativeInteger
+                              ] ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty gd:grade ;
+                                owl:minCardinality "0"^^xsd:nonNegativeInteger
+                              ] ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty gd:academic_year ;
+                                owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                              ] ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty gd:grade ;
+                                owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                              ] ;
+              rdfs:label "Enrollment" ;
+              skos:definition "A bond in the student capacity, with a grade and year." ;
+              skos:inScheme <https://gurudevi.lk/ontology> ;
+              gd:fixed_capacity "student" ;
+              gd:ufo "relator (subkind of Bond)" .
+
+
+###  https://gurudevi.lk/ontology/Institution
+gd:Institution rdf:type owl:Class ;
+               rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                 owl:onProperty gd:id ;
+                                 owl:allValuesFrom xsd:anyURI
+                               ] ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty gd:name ;
+                                 owl:allValuesFrom xsd:string
+                               ] ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty gd:id ;
+                                 owl:minCardinality "1"^^xsd:nonNegativeInteger
+                               ] ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty gd:name ;
+                                 owl:minCardinality "1"^^xsd:nonNegativeInteger
+                               ] ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty gd:id ;
+                                 owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                               ] ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty gd:name ;
+                                 owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                               ] ;
+               rdfs:label "Institution" ;
+               skos:definition "A school, tuition institute or other organisation people bond with." ;
+               skos:exactMatch schema1:Organization ;
+               skos:inScheme <https://gurudevi.lk/ontology> ;
+               gd:ufo "kind" .
+
+
+###  https://gurudevi.lk/ontology/Person
+gd:Person rdf:type owl:Class ;
+          rdfs:subClassOf [ rdf:type owl:Restriction ;
+                            owl:onProperty gd:display_name ;
+                            owl:allValuesFrom xsd:string
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty gd:id ;
+                            owl:allValuesFrom xsd:anyURI
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty gd:display_name ;
+                            owl:minCardinality "1"^^xsd:nonNegativeInteger
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty gd:id ;
+                            owl:minCardinality "1"^^xsd:nonNegativeInteger
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty gd:display_name ;
+                            owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty gd:id ;
+                            owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                          ] ;
+          rdfs:label "Person" ;
+          skos:definition "One human, one account for a whole life." ;
+          skos:exactMatch schema1:Person ;
+          skos:inScheme <https://gurudevi.lk/ontology> ;
+          gd:ufo "kind" .
+
+
+###  https://gurudevi.lk/ontology/Power
+gd:Power rdf:type owl:Class ;
+         owl:equivalentClass [ rdf:type owl:Class ;
+                               owl:unionOf ( <https://gurudevi.lk/ontology/Power#enrol>
+                                             <https://gurudevi.lk/ontology/Power#invite>
+                                             <https://gurudevi.lk/ontology/Power#mark>
+                                             <https://gurudevi.lk/ontology/Power#view_reports>
+                                           )
+                             ] ;
+         rdfs:label "Power" ;
+         skos:inScheme <https://gurudevi.lk/ontology> ;
+         linkml:permissible_values <https://gurudevi.lk/ontology/Power#enrol> ,
+                                   <https://gurudevi.lk/ontology/Power#invite> ,
+                                   <https://gurudevi.lk/ontology/Power#mark> ,
+                                   <https://gurudevi.lk/ontology/Power#view_reports> .
+
+
+###  https://gurudevi.lk/ontology/BondState#active
+<https://gurudevi.lk/ontology/BondState#active> rdf:type owl:Class ;
+                                                rdfs:subClassOf gd:BondState ;
+                                                rdfs:label "active" .
+
+
+###  https://gurudevi.lk/ontology/BondState#ended
+<https://gurudevi.lk/ontology/BondState#ended> rdf:type owl:Class ;
+                                               rdfs:subClassOf gd:BondState ;
+                                               rdfs:label "ended" .
+
+
+###  https://gurudevi.lk/ontology/BondState#invited
+<https://gurudevi.lk/ontology/BondState#invited> rdf:type owl:Class ;
+                                                 rdfs:subClassOf gd:BondState ;
+                                                 rdfs:label "invited" .
+
+
+###  https://gurudevi.lk/ontology/BondState#suspended
+<https://gurudevi.lk/ontology/BondState#suspended> rdf:type owl:Class ;
+                                                   rdfs:subClassOf gd:BondState ;
+                                                   rdfs:label "suspended" .
+
+
+###  https://gurudevi.lk/ontology/Capacity#founder
+<https://gurudevi.lk/ontology/Capacity#founder> rdf:type owl:Class ;
+                                                rdfs:subClassOf gd:Capacity ;
+                                                rdfs:label "founder" .
+
+
+###  https://gurudevi.lk/ontology/Capacity#guardian
+<https://gurudevi.lk/ontology/Capacity#guardian> rdf:type owl:Class ;
+                                                 rdfs:subClassOf gd:Capacity ;
+                                                 rdfs:label "guardian" .
+
+
+###  https://gurudevi.lk/ontology/Capacity#principal
+<https://gurudevi.lk/ontology/Capacity#principal> rdf:type owl:Class ;
+                                                  rdfs:subClassOf gd:Capacity ;
+                                                  rdfs:label "principal" .
+
+
+###  https://gurudevi.lk/ontology/Capacity#student
+<https://gurudevi.lk/ontology/Capacity#student> rdf:type owl:Class ;
+                                                rdfs:subClassOf gd:Capacity ;
+                                                rdfs:label "student" .
+
+
+###  https://gurudevi.lk/ontology/Capacity#teacher
+<https://gurudevi.lk/ontology/Capacity#teacher> rdf:type owl:Class ;
+                                                rdfs:subClassOf gd:Capacity ;
+                                                rdfs:label "teacher" .
+
+
+###  https://gurudevi.lk/ontology/Power#enrol
+<https://gurudevi.lk/ontology/Power#enrol> rdf:type owl:Class ;
+                                           rdfs:subClassOf gd:Power ;
+                                           rdfs:label "enrol" .
+
+
+###  https://gurudevi.lk/ontology/Power#invite
+<https://gurudevi.lk/ontology/Power#invite> rdf:type owl:Class ;
+                                            rdfs:subClassOf gd:Power ;
+                                            rdfs:label "invite" .
+
+
+###  https://gurudevi.lk/ontology/Power#mark
+<https://gurudevi.lk/ontology/Power#mark> rdf:type owl:Class ;
+                                          rdfs:subClassOf gd:Power ;
+                                          rdfs:label "mark" .
+
+
+###  https://gurudevi.lk/ontology/Power#view_reports
+<https://gurudevi.lk/ontology/Power#view_reports> rdf:type owl:Class ;
+                                                  rdfs:subClassOf gd:Power ;
+                                                  rdfs:label "view_reports" .
+
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  https://gurudevi.lk/ontology/e9
+gd:e9 rdf:type owl:NamedIndividual ,
+               owl:Thing ,
+               gd:Bond ,
+               gd:Enrollment .
+
+
+###  Generated by the OWL API (version 4.5.29) https://github.com/owlcs/owlapi

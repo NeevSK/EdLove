@@ -2,27 +2,17 @@ import { createServer, validateHeaderName, validateHeaderValue } from 'node:http
 import { getRequestListener, RequestError } from '@hono/node-server';
 import type { Router } from '@orpc/server';
 import type { ServerConfig } from './config';
-import { createApp, createRuntimeState } from './core/app';
 import type { APIContext } from './core/context';
 import { router } from './core/router';
 import type { Platform } from './platform';
+import { createServerApp } from './server-app';
 
 export async function startNodeServer(
   config: ServerConfig,
   procedures: Router<APIContext> = router,
   platform?: Platform,
 ) {
-  const state = createRuntimeState();
-  const app = createApp(procedures, {
-    runtimeState: state,
-    timeoutMs: config.API_REQUEST_TIMEOUT_MS,
-    streamingTimeoutMs: config.API_STREAM_TIMEOUT_MS,
-    maxUnknownLengthRequests: config.API_MAX_UNKNOWN_LENGTH_REQUESTS,
-    maxAuthenticationRequests: config.API_MAX_AUTHENTICATION_REQUESTS,
-    maxInFlightRequests: config.API_MAX_IN_FLIGHT_REQUESTS,
-    platform,
-    browserOrigins: config.API_BROWSER_ORIGINS,
-  });
+  const { app, state } = createServerApp(config, procedures, platform);
   // HTTP/2 has a different drain contract and is not an admitted transport here.
   const server = createServer(
     {

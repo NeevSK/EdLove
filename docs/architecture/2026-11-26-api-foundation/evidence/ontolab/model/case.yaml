@@ -1,0 +1,80 @@
+id: https://gurudevi.lk/ontology
+name: gurudevi_case
+title: Shared case - Person, Bond, Authority, Institution, Enrollment
+prefixes:
+  linkml: https://w3id.org/linkml/
+  gd: https://gurudevi.lk/ontology/
+  schema: http://schema.org/
+  prov: http://www.w3.org/ns/prov#
+  gufo: http://purl.org/nemo/gufo#
+default_prefix: gd
+default_range: string
+imports: [linkml:types]
+
+classes:
+  Person:
+    description: One human, one account for a whole life.
+    exact_mappings: [schema:Person]
+    slots: [id, display_name]
+    disjoint_with: [Institution]
+    annotations: {ufo: kind}
+
+  Institution:
+    description: A school, tuition institute or other organisation people bond with.
+    exact_mappings: [schema:Organization]
+    slots: [id, name]
+    annotations: {ufo: kind}
+
+  Bond:
+    description: How a person joins an institution in one capacity. A relator; it exists only while both sides do.
+    slots: [id, person, institution, capacity, state, valid_from, valid_to, recorded_at]
+    slot_usage:
+      valid_to: {required: false}
+    annotations:
+      ufo: relator
+      lifecycle: |
+        state: state
+        within: institution
+        start: invited
+        transitions:
+          - {from: invited, to: active, by: accept, who: [person]}
+          - {from: invited, to: ended, by: decline, who: [person]}
+          - {from: active, to: suspended, by: suspend, who: [principal]}
+          - {from: suspended, to: active, by: restore, who: [principal]}
+          - {from: active, to: ended, by: end, who: [person, principal]}
+          - {from: suspended, to: ended, by: end, who: [principal]}
+
+  Enrollment:
+    is_a: Bond
+    description: A bond in the student capacity, with a grade and year.
+    slots: [grade, academic_year]
+    annotations: {ufo: relator (subkind of Bond), fixed_capacity: student}
+
+  Authority:
+    description: A power a bond grants (mark, enrol, invite...). Never outlives the bond that grants it.
+    slots: [id, granted_by, power, valid_from, valid_to, recorded_at]
+    annotations: {ufo: "normative relator (UFO-C power)"}
+
+slots:
+  id: {identifier: true, range: uriorcurie}
+  display_name: {required: true}
+  name: {required: true}
+  person: {range: Person, required: true, annotations: {ufo: mediation}}
+  institution: {range: Institution, required: true, annotations: {ufo: mediation}}
+  granted_by: {range: Bond, required: true}
+  capacity: {range: Capacity, required: true}
+  state: {range: BondState, required: true}
+  power: {range: Power, required: true}
+  grade: {range: integer, minimum_value: 1, maximum_value: 13}
+  academic_year: {range: integer}
+  valid_from: {range: datetime, required: true, description: When it became true in the world (valid time).}
+  valid_to: {range: datetime, description: When it stopped being true in the world. Empty means still true.}
+  recorded_at: {range: datetime, required: true, slot_uri: prov:generatedAtTime, description: When Gurudevi learned it (transaction time).}
+
+enums:
+  Capacity:
+    permissible_values: {student: {}, teacher: {}, principal: {}, guardian: {}, founder: {}}
+  BondState:
+    permissible_values: {invited: {}, active: {}, suspended: {}, ended: {}}
+  Power:
+    permissible_values: {mark: {}, enrol: {}, invite: {}, view_reports: {}}

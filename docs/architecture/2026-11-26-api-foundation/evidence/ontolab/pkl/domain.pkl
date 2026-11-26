@@ -1,0 +1,2 @@
+amends "Security.pkl"
+approve { id = "enrollment.approve"; kind = "command"; transaction = true; audit = true }

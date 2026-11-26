@@ -1,0 +1,4 @@
+@prefix gd: <https://gurudevi.lk/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+<https://gurudevi.lk/t3> a owl:Ontology .
+gd:oops a gd:Bond , gd:Person .

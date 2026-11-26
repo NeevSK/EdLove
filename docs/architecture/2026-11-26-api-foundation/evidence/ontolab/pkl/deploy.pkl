@@ -1,0 +1,2 @@
+amends "domain.pkl"
+approve { timeout_ms = 3000 }

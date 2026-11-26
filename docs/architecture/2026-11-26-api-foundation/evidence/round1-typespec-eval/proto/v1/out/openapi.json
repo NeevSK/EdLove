@@ -1,0 +1,104 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Portable",
+    "version": "0.0.0"
+  },
+  "tags": [],
+  "paths": {
+    "/lms/attendance/mark": {
+      "post": {
+        "operationId": "lms.attendance.mark",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarkAttendanceResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarkAttendanceRequest"
+              }
+            }
+          }
+        },
+        "x-cedar-action": "Lms::MarkAttendance"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DecimalString": {
+        "type": "string",
+        "description": "Decimal carried as string: proto has no decimal type."
+      },
+      "Mark": {
+        "type": "object",
+        "required": [
+          "studentId",
+          "present"
+        ],
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "present": {
+            "type": "boolean"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "MarkAttendanceRequest": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "marks"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string"
+          },
+          "marks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Mark"
+            }
+          }
+        }
+      },
+      "MarkAttendanceResponse": {
+        "type": "object",
+        "required": [
+          "presentCount",
+          "absentCount",
+          "fee"
+        ],
+        "properties": {
+          "presentCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "absentCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fee": {
+            "$ref": "#/components/schemas/DecimalString"
+          }
+        }
+      }
+    }
+  }
+}

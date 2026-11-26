@@ -1,0 +1,16 @@
+base-T1-1 | {"passed":7,"failed":0,"failures":[]} | checks=1 failed=0 | files=8 added=156
+base-T1-2 | {"passed":7,"failed":0,"failures":[]} | checks=1 failed=0 | files=8 added=163
+base-T2-1 | {"passed":8,"failed":0,"failures":[]} | checks=1 failed=0 | files=8 added=210
+base-T2-2 | {"passed":8,"failed":0,"failures":[]} | checks=4 failed=0 | files=8 added=199
+base-T3-1 | {"passed":7,"failed":0,"failures":[]} | checks=1 failed=0 | files=3 added=61
+base-T3-2 | {"passed":7,"failed":0,"failures":[]} | checks=1 failed=0 | files=3 added=88
+base-T4-1 | {"passed":7,"failed":0,"failures":[]} | checks=2 failed=0 | files=4 added=49
+base-T4-2 | {"passed":7,"failed":0,"failures":[]} | checks=3 failed=2 | files=5 added=19
+cap-T1-1 | {"passed":7,"failed":0,"failures":[]} | checks=1 failed=0 | files=6 added=140
+cap-T1-2 | {"passed":7,"failed":0,"failures":[]} | checks=2 failed=0 | files=7 added=145
+cap-T2-1 | {"passed":8,"failed":0,"failures":[]} | checks=2 failed=0 | files=7 added=198
+cap-T2-2 | {"passed":8,"failed":0,"failures":[]} | checks=2 failed=0 | files=7 added=184
+cap-T3-1 | {"passed":7,"failed":0,"failures":[]} | checks=2 failed=0 | files=3 added=73
+cap-T3-2 | {"passed":7,"failed":0,"failures":[]} | checks=1 failed=0 | files=3 added=73
+cap-T4-1 | {"passed":7,"failed":0,"failures":[]} | checks=2 failed=1 | files=6 added=67
+cap-T4-2 | {"passed":7,"failed":0,"failures":[]} | checks=2 failed=1 | files=5 added=15

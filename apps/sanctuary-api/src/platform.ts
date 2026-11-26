@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { ORPCError } from '@orpc/server';
+import { type ConnectionZenStackDb, createZenStackOnConnection } from '@repo/database/transaction';
 import { check } from '@repo/policies';
 import { Pool, type PoolClient } from 'pg';
 import type { ServerConfig } from './config';
@@ -243,6 +244,21 @@ export function createPlatform(
       signal.throwIfAborted();
       if (result.rowCount !== 1) throw new ORPCError('TOO_MANY_REQUESTS');
     });
+  }
+
+  /**
+   * withAccountData with typed ZenStack queries on the same connection and transaction, so
+   * row-level security, timeouts and verified claims apply exactly as for raw SQL. The raw
+   * client stays available for statements the model doesn't describe.
+   */
+  function withAccountModel<T>(
+    identity: AuthenticatedIdentity,
+    signal: AbortSignal,
+    work: (db: ConnectionZenStackDb, client: PoolClient) => Promise<T>,
+  ): Promise<T> {
+    return withAccountData(identity, signal, (client) =>
+      work(createZenStackOnConnection(client), client),
+    );
   }
 
   async function withAccountData<T>(
@@ -603,6 +619,7 @@ export function createPlatform(
     purgeExpired,
     consumeBudget,
     withAccountData,
+    withAccountModel,
     checkReadiness,
     startMaintenance,
     close: () => {

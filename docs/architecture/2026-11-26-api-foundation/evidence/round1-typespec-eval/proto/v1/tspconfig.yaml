@@ -1,0 +1,4 @@
+emit: ["@typespec/protobuf", "@typespec/openapi3"]
+options:
+  "@typespec/protobuf": { emitter-output-dir: "{project-root}/out" }
+  "@typespec/openapi3": { emitter-output-dir: "{project-root}/out", openapi-versions: ["3.1.0"], file-type: json }

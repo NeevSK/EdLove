@@ -1,0 +1,13 @@
+%% Bond
+stateDiagram-v2
+  [*] --> invited
+  invited --> active: accept (person)
+  invited --> ended: decline (person)
+  active --> ended: end (person, principal, founder)
+  ended --> kept: keep (system)
+%% Assignment
+stateDiagram-v2
+  [*] --> draft
+  draft --> published: publish (teacher)
+  published --> closed: close (teacher, system)
+  closed --> published: reopen (teacher)

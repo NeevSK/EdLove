@@ -1,0 +1,124 @@
+id: https://gurudevi.lk/ontology
+name: gurudevi
+title: Gurudevi ontology (first slice)
+description: What exists in Gurudevi and how each thing comes into being and changes.
+prefixes:
+  linkml: https://w3id.org/linkml/
+  gd: https://gurudevi.lk/ontology/
+  schema: http://schema.org/
+  oneroster: https://purl.imsglobal.org/spec/or/v1p2/
+default_prefix: gd
+default_range: string
+imports: [linkml:types]
+
+classes:
+  Person:
+    description: One human, one account for a whole life. The root of everything.
+    exact_mappings: [schema:Person]
+    slots: [id, display_name, born_on]
+    annotations: {owner: self}
+
+  Entity:
+    abstract: true
+    description: Something a person can join through a bond.
+    slots: [id, name]
+
+  School:
+    is_a: Entity
+    exact_mappings: [oneroster:Org, schema:School]
+    slots: [handle, time_zone]
+    annotations: {owner: institution}
+
+  Classroom:
+    is_a: Entity
+    exact_mappings: [oneroster:Class]
+    slots: [school]
+    annotations: {owner: institution}
+
+  Family:
+    is_a: Entity
+    annotations: {owner: family}
+
+  Bond:
+    description: How a person joins an entity, in one capacity.
+    slots: [id, person, entity, capacity, state, valid_from, valid_to]
+    slot_usage:
+      state: {range: BondState}
+    annotations:
+      owner: institution
+      lifecycle: |
+        state: state
+        within: entity
+        start: invited
+        transitions:
+          - {from: invited, to: active, by: accept, who: [person]}
+          - {from: invited, to: ended, by: decline, who: [person]}
+          - {from: active, to: ended, by: end, who: [person, principal, founder]}
+          - {from: ended, to: kept, by: keep, who: [system]}
+
+  Assignment:
+    description: Work a teacher sets for a classroom.
+    slots: [id, classroom, title, due_at, max_score, stage]
+    annotations:
+      owner: institution
+      area: learning.assignments
+      lifecycle: |
+        state: stage
+        within: classroom
+        start: draft
+        transitions:
+          - {from: draft, to: published, by: publish, who: [teacher]}
+          - {from: published, to: closed, by: close, who: [teacher, system]}
+          - {from: closed, to: published, by: reopen, who: [teacher]}
+
+  Submission:
+    description: A student's answer to an assignment. The student is its author.
+    slots: [id, assignment, student, submitted_at, answer]
+    annotations: {owner: institution, author: student, area: learning.assignments}
+
+slots:
+  id: {identifier: true, range: uriorcurie}
+  name: {required: true}
+  display_name: {}
+  born_on: {range: date}
+  handle: {pattern: "^[a-z0-9-]{1,80}$"}
+  time_zone: {ifabsent: string(Asia/Colombo)}
+  school: {range: School, required: true}
+  classroom: {range: Classroom, required: true}
+  person: {range: Person, required: true}
+  student: {range: Person, required: true}
+  entity: {range: Entity, required: true}
+  assignment: {range: Assignment, required: true}
+  capacity: {range: Capacity, required: true}
+  state: {required: true}
+  valid_from: {range: datetime}
+  valid_to: {range: datetime}
+  title: {required: true}
+  due_at: {range: datetime}
+  max_score: {range: decimal, required: true}
+  submitted_at: {range: datetime, required: true}
+  answer: {required: true}
+  stage: {range: AssignmentStage, required: true}
+
+enums:
+  AssignmentStage:
+    permissible_values: {draft: {}, published: {}, closed: {}}
+  Capacity:
+    permissible_values:
+      student: {}
+      teacher: {}
+      tutor: {}
+      marker: {}
+      guardian: {}
+      principal: {}
+      section_head: {}
+      grade_head: {}
+      founder: {}
+      platform_staff: {}
+  BondState:
+    description: "Ontogeny of a bond: invited -> active -> ended -> kept"
+    permissible_values:
+      invited: {}
+      active: {}
+      ended: {}
+      kept: {description: "Ended, but its history stays readable for the person and the institution"}
