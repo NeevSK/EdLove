@@ -165,6 +165,7 @@ Records documenting the rationale behind core design and architecture choices.
 | [decisions/2026-10-06-quiet-cultivation-and-private-sanctuary-decision.md](decisions/2026-10-06-quiet-cultivation-and-private-sanctuary-decision.md) | Founder decision embracing quiet cultivation, private sanctuary, and de-scoping public open-source/sponsorship overhead |
 | [decisions/2026-10-10-gurudevi-core-ecosystem-manifesto-and-architecture-covenant.md](decisions/2026-10-10-gurudevi-core-ecosystem-manifesto-and-architecture-covenant.md) | Core definition covenant: Convivial sanctuary, Firefly companion, integrated educational ecosystem, agentic leverage, and local-first physics |
 | [decisions/2026-10-10-sovereign-inter-institutional-mesh-and-uplink-strategy.md](decisions/2026-10-10-sovereign-inter-institutional-mesh-and-uplink-strategy.md) | Sovereign Inter-Institutional Mesh & Remote Uplink Strategy: Physical Layer-Local P2P vs. Obfuscated Remote Overlays (Outline & Headscale) |
+| [decisions/2026-11-26-api-contract-and-backend-direction.md](decisions/2026-11-26-api-contract-and-backend-direction.md) | Proposed: API stays TypeScript + oRPC contract as one source, generated OpenAPI projection, HTTP fixtures; Rust only as Wasm library on a named trigger |
 
 ---
 
