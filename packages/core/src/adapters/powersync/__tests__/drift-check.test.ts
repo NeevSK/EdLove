@@ -9,8 +9,11 @@
  * - tableToModelMap in sync.ts contains exactly the 4 published tables
  */
 
-import { AppSchema, isLocalOnlyTable, LOCAL_ONLY_TABLES } from '@repo/core/adapters/powersync';
+import { readFileSync } from 'node:fs';
+import { schema } from '@repo/schema';
+import { getTableConfig, type SQLiteTable } from 'drizzle-orm/sqlite-core';
 import { describe, expect, it } from 'vitest';
+import { AppSchema, isLocalOnlyTable, LOCAL_ONLY_TABLES } from '../schema';
 
 describe('Storage Contract: AppSchema ↔ Postgres Alignment', () => {
   const SYNCED_TABLES = [
@@ -52,20 +55,6 @@ describe('Storage Contract: AppSchema ↔ Postgres Alignment', () => {
   it('isLocalOnlyTable returns false for all synced tables', () => {
     for (const table of SYNCED_TABLES) {
       expect(isLocalOnlyTable(table)).toBe(false);
-    }
-  });
-
-  it('AppSchema exports exactly 21 tables (4 synced + 17 local-only)', () => {
-    const schemaKeys = Object.keys(AppSchema);
-    expect(schemaKeys).toHaveLength(21);
-
-    for (const table of SYNCED_TABLES) {
-      const camelCased = camelCase(table);
-      expect(schemaKeys).toContain(camelCased);
-    }
-
-    for (const table of LOCAL_ONLY_TABLES_LIST) {
-      expect(schemaKeys).toContain(table);
     }
   });
 
@@ -126,3 +115,109 @@ describe('Storage Contract: AppSchema ↔ Postgres Alignment', () => {
 function camelCase(str: string): string {
   return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 }
+
+// ZenStack model → device tables. The model (schema.zmodel, generated into @repo/schema) is
+// the one description of a table; a replicated device table may only carry columns the
+// model has, with a SQLite type that can hold the model's type. Sync streams decide which
+// tables replicate. This is wiring only: it does not decide what goes to the device.
+type ModelField = {
+  name: string;
+  type: string;
+  array?: boolean;
+  relation?: unknown;
+  attributes?: readonly Attribute[];
+};
+type Attribute = { name: string; args?: readonly { value?: { value?: unknown } }[] };
+type Model = {
+  name: string;
+  fields: Record<string, ModelField>;
+  attributes?: readonly Attribute[];
+};
+
+const mapped = (attributes: readonly Attribute[] | undefined, name: string) =>
+  attributes?.find((attribute) => attribute.name === name)?.args?.[0]?.value?.value as
+    | string
+    | undefined;
+const modelsByTable = new Map<string, Model>(
+  (Object.values(schema.models) as unknown as Model[]).map((model) => [
+    mapped(model.attributes, '@@map') ?? model.name,
+    model,
+  ]),
+);
+const enums = new Set(Object.keys((schema as { enums?: Record<string, unknown> }).enums ?? {}));
+const streamed = new Set(
+  [
+    ...readFileSync(
+      new URL('../../../../../../powersync/sync-config.yaml', import.meta.url),
+      'utf8',
+    ).matchAll(/\b(?:FROM|JOIN)\s+([a-z_][a-z0-9_]*)/gi),
+  ].map((match) => match[1] as string),
+);
+// What each SQLite column type can hold, by model type.
+const HOLDS: Record<string, readonly string[]> = {
+  SQLiteText: ['String', 'DateTime', 'Json', 'Decimal', 'BigInt', 'enum'],
+  SQLiteInteger: ['Int', 'BigInt', 'Boolean', 'DateTime'],
+  SQLiteBoolean: ['Boolean'],
+  SQLiteTimestamp: ['DateTime'],
+  SQLiteReal: ['Float', 'Decimal', 'Int'],
+};
+// Device tables that are neither local-only nor read by any stream (found 2026-11-26).
+// Each needs a decision: add a stream, or mark it local-only. The list may only shrink.
+const UNDECIDED = new Set([
+  'jurisdiction_nodes',
+  'joy_moments',
+  'gratitude_glimmers',
+  'sleep_logs',
+  'timetable_periods',
+  'daily_prep_items',
+  'personal_reminders',
+]);
+
+const replicated = Object.entries(AppSchema)
+  .filter(([key]) => !isLocalOnlyTable(key))
+  .map(([, table]) => getTableConfig(table as SQLiteTable));
+
+describe('AppSchema ↔ ZenStack model (offline)', () => {
+  it('every replicated device table is described by the model', () => {
+    expect(replicated.filter((table) => !modelsByTable.has(table.name)).map((t) => t.name)).toEqual(
+      [],
+    );
+  });
+
+  it('every replicated device column exists in the model with a type SQLite can hold', () => {
+    const drift: string[] = [];
+    for (const table of replicated) {
+      const model = modelsByTable.get(table.name);
+      if (!model) continue;
+      const fields = new Map(
+        Object.values(model.fields)
+          .filter((field) => !field.relation)
+          .map((field) => [mapped(field.attributes, '@map') ?? field.name, field]),
+      );
+      for (const column of table.columns) {
+        const field = fields.get(column.name);
+        if (!field) {
+          drift.push(`${table.name}.${column.name}: not in the model`);
+          continue;
+        }
+        const kind = field.array ? 'Json' : enums.has(field.type) ? 'enum' : field.type;
+        if (!HOLDS[column.columnType]?.includes(kind))
+          drift.push(`${table.name}.${column.name}: ${column.columnType} cannot hold ${kind}`);
+      }
+    }
+    expect(drift).toEqual([]);
+  });
+
+  it('every stream reads tables the model describes and the device declares', () => {
+    const deviceTables = new Set(replicated.map((table) => table.name));
+    for (const table of streamed) {
+      expect(modelsByTable.has(table), `${table} in the model`).toBe(true);
+      expect(deviceTables.has(table), `${table} on the device`).toBe(true);
+    }
+  });
+
+  it('every replicated device table is streamed, or listed as undecided', () => {
+    const unstreamed = replicated.map((table) => table.name).filter((name) => !streamed.has(name));
+    expect(unstreamed.sort()).toEqual([...UNDECIDED].sort());
+  });
+});

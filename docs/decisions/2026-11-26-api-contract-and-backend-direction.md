@@ -78,3 +78,32 @@ was checked against `integrate/nov-convergence` (`5a466cd5e`, which contains
 | Hosting | Always-on instance, same region as the database (Singapore) | `render.yaml` still `plan: free`, `region: singapore` | Cloud Run (min instances) or a paid Render plan both work |
 | Rust | Selective computational engine only, as a Wasm library first | No `Cargo.toml` on any branch | Bake-off before the first one |
 | Protobuf/Connect | Available for future interoperable services | None | |
+
+## Built after the final round (2026-11-26)
+
+**Bun, without touching Node.** `src/index.ts` now boots the authenticated foundation under
+Bun (it used to refuse `API_AUTHENTICATION=required`). Both runtimes build the app in one place
+(`src/server-app.ts`); `src/bun-server.ts` keeps the Node adapter's drain, deadline,
+stream-failure and port-collision rules. `pnpm test:bun` runs the foundation suite inside Bun
+plus Bun copies of the socket tests. Node stays the production entry (Dockerfile unchanged).
+Still to prove under Bun: the G2 database suite (`test:database`, needs Doppler) and
+`Server-Timing` before/after.
+
+**Effect v4 with the API: yes, bounded.** oRPC stays the boundary and Zod the contract. Effect
+fits inside procedures and the platform where it pays: the per-request transaction (acquire,
+claims, commit or rollback as one scoped resource), retries and timeouts on outside calls, and
+the maintenance loop. `@orpc/effect` (same beta as `@orpc/*`) can wrap a procedure when one
+needs it. Not in handler signatures or the contract.
+
+**ZenStack + Zod as the one description of tables: wiring only.**
+
+| Wire | What exists now | Proof |
+| --- | --- | --- |
+| API → ZenStack | `createZenStackOnConnection(client)` in `@repo/database`; `platform.withAccountModel` gives typed ZenStack queries on the API's own transaction. Row-level security, timeouts and claims apply as for raw SQL; ZenStack's own transactions become savepoints; no policy plugin (RLS + Cedar decide) | `packages/database/src/transaction.test.ts` on a real Postgres: RLS holds, inner rollback stays inner, caller owns commit. ~1 ms to build a client |
+| ZenStack → device (PowerSync) | `drift-check.test.ts` reads the model from `@repo/schema` and the tables from `powersync/sync-config.yaml`: every replicated device column must exist in the model with a SQLite type that can hold it; every stream must read a table the model and device both declare | Passes today. 7 device tables are neither local-only nor streamed (`jurisdiction_nodes`, `joy_moments`, `gratitude_glimmers`, `sleep_logs`, `timetable_periods`, `daily_prep_items`, `personal_reminders`); listed as undecided, the list may only shrink |
+| ZenStack → Zod → contract | `makeModelSchema` already derives Zod from the model; the v1 contract still writes its own Zod | Not wired yet: the contract ships to the phone, so it needs generated static Zod, not ZenStack's runtime factory |
+
+Open for Neev: with the model as the one description of tables, SQL migrations still own
+row-level security, functions, grants and `pg_cron` (2026-11-11). Whether migrations for
+tables and columns are then generated from the model (`zen migrate`) or written by hand and
+checked against it is the next choice.

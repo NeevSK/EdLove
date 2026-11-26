@@ -24,10 +24,13 @@
     "@orpc/contract": "2.0.0-beta.53",
     "@orpc/server": "2.0.0-beta.53",
     "@repo/core": "workspace:*",
+    "@repo/database": "workspace:*",
     "@repo/policies": "workspace:*",
+    "@repo/schema": "workspace:*",
     "effect": "^4.1.5",
     "hono": "5.0.0-rc.1",
     "jose": "6.2.18",
+    "kysely": "0.29.9",
     "pg": "^8.23.1",
     "zod": "4.6.7"
   },
