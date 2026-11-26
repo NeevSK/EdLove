@@ -85,6 +85,32 @@ A useful detail: the v1 contract is already plain-JSON-shaped. Dates are ISO str
 (`z.iso.datetime()`), times are integers, there are no `Date`, `BigInt`, `Map` or `Set` values.
 So the RPC format's extra type metadata buys nothing today, and an OpenAPI projection is lossless.
 
+## 3b. Where response time goes (added after Neev's latency concern)
+
+Almost all of a call's time is network and hosting, not code. Read from the code; round-trip
+times are estimates until measured with `Server-Timing`.
+
+| Cost | Where | Rough size |
+| --- | --- | --- |
+| API in Singapore, database in Mumbai | `render.yaml` (`region: singapore`); production pooler `aws-1-ap-south-1` (per `docs/archive/.../oss-public-release-security-checklist.md`) | ~60 ms per database round trip (estimate) |
+| Identity check | `security.authenticate` | 1 round trip |
+| Per-minute budget | `platform.consumeBudget` (begin, insert, commit) | 3 round trips |
+| Handler transaction | `withAccountData`: begin, timeouts, identity re-check (2), claims, role, query, commit | ~8 round trips |
+| Free Render plan | `render.yaml` (`plan: free`) | Sleeps after ~15 min idle, ~1 min to wake, 0.1 CPU |
+| Node + Hono + oRPC work | `app.ts`, `router.ts` | A few ms: the most Rust could save |
+
+Standard fixes, in order: measure each phase with a `Server-Timing` header; put the API and the
+database in the same city; use an always-on instance; fold identity, budget and claims into one
+database call (about 12 round trips down to 2 or 3).
+
+If Rust were adopted: server, middleware, contract types, Cedar, JSON and tracing come from crates
+or generation (glue cheap models handle reasonably). JWT/JWKS, signing, transaction setup, error
+mapping and the operations store are hand-written and security-critical. Timeouts, draining and
+cancellation are hand-written async, where LLMs do worst in Rust. No published data exists on
+Gemini Flash-class models in Rust, so the proposal is a bake-off: the same small task
+(`identity.session` + auth) in TypeScript and Rust by a cheap model, checked by the same HTTP
+fixtures, counting attempts, compile time and pass rate.
+
 ## 4. Backend language
 
 What decides it, in Gurudevi's case:
