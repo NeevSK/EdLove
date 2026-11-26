@@ -198,3 +198,4 @@ apps/gurudevi-mobile/reports/
 
 # Pinned ontology tools (ontology/tools/install.sh)
 .ontology-tools/
+!ontology/tools/requirements.lock.txt
