@@ -1,0 +1,10 @@
+class Capability {
+  id: String
+  kind: "query"|"command"
+  transaction: Boolean = false
+  audit: Boolean = false
+  authenticated: Boolean(this) = true
+  timeout_ms: Int(isBetween(1, 5000)) = 3000
+}
+typealias Checked = Capability(kind != "command" || (transaction && audit))
+approve: Checked

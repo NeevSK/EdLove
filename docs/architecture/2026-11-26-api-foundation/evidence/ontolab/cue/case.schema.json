@@ -1,0 +1,238 @@
+{
+    "$defs": {
+        "Authority": {
+            "additionalProperties": false,
+            "description": "A power a bond grants (mark, enrol, invite...). Never outlives the bond that grants it.",
+            "properties": {
+                "granted_by": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "power": {
+                    "$ref": "#/$defs/Power"
+                },
+                "recorded_at": {
+                    "description": "When Gurudevi learned it (transaction time).",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "valid_from": {
+                    "description": "When it became true in the world (valid time).",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "valid_to": {
+                    "description": "When it stopped being true in the world. Empty means still true.",
+                    "format": "date-time",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "id",
+                "granted_by",
+                "power",
+                "valid_from",
+                "recorded_at"
+            ],
+            "title": "Authority",
+            "type": "object"
+        },
+        "Bond": {
+            "additionalProperties": false,
+            "description": "How a person joins an institution in one capacity. A relator; it exists only while both sides do.",
+            "properties": {
+                "capacity": {
+                    "$ref": "#/$defs/Capacity"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "institution": {
+                    "type": "string"
+                },
+                "person": {
+                    "type": "string"
+                },
+                "recorded_at": {
+                    "description": "When Gurudevi learned it (transaction time).",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "state": {
+                    "$ref": "#/$defs/BondState"
+                },
+                "valid_from": {
+                    "description": "When it became true in the world (valid time).",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "valid_to": {
+                    "description": "When it stopped being true in the world. Empty means still true.",
+                    "format": "date-time",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "id",
+                "person",
+                "institution",
+                "capacity",
+                "state",
+                "valid_from",
+                "recorded_at"
+            ],
+            "title": "Bond",
+            "type": "object"
+        },
+        "BondState": {
+            "description": "",
+            "enum": [
+                "invited",
+                "active",
+                "suspended",
+                "ended"
+            ],
+            "title": "BondState",
+            "type": "string"
+        },
+        "Capacity": {
+            "description": "",
+            "enum": [
+                "student",
+                "teacher",
+                "principal",
+                "guardian",
+                "founder"
+            ],
+            "title": "Capacity",
+            "type": "string"
+        },
+        "Enrollment": {
+            "additionalProperties": false,
+            "description": "A bond in the student capacity, with a grade and year.",
+            "properties": {
+                "academic_year": {
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "capacity": {
+                    "$ref": "#/$defs/Capacity"
+                },
+                "grade": {
+                    "maximum": 13,
+                    "minimum": 1,
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "institution": {
+                    "type": "string"
+                },
+                "person": {
+                    "type": "string"
+                },
+                "recorded_at": {
+                    "description": "When Gurudevi learned it (transaction time).",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "state": {
+                    "$ref": "#/$defs/BondState"
+                },
+                "valid_from": {
+                    "description": "When it became true in the world (valid time).",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "valid_to": {
+                    "description": "When it stopped being true in the world. Empty means still true.",
+                    "format": "date-time",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "id",
+                "person",
+                "institution",
+                "capacity",
+                "state",
+                "valid_from",
+                "recorded_at"
+            ],
+            "title": "Enrollment",
+            "type": "object"
+        },
+        "Institution": {
+            "additionalProperties": false,
+            "description": "A school, tuition institute or other organisation people bond with.",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "name"
+            ],
+            "title": "Institution",
+            "type": "object"
+        },
+        "Person": {
+            "additionalProperties": false,
+            "description": "One human, one account for a whole life.",
+            "properties": {
+                "display_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "display_name"
+            ],
+            "title": "Person",
+            "type": "object"
+        },
+        "Power": {
+            "description": "",
+            "enum": [
+                "mark",
+                "enrol",
+                "invite",
+                "view_reports"
+            ],
+            "title": "Power",
+            "type": "string"
+        }
+    },
+    "$id": "https://gurudevi.lk/ontology",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "additionalProperties": true,
+    "metamodel_version": "1.12.0",
+    "title": "gurudevi_case",
+    "type": "object",
+    "version": null
+}
+

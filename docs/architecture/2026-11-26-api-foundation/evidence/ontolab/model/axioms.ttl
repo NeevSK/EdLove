@@ -1,0 +1,9 @@
+@prefix gd: <https://gurudevi.lk/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix gufo: <http://purl.org/nemo/gufo#> .
+<https://gurudevi.lk/axioms> a owl:Ontology .
+gd:Person owl:disjointWith gd:Institution .
+gd:Person rdfs:subClassOf gufo:FunctionalComplex . gd:Institution rdfs:subClassOf gufo:FunctionalComplex .
+gd:Bond rdfs:subClassOf gufo:Relator . gd:Authority rdfs:subClassOf gufo:Relator .
+gufo:Relator owl:disjointWith gufo:FunctionalComplex .

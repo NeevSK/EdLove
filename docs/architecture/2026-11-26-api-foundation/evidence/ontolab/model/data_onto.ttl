@@ -1,0 +1,30 @@
+<https://gurudevi.lk/data> a <http://www.w3.org/2002/07/owl#Ontology> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix gd: <https://gurudevi.lk/ontology/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+gd:nimal a gd:Person ; gd:id gd:nimal ; gd:display_name "Nimal" .
+gd:sita a gd:Person ; gd:id gd:sita ; gd:display_name "Sita" .
+gd:royal a gd:Institution ; gd:id gd:royal ; gd:name "Royal College" .
+
+# good: Nimal taught 2024-2025, his marking power ended with the bond
+gd:b1 a gd:Bond ; gd:id gd:b1 ; gd:person gd:nimal ; gd:institution gd:royal ; gd:capacity "teacher" ; gd:state "ended" ;
+  gd:valid_from "2024-01-10T00:00:00+05:30"^^xsd:dateTime ; gd:valid_to "2025-12-31T00:00:00+05:30"^^xsd:dateTime ;
+  prov:generatedAtTime "2024-01-09T10:00:00+05:30"^^xsd:dateTime .
+gd:a1 a gd:Authority ; gd:id gd:a1 ; gd:granted_by gd:b1 ; gd:power "mark" ;
+  gd:valid_from "2024-01-10T00:00:00+05:30"^^xsd:dateTime ; gd:valid_to "2025-12-31T00:00:00+05:30"^^xsd:dateTime ;
+  prov:generatedAtTime "2024-01-09T10:00:00+05:30"^^xsd:dateTime .
+
+# BAD 1: authority still open after the bond ended
+gd:a2 a gd:Authority ; gd:id gd:a2 ; gd:granted_by gd:b1 ; gd:power "mark" ;
+  gd:valid_from "2024-02-01T00:00:00+05:30"^^xsd:dateTime ; prov:generatedAtTime "2024-02-01T10:00:00+05:30"^^xsd:dateTime .
+# BAD 2: teacher bond granting enrol power
+gd:a3 a gd:Authority ; gd:id gd:a3 ; gd:granted_by gd:b1 ; gd:power "enrol" ;
+  gd:valid_from "2024-02-01T00:00:00+05:30"^^xsd:dateTime ; gd:valid_to "2024-03-01T00:00:00+05:30"^^xsd:dateTime ;
+  prov:generatedAtTime "2024-02-01T10:00:00+05:30"^^xsd:dateTime .
+# BAD 3: enrollment in teacher capacity, ended without an end date, grade 14
+gd:e1 a gd:Enrollment ; gd:id gd:e1 ; gd:person gd:sita ; gd:institution gd:royal ; gd:capacity "teacher" ; gd:state "ended" ;
+  gd:grade 14 ; gd:academic_year 2026 ;
+  gd:valid_from "2026-01-05T00:00:00+05:30"^^xsd:dateTime ; prov:generatedAtTime "2026-01-05T09:00:00+05:30"^^xsd:dateTime .
+# BAD 4: bond with no person, state not in enum
+gd:b2 a gd:Bond ; gd:id gd:b2 ; gd:institution gd:royal ; gd:capacity "principal" ; gd:state "archived" ;
+  gd:valid_from "2026-01-05T00:00:00+05:30"^^xsd:dateTime ; prov:generatedAtTime "2026-01-05T09:00:00+05:30"^^xsd:dateTime .

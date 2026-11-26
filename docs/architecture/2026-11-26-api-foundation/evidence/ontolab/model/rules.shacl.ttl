@@ -1,0 +1,31 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix gd: <https://gurudevi.lk/ontology/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+gd: sh:declare [ sh:prefix "gd" ; sh:namespace "https://gurudevi.lk/ontology/"^^xsd:anyURI ] .
+
+gd:AuthorityWithinBond a sh:NodeShape ; sh:targetClass gd:Authority ;
+  sh:sparql [ sh:prefixes gd: ;
+    sh:message "Authority outlives the bond that grants it" ;
+    sh:select """SELECT $this WHERE {
+      $this gd:granted_by ?b .
+      OPTIONAL { $this gd:valid_to ?at }
+      ?b gd:valid_to ?bt .
+      FILTER (!BOUND(?at) || ?at > ?bt) }""" ] ;
+  sh:sparql [ sh:prefixes gd: ;
+    sh:message "Authority starts before its bond starts" ;
+    sh:select """SELECT $this WHERE { $this gd:granted_by ?b ; gd:valid_from ?af . ?b gd:valid_from ?bf . FILTER (?af < ?bf) }""" ] ;
+  sh:sparql [ sh:prefixes gd: ;
+    sh:message "This capacity cannot grant this power" ;
+    sh:select """SELECT $this WHERE { $this gd:granted_by ?b ; gd:power ?p . ?b gd:capacity ?c .
+      FILTER (CONCAT(?c, ":", ?p) NOT IN ("teacher:mark", "principal:enrol", "principal:invite",
+        "principal:view_reports", "founder:enrol", "founder:invite", "guardian:view_reports")) }""" ] .
+
+gd:EnrollmentIsStudent a sh:NodeShape ; sh:targetClass gd:Enrollment ;
+  sh:property [ sh:path gd:capacity ; sh:hasValue "student" ; sh:message "An enrollment is always a student bond" ] .
+
+gd:IntervalOrder a sh:NodeShape ; sh:targetSubjectsOf gd:valid_to ;
+  sh:property [ sh:path gd:valid_from ; sh:lessThanOrEquals gd:valid_to ; sh:message "valid_to is before valid_from" ] .
+
+gd:EndedHasEnd a sh:NodeShape ; sh:targetClass gd:Bond, gd:Enrollment ;
+  sh:sparql [ sh:prefixes gd: ; sh:message "An ended bond must say when it ended (valid_to)" ;
+    sh:select """SELECT $this WHERE { $this gd:state "ended" . FILTER NOT EXISTS { $this gd:valid_to ?t } }""" ] .

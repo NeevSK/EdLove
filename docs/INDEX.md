@@ -2,7 +2,7 @@
 title: "Documentation Index"
 status: "active"
 created: 2026-06-26
-updated: 2026-10-23
+updated: 2026-11-26
 author: "Naveen"
 scribe: "Antigravity"
 tags: [docs, index, changelog]
@@ -167,6 +167,8 @@ Records documenting the rationale behind core design and architecture choices.
 | [decisions/2026-10-10-gurudevi-core-ecosystem-manifesto-and-architecture-covenant.md](decisions/2026-10-10-gurudevi-core-ecosystem-manifesto-and-architecture-covenant.md) | Core definition covenant: Convivial sanctuary, Firefly companion, integrated educational ecosystem, agentic leverage, and local-first physics |
 | [decisions/2026-10-10-sovereign-inter-institutional-mesh-and-uplink-strategy.md](decisions/2026-10-10-sovereign-inter-institutional-mesh-and-uplink-strategy.md) | Sovereign Inter-Institutional Mesh & Remote Uplink Strategy: Physical Layer-Local P2P vs. Obfuscated Remote Overlays (Outline & Headscale) |
 | [decisions/2026-11-26-api-contract-and-backend-direction.md](decisions/2026-11-26-api-contract-and-backend-direction.md) | Proposed: API stays TypeScript + oRPC contract as one source, generated OpenAPI projection, HTTP fixtures; Rust only as Wasm library on a named trigger |
+| [decisions/2026-11-26-gurudevi-tool-selection.md](decisions/2026-11-26-gurudevi-tool-selection.md) | Gurudevi tool selection: LinkML ontology as one source + own generator; CUE obligations; Cedar; TypeSpec; Alloy 6 and TLA+ checks; what is left out |
+| [architecture/2026-11-26-api-foundation/README.md](architecture/2026-11-26-api-foundation/README.md) | API foundation research 2026-11-26: five exported docs and all evaluation evidence (TypeSpec rounds 1-2, ontology tools on one case) |
 
 ---
 

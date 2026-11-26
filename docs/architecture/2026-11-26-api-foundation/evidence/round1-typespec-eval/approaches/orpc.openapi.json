@@ -1,0 +1,801 @@
+{
+ "info": {
+  "title": "orpc",
+  "version": "1"
+ },
+ "openapi": "3.1.0",
+ "components": {
+  "schemas": {
+   "UndefinedError": {
+    "title": "UndefinedError",
+    "type": "object",
+    "properties": {
+     "defined": {
+      "const": false
+     },
+     "code": {
+      "type": "string"
+     },
+     "message": {
+      "type": "string"
+     },
+     "data": {}
+    },
+    "required": [
+     "defined",
+     "code",
+     "message"
+    ]
+   },
+   "NotFound": {
+    "title": "NOT_FOUND",
+    "type": "object",
+    "properties": {
+     "defined": {
+      "const": true
+     },
+     "code": {
+      "const": "NOT_FOUND"
+     },
+     "message": {
+      "type": "string"
+     },
+     "data": {}
+    },
+    "required": [
+     "defined",
+     "code",
+     "message"
+    ]
+   },
+   "Forbidden": {
+    "title": "FORBIDDEN",
+    "type": "object",
+    "properties": {
+     "defined": {
+      "const": true
+     },
+     "code": {
+      "const": "FORBIDDEN"
+     },
+     "message": {
+      "type": "string"
+     },
+     "data": {}
+    },
+    "required": [
+     "defined",
+     "code",
+     "message"
+    ]
+   },
+   "Conflict": {
+    "title": "CONFLICT",
+    "type": "object",
+    "properties": {
+     "defined": {
+      "const": true
+     },
+     "code": {
+      "const": "CONFLICT"
+     },
+     "message": {
+      "type": "string"
+     },
+     "data": {}
+    },
+    "required": [
+     "defined",
+     "code",
+     "message"
+    ]
+   }
+  }
+ },
+ "paths": {
+  "/lms/assignments/list": {
+   "post": {
+    "operationId": "lms.assignments.list",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "classroomId": {
+          "type": "string"
+         },
+         "cursor": {
+          "type": "string"
+         },
+         "limit": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+         }
+        },
+        "required": [
+         "classroomId"
+        ],
+        "additionalProperties": false
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "items": {
+           "type": "array",
+           "items": {
+            "type": "object",
+            "properties": {
+             "id": {
+              "type": "string"
+             },
+             "classroomId": {
+              "type": "string"
+             },
+             "title": {
+              "type": "string"
+             },
+             "dueAt": {
+              "anyOf": [
+               {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+               },
+               {
+                "type": "null"
+               }
+              ]
+             },
+             "maxScore": {
+              "type": "string",
+              "pattern": "^-?[0-9]+(\\.[0-9]{1,4})?$"
+             }
+            },
+            "required": [
+             "id",
+             "classroomId",
+             "title",
+             "dueAt",
+             "maxScore"
+            ],
+            "additionalProperties": false
+           }
+          },
+          "nextCursor": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "items"
+         ],
+         "additionalProperties": false
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "403",
+      "content": {
+       "application/json": {
+        "schema": {
+         "oneOf": [
+          {
+           "$ref": "#/components/schemas/Forbidden"
+          },
+          {
+           "$ref": "#/components/schemas/UndefinedError"
+          }
+         ]
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "404",
+      "content": {
+       "application/json": {
+        "schema": {
+         "oneOf": [
+          {
+           "$ref": "#/components/schemas/NotFound"
+          },
+          {
+           "$ref": "#/components/schemas/UndefinedError"
+          }
+         ]
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/lms/submissions/grade": {
+   "post": {
+    "operationId": "lms.submissions.grade",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "submissionId": {
+          "type": "string"
+         },
+         "score": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(\\.[0-9]{1,4})?$"
+         },
+         "feedback": {
+          "type": [
+           "string",
+           "null"
+          ]
+         }
+        },
+        "required": [
+         "submissionId",
+         "score"
+        ],
+        "additionalProperties": false
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "submissionId": {
+           "type": "string"
+          },
+          "score": {
+           "type": "string",
+           "pattern": "^-?[0-9]+(\\.[0-9]{1,4})?$"
+          },
+          "feedback": {
+           "type": [
+            "string",
+            "null"
+           ]
+          }
+         },
+         "required": [
+          "submissionId",
+          "score",
+          "feedback"
+         ],
+         "additionalProperties": false
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "403",
+      "content": {
+       "application/json": {
+        "schema": {
+         "oneOf": [
+          {
+           "$ref": "#/components/schemas/Forbidden"
+          },
+          {
+           "$ref": "#/components/schemas/UndefinedError"
+          }
+         ]
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "404",
+      "content": {
+       "application/json": {
+        "schema": {
+         "oneOf": [
+          {
+           "$ref": "#/components/schemas/NotFound"
+          },
+          {
+           "$ref": "#/components/schemas/UndefinedError"
+          }
+         ]
+        }
+       }
+      }
+     },
+     "409": {
+      "description": "409",
+      "content": {
+       "application/json": {
+        "schema": {
+         "oneOf": [
+          {
+           "$ref": "#/components/schemas/Conflict"
+          },
+          {
+           "$ref": "#/components/schemas/UndefinedError"
+          }
+         ]
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/erp/invoices/create": {
+   "post": {
+    "operationId": "erp.invoices.create",
+    "parameters": [
+     {
+      "in": "header",
+      "name": "idempotency-key",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "studentId": {
+          "type": "string"
+         },
+         "currency": {
+          "type": "string",
+          "enum": [
+           "LKR",
+           "USD"
+          ]
+         },
+         "lines": {
+          "type": "array",
+          "items": {
+           "type": "object",
+           "properties": {
+            "description": {
+             "type": "string"
+            },
+            "quantity": {
+             "type": "integer",
+             "minimum": -2147483648,
+             "maximum": 2147483647
+            },
+            "unitPrice": {
+             "type": "string",
+             "pattern": "^-?[0-9]+(\\.[0-9]{1,4})?$"
+            }
+           },
+           "required": [
+            "description",
+            "quantity",
+            "unitPrice"
+           ],
+           "additionalProperties": false
+          }
+         },
+         "payment": {
+          "oneOf": [
+           {
+            "type": "object",
+            "properties": {
+             "kind": {
+              "type": "string",
+              "const": "cash"
+             },
+             "receivedBy": {
+              "type": "string"
+             }
+            },
+            "required": [
+             "kind",
+             "receivedBy"
+            ],
+            "additionalProperties": false
+           },
+           {
+            "type": "object",
+            "properties": {
+             "kind": {
+              "type": "string",
+              "const": "bank"
+             },
+             "reference": {
+              "type": "string"
+             },
+             "bankCode": {
+              "type": "string"
+             }
+            },
+            "required": [
+             "kind",
+             "reference",
+             "bankCode"
+            ],
+            "additionalProperties": false
+           }
+          ]
+         }
+        },
+        "required": [
+         "studentId",
+         "currency",
+         "lines"
+        ],
+        "additionalProperties": false
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "id": {
+           "type": "string"
+          },
+          "total": {
+           "type": "string",
+           "pattern": "^-?[0-9]+(\\.[0-9]{1,4})?$"
+          },
+          "lines": {
+           "type": "array",
+           "items": {
+            "type": "object",
+            "properties": {
+             "description": {
+              "type": "string"
+             },
+             "quantity": {
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
+             },
+             "unitPrice": {
+              "type": "string",
+              "pattern": "^-?[0-9]+(\\.[0-9]{1,4})?$"
+             }
+            },
+            "required": [
+             "description",
+             "quantity",
+             "unitPrice"
+            ],
+            "additionalProperties": false
+           }
+          },
+          "payment": {
+           "anyOf": [
+            {
+             "oneOf": [
+              {
+               "type": "object",
+               "properties": {
+                "kind": {
+                 "type": "string",
+                 "const": "cash"
+                },
+                "receivedBy": {
+                 "type": "string"
+                }
+               },
+               "required": [
+                "kind",
+                "receivedBy"
+               ],
+               "additionalProperties": false
+              },
+              {
+               "type": "object",
+               "properties": {
+                "kind": {
+                 "type": "string",
+                 "const": "bank"
+                },
+                "reference": {
+                 "type": "string"
+                },
+                "bankCode": {
+                 "type": "string"
+                }
+               },
+               "required": [
+                "kind",
+                "reference",
+                "bankCode"
+               ],
+               "additionalProperties": false
+              }
+             ]
+            },
+            {
+             "type": "null"
+            }
+           ]
+          }
+         },
+         "required": [
+          "id",
+          "total",
+          "lines",
+          "payment"
+         ],
+         "additionalProperties": false
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "403",
+      "content": {
+       "application/json": {
+        "schema": {
+         "oneOf": [
+          {
+           "$ref": "#/components/schemas/Forbidden"
+          },
+          {
+           "$ref": "#/components/schemas/UndefinedError"
+          }
+         ]
+        }
+       }
+      }
+     },
+     "409": {
+      "description": "409",
+      "content": {
+       "application/json": {
+        "schema": {
+         "oneOf": [
+          {
+           "$ref": "#/components/schemas/Conflict"
+          },
+          {
+           "$ref": "#/components/schemas/UndefinedError"
+          }
+         ]
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/people/profiles/update": {
+   "post": {
+    "operationId": "people.profiles.update",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "personId": {
+          "type": "string"
+         },
+         "preferredName": {
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "phone": {
+          "type": [
+           "string",
+           "null"
+          ]
+         }
+        },
+        "required": [
+         "personId"
+        ],
+        "additionalProperties": false
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "personId": {
+           "type": "string"
+          },
+          "legalName": {
+           "type": "string"
+          },
+          "preferredName": {
+           "type": [
+            "string",
+            "null"
+           ]
+          },
+          "phone": {
+           "type": [
+            "string",
+            "null"
+           ]
+          },
+          "guardians": {
+           "type": "array",
+           "items": {
+            "type": "string"
+           }
+          }
+         },
+         "required": [
+          "personId",
+          "legalName",
+          "preferredName",
+          "phone",
+          "guardians"
+         ],
+         "additionalProperties": false
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "403",
+      "content": {
+       "application/json": {
+        "schema": {
+         "oneOf": [
+          {
+           "$ref": "#/components/schemas/Forbidden"
+          },
+          {
+           "$ref": "#/components/schemas/UndefinedError"
+          }
+         ]
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "404",
+      "content": {
+       "application/json": {
+        "schema": {
+         "oneOf": [
+          {
+           "$ref": "#/components/schemas/NotFound"
+          },
+          {
+           "$ref": "#/components/schemas/UndefinedError"
+          }
+         ]
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/authority/snapshot/refresh": {
+   "post": {
+    "operationId": "authority.refreshSnapshot",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "bondId": {
+          "type": "string"
+         }
+        },
+        "required": [
+         "bondId"
+        ],
+        "additionalProperties": false
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "OK",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "properties": {
+          "payload": {
+           "type": "string"
+          },
+          "signature": {
+           "type": "string"
+          },
+          "keyId": {
+           "type": "string"
+          },
+          "expiresAt": {
+           "type": "string",
+           "format": "date-time",
+           "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          }
+         },
+         "required": [
+          "payload",
+          "signature",
+          "keyId",
+          "expiresAt"
+         ],
+         "additionalProperties": false
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "403",
+      "content": {
+       "application/json": {
+        "schema": {
+         "oneOf": [
+          {
+           "$ref": "#/components/schemas/Forbidden"
+          },
+          {
+           "$ref": "#/components/schemas/UndefinedError"
+          }
+         ]
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "404",
+      "content": {
+       "application/json": {
+        "schema": {
+         "oneOf": [
+          {
+           "$ref": "#/components/schemas/NotFound"
+          },
+          {
+           "$ref": "#/components/schemas/UndefinedError"
+          }
+         ]
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}
