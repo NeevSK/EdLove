@@ -1,0 +1,10 @@
+# Sita is a student at Royal College, grade 10, in 2026.
+- id: gd:e2
+  person: gd:sita
+  institution: gd:royal
+  capacity: student
+  state: active
+  grade: 10
+  academic_year: 2026
+  valid_from: "2026-01-05T00:00:00+05:30"
+  recorded_at: "2026-01-05T09:00:00+05:30"

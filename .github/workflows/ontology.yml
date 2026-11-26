@@ -1,0 +1,49 @@
+name: Ontology
+
+# Build step 1 of docs/decisions/2026-11-26-gurudevi-tool-selection.md: the ontology folder
+# and the pinned tools. Installs every pinned tool (checksums verified, versions asserted)
+# and runs the checks that exist so far (ontology/check.sh). Later steps add the generator
+# drift check and the CUE, Alloy, OntoUML, TLC and TypeSpec runs to ontology/check.sh.
+
+on:
+  pull_request:
+    paths:
+      - 'ontology/**'
+      - '.github/workflows/ontology.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ontology/**'
+      - '.github/workflows/ontology.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ontology:
+    name: Ontology checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          java-version: '17'
+          distribution: temurin
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .nvmrc
+      - name: Install pinned ontology tools
+        run: |
+          ONTOLOGY_TOOLS="$RUNNER_TEMP/ontology-tools" bash ontology/tools/install.sh | tee "$RUNNER_TEMP/tools.txt"
+          {
+            echo "$RUNNER_TEMP/ontology-tools/venv/bin"
+            echo "$RUNNER_TEMP/ontology-tools/bin"
+            echo "$RUNNER_TEMP/ontology-tools/node/node_modules/.bin"
+          } >> "$GITHUB_PATH"
+      - name: Ontology checks
+        run: bash ontology/check.sh

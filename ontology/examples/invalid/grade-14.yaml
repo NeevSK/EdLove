@@ -1,0 +1,10 @@
+# Planted defect 4: a grade of 14.
+- id: gd:e4
+  person: gd:sita
+  institution: gd:royal
+  capacity: student
+  state: active
+  grade: 14
+  academic_year: 2026
+  valid_from: "2026-01-05T00:00:00+05:30"
+  recorded_at: "2026-01-05T09:00:00+05:30"

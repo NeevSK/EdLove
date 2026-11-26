@@ -1,0 +1,376 @@
+# Gurudevi ontology: what exists, and how each thing comes to be and changes.
+#
+# This is the one hand-written source for meaning (layer 1), lifecycles (layer 3),
+# time (layer 4) and rules across things (layer 5) in
+# docs/decisions/2026-11-26-gurudevi-tool-selection.md.
+# Everything else (zmodel, TypeSpec models, Cedar schema, XState machines, CUE entries,
+# Alloy skeleton, OntoUML JSON, Zod and SQL rule checks, Mermaid) will be generated
+# from this file by the generator (build step 2 onward). Do not copy facts from here
+# into other files by hand.
+#
+# Words: only Neev's words and the existing code's. A new term needs Neev's yes before
+# it enters this file (decision rule 6). Sinhala and Tamil labels are supplied by Neev,
+# never guessed; see ontology/README.md.
+#
+# Scope: build step 1 = the shared case from
+# docs/architecture/2026-11-26-api-foundation/05-ontology-tools-tested-on-one-case.md
+# (Person, Institution, Bond, Enrollment, Authority).
+
+id: https://gurudevi.lk/ontology
+name: gurudevi
+title: Gurudevi ontology
+description: >-
+  What exists in Gurudevi and how each thing comes into being and changes.
+  First slice: the shared case (Person, Institution, Bond, Enrollment, Authority).
+version: 0.1.0
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  linkml: https://w3id.org/linkml/
+  gd: https://gurudevi.lk/ontology/
+  schema: http://schema.org/
+  prov: http://www.w3.org/ns/prov#
+  gufo: http://purl.org/nemo/gufo#
+  oneroster: https://purl.imsglobal.org/spec/or/v1p2/
+default_prefix: gd
+default_range: string
+imports:
+  - linkml:types
+
+# ---------------------------------------------------------------------------------------
+# Layer 5: rules across things.
+#
+# Facts about ONE slot (range, required, min/max, a fixed value) and if-then rules inside
+# ONE object are written natively in LinkML below (slot_usage, `rules:` on a class), so
+# `linkml-validate` checks them today. This section holds only what LinkML cannot say:
+# rules that cross objects or compare times. Each is written once here and will be
+# emitted to Alloy, CUE, Zod and SQL checks by the generator (build steps 3 and 4).
+#
+# Format of one rule:
+#   id:    kebab-case, stable; tests and reports refer to it
+#   says:  the rule in plain words
+#   kind:  one of the kinds below; the generator refuses an unknown kind
+#   class: the class the rule is checked on
+#   ...    the fields that kind needs
+#
+# Kinds used so far:
+#   interval_order   valid_from <= valid_to on every Bitemporal object
+#   within_interval  the object's valid interval lies inside the interval of the object
+#                    it points to through `via`; if that one has ended, this one has too
+#   allowed_by       the value of `slot` must be one listed in `table`, keyed by the value
+#                    found by following `key` (a dotted path)
+#   unique_while     at most one object with the same `keys` while `when` holds
+#   checked_at       an act is checked against the state at the given time slot,
+#                    not at the time it reaches the server
+# ---------------------------------------------------------------------------------------
+annotations:
+  rules:
+    value:
+      - id: interval-order
+        says: Something cannot stop being true before it started.
+        kind: interval_order
+        class: Bitemporal
+
+      - id: authority-within-bond
+        says: An authority never outlives the bond that grants it, and never starts before it.
+        kind: within_interval
+        class: Authority
+        via: granted_by
+
+      - id: capacity-decides-powers
+        says: The capacity of a bond decides which powers it can grant.
+        kind: allowed_by
+        class: Authority
+        slot: power
+        key: granted_by.capacity
+        table:
+          student: []
+          teacher: [mark]
+          principal: [enrol, invite, view_reports]
+          founder: [enrol, invite]
+          guardian: [view_reports]
+
+      - id: one-active-bond
+        says: A person has at most one active bond with an institution in each capacity.
+        kind: unique_while
+        class: Bond
+        keys: [person, institution, capacity]
+        when:
+          state: active
+
+      - id: authority-at-act-time
+        says: >-
+          An act that needs a power is checked against the authority as it was when the act
+          happened (its valid time), not when it reached the server. An offline mark made
+          while the bond was active is kept; one made after the bond ended is refused.
+        kind: checked_at
+        class: Authority
+        at: valid_from
+        evidence: docs/architecture/2026-11-26-api-foundation/evidence/ontolab/tla/OfflineMarks.tla
+
+classes:
+  # -------------------------------------------------------------------------------------
+  # Layer 4: time. Written once as a mixin; the columns are generated.
+  # -------------------------------------------------------------------------------------
+  Bitemporal:
+    mixin: true
+    description: >-
+      When something was true in the world (valid time) and when Gurudevi learned it
+      (recorded time). Offline acts are checked at their own valid time.
+    slots:
+      - valid_from
+      - valid_to
+      - recorded_at
+
+  # -------------------------------------------------------------------------------------
+  # Layer 1: meaning. `ufo` annotations give the UFO kind (kind, role, relator, phase,
+  # mode); the OntoUML check (layer 2) reads them.
+  # -------------------------------------------------------------------------------------
+  Person:
+    description: One human, one account for a whole life. The root of everything.
+    exact_mappings:
+      - schema:Person
+    disjoint_with:
+      - Institution
+    slots:
+      - id
+      - display_name
+    annotations:
+      ufo: kind
+
+  Institution:
+    description: A school, tuition institute or other organisation people bond with.
+    exact_mappings:
+      - schema:Organization
+    close_mappings:
+      - oneroster:Org
+    slots:
+      - id
+      - name
+    annotations:
+      ufo: kind
+
+  Bond:
+    description: >-
+      How a person joins an institution, in one capacity. It exists only while both
+      sides do.
+    mixins:
+      - Bitemporal
+    slots:
+      - id
+      - person
+      - institution
+      - capacity
+      - state
+    rules:
+      - description: An ended bond must say when it ended.
+        preconditions:
+          slot_conditions:
+            state:
+              equals_string: ended
+        postconditions:
+          slot_conditions:
+            valid_to:
+              required: true
+    annotations:
+      ufo: relator
+      # Layer 3: ontogeny. Each transition is one capability; its id is the join key
+      # used by CUE, Cedar, TypeSpec, oRPC, the handler file and the XState event.
+      #   create:      the capability that brings a new one into its start state
+      #   who:         `person` = the bond's own person; `system` = Gurudevi itself;
+      #                any other word is a capacity, held in an active bond with `within`
+      #   needs:       the power (Authority) the actor must hold, if any
+      #   ends:        objects that end at the same valid time as this transition
+      #   why:         one line of purpose, in plain words
+      lifecycle:
+        value:
+          state: state
+          within: institution
+          start: invited
+          create:
+            id: bond.invite
+            who: [principal, founder]
+            needs: invite
+            why: An institution asks a person to join it in a capacity.
+          transitions:
+            - id: bond.accept
+              from: invited
+              to: active
+              who: [person]
+              why: The person agrees to join, so the bond starts.
+            - id: bond.decline
+              from: invited
+              to: ended
+              who: [person]
+              why: The person says no, so the invitation ends without a bond.
+            - id: bond.suspend
+              from: active
+              to: suspended
+              who: [principal]
+              why: The institution pauses a bond without ending it.
+            - id: bond.restore
+              from: suspended
+              to: active
+              who: [principal]
+              why: A paused bond becomes active again.
+            - id: bond.end
+              from: active
+              to: ended
+              who: [person, principal]
+              why: Either side ends the bond.
+              ends:
+                - class: Authority
+                  via: granted_by
+            - id: bond.end
+              from: suspended
+              to: ended
+              who: [principal]
+              why: The institution ends a paused bond.
+
+  Enrollment:
+    is_a: Bond
+    description: A bond in the student capacity, with a grade and an academic year.
+    close_mappings:
+      - oneroster:Enrollment
+    slots:
+      - grade
+      - academic_year
+    slot_usage:
+      capacity:
+        equals_string: student
+    annotations:
+      ufo: relator
+      # Until Neev decides otherwise, an enrollment follows the Bond lifecycle unchanged.
+      # See "Open questions" in ontology/README.md.
+
+  Authority:
+    description: >-
+      A power a bond grants (mark, enrol, invite, view reports). Held while its valid
+      time is open; never outlives the bond that grants it.
+    mixins:
+      - Bitemporal
+    slots:
+      - id
+      - granted_by
+      - power
+      - state
+    slot_usage:
+      state:
+        range: AuthorityState
+    rules:
+      - description: An ended authority must say when it ended.
+        preconditions:
+          slot_conditions:
+            state:
+              equals_string: ended
+        postconditions:
+          slot_conditions:
+            valid_to:
+              required: true
+    annotations:
+      ufo: mode
+      lifecycle:
+        value:
+          state: state
+          within: granted_by.institution
+          start: held
+          create:
+            id: authority.grant
+            who: [principal, founder]
+            why: A bond's power is given, within what its capacity allows.
+          transitions:
+            - id: authority.revoke
+              from: held
+              to: ended
+              who: [principal, founder]
+              why: A power is taken back while the bond goes on.
+
+slots:
+  id:
+    identifier: true
+    range: uriorcurie
+    description: Stable identifier.
+  display_name:
+    required: true
+    description: The name a person chooses to be shown by.
+  name:
+    required: true
+    description: The institution's name.
+  person:
+    range: Person
+    required: true
+    description: The person this bond joins.
+    annotations:
+      ufo: mediation
+  institution:
+    range: Institution
+    required: true
+    description: The institution this bond joins.
+    annotations:
+      ufo: mediation
+  capacity:
+    range: Capacity
+    required: true
+    description: The capacity the person holds in this bond.
+  state:
+    range: BondState
+    required: true
+    description: Where this thing is in its lifecycle.
+  granted_by:
+    range: Bond
+    required: true
+    description: The bond that grants this authority.
+  power:
+    range: Power
+    required: true
+    description: What the authority lets its holder do.
+  grade:
+    range: integer
+    minimum_value: 1
+    maximum_value: 13
+    required: true
+    description: School grade, 1 to 13.
+  academic_year:
+    range: integer
+    required: true
+    description: The academic year this enrollment is for.
+  valid_from:
+    range: datetime
+    required: true
+    description: When it became true in the world (valid time). Stored with its time zone.
+  valid_to:
+    range: datetime
+    description: When it stopped being true in the world. Empty means still true.
+  recorded_at:
+    range: datetime
+    required: true
+    slot_uri: prov:generatedAtTime
+    description: When Gurudevi learned it (recorded time).
+
+enums:
+  Capacity:
+    description: The capacity a person holds in a bond.
+    permissible_values:
+      student: {}
+      teacher: {}
+      principal: {}
+      guardian: {}
+      founder: {}
+  BondState:
+    description: Lifecycle of a bond.
+    permissible_values:
+      invited: {}
+      active: {}
+      suspended: {}
+      ended: {}
+  AuthorityState:
+    description: Lifecycle of an authority.
+    permissible_values:
+      held: {}
+      ended: {}
+  Power:
+    description: What an authority lets its holder do.
+    permissible_values:
+      mark: {}
+      enrol: {}
+      invite: {}
+      view_reports: {}

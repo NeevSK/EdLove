@@ -1,0 +1,10 @@
+# Planted defect 5: an ended enrollment that does not say when it ended.
+- id: gd:e5
+  person: gd:sita
+  institution: gd:royal
+  capacity: student
+  state: ended
+  grade: 10
+  academic_year: 2025
+  valid_from: "2025-01-06T00:00:00+05:30"
+  recorded_at: "2025-01-06T09:00:00+05:30"

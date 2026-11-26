@@ -103,6 +103,8 @@ once its recall is measured ([plan](apps/sanctuary-api/docs/implementation/2026-
 
 **Places, roles and features (read before any navigation, catalog or screen work):** [`docs/architecture/places-roles-and-features.md`](docs/architecture/places-roles-and-features.md) is the one model for how a role becomes what a person sees: one word per idea, Workspace as a floor per role, every other place one floor whose features differ by role, yes/no role relevance, capabilities from the server, and nothing on screen for what a person does not have.
 
+**API foundation and ontology (read before any API, data model or lifecycle work):** [`docs/decisions/2026-11-26-gurudevi-tool-selection.md`](docs/decisions/2026-11-26-gurudevi-tool-selection.md) picks one tool per layer and the build order; [`ontology/gurudevi.yaml`](ontology/README.md) is the one hand-written source for what exists and how it changes. Research and evidence: [`docs/architecture/2026-11-26-api-foundation/README.md`](docs/architecture/2026-11-26-api-foundation/README.md).
+
 **Platform structure (read before any API, package or screen design):**
 [`docs/architecture/platform-map.md`](docs/architecture/platform-map.md) is the
 top-down map: channels, places (tabs), business domains, platform services, runtime,
