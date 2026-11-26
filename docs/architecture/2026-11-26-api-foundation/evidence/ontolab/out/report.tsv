@@ -1,0 +1,52 @@
+Level	Rule Name	Subject	Property	Value
+ERROR	missing_ontology_description	https://gurudevi.lk/ontology.owl.ttl	dc:description	
+ERROR	missing_ontology_license	https://gurudevi.lk/ontology.owl.ttl	dc:license	
+WARN	annotation_whitespace	https://gurudevi.lk/ontology/Bond	https://gurudevi.lk/ontology/lifecycle	"state: state
+within: institution
+start: invited
+transitions:
+  - {from: invited, to: active, by: accept, who: [person]}
+  - {from: invited, to: ended, by: decline, who: [person]}
+  - {from: active, to: suspended, by: suspend, who: [principal]}
+  - {from: suspended, to: active, by: restore, who: [principal]}
+  - {from: active, to: ended, by: end, who: [person, principal]}
+  - {from: suspended, to: ended, by: end, who: [principal]}
+"
+WARN	missing_definition	https://gurudevi.lk/ontology/Authority	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Bond	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/BondState	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/BondState#active	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/BondState#ended	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/BondState#invited	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/BondState#suspended	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Capacity	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Capacity#founder	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Capacity#guardian	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Capacity#principal	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Capacity#student	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Capacity#teacher	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Enrollment	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Institution	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Person	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Power	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Power#enrol	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Power#invite	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Power#mark	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/Power#view_reports	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/academic_year	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/capacity	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/display_name	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/grade	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/granted_by	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/id	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/institution	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/name	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/person	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/power	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/recorded_at	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/state	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/valid_from	IAO:0000115	
+WARN	missing_definition	https://gurudevi.lk/ontology/valid_to	IAO:0000115	
+INFO	missing_superclass	https://gurudevi.lk/ontology/BondState	rdfs:subClassOf	
+INFO	missing_superclass	https://gurudevi.lk/ontology/Capacity	rdfs:subClassOf	
+INFO	missing_superclass	https://gurudevi.lk/ontology/Power	rdfs:subClassOf	

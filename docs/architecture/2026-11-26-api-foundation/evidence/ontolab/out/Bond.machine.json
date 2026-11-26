@@ -1,0 +1,71 @@
+{
+ "id": "Bond",
+ "initial": "invited",
+ "states": {
+  "invited": {
+   "on": {
+    "ACCEPT": {
+     "target": "active",
+     "meta": {
+      "who": [
+       "person"
+      ]
+     }
+    },
+    "DECLINE": {
+     "target": "ended",
+     "meta": {
+      "who": [
+       "person"
+      ]
+     }
+    }
+   }
+  },
+  "active": {
+   "on": {
+    "SUSPEND": {
+     "target": "suspended",
+     "meta": {
+      "who": [
+       "principal"
+      ]
+     }
+    },
+    "END": {
+     "target": "ended",
+     "meta": {
+      "who": [
+       "person",
+       "principal"
+      ]
+     }
+    }
+   }
+  },
+  "ended": {
+   "on": {},
+   "type": "final"
+  },
+  "suspended": {
+   "on": {
+    "RESTORE": {
+     "target": "active",
+     "meta": {
+      "who": [
+       "principal"
+      ]
+     }
+    },
+    "END": {
+     "target": "ended",
+     "meta": {
+      "who": [
+       "principal"
+      ]
+     }
+    }
+   }
+  }
+ }
+}

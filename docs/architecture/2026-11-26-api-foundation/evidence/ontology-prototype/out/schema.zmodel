@@ -1,0 +1,54 @@
+enum AssignmentStage { draft published closed }
+enum Capacity { student teacher tutor marker guardian principal section_head grade_head founder platform_staff }
+enum BondState { invited active ended kept }
+/// owner: self
+model Person {
+  id String @id @default(uuid())
+  display_name String?
+  born_on DateTime? @db.Date
+}
+/// owner: institution
+model School {
+  handle String?
+  time_zone String?
+  id String @id @default(uuid())
+  name String
+}
+/// owner: institution
+model Classroom {
+  school_id String
+  id String @id @default(uuid())
+  name String
+}
+/// owner: family
+model Family {
+  id String @id @default(uuid())
+  name String
+}
+/// owner: institution
+model Bond {
+  id String @id @default(uuid())
+  person_id String
+  entity_id String
+  capacity Capacity
+  state BondState
+  valid_from DateTime? @db.Timestamptz
+  valid_to DateTime? @db.Timestamptz
+}
+/// owner: institution
+model Assignment {
+  id String @id @default(uuid())
+  classroom_id String
+  title String
+  due_at DateTime? @db.Timestamptz
+  max_score Decimal
+  stage AssignmentStage
+}
+/// owner: institution
+model Submission {
+  id String @id @default(uuid())
+  assignment_id String
+  student_id String
+  submitted_at DateTime @db.Timestamptz
+  answer String
+}

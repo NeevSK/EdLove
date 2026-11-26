@@ -1,0 +1,10 @@
+namespace Gurudevi {
+  entity Person;
+  entity Entity;
+  entity School in [Entity];
+  entity Classroom in [Entity];
+  entity Family in [Entity];
+  entity Bond;
+  entity Assignment;
+  entity Submission;
+}

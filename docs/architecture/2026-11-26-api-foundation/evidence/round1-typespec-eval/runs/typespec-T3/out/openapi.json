@@ -1,0 +1,1097 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Gurudevi v1 (evaluation)",
+    "version": "0.0.0"
+  },
+  "tags": [],
+  "paths": {
+    "/authority/snapshot/refresh": {
+      "post": {
+        "operationId": "authority.refreshSnapshot",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignedSnapshot"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Every error has a stable machine code; clients switch on `code`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Every error has a stable machine code; clients switch on `code`."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Every error has a stable machine code; clients switch on `code`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "NOT_FOUND"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Every error has a stable machine code; clients switch on `code`."
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "bondId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "bondId"
+                ]
+              }
+            }
+          }
+        },
+        "x-cedar-action": "Authority::RefreshSnapshot"
+      }
+    },
+    "/erp/invoices/create": {
+      "post": {
+        "operationId": "erp.invoices.create",
+        "parameters": [
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invoice"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Every error has a stable machine code; clients switch on `code`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Every error has a stable machine code; clients switch on `code`."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Every error has a stable machine code; clients switch on `code`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "CONFLICT"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Every error has a stable machine code; clients switch on `code`."
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceInput"
+              }
+            }
+          }
+        },
+        "x-cedar-action": "Erp::CreateInvoice"
+      }
+    },
+    "/lms/assignments/list": {
+      "post": {
+        "operationId": "lms.assignments.list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "items"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Assignment"
+                      }
+                    },
+                    "nextCursor": {
+                      "type": "string",
+                      "description": "Absent on the last page."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Every error has a stable machine code; clients switch on `code`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Every error has a stable machine code; clients switch on `code`."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Every error has a stable machine code; clients switch on `code`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "NOT_FOUND"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Every error has a stable machine code; clients switch on `code`."
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "classroomId": {
+                    "type": "string"
+                  },
+                  "cursor": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "format": "int32"
+                  }
+                },
+                "required": [
+                  "classroomId"
+                ]
+              }
+            }
+          }
+        },
+        "x-cedar-action": "Lms::ListAssignments"
+      }
+    },
+    "/lms/submissions/grade": {
+      "post": {
+        "operationId": "lms.submissions.grade",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Grade"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Every error has a stable machine code; clients switch on `code`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Every error has a stable machine code; clients switch on `code`."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Every error has a stable machine code; clients switch on `code`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "NOT_FOUND"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Every error has a stable machine code; clients switch on `code`."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Every error has a stable machine code; clients switch on `code`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "CONFLICT"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Every error has a stable machine code; clients switch on `code`."
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GradeInput"
+              }
+            }
+          }
+        },
+        "x-cedar-action": "Lms::GradeSubmission"
+      }
+    },
+    "/people/guardians/link": {
+      "post": {
+        "operationId": "people.guardians.link",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuardianLink"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Every error has a stable machine code; clients switch on `code`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Every error has a stable machine code; clients switch on `code`."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Every error has a stable machine code; clients switch on `code`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "NOT_FOUND"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Every error has a stable machine code; clients switch on `code`."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Every error has a stable machine code; clients switch on `code`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "CONFLICT"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Every error has a stable machine code; clients switch on `code`."
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuardianLinkInput"
+              }
+            }
+          }
+        },
+        "x-cedar-action": "People::LinkGuardian"
+      }
+    },
+    "/people/profiles/update": {
+      "post": {
+        "operationId": "people.profiles.update",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Every error has a stable machine code; clients switch on `code`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Every error has a stable machine code; clients switch on `code`."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Every error has a stable machine code; clients switch on `code`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message",
+                    "requestId"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "NOT_FOUND"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "Every error has a stable machine code; clients switch on `code`."
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfilePatch"
+              }
+            }
+          }
+        },
+        "x-cedar-action": "People::UpdateProfile"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Assignment": {
+        "type": "object",
+        "required": [
+          "id",
+          "classroomId",
+          "title",
+          "dueAt",
+          "maxScore"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "classroomId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "dueAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "null = no due date (not the same as unknown)."
+          },
+          "maxScore": {
+            "$ref": "#/components/schemas/DecimalString"
+          }
+        }
+      },
+      "DecimalString": {
+        "type": "string",
+        "pattern": "^-?[0-9]+(\\.[0-9]{1,4})?$",
+        "description": "Decimal carried as a string so no precision is lost (e.g. \"1234.50\")."
+      },
+      "Grade": {
+        "type": "object",
+        "required": [
+          "submissionId",
+          "score",
+          "feedback"
+        ],
+        "properties": {
+          "submissionId": {
+            "type": "string"
+          },
+          "score": {
+            "$ref": "#/components/schemas/DecimalString"
+          },
+          "feedback": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "GradeInput": {
+        "type": "object",
+        "required": [
+          "submissionId",
+          "score"
+        ],
+        "properties": {
+          "submissionId": {
+            "type": "string"
+          },
+          "score": {
+            "$ref": "#/components/schemas/DecimalString"
+          },
+          "feedback": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Omitted = keep existing feedback; null = clear it."
+          }
+        }
+      },
+      "GuardianLink": {
+        "type": "object",
+        "required": [
+          "linkId",
+          "studentId",
+          "guardianId",
+          "relationship",
+          "verified"
+        ],
+        "properties": {
+          "linkId": {
+            "type": "string"
+          },
+          "studentId": {
+            "type": "string"
+          },
+          "guardianId": {
+            "type": "string"
+          },
+          "relationship": {
+            "$ref": "#/components/schemas/GuardianRelationship"
+          },
+          "verified": {
+            "type": "boolean",
+            "enum": [
+              false
+            ],
+            "description": "Always false until verification exists."
+          }
+        }
+      },
+      "GuardianLinkInput": {
+        "type": "object",
+        "required": [
+          "studentId",
+          "guardianId",
+          "relationship"
+        ],
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "guardianId": {
+            "type": "string"
+          },
+          "relationship": {
+            "$ref": "#/components/schemas/GuardianRelationship"
+          }
+        }
+      },
+      "GuardianRelationship": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "parent"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "legal_guardian"
+                ]
+              },
+              "courtOrderRef": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "courtOrderRef"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "other"
+                ]
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "description"
+            ]
+          }
+        ],
+        "discriminator": {
+          "propertyName": "kind",
+          "mapping": {}
+        }
+      },
+      "Invoice": {
+        "type": "object",
+        "required": [
+          "id",
+          "total",
+          "lines",
+          "payment"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "total": {
+            "$ref": "#/components/schemas/DecimalString"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InvoiceLine"
+            }
+          },
+          "payment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Payment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "InvoiceInput": {
+        "type": "object",
+        "required": [
+          "studentId",
+          "currency",
+          "lines"
+        ],
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "LKR",
+              "USD"
+            ]
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InvoiceLine"
+            }
+          },
+          "payment": {
+            "$ref": "#/components/schemas/Payment"
+          }
+        }
+      },
+      "InvoiceLine": {
+        "type": "object",
+        "required": [
+          "description",
+          "quantity",
+          "unitPrice"
+        ],
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unitPrice": {
+            "$ref": "#/components/schemas/DecimalString"
+          }
+        }
+      },
+      "Payment": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "cash"
+                ]
+              },
+              "receivedBy": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "receivedBy"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "bank"
+                ]
+              },
+              "reference": {
+                "type": "string"
+              },
+              "bankCode": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "reference",
+              "bankCode"
+            ]
+          }
+        ],
+        "discriminator": {
+          "propertyName": "kind",
+          "mapping": {}
+        }
+      },
+      "Profile": {
+        "type": "object",
+        "required": [
+          "personId",
+          "legalName",
+          "preferredName",
+          "phone",
+          "guardians"
+        ],
+        "properties": {
+          "personId": {
+            "type": "string"
+          },
+          "legalName": {
+            "type": "string"
+          },
+          "preferredName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "guardians": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ProfilePatch": {
+        "type": "object",
+        "required": [
+          "personId"
+        ],
+        "properties": {
+          "personId": {
+            "type": "string"
+          },
+          "preferredName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Omitted = unchanged; null = clear."
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "SignedSnapshot": {
+        "type": "object",
+        "required": [
+          "payload",
+          "signature",
+          "keyId",
+          "expiresAt"
+        ],
+        "properties": {
+          "payload": {
+            "type": "string",
+            "description": "Canonical JSON (RFC 8785) of the claims, exactly as signed."
+          },
+          "signature": {
+            "type": "string",
+            "description": "Ed25519 signature over `payload`, base64url."
+          },
+          "keyId": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.example.invalid",
+      "description": "eval",
+      "variables": {}
+    }
+  ]
+}
