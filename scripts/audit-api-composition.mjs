@@ -24,6 +24,8 @@ const admittedHostFiles = new Set([
   'apps/sanctuary-api/src/index.ts',
   'apps/sanctuary-api/src/entry-node.ts',
   'apps/sanctuary-api/src/node-server.ts',
+  'apps/sanctuary-api/src/bun-server.ts',
+  'apps/sanctuary-api/src/server-app.ts',
   'apps/sanctuary-api/src/platform.ts',
   'apps/sanctuary-api/src/security/security.ts',
   // The short-lived PowerSync token (identity.syncGrant).

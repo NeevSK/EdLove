@@ -15,7 +15,8 @@
     "format": "biome check --write src",
     "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run --exclude src/__tests__/node-server.test.ts --reporter=default --reporter=json --outputFile.json=../../reports/evidence/G1.sanctuary-api-foundation.json\" --name apps_sanctuary-api-foundation --evidence-level G1",
     "test:database": "doppler run --no-fallback -- node ../../scripts/run-and-report.mjs --cmd \"node node_modules/tsx/dist/cli.mjs --tsconfig tsconfig.json scripts/test-foundation-database.ts --reporter=default --reporter=json --outputFile.json=../../reports/evidence/G2.sanctuary-api-database.json\" --name apps_sanctuary-api-foundation_database --evidence-level G2",
-    "test:socket": "node ../../scripts/run-and-report.mjs --cmd \"vitest run src/__tests__/node-server.test.ts --reporter=default --reporter=json --outputFile.json=../../reports/evidence/G2.sanctuary-api-sockets.json\" --name apps_sanctuary-api-sockets --evidence-level G2"
+    "test:socket": "node ../../scripts/run-and-report.mjs --cmd \"vitest run src/__tests__/node-server.test.ts --reporter=default --reporter=json --outputFile.json=../../reports/evidence/G2.sanctuary-api-sockets.json\" --name apps_sanctuary-api-sockets --evidence-level G2",
+    "test:bun": "node ../../scripts/run-and-report.mjs --cmd \"bun --bun x vitest run --pool=threads --exclude src/__tests__/node-server.test.ts --exclude src/conformance/consumers.adapter.test.ts --reporter=default --reporter=json --outputFile.json=../../reports/evidence/G2.sanctuary-api-bun.json\" --name apps_sanctuary-api-bun --evidence-level G2"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.11",
