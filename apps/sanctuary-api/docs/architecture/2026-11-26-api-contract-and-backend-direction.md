@@ -256,6 +256,17 @@ contracts (that needs its own pass and Neev's yes).
 - Is there a computation you already know must match offline and online? That is the only
   place Rust is likely to pay.
 
+## 9. Final round (2026-11-26): settled direction
+
+Neev settled the direction: keep TypeScript, change what is underneath where it pays (Bun
+candidate, oRPC v2, Hono v5 thin shell, OpenAPI, Cedar Wasm behind `check()`, JSON default,
+Zod, `pg`, bounded Effect, always-on hosting next to the database, Rust only as a selective
+engine). The row-by-row check against `integrate/nov-convergence` is in
+`docs/decisions/2026-11-26-api-contract-and-backend-direction.md`. Corrections found there:
+the v1 contract now has 15 capabilities (not 6); the Bun entry still refuses authenticated mode;
+Effect is a dependency of the API but not used in its code; there is no Rust Cedar integration
+to "retain"; authentication lives in the Hono layer, not in oRPC middleware.
+
 ## Sources
 
 Repo (all on `integrate/worlds-and-upstream`): files named in section 1;
