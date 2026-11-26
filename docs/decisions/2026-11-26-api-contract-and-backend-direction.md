@@ -36,6 +36,17 @@ tags: [decision, api, contract, orpc, openapi, rust, python, typespec, protobuf]
 - Rust was decided twice before (2026-07-28 local PDP, 2026-10-25 sidecar) and both times the
   Wasm Cedar library was enough.
 
+## Decided (Neev, 2026-11-26)
+
+- **Production database moves to Singapore**, next to the API (today it is in Mumbai,
+  `ap-south-1`, while the API runs in Singapore). Reminder: not done yet.
+- **Standing rule:** API host and database share a region; any new host, worker or database is
+  checked against this before it is added.
+- **Refine in this order before considering Rust:** measure (`Server-Timing`), database to
+  Singapore, always-on instance, fewer database round trips per call (~12 to 2–3), fewer calls
+  per screen (PowerSync for reads), payload and connection reuse, then profile CPU. Details in
+  the brief, section 3b.
+
 ## Triggers to revisit
 
 Non-TypeScript client; a measured offline/online computation; multi-language services with

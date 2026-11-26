@@ -103,6 +103,28 @@ Standard fixes, in order: measure each phase with a `Server-Timing` header; put 
 database in the same city; use an always-on instance; fold identity, budget and claims into one
 database call (about 12 round trips down to 2 or 3).
 
+**Decided by Neev (2026-11-26):** the production database moves to Singapore, next to the API.
+Standing rule from now on: the API host and the database must be in the same region, and any
+new host, worker or database is checked against that before it is added.
+
+### Where to refine, in order, before Rust is even a question
+
+Each step is measured with `Server-Timing` before and after; the next step starts only when
+the numbers say the previous one is done.
+
+1. **Measure.** `Server-Timing` per phase (auth, budget, db, handler) and a small probe from
+   Sri Lanka, so every later step has a before and after.
+2. **Database to Singapore** (decided). Expected: each database round trip drops from tens of
+   ms to a few ms.
+3. **Always-on instance.** Leave the free plan; no sleep, no minute-long wake.
+4. **Fewer round trips per call.** Identity check, budget and claims in one transaction or one
+   SQL function: about 12 sequential round trips down to 2 or 3.
+5. **Fewer calls per screen.** Reads the phone can get from PowerSync stay off the API; the
+   API carries commands and grants only.
+6. **Payload and connection reuse.** Small responses, compression, keep-alive from the apps.
+7. **Only then, profile the server's own CPU time.** If one capability is still measured slow
+   and CPU-bound, that capability is the Rust candidate (section 4), with the bake-off first.
+
 If Rust were adopted: server, middleware, contract types, Cedar, JSON and tracing come from crates
 or generation (glue cheap models handle reasonably). JWT/JWKS, signing, transaction setup, error
 mapping and the operations store are hand-written and security-critical. Timeouts, draining and
