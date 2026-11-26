@@ -1,7 +1,7 @@
 // packages/core/src/spatial/globalComparative.ts
 // Global Comparative Educational Systems & EdTech Architecture (Scale 0: Planetary Atlas)
 
-import type { GlobalCountrySpatialSummary } from './types';
+import type { GlobalCountrySpatialSummary } from '../types/spatial';
 
 export const GLOBAL_COMPARATIVE_SYSTEMS: GlobalCountrySpatialSummary[] = [
   {

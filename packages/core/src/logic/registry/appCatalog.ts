@@ -2,7 +2,7 @@ import {
   type DomainEntry,
   DomainEntrySchema,
   type TabDomain,
-} from '@repo/core/logic/registry/domainEntry';
+} from '@repo/core/types/domainEntry';
 import {
   FEATURE_FLAG_MANIFEST,
   validateFeatureFlagManifest,
@@ -24,6 +24,7 @@ export type AppCatalog = Record<string, DomainEntry>;
 let _catalog: AppCatalog | null = null;
 
 function validateCatalogEntry(key: string, entry: DomainEntry): void {
+  // contract-check: checks an authored catalog entry at registration
   DomainEntrySchema.parse(entry);
 
   if (key !== entry.id) {

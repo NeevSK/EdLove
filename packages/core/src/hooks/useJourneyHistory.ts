@@ -1,18 +1,9 @@
-import { supabaseUIExperienceRepository as uiExperience } from '@repo/core/adapters/supabase/uiExperienceRepository';
 import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
+import { journeyEventsQuery } from '@repo/core/store/queries/experienceQueries';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
+import type { JourneyEvent } from '@repo/core/types/uiExperience';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-
-export interface JourneyEvent {
-  id: string;
-  timestamp: string;
-  type: 'mood' | 'journal' | 'growth' | 'reward' | 'moment' | 'impact' | 'system';
-  title: string;
-  description?: string;
-  metadata?: Record<string, unknown>;
-  accentColor?: string;
-}
 
 export interface HolisticView {
   date: string;
@@ -33,53 +24,27 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
   const viewDate = useTemporalStore((s) => s.viewDate);
   const viewScale = useTemporalStore((s) => s.viewScale);
   const timelineFocus = useTemporalStore((s) => s.timelineFocus);
+  const view = useMemo(() => ({ viewDate, phase, viewScale }), [viewDate, phase, viewScale]);
 
-  // Fetch Mood Logs for the current context
-  const { data: moodEvents = [], isLoading: moodLoading } = useQuery({
-    queryKey: ['journey_history_mood', userId, viewDate, viewScale],
-    queryFn: async () => {
-      if (!userId) return [];
-      return uiExperience.getMoodJourneyEvents(userId);
-    },
-    enabled: !!userId,
-  });
+  const { data: moodEvents = [], isLoading: moodLoading } = useQuery(
+    journeyEventsQuery('mood', userId, view),
+  );
 
-  // Fetch Journal Entries
-  const { data: journalEvents = [], isLoading: journalLoading } = useQuery({
-    queryKey: ['journey_history_journal', userId, viewDate, viewScale],
-    queryFn: async () => {
-      if (!userId) return [];
-      return uiExperience.getJournalJourneyEvents(userId);
-    },
-    enabled: !!userId,
-  });
+  const { data: journalEvents = [], isLoading: journalLoading } = useQuery(
+    journeyEventsQuery('journal', userId, view),
+  );
 
-  const { data: growthEvents = [], isLoading: growthLoading } = useQuery({
-    queryKey: ['journey_history_growth', userId, viewDate, viewScale],
-    queryFn: async () => {
-      if (!userId) return [];
-      return uiExperience.getGrowthJourneyEvents(userId);
-    },
-    enabled: !!userId,
-  });
+  const { data: growthEvents = [], isLoading: growthLoading } = useQuery(
+    journeyEventsQuery('growth', userId, view),
+  );
 
-  const { data: rewardEvents = [], isLoading: rewardLoading } = useQuery({
-    queryKey: ['journey_history_rewards', userId, viewDate, viewScale],
-    queryFn: async () => {
-      if (!userId) return [];
-      return uiExperience.getRewardJourneyEvents(userId);
-    },
-    enabled: !!userId,
-  });
+  const { data: rewardEvents = [], isLoading: rewardLoading } = useQuery(
+    journeyEventsQuery('rewards', userId, view),
+  );
 
-  const { data: momentEvents = [], isLoading: momentLoading } = useQuery({
-    queryKey: ['journey_history_moments', userId, viewDate, viewScale],
-    queryFn: async () => {
-      if (!userId) return [];
-      return uiExperience.getMomentJourneyEvents(userId);
-    },
-    enabled: !!userId,
-  });
+  const { data: momentEvents = [], isLoading: momentLoading } = useQuery(
+    journeyEventsQuery('moments', userId, view),
+  );
 
   // Consolidate and Sort
   const events = useMemo(() => {

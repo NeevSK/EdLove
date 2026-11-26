@@ -4,6 +4,7 @@ import { type ComponentType, createContext, type ReactNode, useContext, useMemo 
 import type {
   DocumentAdapterProps,
   DocumentKind,
+  H5pAdapterProps,
   MarkdownAdapterProps,
   RichTextAdapterProps,
 } from '../../../theme/contracts';
@@ -11,12 +12,13 @@ import { BrowserPdfAdapter } from './BrowserPdfAdapter';
 
 /**
  * The renderers this app has chosen for media and documents (the adapters
- * behind the kit's ports). A screen renders `Markdown` or `DocumentView`; the
- * nearest `MediaAdapters` decides how.
+ * behind the kit's ports). A screen renders `Markdown`, `DocumentView`, or
+ * `H5pView`; the nearest `MediaAdapters` decides how.
  */
 export interface MediaAdapterSet {
   markdown?: ComponentType<MarkdownAdapterProps>;
   richText?: ComponentType<RichTextAdapterProps>;
+  h5p?: ComponentType<H5pAdapterProps>;
   documents?: Partial<Record<DocumentKind, ComponentType<DocumentAdapterProps>>>;
 }
 
@@ -42,6 +44,7 @@ export function MediaAdapters({
     () => ({
       markdown: adapters.markdown ?? parent.markdown,
       richText: adapters.richText ?? parent.richText,
+      h5p: adapters.h5p ?? parent.h5p,
       documents: { ...parent.documents, ...adapters.documents },
     }),
     [adapters, parent],

@@ -6,8 +6,6 @@
  * with optimistic updates, filter states, remaining counts, and active world dressing.
  */
 
-'use client';
-
 import React, { useState, useMemo } from 'react';
 import { useWebTodos, type WebTodo } from '@repo/core/todos';
 import styles from './todo-view.module.css';

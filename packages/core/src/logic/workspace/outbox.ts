@@ -2,8 +2,8 @@ import {
   generateIdempotencyKey,
   getConsistentIdempotencyKey,
 } from '@repo/core/lib/sync/idempotency';
-import type { QueuedMutation } from '@repo/core/lib/sync/types';
-import { uuidv7 } from '@repo/core/logic/utils/uuid';
+import type { QueuedMutation } from '@repo/core/types/mutationQueue';
+import { v7 as uuidv7 } from 'uuid';
 import type {
   WorkspaceLayoutPatch,
   WorkspaceLayoutPatchGroup,

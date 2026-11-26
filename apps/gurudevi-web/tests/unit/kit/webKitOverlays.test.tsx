@@ -1,4 +1,12 @@
-import { Dialog, Popover, Sheet, ToastHost, Tooltip, toast } from '@repo/ui/components/web';
+import {
+  Dialog,
+  Popover,
+  Sheet,
+  SidePanel,
+  ToastHost,
+  Tooltip,
+  toast,
+} from '@repo/ui/components/web';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRef } from 'react';
@@ -18,7 +26,7 @@ beforeAll(() => {
 
 afterEach(() => {
   act(() => {
-    for (const id of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) toast.dismiss(id);
+    toast.dismissAll();
   });
 });
 
@@ -69,6 +77,31 @@ describe('web kit: Sheet', () => {
   });
 });
 
+describe('web kit: SidePanel', () => {
+  it('is a named modal dialog laid out as a side panel, on the end edge by default', () => {
+    render(<SidePanel open onClose={() => {}} title="Lesson notes" />);
+    const panel = screen.getByRole('dialog', { name: 'Lesson notes' });
+    expect(panel.className).toContain('gd-side-panel');
+    expect(panel.getAttribute('data-side')).toBe('end');
+    expect(screen.getByRole('heading', { name: 'Lesson notes' })).toBeTruthy();
+  });
+
+  it('comes from the start edge when asked', () => {
+    render(<SidePanel open onClose={() => {}} title="Filters" side="start" />);
+    expect(screen.getByRole('dialog', { name: 'Filters' }).getAttribute('data-side')).toBe('start');
+  });
+
+  it('Escape closes it, unless only `open` may', () => {
+    const onClose = vi.fn();
+    const { rerender } = render(<SidePanel open onClose={onClose} title="Filters" />);
+    fireEvent(screen.getByRole('dialog'), new Event('cancel', { cancelable: true }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+    rerender(<SidePanel open onClose={onClose} title="Filters" dismissable={false} />);
+    fireEvent(screen.getByRole('dialog'), new Event('cancel', { cancelable: true }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('web kit: ToastHost', () => {
   it('announces news politely and failures assertively, and runs an action', async () => {
     const undo = vi.fn();
@@ -83,6 +116,35 @@ describe('web kit: ToastHost', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
     expect(undo).toHaveBeenCalledTimes(1);
     expect(screen.queryByText('Deleted')).toBeNull();
+  });
+});
+
+describe('web kit: ToastHost stack', () => {
+  it('gathers several, newest in front, and fans out on hover', async () => {
+    const { container } = render(<ToastHost />);
+    act(() => {
+      toast.show({ message: 'First' });
+      toast.show({ message: 'Second' });
+    });
+    const first = screen.getByText('First').closest('.gd-toast');
+    expect(first?.getAttribute('aria-hidden')).toBe('true');
+    expect(screen.getByText('Second').closest('.gd-toast')?.hasAttribute('aria-hidden')).toBe(false);
+    fireEvent.mouseEnter(container.querySelector('.gd-toasts') as Element);
+    expect(first?.hasAttribute('aria-hidden')).toBe(false);
+  });
+
+  it('puts banners at the top, counts repeats under one key, and lets Escape dismiss the newest', () => {
+    render(<ToastHost />);
+    act(() => {
+      toast.show({ message: 'Offline', size: 'banner' });
+      toast.show({ message: 'Retrying', key: 'sync' });
+      toast.show({ message: 'Retrying', key: 'sync' });
+    });
+    expect(screen.getByText('Offline').closest('.gd-toast')?.classList.contains('gd-toast-banner')).toBe(true);
+    expect(screen.getByText('×2')).toBeTruthy();
+    fireEvent.keyDown(screen.getByText('Retrying'), { key: 'Escape' });
+    expect(screen.queryByText('Retrying')).toBeNull();
+    expect(screen.getByText('Offline')).toBeTruthy();
   });
 });
 

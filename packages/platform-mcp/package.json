@@ -22,25 +22,25 @@
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_platform-mcp-clean\""
   },
   "dependencies": {
-    "@cedar-policy/mcp-schema-generator-wasm": "0.7.0",
+    "@cedar-policy/mcp-schema-generator-wasm": "0.8.0",
     "@modelcontextprotocol/client": "^2.4.0",
     "@modelcontextprotocol/core": "^2.4.0",
     "@modelcontextprotocol/server": "^2.4.0",
     "@modelcontextprotocol/server-sequential-thinking": "2025.12.18",
-    "@swmansion/argent": "^0.32.0",
-    "agent-device": "^0.21.36",
-    "dotenv": "^18.0.9",
+    "@swmansion/argent": "^0.34.0",
+    "agent-device": "^0.21.43",
+    "dotenv": "^18.0.10",
     "zod": "4.6.7"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^26.6.6",
-    "eslint": "^10.14.0",
-    "mcp-remote": "^0.16.0",
+    "eslint": "^10.15.0",
+    "mcp-remote": "^0.16.7",
     "typescript": "7.1.0-beta",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "5.1.0"
+    "vitest": "5.1.1"
   },
   "_originalScripts": {
     "build": "tsc",

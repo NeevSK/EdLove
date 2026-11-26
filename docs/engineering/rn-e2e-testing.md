@@ -2,39 +2,60 @@
 title: "RN E2E Testing & Free Device Access"
 status: "active"
 created: 2026-08-24
-updated: 2026-08-24
+updated: 2026-11-17
 author: "Naveen"
-scribe: "opencode"
-tags: [docs, engineering]
+scribe: "Antigravity"
+tags: [docs, engineering, e2e, mobile, expo, maestro, detox, agent-device]
+references:
+  - "docs/architecture/interaction-tree-and-e2e-testing-standard.md"
+  - "docs/architecture/ui-runtime-testing-standard.md"
 ---
 
 # RN E2E Testing & Free Device Access
 
-Fourth companion doc. Covers E2E framework choice and where to actually run tests — local emulators/simulators (free, unlimited, your real baseline) up through cloud device farms and their free tiers (limited, useful for real-device/CI coverage beyond what you own).
+Fourth companion doc. Covers E2E framework choice and where to actually run tests — local emulators/simulators (free, unlimited, your real baseline) up through cloud device farms, declarative flows (Maestro), and agentic exploration (TesterArmy, Callstack `agent-device`, Software Mansion `argent`).
+
+> Canonical Cross-Platform Standard: [`docs/architecture/interaction-tree-and-e2e-testing-standard.md`](../architecture/interaction-tree-and-e2e-testing-standard.md)
 
 ---
 
-## 1. Framework choice — Detox vs Maestro vs Appium (2026 state)
+## 1. Framework choice — Maestro vs Detox in the New Architecture Era (Expo SDK 58 / RN 0.88+)
 
-**Quick answer, three real options, different tradeoffs:**
+**The 2026 Architectural Reality:**
 
-| Framework | Best for | Flakiness | Setup | Real constraint |
+| Framework | Architecture | RN 0.88 / New Arch Compatibility | Setup & Maintenance | Best For |
 |---|---|---|---|---|
-| **Detox** | Pure RN app, want lowest flakiness | Lowest (<2%) — gray-box, syncs with JS thread/animations/network so it never races ahead | TypeScript-based, more setup | Locked to React Native only; still depends on `testID` coverage |
-| **Maestro** | Fastest setup, broadest platform reach | Low — retries flaky assertions automatically | Fastest (10–15 min to first test), YAML, no code | Still selector-based under the hood (accessibility tree) |
-| **Appium** | Cross-platform depth, any language, existing Selenium/WebDriver infra | Highest (15–20% average) | Most setup/maintenance (30–50% of QA time in practice) | Overkill if you're RN-only and don't need this breadth |
+| **Maestro** | **Black-Box (OS Accessibility Tree)** | **100% Immune** — interacts with standard OS accessibility nodes (UIAutomator / XCUITest). Completely indifferent to Fabric/TurboModules. | **Zero native code** — 10–15 min setup, declarative YAML flows, easily generated/maintained by AI. | **Primary Recommended E2E Framework** for Expo 58+ and fast-moving monorepos. |
+| **Detox** | **Gray-Box (In-Process Native Instrumentation)** | **High Friction** — historically hooked into the legacy JS Bridge and native event queues. Fabric/Bridgeless overhauls break synchronization hooks, requiring native patches and upgrade delays. | **Heavy** — requires native Android/iOS test runner setups (`DetoxTest.java`), custom build types, and constant synchronization tuning. | Specialized in-process timing verification where TypeScript suites already exist and gray-box sync is strictly mandatory. |
+| **Appium** | **Cross-Platform WebDriver** | Moderate — driver overhead | Highest maintenance (30–50% QA time). | Cross-platform enterprise suites with existing Selenium infrastructure. |
 
-**Practical recommendation for a solo+AI setup:** start with **Maestro** for critical-path coverage — YAML tests are fast to write and, importantly, easy for an AI assistant to generate/maintain correctly since the syntax is declarative and low-ambiguity. Add **Detox** later specifically for flows where gray-box sync (waiting correctly for animations/network without manual sleeps) matters enough to justify the heavier setup — e.g. anything touching your Reanimated/Skia UI work, where timing-sensitive assertions are exactly where black-box tools get flaky.
+### Architectural Verdict for Polymath / Gurudevi Mobile
 
-**One thing to do regardless of framework, day one:** systematically add `testID` props to interactive elements as you build, not retroactively. All three frameworks degrade in reliability without it, and Detox specifically depends on it heavily. Retrofitting `testID` coverage into an existing app is a real, avoidable cost — cheap to do incrementally, annoying to do in bulk later.
-
-**Structural caveat worth knowing (not a blocker, just context):** all three frameworks share the same underlying weakness — they identify elements via `testID`/XPath/accessibility-label selectors, which break whenever a component gets renamed or a UI is reshuffled. This isn't a reason to avoid E2E testing, just a reason to expect some selector-maintenance overhead regardless of which tool you pick — it's not unique to any one of them.
-
-**Testing pyramid for context (don't put everything in E2E):** roughly 70% unit tests (Jest + React Native Testing Library), 20% integration/component tests (RNTL or Detox), 10% E2E (Detox/Maestro/Appium). E2E tests are the slowest and most expensive to run and maintain — reserve them for critical user flows, not exhaustive coverage. Unit/integration tests should catch the bulk of regressions.
+1. **Maestro is the default E2E standard:**
+   Because Gurudevi Mobile runs on Expo SDK 58 and React Native 0.88 with the New Architecture (Fabric, TurboModules) fully enforced, Maestro eliminates the native build breaks and synchronization crashes that plague gray-box tools during minor RN upgrades. Flows are authored in declarative YAML under `apps/gurudevi-mobile/e2e/`.
+2. **Accessibility-First Discipline (`testID` & `accessibilityLabel`):**
+   Interactive elements must declare semantic `testID` and `accessibilityLabel` props at the component level (`@repo/ui/components/native`). This satisfies both WCAG accessibility compliance and ensures resilient Maestro assertions.
 
 ---
 
-## 2. Where to actually run tests — free tiers, cheapest to most capable
+## 2. Agentic Mobile Testing & Autonomous Exploration
+
+Beyond static scripted tests, 2026 introduced autonomous AI testing agents for mobile:
+
+### A. TesterArmy & EAS Cloud Simulator Integration
+- **Background**: Founded by Szymon Rybczak & Oskar Kwaśniewski (YC-backed), TesterArmy pioneered multimodal vision AI agents that autonomously explore mobile apps without written test scripts.
+- **Expo EAS Workflows**: By leveraging EAS Cloud Simulator builds (`.app` / `.apk`), AI agents can launch, tap, navigate, and verify user journeys in ephemeral cloud environments.
+- **Evolution**: The technology evolved into open-source agentic testing primitives (`e2e`) and cloud runner integrations for CI pull requests.
+
+### B. Sovereign Agent-Device & Argentine (Local / CI Agent Control)
+The Polymath monorepo integrates native agentic device control via:
+- **Callstack `agent-device`**: CLI tool enabling AI agents to query the mobile accessibility hierarchy and issue semantic touch/scroll commands.
+- **Software Mansion `argent`**: Autonomous UI flow tester and visual explorer.
+- **Polymath MCP Integration**: Accessible through the `agent-device-control` skill and `sovereign_device` MCP server, allowing agents to systematically explore mobile screens and verify transitions.
+
+---
+
+## 3. Where to actually run tests — free tiers, cheapest to most capable
 
 **Tier 0 — local emulator/simulator (free, unlimited, your actual baseline):** Android Studio's emulator and Xcode's iOS Simulator cost nothing and have no run limits — this is where the bulk of your day-to-day E2E runs should happen, both locally and in CI (GitHub Actions supports macOS runners with Xcode preinstalled for iOS Simulator runs, and Linux/macOS runners for Android emulator). Cloud device farms are for things local emulators can't give you: real hardware, real-device performance characteristics, and breadth of OS/device versions you don't own.
 
@@ -56,10 +77,12 @@ Fourth companion doc. Covers E2E framework choice and where to actually run test
 
 ---
 
-## 3. React Native-specific testing challenge worth naming
+## 4. Testing Pyramid & Graduation Mapping
 
-The recurring RN-specific problem across all of this: your JS creates components, but native platform code renders them — so unit tests (Jest) can't validate what a user actually sees, integration tests need native-module mocking that doesn't exist in the Jest environment, and E2E tests fight async rendering, animation timing, and selector instability across that JS↔native boundary. This is exactly why Detox's gray-box approach (syncing with the RN bridge/JS thread instead of guessing with sleeps) exists — and exactly why your Reanimated/Skia UI work (per `ui-thread-discipline.md`) is the highest-risk area for E2E flakiness specifically: UI-thread-driven animation state is invisible to a black-box tool the same way it's invisible to React's own render cycle by design.
+1. **Unit Tests (Vitest / Jest + RNTL, 70%)**: Deterministic logic, stores, schema parsing, and isolated component rendering (G0–G3 in `ui-runtime-testing-standard.md`).
+2. **Integration & Style Engine Tests (Vitest + Metro Harness, 20%)**: Verifies NativeWind CSS-to-style output and multi-component wiring (G4).
+3. **E2E & Interaction Tree Tests (Maestro / Agent-Device, 10%)**: End-to-end critical journeys, onboarding, tab switching, and physical device confirmation (G5).
 
 ---
 
-Five docs now cover the surface: `ui-thread-discipline.md` (animation/gesture), `rn-perf-surface-map.md` (lists, native, jank, bundling), `rn-js-react-profiling.md` (JS/React profiling and concurrent model), and this one (E2E testing and where to run it).
+Five companion docs now cover the surface: `ui-thread-discipline.md` (animation/gesture), `rn-perf-surface-map.md` (lists, native, jank, bundling), `rn-js-react-profiling.md` (JS/React profiling and concurrent model), `interaction-tree-and-e2e-testing-standard.md` (user-perspective interaction tree & E2E standard), and this one (E2E testing frameworks and device execution).

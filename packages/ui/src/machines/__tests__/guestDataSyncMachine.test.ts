@@ -1,166 +1,179 @@
 import {
   createGuestDataSyncActor,
-  executeFetchGuestDataSummaryEffect,
-  executeGuestDataSyncEffect,
   guestDataSyncMachine,
+  type SyncSummary,
 } from '@repo/ui/machines/guestDataSyncMachine';
 import { describe, expect, it, vi } from 'vitest';
-import { createActor } from 'xstate';
+import { type AnyEventObject, createAsyncLogic, createCallbackLogic, type EventObject, waitFor } from 'xstate';
 
-describe('guestDataSyncMachine (XState v6 + Effect v4)', () => {
-  it('initializes in idle state with empty summary and progress', () => {
-    const actor = createActor(guestDataSyncMachine);
-    actor.start();
+const core = vi.hoisted(() => ({ getGuestDataSummary: vi.fn(), syncAllData: vi.fn() }));
+vi.mock('@repo/core/native/guestDataSync', () => ({ GuestDataSync: core }));
 
-    const snapshot = actor.getSnapshot();
-    expect(snapshot.value).toBe('idle');
-    expect(snapshot.context.summary.total).toBe(0);
-    expect(snapshot.context.progress.current).toBe(0);
-    expect(snapshot.context.error).toBeNull();
+const SUMMARY: SyncSummary = {
+  timetablePeriods: 2,
+  moodLogs: 1,
+  journalEntries: 3,
+  students: 4,
+  total: 10,
+};
+
+type Progress = { completed: number; total: number; currentStep: string };
+type TransferResult = { success: boolean; errors: string[] };
+
+/** The machine with its two jobs replaced: no device storage, no network. */
+function machineWith(
+  load: () => Promise<SyncSummary>,
+  transfer: (
+    userId: string,
+    onProgress: (p: Progress) => void,
+  ) => Promise<TransferResult> = async () => ({
+    success: true,
+    errors: [],
+  }),
+) {
+  return guestDataSyncMachine.provide({
+    actors: {
+      loadSummary: createAsyncLogic<SyncSummary, void>({ run: load }),
+      transfer: createCallbackLogic<EventObject, { userId: string }>(({ input, sendBack }) => {
+        let active = true;
+        const send = (event: AnyEventObject) => {
+          if (active) sendBack(event);
+        };
+        transfer(input.userId, (p) =>
+          send({
+            type: 'TRANSFER_PROGRESS',
+            current: p.completed,
+            total: p.total,
+            step: p.currentStep,
+          }),
+        ).then(
+          (r) =>
+            send(
+              r.success
+                ? { type: 'TRANSFER_DONE' }
+                : { type: 'TRANSFER_FAILED', message: r.errors.join(', ') },
+            ),
+          (e: Error) => send({ type: 'TRANSFER_FAILED', message: e.message }),
+        );
+        return () => {
+          active = false;
+        };
+      }),
+    },
+  });
+}
+
+describe('guestDataSyncMachine / G1, real XState, jobs provided', () => {
+  it('starts idle with nothing counted', () => {
+    const actor = createGuestDataSyncActor(
+      undefined,
+      machineWith(async () => SUMMARY),
+    );
+    expect(actor.getSnapshot().value).toBe('idle');
+    expect(actor.getSnapshot().context).toMatchObject({ summary: { total: 0 }, error: null });
   });
 
-  it('transitions to loading on START_LOADING, then to ready on SET_SUMMARY', () => {
-    const actor = createActor(guestDataSyncMachine);
-    actor.start();
-
+  it('counts what is on the device when loading starts', async () => {
+    const actor = createGuestDataSyncActor(
+      undefined,
+      machineWith(async () => SUMMARY),
+    );
     actor.send({ type: 'START_LOADING' });
     expect(actor.getSnapshot().value).toBe('loading');
-
-    actor.send({
-      type: 'SET_SUMMARY',
-      summary: {
-        timetablePeriods: 3,
-        moodLogs: 2,
-        journalEntries: 1,
-        students: 5,
-        total: 11,
-      },
-    });
-
-    const snapshot = actor.getSnapshot();
-    expect(snapshot.value).toBe('ready');
-    expect(snapshot.context.summary.total).toBe(11);
-    expect(snapshot.context.summary.students).toBe(5);
+    const ready = await waitFor(actor, (s) => s.matches('ready'));
+    expect(ready.context.summary).toEqual(SUMMARY);
   });
 
-  it('handles confirm_skip lifecycle cleanly', () => {
-    const actor = createActor(guestDataSyncMachine);
-    actor.start();
-
+  it('shows the error when counting fails, and can try again', async () => {
+    const load = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('storage locked'))
+      .mockResolvedValue(SUMMARY);
+    const actor = createGuestDataSyncActor(undefined, machineWith(load));
     actor.send({ type: 'START_LOADING' });
-    actor.send({
-      type: 'SET_SUMMARY',
-      summary: {
-        timetablePeriods: 1,
-        moodLogs: 0,
-        journalEntries: 0,
-        students: 0,
-        total: 1,
-      },
-    });
+    const failed = await waitFor(actor, (s) => s.matches('error'));
+    expect(failed.context.error).toBe('storage locked');
+    actor.send({ type: 'START_LOADING' });
+    await waitFor(actor, (s) => s.matches('ready'));
+  });
 
-    expect(actor.getSnapshot().value).toBe('ready');
-
+  it('asks before discarding data, and goes back on cancel', async () => {
+    const actor = createGuestDataSyncActor(
+      undefined,
+      machineWith(async () => SUMMARY),
+    );
+    actor.send({ type: 'START_LOADING' });
+    await waitFor(actor, (s) => s.matches('ready'));
     actor.send({ type: 'TRIGGER_CONFIRM_SKIP' });
     expect(actor.getSnapshot().value).toBe('confirm_skip');
-
     actor.send({ type: 'CANCEL_CONFIRM_SKIP' });
     expect(actor.getSnapshot().value).toBe('ready');
   });
 
-  it('manages active sync progress updates and completes', () => {
-    const actor = createActor(guestDataSyncMachine);
-    actor.start();
-
-    actor.send({ type: 'START_LOADING' });
-    actor.send({
-      type: 'SET_SUMMARY',
-      summary: {
-        timetablePeriods: 1,
-        moodLogs: 1,
-        journalEntries: 0,
-        students: 0,
-        total: 2,
-      },
-    });
-
-    actor.send({ type: 'START_SYNC' });
-    expect(actor.getSnapshot().value).toBe('syncing');
-
-    actor.send({
-      type: 'UPDATE_PROGRESS',
-      current: 1,
-      total: 2,
-      step: 'Syncing timetable periods...',
-    });
-
-    let snapshot = actor.getSnapshot();
-    expect(snapshot.value).toBe('syncing');
-    expect(snapshot.context.progress.current).toBe(1);
-    expect(snapshot.context.progress.step).toBe('Syncing timetable periods...');
-
-    actor.send({ type: 'SET_COMPLETED' });
-    snapshot = actor.getSnapshot();
-    expect(snapshot.value).toBe('completed');
-  });
-
-  it('transitions to error on SET_ERROR and allows retry', () => {
-    const actor = createActor(guestDataSyncMachine);
-    actor.start();
-
-    actor.send({ type: 'START_LOADING' });
-    actor.send({ type: 'SET_ERROR', message: 'Network offline.' });
-
-    let snapshot = actor.getSnapshot();
-    expect(snapshot.value).toBe('error');
-    expect(snapshot.context.error).toBe('Network offline.');
-
-    // Retry transitions back to syncing or loading
-    actor.send({ type: 'START_SYNC' });
-    snapshot = actor.getSnapshot();
-    expect(snapshot.value).toBe('syncing');
-  });
-
-  it('executes fetchGuestDataSummaryEffect with Effect-TS v4 successfully', async () => {
-    const actor = createGuestDataSyncActor();
-
-    const mockFetch = vi.fn().mockResolvedValue({
-      timetablePeriods: 2,
-      moodLogs: 1,
-      journalEntries: 3,
-      students: 4,
-      total: 10,
-    });
-
-    const result = await executeFetchGuestDataSummaryEffect(actor, mockFetch);
-    expect(result.success).toBe(true);
-    expect(result.summary?.total).toBe(10);
-    expect(actor.getSnapshot().value).toBe('ready');
-  });
-
-  it('executes executeGuestDataSyncEffect with progress and success', async () => {
-    const actor = createGuestDataSyncActor();
-
-    const mockSync = vi.fn().mockImplementation(async (_userId, onProgress) => {
+  it('moves the data for this account, reporting progress, then completes', async () => {
+    const transfer = vi.fn(async (_userId: string, onProgress: (p: Progress) => void) => {
       onProgress({ completed: 5, total: 10, currentStep: 'Uploading records...' });
-      return { success: true };
+      return { success: true, errors: [] };
     });
-
-    const result = await executeGuestDataSyncEffect(actor, 'usr-123', mockSync);
-    expect(result.success).toBe(true);
-    expect(actor.getSnapshot().value).toBe('completed');
-    expect(actor.getSnapshot().context.progress.current).toBe(5);
+    const actor = createGuestDataSyncActor(
+      { userId: 'usr-123' },
+      machineWith(async () => SUMMARY, transfer),
+    );
+    actor.send({ type: 'START_SYNC' });
+    const done = await waitFor(actor, (s) => s.status === 'done');
+    expect(done.value).toBe('completed');
+    expect(done.context.progress).toEqual({ current: 5, total: 10, step: 'Uploading records...' });
+    expect(transfer).toHaveBeenCalledWith('usr-123', expect.any(Function));
   });
 
-  it('handles executeGuestDataSyncEffect failure cleanly', async () => {
-    const actor = createGuestDataSyncActor();
+  it.each([
+    [
+      'reports failures',
+      async () => ({ success: false, errors: ['moods', 'journal'] }),
+      'moods, journal',
+    ],
+    [
+      'throws',
+      async () => Promise.reject(new Error('Cloud endpoint unavailable.')),
+      'Cloud endpoint unavailable.',
+    ],
+  ])('shows the error when the transfer %s', async (_name, transfer, message) => {
+    const actor = createGuestDataSyncActor(
+      { userId: 'u' },
+      machineWith(async () => SUMMARY, transfer),
+    );
+    actor.send({ type: 'START_SYNC' });
+    const failed = await waitFor(actor, (s) => s.matches('error'));
+    expect(failed.context.error).toBe(message);
+  });
 
-    const mockSync = vi.fn().mockRejectedValue(new Error('Cloud endpoint unavailable.'));
+  it('ignores a count that finishes after the modal closed', async () => {
+    let finish!: (s: SyncSummary) => void;
+    const actor = createGuestDataSyncActor(
+      undefined,
+      machineWith(() => new Promise((resolve) => (finish = resolve))),
+    );
+    actor.send({ type: 'START_LOADING' });
+    actor.send({ type: 'RESET' });
+    finish(SUMMARY);
+    await Promise.resolve();
+    expect(actor.getSnapshot().value).toBe('idle');
+    expect(actor.getSnapshot().context.summary.total).toBe(0);
+  });
 
-    const result = await executeGuestDataSyncEffect(actor, 'usr-123', mockSync);
-    expect(result.success).toBe(false);
-    expect(result.error).toBe('Cloud endpoint unavailable.');
-    expect(actor.getSnapshot().value).toBe('error');
-    expect(actor.getSnapshot().context.error).toBe('Cloud endpoint unavailable.');
+  it('runs the real jobs against the guest data coordinator', async () => {
+    core.getGuestDataSummary.mockResolvedValue({ ...SUMMARY, extra: 'ignored' });
+    core.syncAllData.mockImplementation(async (_id: string, onProgress: (p: Progress) => void) => {
+      onProgress({ completed: 1, total: 2, currentStep: 'Moods' });
+      return { success: true, synced: {}, errors: [] };
+    });
+    const actor = createGuestDataSyncActor({ userId: 'usr-9' });
+    actor.send({ type: 'START_LOADING' });
+    const ready = await waitFor(actor, (s) => s.matches('ready'));
+    expect(ready.context.summary).toEqual(SUMMARY);
+    actor.send({ type: 'START_SYNC' });
+    const done = await waitFor(actor, (s) => s.status === 'done');
+    expect(done.context.progress.step).toBe('Moods');
+    expect(core.syncAllData).toHaveBeenCalledWith('usr-9', expect.any(Function));
   });
 });

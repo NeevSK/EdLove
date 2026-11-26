@@ -2,7 +2,7 @@ import { View, Text } from 'react-native';
 import { useChatMessages } from '@repo/community/hooks/useChatMessages';
 import { useChatOutbox } from '@repo/community/hooks/useChatOutbox';
 import { useChatRealtime } from '@repo/community/hooks/useChatRealtime';
-import type { ChatMessage } from '@repo/community/types';
+import type { ChatMessage } from '@repo/core/types/Community';
 import {
   type ChatChannel,
   ChatSendCommandSchema,
@@ -147,6 +147,7 @@ function AccountChat(props: BaseChatScreenProps & { principalId: string }) {
               access={composerAccess(props)}
               onTyping={realtime.sendTyping}
               typingUsers={realtime.typingUsers}
+              draftKey={`chat:${props.channel.kind}:${props.channel.id}`}
             />
           </View>
         </View>

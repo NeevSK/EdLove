@@ -4,9 +4,11 @@ import {
   useActiveSubTabsStore,
 } from '@repo/core/store/useActiveSubTabsStore';
 import { TaskTabs } from '@repo/ui/components/native';
-import { usePathname, useRouter } from 'expo-router';
+import { usePathname } from 'expo-router';
 import type React from 'react';
 import { useCallback } from 'react';
+import { buildHref } from '@repo/core/routing/internalHref';
+import { useNavigator } from './native/navigation';
 
 const EMPTY_TABS: ActiveSubTabItem[] = [];
 
@@ -21,7 +23,7 @@ export interface ActiveSubTabStripProps {
  * mounted. The strip's store and routes live here; the kit's TaskTabs draws it.
  */
 export const ActiveSubTabStrip: React.FC<ActiveSubTabStripProps> = ({ domain, onReturnToOverview }) => {
-  const router = useRouter();
+  const router = useNavigator();
   const pathname = usePathname();
   const tabs = useActiveSubTabsStore((state) => state.tabsByDomain[domain] ?? EMPTY_TABS);
   const activeTabId = useActiveSubTabsStore((state) => state.activeTabByDomain[domain] || '');
@@ -32,7 +34,7 @@ export const ActiveSubTabStrip: React.FC<ActiveSubTabStripProps> = ({ domain, on
 
   const open = useCallback(
     (tab: ActiveSubTabItem) =>
-      router.push({ pathname: tab.route, params: tab.params } as Parameters<typeof router.push>[0]),
+      router.follow(buildHref(tab.route, tab.params), 'sub-tab'),
     [router],
   );
 

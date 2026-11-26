@@ -1,4 +1,4 @@
-import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/lib/sync/types';
+import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/types/mutationQueue';
 
 /**
  * The pre-cutover domain replay table was retired with the legacy API.
@@ -7,12 +7,16 @@ import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/li
  */
 export const MUTATION_REGISTRY: Record<
   string,
-  (variables: unknown, context?: { idempotencyKey: string; commandId?: string; userId?: string }) =>
-    Promise<QueuedMutationDispatchResult>
+  (
+    variables: unknown,
+    context?: { idempotencyKey: string; commandId?: string; userId?: string },
+  ) => Promise<QueuedMutationDispatchResult>
 > = Object.create(null) as Record<
   string,
-  (variables: unknown, context?: { idempotencyKey: string; commandId?: string; userId?: string }) =>
-    Promise<QueuedMutationDispatchResult>
+  (
+    variables: unknown,
+    context?: { idempotencyKey: string; commandId?: string; userId?: string },
+  ) => Promise<QueuedMutationDispatchResult>
 >;
 
 export function hasAdmittedMutation(name: QueuedMutation['name']): boolean {

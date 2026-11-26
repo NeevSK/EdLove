@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { persistStorage } from '@repo/core/effect/bindings/state';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -33,7 +33,9 @@ export const useSensoryStore = create<SensoryPreferencesState>()(
     }),
     {
       name: 'gurudevi_sensory_preferences_v1',
-      storage: createJSONStorage(() => SafeZustandStorage),
+      // The shape on the device today. Bump it, with a `migrate`, when the persisted shape changes.
+      version: 0,
+      storage: createJSONStorage(() => persistStorage),
     },
   ),
 );

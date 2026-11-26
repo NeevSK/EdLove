@@ -49,6 +49,8 @@ A cross-platform hook that abstracts the physical file:
 ## 🛠️ The "Universal Document Portal"
 We implement a `UniversalDocumentPortal` to handle non-video/PDF formats (XLSX, DOCX, PPTX).
 
+> **Updated 14 Nov 2026:** for prose content, DOCX and PPTX are imported into Gurudevi Markdown rather than previewed through an online vendor viewer. See [content authoring and formats](../../../../docs/architecture/2026-11-14-content-authoring-and-formats.md). Viewer hand-off stays for files a person keeps as files.
+
 ### Strategy by File Type:
 | Format | 2026 Best Practice Implementation |
 | :--- | :--- |

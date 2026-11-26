@@ -10,3 +10,19 @@ export { default as SchoolOverview } from '@repo/admin/components/principal/Scho
 export { default as SchoolStats } from '@repo/admin/components/principal/SchoolStats';
 export { default as StaffDirectory } from '@repo/admin/components/principal/StaffDirectory';
 export { PrincipalSetupWizard } from '@repo/admin/components/principal/PrincipalSetupWizard';
+export {
+  SchoolConnectionWelcome,
+  type SchoolConnectionWelcomeProps,
+} from './school/SchoolConnectionWelcome';
+export {
+  InviteCodeManager,
+  type InviteCodeManagerProps,
+  type InviteRole,
+} from './school/InviteCodeManager';
+export {
+  SchoolSettingsSheet,
+  type SchoolSettingsSheetProps,
+  type SchoolLevel,
+  type GuardianPolicy,
+} from './school/SchoolSettingsSheet';
+

@@ -1,0 +1,10 @@
+{
+  "directDatabaseCalls": 17,
+  "surfaceBranches": 142,
+  "exploreBackendClients": [
+    "sanctuary-api",
+    "supabase-auth",
+    "supabase-host",
+    "supabase-realtime"
+  ]
+}

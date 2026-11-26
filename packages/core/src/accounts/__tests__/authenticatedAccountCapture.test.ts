@@ -1,16 +1,16 @@
-import type { AuthSession } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession } from '@repo/core/types/authSession';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const captureCurrentAccount = vi.hoisted(() => vi.fn());
 
-vi.mock('../deviceAccounts', () => ({
+vi.mock('../deviceAccounts.adapter', () => ({
   deviceAccounts: { captureCurrentAccount },
 }));
 
 import {
   captureAuthenticatedDeviceAccount,
   getVerifiedDeviceAccountProfile,
-} from '../authenticatedAccountCapture';
+} from '../authenticatedAccountCapture.adapter';
 
 function session(accessToken = 'access-token'): AuthSession {
   return {

@@ -11,8 +11,9 @@ tags: [edlove, gurudevi, sanctuary, offline-first, education-commons, humane-tec
 # EdLove & Gurudevi Sanctuary
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-7.0.2-blue)](https://www.typescriptlang.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-16.4-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-7.1.0--beta-blue)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8.3.5-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![Astro](https://img.shields.io/badge/Astro-7.4-BC52EE?logo=astro&logoColor=white)](https://astro.build/)
 [![Expo](https://img.shields.io/badge/Expo-58.0.3-000020?logo=expo)](https://expo.dev/)
 [![React Native](https://img.shields.io/badge/React_Native-0.88-61DAFB?logo=react)](https://reactnative.dev/)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor_Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
@@ -38,10 +39,11 @@ EdLove is a civic and educational software constellation dedicated to **Educatio
 
 | Application | Purpose | Real State & Environment |
 | :--- | :--- | :--- |
-| [**`apps/edlove-web`**](./apps/edlove-web) | **EdLove Epistemic Commons (`edlove.org`)** — Public educational philosophy, 200 Innovations Archive, 6 Cosmos Paradigms, and Ceylon Research Atlas | 223 pre-rendered static routes, high-contrast APCA typography, instant search |
-| [**`apps/gurudevi-web`**](./apps/gurudevi-web) | **Gurudevi Unified Platform (`gurudevi.app`)** — Canonical browser sanctuary: public discovery + authenticated classroom, self, and school workspaces | Next.js 16 (Turbopack, Tailwind v4) with in-browser offline WASM SQLite |
+| [**`apps/edlove-web`**](./apps/edlove-web) | **EdLove Epistemic Commons (`edlove.org`)** — Public educational philosophy, 200 Innovations Archive, 6 Cosmos Paradigms, and Ceylon Research Atlas | Astro 7.4 static site (Svelte, Tailwind v4) with 30 pre-rendered routes, high-contrast APCA typography |
+| [**`apps/gurudevi-web`**](./apps/gurudevi-web) | **Gurudevi Web App (`sanctuary.gurudevi.app`, `explore.gurudevi.app`)** — Canonical browser sanctuary: authenticated classroom, self, and school workspaces | Vite 8.3.5 SPA (`spa/` with `@tanstack/react-router`, Tailwind v4) on Cloudflare Pages |
+| [**`apps/gurudevi-public`**](./apps/gurudevi-public) | **Gurudevi Public Site (`gurudevi.app`)** — Canonical public marketing, journal, legal, SEO, and AI agent discovery | Astro 7.4 static site with 30 pre-rendered routes |
 | [**`apps/gurudevi-mobile`**](./apps/gurudevi-mobile) | **Gurudevi Mobile** — Daily operational mobile haven for teachers, students, and principals | Expo SDK 58 / React Native 0.88 with local SQLite offline synchronization |
-| [**`apps/sanctuary-api`**](./apps/sanctuary-api) | **Sanctuary Verification Engine** — Cryptographic receipts, OpenAPI contracts, and distributed sync coordination | Lightweight, high-velocity Node.js / Hono microservice |
+| [**`apps/sanctuary-api`**](./apps/sanctuary-api) | **Sanctuary Verification Engine** — Cryptographic receipts, OpenAPI contracts, and distributed sync coordination | Lightweight, high-velocity Node.js / Hono microservice (oRPC v2) |
 
 ### Shared Domains (`packages/`)
 
@@ -95,9 +97,10 @@ pnpm install
 pnpm dev
 
 # Or run individual applications
-pnpm --filter edlove-web dev        # EdLove Commons
-pnpm --filter gurudevi-web dev      # Gurudevi Unified Web
-pnpm --filter gurudevi-mobile dev   # Mobile Development Client
+pnpm --filter apps-edlove-web dev        # EdLove Commons (Astro)
+pnpm --filter apps-gurudevi-public dev   # Gurudevi Public Site (Astro)
+pnpm --filter gurudevi-web dev           # Gurudevi Sanctuary App (Vite)
+pnpm --filter gurudevi-mobile dev        # Mobile Development Client (Expo)
 ```
 
 ---

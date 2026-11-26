@@ -5,7 +5,7 @@ import {
   restoreGradebookDraftSnapshot,
   saveGradebookDraftSnapshot,
 } from '@repo/classroom/machines/gradebookBatchMachine';
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createActor } from 'xstate';
 

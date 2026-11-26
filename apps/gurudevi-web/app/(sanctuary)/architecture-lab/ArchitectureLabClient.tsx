@@ -1,7 +1,5 @@
-'use client';
-
 import { useState, useMemo } from 'react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import toolsMetaModelData from '../architecture/toolsMetaModelData.json';
 
 // --- Types ---
@@ -308,7 +306,7 @@ export function ArchitectureLabClient() {
         {/* Cross-Link back to Monorepo Architecture Tool */}
         <div className="flex items-center gap-2">
           <Link
-            href="/architecture"
+            to="/architecture"
             className="flex items-center gap-1.5 rounded-lg border border-sky-700/80 bg-sky-950/60 px-3 py-1.5 text-xs font-bold text-sky-300 hover:bg-sky-900/80 hover:text-white transition shadow"
           >
             <span>🏛️ Monorepo Sentinels &amp; ERD</span>

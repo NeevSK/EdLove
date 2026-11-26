@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useState } from 'react';
 import {
   CANONICAL_CLIMATE_DIMENSIONS,
@@ -83,7 +81,7 @@ export function ClimateSensingFloor({ displayName, capacity }: Readonly<ClimateS
         <div className={styles.titleArea}>
           <div style={{ marginBottom: '0.5rem' }}>
             <Link
-              href="/workspace"
+              to="/workspace"
               style={{
                 fontSize: '0.8rem',
                 fontWeight: 650,

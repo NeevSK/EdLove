@@ -7,7 +7,7 @@ const setItem = vi.hoisted(() =>
 vi.mock('@react-native-async-storage/async-storage', () => ({
   default: {
     getAllKeys: async () => [...values.keys()],
-    multiGet: async (keys: string[]) => keys.map((key) => [key, values.get(key) ?? null]),
+    getMany: async (keys: string[]) => Object.fromEntries(keys.map((key) => [key, values.get(key) ?? null])),
     getItem: async (key: string) => values.get(key) ?? null,
     setItem,
     removeItem: async (key: string) => values.delete(key),

@@ -1,6 +1,3 @@
-'use client';
-
-import Image from 'next/image';
 import styles from './tutii-greeting.module.css';
 
 type TutiiGreetingProps = Readonly<{
@@ -19,12 +16,13 @@ export function TutiiGreeting({ context, actionLabel, onContinue, autoFocus = fa
   return (
     <section className={styles.greeting} aria-labelledby="tutii-greeting-title">
       <div className={styles.portrait}>
-        <Image
+        <img
           src="/mascot/firefly-guide-welcome-light-cutout-v2.webp"
           alt="Tutii looks toward you with a welcoming expression."
           width={360}
           height={360}
-          priority
+          fetchPriority="high"
+          decoding="async"
         />
       </div>
       <div className={styles.voice}>

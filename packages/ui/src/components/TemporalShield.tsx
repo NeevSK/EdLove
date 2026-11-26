@@ -20,7 +20,8 @@ interface TemporalShieldProps {
  * It reinforces the "Read-Only" nature of historical data.
  */
 export const TemporalShield: React.FC<TemporalShieldProps> = ({ children, style, label }) => {
-  const { phase, intensity } = useTemporalStore();
+  const phase = useTemporalStore((s) => s.phase);
+  const intensity = useTemporalStore((s) => s.intensity);
   const isPast = phase === 'past';
 
   if (!isPast) return <View style={style}>{children}</View>;

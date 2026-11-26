@@ -1,5 +1,29 @@
 import type { PjcHierarchy } from './hierarchy';
 
+/** Format a journey as a compact Mermaid statechart string for agent token efficiency. */
+export function formatJourneyStatechart(journey: {
+  entry?: string;
+  steps: Array<{ id: string; terminal?: boolean }>;
+  transitions: Array<{ from: string; to: string; action?: string }>;
+}): string {
+  const lines: string[] = ['stateDiagram-v2'];
+  if (journey.entry) {
+    lines.push(`  [*] --> ${journey.entry.replace(/^step:/, '')}`);
+  }
+  for (const t of journey.transitions) {
+    const from = t.from.replace(/^step:/, '');
+    const to = t.to.replace(/^step:/, '');
+    const action = t.action ? `: ${t.action}` : '';
+    lines.push(`  ${from} --> ${to}${action}`);
+  }
+  for (const s of journey.steps) {
+    if (s.terminal) {
+      lines.push(`  ${s.id.replace(/^step:/, '')} --> [*]`);
+    }
+  }
+  return lines.join('\n');
+}
+
 /** Return the complete journey, its parent, and intents that share it. */
 export function inspectHierarchyJourney(catalog: PjcHierarchy, id: string) {
   const intents = catalog.features.flatMap((feature) =>

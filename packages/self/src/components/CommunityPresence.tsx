@@ -43,15 +43,11 @@ export default function CommunityPresence({
   const pulseOpacity = useSharedValue(0.6);
 
   useEffect(() => {
-    pulseScale.value = withRepeat(
-      withTiming(1.5, { duration: 3000, easing: Easing.inOut(Easing.ease) }),
-      -1,
-      true,
+    pulseScale.set(
+      withRepeat(withTiming(1.5, { duration: 3000, easing: Easing.inOut(Easing.ease) }), -1, true),
     );
-    pulseOpacity.value = withRepeat(
-      withTiming(0.1, { duration: 3000, easing: Easing.inOut(Easing.ease) }),
-      -1,
-      true,
+    pulseOpacity.set(
+      withRepeat(withTiming(0.1, { duration: 3000, easing: Easing.inOut(Easing.ease) }), -1, true),
     );
   }, [pulseScale, pulseOpacity]);
 
@@ -93,7 +89,7 @@ export default function CommunityPresence({
   if (isLoading) {
     return (
       <HStack className={`items-center gap-3 ${hidePadding || compact ? '' : 'p-4'} opacity-50`}>
-        <WaitingSign size="sm" />
+        <WaitingSign size={20} />
         <Text className="text-mistGray text-xs font-bold uppercase tracking-widest">
           Synchronizing Presence...
         </Text>

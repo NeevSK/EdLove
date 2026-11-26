@@ -7,13 +7,12 @@ import { AppHeader, type AppHeaderProps } from '@repo/ui/components/native';
 import { Bell, ChevronLeft, Menu, Search, X } from '@repo/ui/icons';
 import { useWorld } from '@repo/ui/theme/native';
 import { getHeaderGreeting, getHeaderRoleContext } from '@repo/ui/utils/headerUtils';
-import { safeBack } from '@repo/ui/utils/navigation';
-import { router } from 'expo-router';
 import type React from 'react';
 import { useCallback, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigator } from './native/navigation';
 
 export interface GlobalHeaderProps {
   title?: string;
@@ -87,6 +86,7 @@ export default function GlobalHeader({
   isSelfView = false,
   perspectivePill,
 }: GlobalHeaderProps) {
+  const router = useNavigator();
   const { t } = useTranslation();
   const { can } = usePermissions();
   const wt = useWorld().tokens;
@@ -120,8 +120,8 @@ export default function GlobalHeader({
 
   const handleBack = useCallback(() => {
     if (onBack) onBack();
-    else safeBack('/self');
-  }, [onBack]);
+    else router.back('/self');
+  }, [onBack, router]);
 
   const { notifications, unreadCount, isLoading, isRealtimeConnected, error, markAsRead, markAllRead } =
     useScopedNotifications(user?.id);

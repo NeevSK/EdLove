@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import { act, create } from 'react-test-renderer';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -60,16 +61,23 @@ vi.mock('@repo/ui/components/BrandPulse', () => ({
 vi.mock('@repo/ui/components/Mascot', () => ({
   Mascot: () => null,
 }));
-vi.mock('@repo/ui/primitives', () => ({
-  Box: 'Box',
-  Pressable: 'Pressable',
+vi.mock('@repo/ui/components/native', () => ({
+  Button: ({ label, ...rest }: { label: string }) =>
+    createElement(
+      'Pressable',
+      { accessibilityRole: 'button', accessibilityLabel: label, ...rest },
+      label,
+    ),
   Text: 'Text',
+}));
+vi.mock('@repo/ui/theme/native', () => ({
+  useWorld: () => ({ tokens: { ground: 'ground', lamp: 'lamp' } }),
 }));
 
 import {
   DEFAULT_PENDING_INTENT_TTL_MS,
   pendingIntentStore,
-} from '@repo/core/logic/deeplink/pendingIntentStore';
+} from '@repo/core/logic/deeplink/pendingIntent.store';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
 
 function AppServices() {
@@ -571,7 +579,10 @@ describe('SessionRouteGate account isolation', () => {
     expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
   });
 
-  it('replays a validated QR payload exactly once after session admission', async () => {
+  // The mobile app has no `/qr` screen (QR intents are retired; `+native-intent` fails them closed).
+  // The intent is still drained exactly once, but the navigator refuses to open a screen that
+  // doesn't exist, where it used to replace into expo-router's unmatched screen.
+  it('drains a QR intent exactly once and does not open the retired QR screen', async () => {
     const payload = JSON.stringify({ v: 1, action: 'join_class', classroom_id: 'c123' });
     const targetPath = `/qr?payload=${encodeURIComponent(payload)}`;
     pendingIntentStore.getState().setPendingIntent({
@@ -595,11 +606,39 @@ describe('SessionRouteGate account isolation', () => {
       );
     });
 
-    expect(mocks.replace).toHaveBeenCalledWith(targetPath);
+    expect(mocks.replace).not.toHaveBeenCalled();
     expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
   });
 
   it('drains an internal route intent and navigates to target after session admission', async () => {
+    const targetPath = '/self/wisdom/bio-101';
+    pendingIntentStore.getState().setPendingIntent({
+      targetPath,
+      intentKind: 'generic',
+      params: { path: targetPath },
+      originalUrl: 'https://sanctuary.gurudevi.app/self/wisdom/bio-101',
+    });
+
+    mocks.pathname = '/self';
+    mocks.routeTarget = {
+      decision: 'app',
+      redirectTo: null,
+      policy: { canRenderCurrentPath: true },
+    };
+
+    await act(async () => {
+      create(
+        <SessionRouteGate>
+          <>{'app-shell'}</>
+        </SessionRouteGate>,
+      );
+    });
+
+    expect(mocks.replace).toHaveBeenCalledWith(targetPath);
+    expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
+  });
+
+  it('drains an intent for a screen that does not exist without navigating to it', async () => {
     const targetPath = '/library/resource/bio-101';
     pendingIntentStore.getState().setPendingIntent({
       targetPath,
@@ -623,7 +662,7 @@ describe('SessionRouteGate account isolation', () => {
       );
     });
 
-    expect(mocks.replace).toHaveBeenCalledWith(targetPath);
+    expect(mocks.replace).not.toHaveBeenCalled();
     expect(pendingIntentStore.getState().getPendingIntent()).toBeNull();
   });
 

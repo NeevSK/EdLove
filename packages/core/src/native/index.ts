@@ -46,20 +46,15 @@ export {
   setGuestScope,
 } from '@repo/core/native/guestScope';
 export { discardLocalGuestSession } from '@repo/core/native/guestSessionCleanup';
-export { activateLocalGuestSession } from '@repo/core/native/localGuestActivation';
+export { activateLocalGuestSession } from '@repo/core/accounts/localGuestActivation.coordinator';
 export {
   completeLocalGuestOnboarding,
   createLocalGuestInitialBond,
   discardLocalGuestOnboarding,
 } from '@repo/core/native/localGuestOnboarding';
 export type { LocalGuestSession } from '@repo/core/native/localGuestSession';
-export {
-  clearLocalGuestSession,
-  getOrCreateLocalGuestSession,
-  isLocalGuestSessionId,
-  LocalGuestSessionError,
-  restoreLocalGuestSession,
-} from '@repo/core/native/localGuestSession';
+export { clearLocalGuestSession, getOrCreateLocalGuestSession, LocalGuestSessionError, restoreLocalGuestSession } from '@repo/core/native/localGuestSession';
+export { isLocalGuestSessionId } from '@repo/core/types/localGuest';
 export { Runtime } from '@repo/core/native/runtime';
 export {
   nativeDeviceProvider,

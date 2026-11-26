@@ -140,6 +140,7 @@ export function createPracticeDocumentLifecycle<T extends PracticeDocument>(inpu
     try {
       const envelope = parseEnvelope(raw, input.policy);
       if (!envelope) {
+        // contract-check: decodes through the codec the caller supplies (dependency-inverted boundary)
         const document = input.codec.parse(raw);
         return { envelope: null, document };
       }
@@ -150,6 +151,7 @@ export function createPracticeDocumentLifecycle<T extends PracticeDocument>(inpu
         emit('expired');
         return { envelope: null, document: null };
       }
+      // contract-check: decodes through the codec the caller supplies (dependency-inverted boundary)
       const document = input.codec.parse(JSON.stringify(envelope.value));
       return { envelope, document };
     } catch (cause) {

@@ -1,4 +1,4 @@
-import type { Capacity } from '@repo/core/types/Identity';
+import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 
 /**
  * Get capacity display name.

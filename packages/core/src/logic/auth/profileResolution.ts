@@ -1,7 +1,8 @@
 import type { Identity as ActiveCitizen } from '@repo/core/types/Identity';
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
 import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
-import type { AccountLifecycleStatus, AuthSession } from '@repo/core/logic/ports/auth.port';
+import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession } from '@repo/core/types/authSession';
 
 export type AuthProfileResolution =
   | { kind: 'active'; identity: ActiveCitizen; schoolType: SchoolType | null }

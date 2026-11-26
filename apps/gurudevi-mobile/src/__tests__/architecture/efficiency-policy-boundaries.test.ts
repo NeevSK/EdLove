@@ -22,7 +22,7 @@ describe('efficiency policy boundaries', () => {
     expect(retentionScheduler).not.toMatch(/(import\(|from\s+)['"]expo-network['"]/);
     expect(backgroundSync).toMatch(/getActiveAccountId/);
     expect(backgroundSync).toMatch(/planMutationReplay\(\s*queue,\s*activeUserId,/);
-    const replayPolicy = read('packages/core/src/lib/sync/replayPolicy.ts');
+    const replayPolicy = read('packages/core/src/lib/sync/replayPolicy.coordinator.ts');
     expect(replayPolicy).toMatch(/item\.userId\s*!==\s*principalId/);
     expect(backgroundSync).toMatch(/tryAcquireMutationLease/);
   });

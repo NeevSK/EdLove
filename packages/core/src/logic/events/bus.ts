@@ -3,12 +3,13 @@ import type { GurudeviEvents } from '@repo/core/logic/events/schemas';
 export * from '@repo/core/logic/events/producers';
 export * from '@repo/core/logic/events/runtimeBridge';
 /**
- * Shared event contracts only.
+ * Shared event producers & runtime bridge only.
  *
- * This module intentionally exports event definitions and lightweight types
- * while leaving client instantiation to the app shells.
+ * Server-side Inngest event definitions (`eventType(...)` from `inngest`) live in
+ * `@repo/core/logic/events/schemas` and are deliberately NOT re-exported from this
+ * mobile-reachable barrel so the 455 KB Inngest SDK never enters native bundles.
  */
-export * from '@repo/core/logic/events/schemas';
+export type { GurudeviEvents };
 
 /**
  * Transitional type kept for repo-wide compatibility while older code is being

@@ -15,7 +15,7 @@ const mocks = vi.hoisted(() => {
   };
 });
 
-vi.mock('@repo/core/lib/storageWrapper', () => ({
+vi.mock('@repo/core/lib/storageWrapper.adapter', () => ({
   SafeZustandStorage: {
     getItem: mocks.getItem,
     removeItem: mocks.removeItem,

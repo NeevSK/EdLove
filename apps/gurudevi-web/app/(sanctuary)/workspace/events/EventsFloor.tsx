@@ -1,5 +1,3 @@
-'use client';
-
 import type { InstitutionalEvent, InventoryAssetItem } from '@repo/core/types/InstitutionalERP';
 import React, { useEffect, useState } from 'react';
 import {

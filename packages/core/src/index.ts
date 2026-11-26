@@ -1,7 +1,15 @@
 /* eslint-disable import-x/export */
 // 1. Foundation (No relative dependencies)
+export { ResendEmailAdapter, type ResendEmailAdapterOptions } from '@repo/core/adapters/resendEmail.adapter';
+export type {
+  EmailAttachment,
+  IEmailPort,
+  SendEmailRequest,
+  SendEmailResponse,
+} from '@repo/core/logic/ports/email.port';
 
-export { accountTransition } from '@repo/core/accounts/accountTransition';
+
+export { accountTransition } from '@repo/core/accounts/accountTransition.coordinator';
 export {
   type DeviceAccountProfile,
   type DeviceAccountRecord,
@@ -9,10 +17,9 @@ export {
   deviceAccounts,
   getDeviceAccountsConfig,
   setDeviceAccountsConfig,
-} from '@repo/core/accounts/deviceAccounts';
-export { isDemo } from '@repo/core/logic/modes/demo';
+} from '@repo/core/accounts/deviceAccounts.adapter';
 // 4. API & Business Logic (Named exports for better tree-shaking)
-export { accountPin, validateAccountPin } from '@repo/core/lib/accountPin';
+export { accountPin, validateAccountPin } from '@repo/core/lib/accountPin.adapter';
 export { marksToGPA } from '@repo/core/lib/grading';
 export {
   CLASSROOM_RESOURCE_SCOPE,
@@ -31,7 +38,7 @@ export {
   getPendingGateAction,
   type PendingGateAction,
   setPendingGateAction,
-} from '@repo/core/lib/pendingGateAction';
+} from '@repo/core/lib/pendingGateAction.adapter';
 export {
   getCapacityLabel,
   getSchoolCapacityForUser,
@@ -70,10 +77,10 @@ export type {
   SyncPracticeController,
 } from '@repo/core/lib/practiceContract';
 export { createPracticeController } from '@repo/core/lib/practiceContract';
-export { StorageKeys, storage } from '@repo/core/lib/storage';
-export { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-export type { SanctuaryAPIError } from '@repo/core/logic/apiInterceptor';
-export { handleAPIError, withErrorHandling } from '@repo/core/logic/apiInterceptor';
+export { StorageKeys, storage } from '@repo/core/lib/storage.adapter';
+export { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+export type { SanctuaryAPIError } from '@repo/core/logic/apiInterceptor.adapter';
+export { handleAPIError, withErrorHandling } from '@repo/core/logic/apiInterceptor.adapter';
 export * from '@repo/core/logic/capabilityDecision';
 export {
   classifyRouteIntent,
@@ -85,7 +92,7 @@ export {
   type PendingDeepLinkIntent,
   pendingIntentStore,
   usePendingIntentStore,
-} from '@repo/core/logic/deeplink/pendingIntentStore';
+} from '@repo/core/logic/deeplink/pendingIntent.store';
 export type {
   PlatformEvents,
   SchoolAttendanceRecordedPayload,
@@ -102,10 +109,6 @@ export type {
 } from '@repo/core/logic/events/bus';
 export {
   injectWorkflowEventBridge,
-  schemas,
-  schoolAttendanceRecordedEvent,
-  schoolClassroomCreatedEvent,
-  schoolGradePublishedEvent,
   sendSchoolAttendanceRecorded,
   sendSchoolClassroomCreated,
   sendSchoolGradePublished,
@@ -116,23 +119,20 @@ export {
   sendUserCreated,
   sendUserUpdated,
   sendWellbeingMoodLogged,
-  studentOnboardedEvent,
-  studentSupportRequestedEvent,
-  studentSupportRequestedPayloadSchema,
-  syncMutationQueuedEvent,
-  systemAuditLogEvent,
-  teacherSummaryRequestedEvent,
-  teacherSummaryRequestedPayloadSchema,
-  userCreatedEvent,
-  userUpdatedEvent,
-  wellbeingMoodLoggedEvent,
 } from '@repo/core/logic/events/bus';
 export {
   ActivityPulseProvider,
   useActivityPulse,
 } from '@repo/core/logic/experience/ActivityPulseContext';
-export { default as i18n } from '@repo/core/logic/i18n/config';
+export { default as i18n } from '@repo/core/logic/i18n/i18n.adapter';
 export { mediaInitialState, mediaReducer } from '@repo/core/logic/mediaReducer';
+export { isDemo } from '@repo/core/logic/modes/demo.selectors';
+export {
+  decryptPairingPayload,
+  type EncryptedPairingEnvelope,
+  encryptPairingPayload,
+  generatePairingKey,
+} from '@repo/core/logic/pairing/pairingCrypto';
 export type {
   AccountTransitionDisposition,
   AccountTransitionOutcome,
@@ -156,7 +156,7 @@ export type {
   EdloveUuidV8Parts,
   EdloveUuidV8Subtype,
   ParsedEdloveUuidV8,
-} from '@repo/core/logic/utils/edloveUuidV8';
+} from '@repo/core/logic/schemas/edloveUuidV8';
 export {
   edloveUuidV8Domain,
   edloveUuidV8MintOrigin,
@@ -164,43 +164,39 @@ export {
   encodeEdloveUuidV8,
   isEdloveUuidV8,
   parseEdloveUuidV8,
-} from '@repo/core/logic/utils/edloveUuidV8';
-export { LanguageUtils } from '@repo/core/logic/utils/LanguageUtils';
+} from '@repo/core/logic/schemas/edloveUuidV8';
+export { LanguageUtils } from '@repo/core/logic/utils/LanguageUtils.adapter';
 export { buildQRString, QRBuilder } from '@repo/core/logic/utils/QRBuilder';
 export type { QRResolveResult } from '@repo/core/logic/utils/QRResolver';
 export { resolveQR } from '@repo/core/logic/utils/QRResolver';
-export {
-  decryptPairingPayload,
-  encryptPairingPayload,
-  generatePairingKey,
-  type EncryptedPairingEnvelope,
-} from '@repo/core/logic/pairing/pairingCrypto';
 export {
   applyTemporalFilter,
   getTemporalRange,
   getTransactionRange,
   type TemporalRange,
 } from '@repo/core/logic/utils/temporalUtils';
-export { v4, v7, v7 as uuidv7 } from '@repo/core/logic/utils/uuid';
+export { v4, v7, v7 as uuidv7 } from 'uuid';
 export {
   invalidateResilience,
   type ResilienceOptions,
   withResilience,
-} from '@repo/core/offline/resilience';
+} from '@repo/core/offline/resilience.adapter';
 export { useResponsiveRenderer } from '@repo/core/platform/useResponsiveRenderer';
 export { AssetsProvider } from '@repo/core/providers/AssetsProvider';
 // 3. Auth & Context
-export { AuthProvider, useAuth } from '@repo/core/providers/AuthProvider';
+export { AuthProvider } from '@repo/core/providers/AuthProvider';
+export { useAuth } from '@repo/core/hooks/useAuth';
 export {
   CapabilityHydrationProvider,
   useCapabilityHydration,
 } from '@repo/core/providers/CapabilityHydrationProvider';
 export { GlobalProvider } from '@repo/core/providers/GlobalProvider';
-// 2. Logic State & Storage (Zustand & Supabase)
-export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTemporalStore';
+export { useTemporalStore } from '@repo/core/store/useTemporalStore';
 export { useTenantStore } from '@repo/core/store/useTenantStore';
 export { useUIStore } from '@repo/core/store/useUIStore';
 export * from '@repo/core/types';
+// 2. Logic State & Storage (Zustand & Supabase)
+export type { TemporalScale } from '@repo/core/types/Temporal';
 export type { IPostHog } from './monitoring';
 export {
   captureException,
@@ -216,21 +212,11 @@ export {
 
 import { z } from 'zod';
 
-export { AnalyticsEngine as formAnalytics } from '@intuitui-labs/form-builder-engine/analytics';
-export type { FormState } from '@intuitui-labs/form-builder-engine/core';
-export { FormManager } from '@intuitui-labs/form-builder-engine/core';
-export {
-  clearCustomValidators,
-  FormHydrator,
-  registerCustomValidator,
-} from '@intuitui-labs/form-builder-engine/hydration';
-export type { ValidatorRule } from '@intuitui-labs/form-builder-engine/schema';
-export { applyRule, validateRules } from '@intuitui-labs/form-builder-engine/validation';
 export { GrowthBookFeatureRolloutAdapter } from '@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter';
 // Hexagonal Adapters
 export { SupabaseEntitlementAdapter } from '@repo/core/adapters/supabase/supabaseEntitlement.adapter';
-export { SupabaseFormsAdapter } from '@repo/core/adapters/supabase/forms.adapter';
-export { PowerSyncFormsAdapter } from '@repo/core/adapters/powersync/forms.adapter';
+export * from '@repo/core/ai/contextRegistry.store';
+export * from '@repo/core/ai/platformManifest';
 export * from '@repo/core/constants/SriLankanSchools';
 export { useAccountDeletion } from '@repo/core/hooks/useAccountDeletion';
 export {
@@ -276,15 +262,10 @@ export {
   type ThreeWayMergeResult,
 } from '@repo/core/lib/sync/delta';
 export { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
-export { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
+export { useMutationAuditLog } from '@repo/core/lib/sync/mutationAuditLog.store';
 export type { SyncOrchestratorTraceEvent } from '@repo/core/lib/sync/sync/SyncOrchestrator';
 export { default as SyncOrchestrator } from '@repo/core/lib/sync/sync/SyncOrchestrator';
-export type {
-  MutationOutcome,
-  QueuedMutation,
-  QueuedMutationDispatchResult,
-} from '@repo/core/lib/sync/types';
-export { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+export { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 // Hexagonal Ports
 export type {
   AuthorizationDecision,
@@ -298,14 +279,18 @@ export type {
   IEntitlementPort,
 } from '@repo/core/logic';
 export { cryptoVault } from '@repo/core/logic';
-export * from '@repo/core/logic/agents';
-export type {
-  EntityDefinition,
-  EntityMode,
-  EntityType,
-} from '@repo/core/logic/entities/entity-protocol';
+export * from '@repo/core/logic/agents/agents.adapter';
 export { GPACalculator } from '@repo/core/logic/grading/GPACalculator';
-export * from '@repo/core/logic/permissions';
+export * from '@repo/core/logic/permissions/accessContext';
+export * from '@repo/core/logic/permissions/authority';
+export * from '@repo/core/logic/permissions/bondScope';
+export * from '@repo/core/logic/permissions/featurePresentation';
+export * from '@repo/core/logic/permissions/hooks/useAuthority';
+export * from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
+export * from '@repo/core/logic/permissions/localEvaluator.adapter';
+export * from '@repo/core/logic/permissions/sanctuaryFeature';
+export * from '@repo/core/logic/permissions/sovereignty';
+export * from '@repo/core/types/cedarEvaluationContext';
 export {
   AcademicCycleLeadershipAssignmentSchema,
   AcademicCycleLeadershipAssignmentStatusSchema,
@@ -395,9 +380,20 @@ export { UserSchema } from '@repo/core/logic/schemas/user.schema';
 export { validateForm, validators } from '@repo/core/logic/utils/validators';
 export * from '@repo/core/logic/workspace/canvas';
 export { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';
-export * from '@repo/core/ai/contextRegistry';
-export * from '@repo/core/ai/platformManifest';
-export { useWebTodos, type WebTodo, type UseWebTodosReturn } from './adapters/supabase/todosHook';
-export { z };
-
 export * from '@repo/core/platform/drivers';
+export type {
+  EntityDefinition,
+  EntityMode,
+  EntityType,
+} from '@repo/core/types/entityProtocol';
+export type {
+  MutationOutcome,
+  QueuedMutation,
+  QueuedMutationDispatchResult,
+} from '@repo/core/types/mutationQueue';
+export {
+  type UseWebTodosReturn,
+  useWebTodos,
+  type WebTodo,
+} from './adapters/supabase/webTodos.react';
+export { z };

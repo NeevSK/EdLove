@@ -34,12 +34,13 @@ namespace that isn't admitted, or if a domain lacks its Cedar namespace in
 | | | Reflection | `wellbeing.reflection` | skeleton |
 | | | Practice and goals | `wellbeing.practice` | skeleton |
 | Learning | `learning` | Classrooms | `learning.classrooms` | skeleton |
+| | | Teaching relations | `learning.relations` | card ([draft](learning/relations.md)) |
 | | | Lessons and materials | `learning.lessons` | skeleton |
 | | | Assignments and submissions | `learning.assignments` | skeleton |
-| | | Assessments and quizzes | `learning.assessments` | skeleton |
+| | | Assessments and quizzes | `learning.assessments` | card ([draft](learning/assessments.md)) |
 | | | Grading | `learning.grading` | skeleton |
 | | | Classroom notes | `learning.notes` | skeleton |
-| Institution operations | `ops` | Schools and academic structure | `ops.institutions` | skeleton |
+| Institution operations | `ops` | Schools and academic structure | `ops.institutions` | admitted (`provision`, `handleAvailable`, `update`, `createInviteCode`, `listInviteCodes`, `revokeInviteCode`; [card](ops/institutions.md)) |
 | | | Enrolment | `ops.enrolment` | skeleton |
 | | | Timetables | `ops.timetables` | skeleton |
 | | | Attendance | `ops.attendance` | skeleton (owner to confirm: Learning or Ops) |
@@ -56,7 +57,7 @@ namespace that isn't admitted, or if a domain lacks its Cedar namespace in
 | | | Conversations | `community.conversations` | skeleton |
 | | | Notices | `community.notices` | skeleton |
 | | | Moderation and safety | `community.moderation` | skeleton |
-| Library and commons | `library` | Resources | `library.resources` | skeleton |
+| Library and commons | `library` | Resources | `library.resources` | card ([draft](library/resources.md)) |
 | | | Collections | `library.collections` | skeleton |
 | | | Authoring and review | `library.editorial` | skeleton |
 | | | Media | `library.media` | skeleton |
@@ -76,7 +77,7 @@ namespace that isn't admitted, or if a domain lacks its Cedar namespace in
 
 | Module | Namespace | Status |
 | --- | --- | --- |
-| Identity and accounts | `identity` | admitted (`session`, `scopes`, `entry`, `createInitialBond`, `syncCredentials`; [card](platform/identity.md), draft) |
+| Identity and accounts | `identity` | admitted (`session`, `scopes`, `entry`, `createInitialBond`, `syncGrant`, `deletion.status`, `deletion.request`, `deletion.cancel`; [card](platform/identity.md), draft) |
 | Bonds and authority | `authority` | admitted (`refreshSnapshot`; boundary in `security.ts`; domain namespaces permit nothing yet; [card](platform/authority.md), draft) |
 | Durable operations | `operations` | skeleton (store and dispatcher implemented internally) |
 | Request budgets | `budgets` | skeleton |

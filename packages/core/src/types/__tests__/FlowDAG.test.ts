@@ -1,13 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { CITIZENSHIP } from '@repo/core/logic/registry/citizenship';
+import { CITIZENSHIP } from '@repo/core/types/citizenship';
 import {
   DomainEntrySchema,
-  FeatureJTBDGraphSchema,
-} from '@repo/core/logic/registry/domainEntry';
-import {
   type FeatureJTBDGraph,
-  validateFlowDAG,
-} from '@repo/core/types/FlowDAG';
+  FeatureJTBDGraphSchema,
+} from '@repo/core/types/domainEntry';
+import { validateFlowDAG } from '@repo/core/types/FlowDAG';
 
 describe('FeatureJTBDGraph Contract & FlowDAG Validation', () => {
   const sampleTeacherAttendanceFlow: FeatureJTBDGraph = {

@@ -108,6 +108,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
   }, [treeScale]);
 
   useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
     const stage =
       [...GROWTH_STAGES].reverse().find((s) => interactionCount >= s.minInteractions) ||
       GROWTH_STAGES[0]!;
@@ -117,13 +118,17 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
       bloomOpacity.value = withTiming(1, { duration: 600 });
       bloomScale.value = withSpring(1.2, { damping: 10, stiffness: 100 });
 
-      setTimeout(() => {
-        bloomOpacity.value = withTiming(0, { duration: 1000 });
-        setTimeout(() => setShowBloom(false), 1000);
-      }, 3000);
+      // The bloom fades after 3s, then unmounts; both timers stop if the tree changes or unmounts.
+      timers.push(
+        setTimeout(() => {
+          bloomOpacity.value = withTiming(0, { duration: 1000 });
+          timers.push(setTimeout(() => setShowBloom(false), 1000));
+        }, 3000),
+      );
     }
 
     setCurrentStage(stage);
+    return () => timers.forEach(clearTimeout);
   }, [interactionCount, currentStage.stage, bloomScale, bloomOpacity]);
 
   const treeAnimatedStyle = useAnimatedStyle(() => ({

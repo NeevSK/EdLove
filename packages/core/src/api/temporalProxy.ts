@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 
@@ -38,11 +38,15 @@ export function createTemporalProxy<T extends object>(moduleName: string, target
         const result: unknown = await Reflect.apply(originalMethod, obj, args);
 
         if (isTemporalQuery(result)) {
-          return applyTemporalFilter(result, {
-            column: 'created_at',
-            mode: 'event_time',
-            capability: 'event_stream',
-          });
+          return applyTemporalFilter(
+            result,
+            {
+              column: 'created_at',
+              mode: 'event_time',
+              capability: 'event_stream',
+            },
+            { viewDate, phase, viewScale },
+          );
         }
 
         return result;

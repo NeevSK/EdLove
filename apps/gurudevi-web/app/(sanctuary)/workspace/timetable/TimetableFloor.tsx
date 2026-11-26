@@ -1,6 +1,4 @@
-﻿'use client';
-
-import Link from 'next/link';
+﻿import { Link } from '@tanstack/react-router';
 import { DAYS, schoolDayFor, useTimetable } from './useTimetable';
 import { ScrollArea } from '@repo/ui/components/web';
 import styles from './timetable.module.css';
@@ -124,7 +122,7 @@ export function TimetableFloor({ displayName }: TimetableFloorProps) {
               <div className={styles.cardFooter}>
                 <span className={styles.roomTag}>{p.room}</span>
                 <Link
-                  href="/workspace"
+                  to="/workspace"
                   className={styles.attendanceActionLink}
                   title="Check or mark period attendance"
                 >

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const storageMock = vi.hoisted(() => ({ records: new Map<string, string | number | boolean>() }));
-vi.mock('@repo/core/lib/storage', () => ({
+vi.mock('@repo/core/lib/storage.adapter', () => ({
   storage: {
     getString: (key: string) => {
       const val = storageMock.records.get(key);
@@ -39,7 +39,7 @@ vi.mock('@repo/core/lib/storage', () => ({
   },
 }));
 
-import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useExperienceState } from '@repo/core/lib/experienceState.store';
 import {
   _getSandboxRegistry,
   getSandboxDomainConfig,

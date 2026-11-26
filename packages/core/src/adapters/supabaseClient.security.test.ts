@@ -10,7 +10,7 @@ const createClientMock = vi.hoisted(() =>
   vi.fn((_url: string, _key: string, _options: SupabaseClientOptions) => ({})),
 );
 
-vi.mock('@repo/core/lib/authStorage', () => ({ supabaseAuthStorage: {} }));
+vi.mock('@repo/core/lib/authStorage.adapter', () => ({ supabaseAuthStorage: {} }));
 vi.mock('@supabase/supabase-js', () => ({ createClient: createClientMock }));
 
 describe('Supabase API transport security', () => {

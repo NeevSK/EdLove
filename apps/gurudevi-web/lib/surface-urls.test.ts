@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  EDLOVE_URL,
-  EXTERNAL_LINK_PROPS,
-  FOUNDER_URL,
-  INTUITUI_URL,
-  normalizeExternalUrl,
-  resolveSurfaceUrl,
-} from './surface-urls';
+import { EDLOVE_URL, FOUNDER_URL, INTUITUI_URL } from '@repo/core/site';
+import { EXTERNAL_LINK_PROPS, normalizeExternalUrl, resolveSurfaceUrl } from './surface-urls';
 
 describe('Surface URLs Engine', () => {
   it('exports canonical external constants and security props', () => {

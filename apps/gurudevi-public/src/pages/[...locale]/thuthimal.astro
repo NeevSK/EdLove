@@ -1,0 +1,24 @@
+---
+import { Thuthimal } from '../../components/thuthimal/Thuthimal';
+import PublicLayout from '../../layouts/PublicLayout.astro';
+import { LOCALIZED_MARKETING } from '../../content/localized';
+import type { SupportedLocale } from '../../site';
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: undefined } },
+    { params: { locale: 'si' } },
+    { params: { locale: 'ta' } },
+  ];
+}
+const locale = (Astro.params.locale ?? 'en') as SupportedLocale;
+const page = locale === 'en' ? null : LOCALIZED_MARKETING[locale].pages.thuthimal;
+---
+<PublicLayout
+  locale={locale}
+  path="/thuthimal"
+  title={page?.title ?? 'Thuthimal (තුතිමල්) | Reciprocal Care for Teachers'}
+  description={page?.description ?? 'A gift economy protocol enabling communities to sponsor sovereign tools for teachers.'}
+>
+  <Thuthimal locale={locale} />
+</PublicLayout>

@@ -6,12 +6,12 @@ import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { assertHighway } from '@repo/core/api/highways';
 import { IdentityBootstrapSchema } from '@repo/core/api/identity.orpc.contract';
 import { orpcClient } from '@repo/core/api/orpcClient';
-import type { AuthSession } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession } from '@repo/core/types/authSession';
 import { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 import { UserProfilePatchSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { setGuestScope } from '@repo/core/native/guestScope';
-import type { Bond } from '@repo/core/types/Identity';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 
 /**
  * IDENTITY API (Sovereign RPC Proxy)

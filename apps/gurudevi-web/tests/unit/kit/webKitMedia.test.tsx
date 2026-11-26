@@ -1,4 +1,4 @@
-import { DocumentView, FileCard, Markdown, MediaAdapters } from '@repo/ui/components/web';
+import { DocumentView, FileCard, H5pView, Markdown, MediaAdapters } from '@repo/ui/components/web';
 import type { DocumentAdapterProps, MarkdownAdapterProps } from '@repo/ui/theme';
 import { resolveWorld, worldCssVariables } from '@repo/ui/theme';
 import { render, screen } from '@testing-library/react';
@@ -88,5 +88,21 @@ describe('web kit: FileCard and DocumentView', () => {
   it('prose variables come from the world recipe', () => {
     const vars = worldCssVariables(resolveWorld('wewa', 'morning', 'light'));
     expect(vars['--w-prose-lamp-link']).toBe(resolveWorld('wewa').recipes.prose.lamp.link.ink);
+  });
+
+  it('H5pView uses the registered H5P adapter or renders a quiet fallback', () => {
+    const { unmount } = render(<H5pView packageUrl="/h5p-samples/quiz/" />);
+    expect(screen.getByText('/h5p-samples/quiz/')).toBeTruthy();
+    unmount();
+
+    function Host({ packageUrl }: { packageUrl: string }) {
+      return <div data-testid="h5p-host">{packageUrl}</div>;
+    }
+    render(
+      <MediaAdapters adapters={{ h5p: Host }}>
+        <H5pView packageUrl="/h5p-samples/quiz/" />
+      </MediaAdapters>,
+    );
+    expect(screen.getByTestId('h5p-host').textContent).toBe('/h5p-samples/quiz/');
   });
 });

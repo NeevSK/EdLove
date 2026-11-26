@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { isReferenceOnly } from '../tooling/reference-only.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -120,7 +121,7 @@ function listSourceFiles(directory) {
     if (item.name === 'node_modules' || item.name === '.git' || item.name === 'dist') continue;
     const fullPath = path.join(directory, item.name);
     if (item.isDirectory()) files.push(...listSourceFiles(fullPath));
-    else if (/\.(?:ts|tsx|js|jsx)$/.test(item.name)) files.push(fullPath);
+    else if (/\.(?:ts|tsx|js|jsx)$/.test(item.name) && !isReferenceOnly(fullPath)) files.push(fullPath);
   }
   return files;
 }

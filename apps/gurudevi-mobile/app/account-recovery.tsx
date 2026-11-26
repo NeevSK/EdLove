@@ -2,14 +2,14 @@ import { deviceAccounts } from '@repo/core';
 import { useAuth } from '@repo/core/logic';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
-import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { AccountRecoveryScreen } from '@/screens/AccountRecoveryScreen';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
 export default function AccountRecoveryRoute() {
-  const router = useRouter();
+  const router = useNavigator();
   const { accountLifecycleStatus, refreshProfile } = useAuth();
   const { showToast } = useSanctuaryToast();
   const [isSigningOut, setIsSigningOut] = useState(false);

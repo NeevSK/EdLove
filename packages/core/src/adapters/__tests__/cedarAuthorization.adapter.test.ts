@@ -26,7 +26,7 @@ vi.mock('../../logic/permissions/cedarClientEvaluator', () => ({
   evaluateShape2: vi.fn(),
 }));
 
-vi.mock('../../logic/permissions/localEvaluator', () => ({
+vi.mock('../../logic/permissions/localEvaluator.adapter', () => ({
   getLocalResourceAttributes: vi.fn().mockResolvedValue({}),
 }));
 

@@ -159,16 +159,33 @@ const BASE_CSS = `
 .gd-sheet{margin:auto auto 0;width:100%;max-width:640px;max-height:90vh}
 .gd-sheet .gd-overlay-panel{border-bottom-left-radius:0;border-bottom-right-radius:0;padding-bottom:calc(24px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto}
 .gd-sheet-grabber{align-self:center;width:40px;height:4px;margin-bottom:4px;border-radius:2px;background:var(--w-line)}
-@media (prefers-reduced-motion:no-preference){.gd-dialog[open]:not(.gd-sheet){animation:gd-overlay-in var(--w-settle) ease-out}.gd-sheet[open]{animation:gd-sheet-in 280ms cubic-bezier(.2,.8,.2,1)}}
+.gd-side-panel{margin:0 0 0 auto;width:min(86vw,420px);max-width:none;height:100dvh;max-height:none}
+.gd-side-panel[data-side="start"]{margin:0 auto 0 0}
+.gd-side-panel .gd-overlay-panel{height:100%;display:flex;flex-direction:column;border-start-end-radius:0;border-end-end-radius:0;padding-top:calc(24px + env(safe-area-inset-top));padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+.gd-side-panel[data-side="start"] .gd-overlay-panel{border-start-start-radius:0;border-end-start-radius:0;border-start-end-radius:inherit;border-end-end-radius:inherit}
+[dir="rtl"] .gd-side-panel{margin:0 auto 0 0}[dir="rtl"] .gd-side-panel[data-side="start"]{margin:0 0 0 auto}
+@media (prefers-reduced-motion:no-preference){.gd-dialog[open]:not(.gd-sheet,.gd-side-panel){animation:gd-overlay-in var(--w-settle) ease-out}.gd-sheet[open]{animation:gd-sheet-in 280ms cubic-bezier(.2,.8,.2,1)}.gd-side-panel[open]{animation:gd-side-in 280ms cubic-bezier(.2,.8,.2,1)}.gd-side-panel[open][data-side="start"]{animation-name:gd-side-in-start}[dir="rtl"] .gd-side-panel[open]{animation-name:gd-side-in-start}[dir="rtl"] .gd-side-panel[open][data-side="start"]{animation-name:gd-side-in}}
 @keyframes gd-overlay-in{from{opacity:0;transform:translateY(8px) scale(.98)}}
 @keyframes gd-sheet-in{from{transform:translateY(100%)}}
-.gd-toasts{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:1100;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.gd-toast-region{display:flex;flex-direction:column;align-items:center;gap:8px}
-.gd-toast{pointer-events:auto;display:flex;align-items:center;gap:12px;width:100%;max-width:520px;padding:12px 16px;background:var(--w-surface-raised-bg);border-radius:var(--w-surface-raised-radius);box-shadow:var(--w-surface-raised-shadow);border-left:3px solid var(--w-line);color:var(--w-ink)}
+@keyframes gd-side-in{from{transform:translateX(100%)}}
+@keyframes gd-side-in-start{from{transform:translateX(-100%)}}
+.gd-toasts{position:fixed;left:16px;right:16px;bottom:calc(var(--gd-toast-bottom, 16px) + env(safe-area-inset-bottom));z-index:1100;pointer-events:none;transition:height var(--w-settle)}
+.gd-toast-region{position:absolute;inset:0;pointer-events:none}
+.gd-toast{pointer-events:auto;position:absolute;bottom:0;left:0;right:0;margin:0 auto;display:flex;flex-direction:column;gap:4px;width:100%;max-width:520px;box-sizing:border-box;padding:12px 16px;background:var(--w-surface-raised-bg);border-radius:var(--w-surface-raised-radius);box-shadow:var(--w-surface-raised-shadow);border-left:3px solid var(--w-line);color:var(--w-ink);translate:0 var(--gd-y, 0);scale:var(--gd-scale, 1);opacity:var(--gd-fade, 1);transform-origin:50% 100%;touch-action:pan-y}
+.gd-toast[data-size="pill"]{width:max-content;max-width:min(360px, 100%);padding:10px 16px;border-radius:999px;border-left:0}
+.gd-toast-banner{position:fixed;top:calc(8px + env(safe-area-inset-top));bottom:auto;left:12px;right:12px;width:auto;max-width:none}
+.gd-toast[data-behind]{pointer-events:none}
+.gd-toast-line{display:flex;align-items:center;gap:12px}
+.gd-toast-line>.gd-text{flex:1;margin:0;min-width:0}
+.gd-toast-description{margin:0;color:var(--w-ink-soft)}
+.gd-toast-count{font-family:var(--w-text-caption-font);font-size:var(--w-text-caption-size);color:var(--w-ink-soft)}
+.gd-toast-dismiss{appearance:none;border:0;margin:0;background:none;color:inherit;flex:none;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:20px}.gd-toast-dismiss:focus-visible{outline:2px solid var(--w-lamp);outline-offset:-4px}
 .gd-toast[data-tone="success"]{border-left-color:var(--w-success)}
+.gd-toast[data-tone="warning"]{border-left-color:var(--w-lamp-deep)}
 .gd-toast[data-tone="danger"]{border-left-color:var(--w-danger)}
-.gd-toast>.gd-text{flex:1;margin:0}
-@media (prefers-reduced-motion:no-preference){.gd-toast{animation:gd-overlay-in var(--w-settle) ease-out}}
+@keyframes gd-toast-in{from{opacity:0;transform:translateY(16px)}}
+@keyframes gd-toast-drop{from{opacity:0;transform:translateY(-16px)}}
+@media (prefers-reduced-motion:no-preference){.gd-toast{animation:gd-toast-in var(--w-settle) cubic-bezier(.2,.8,.2,1);transition:translate var(--w-settle) cubic-bezier(.2,.8,.2,1),scale var(--w-settle) cubic-bezier(.2,.8,.2,1),opacity var(--w-settle)}.gd-toast-banner{animation-name:gd-toast-drop}.gd-toast[data-swiping]{transition:none}}
 .gd-tipwrap{position:relative;display:inline-flex}
 .gd-tip{position:absolute;bottom:calc(100% + 6px);left:50%;z-index:1060;width:max-content;max-width:240px;padding:6px 10px;border-radius:var(--w-button-radius);background:var(--w-ink);color:var(--w-ground);font-size:.8125rem;line-height:1.35;pointer-events:none;opacity:0;visibility:hidden;transform:translateX(-50%);transition:opacity var(--w-settle),visibility var(--w-settle)}
 .gd-tipwrap:hover>.gd-tip,.gd-tipwrap:focus-within>.gd-tip{opacity:1;visibility:visible}
@@ -245,6 +262,15 @@ const BASE_CSS = `
 .gd-progress[data-indeterminate] .gd-progress-fill{width:30%;animation:gd-progress 1.4s ease-in-out infinite}
 @keyframes gd-progress{from{left:0}to{left:70%}}
 @media (prefers-reduced-motion:reduce){.gd-progress[data-indeterminate] .gd-progress-fill{animation:none;left:35%}}
+.gd-radar{margin:0;container-type:inline-size}
+.gd-radar svg{display:block;overflow:visible}
+.gd-radar-ring{fill:none;stroke:var(--w-line);stroke-width:1}
+.gd-radar-shape.gd-radar-now{fill:var(--w-lamp);fill-opacity:.22;stroke:var(--w-lamp);stroke-width:2;transition:all var(--w-settle)}
+.gd-radar-shape.gd-radar-then{fill:none;stroke:var(--w-ink-soft);stroke-width:1.5;stroke-dasharray:4 4}
+.gd-radar-dot{fill:var(--w-lamp)}
+.gd-radar-label{fill:var(--w-ink);font-family:var(--w-text-caption-font);font-size:var(--w-text-caption-size)}
+.gd-radar-list{margin:0;padding:0;list-style:none;color:var(--w-ink-soft);font-family:var(--w-text-caption-font);font-size:var(--w-text-caption-size)}
+@media (prefers-reduced-motion:reduce){.gd-radar-shape{transition:none}}
 .gd-badge{display:inline-flex;align-items:center;min-height:20px;padding:2px 8px;border-radius:var(--w-chip-radius);font-size:.75rem;line-height:1.3;white-space:nowrap;background:var(--w-sunken);color:var(--w-ink-soft)}
 .gd-badge[data-tone="lamp"]{background:var(--w-lamp);color:var(--w-on-lamp)}
 .gd-badge[data-tone="success"]{background:var(--w-raised);color:var(--w-ink);box-shadow:inset 0 0 0 1px var(--w-success)}
@@ -299,6 +325,9 @@ const BASE_CSS = `
 .gd-card-meta{font-family:var(--w-card-meta-font);font-size:var(--w-card-meta-size);line-height:var(--w-card-meta-lh);color:var(--w-card-meta-color);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gd-card-media{display:block;aspect-ratio:4/3;overflow:hidden}.gd-card-media>*{width:100%;height:100%;object-fit:cover;display:block}
 .gd-card-icon{display:inline-flex;padding:var(--w-card-pad) var(--w-card-pad) 0}
+.gd-card-emoji{font-size:1.4rem;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.gd-card[data-size="lg"] .gd-card-emoji{font-size:1.75rem}
+.gd-card[data-shape="wide"] .gd-card-emoji{font-size:1.6rem}
 .gd-card[data-shape="wide"] .gd-card-body{flex-direction:row;align-items:center;gap:calc(var(--w-card-gap) * 1.5);padding:var(--w-card-pad)}.gd-card[data-shape="wide"] .gd-card-words{padding:0}.gd-card[data-shape="wide"] .gd-card-icon{padding:0}
 .gd-card[data-shape="wide"] .gd-card-media{flex:none;width:88px;height:88px;aspect-ratio:1;border-radius:var(--w-card-tile-radius)}.gd-card[data-shape="wide"][data-size="sm"] .gd-card-media{width:64px;height:64px}.gd-card[data-shape="wide"][data-size="lg"] .gd-card-media{width:112px;height:112px}
 @container (max-width: 359px){.gd-card[data-shape="wide"] .gd-card-body{flex-direction:column;align-items:stretch;padding:0}.gd-card[data-shape="wide"] .gd-card-media{width:auto;height:auto;aspect-ratio:4/3;border-radius:0}.gd-card[data-shape="wide"] .gd-card-words{padding:var(--w-card-pad)}}
@@ -324,15 +353,15 @@ const BASE_CSS = `
 .gd-pebble-sticker[data-active="true"]{opacity:1!important;background:color-mix(in srgb,var(--w-lamp) 22%,var(--w-ground));border-color:color-mix(in srgb,var(--w-lamp) 55%,var(--w-line));box-shadow:-2px 2px 10px -2px color-mix(in srgb,var(--w-lamp) 35%,transparent)}
 .gd-pebble-glyph{font-size:.92rem;line-height:1;display:inline-flex;align-items:center;justify-content:center;transform:translate(2px,-2px);color:var(--w-ink-soft);transition:transform .18s cubic-bezier(.16,1,.3,1),color .15s ease}
 .gd-pebble-hitbox:hover .gd-pebble-glyph{transform:translate(2px,-2px) scale(1.12);color:var(--w-ink)}
-.gd-pebble-sticker[data-active="true"] .gd-pebble-glyph{color:var(--w-lamp)}
-.gd-pebble-counter{font-size:.72rem;font-weight:700;font-variant-numeric:tabular-nums;transform:translate(2px,-2px);color:var(--w-lamp)}
+.gd-pebble-sticker[data-active="true"] .gd-pebble-glyph{color:var(--w-lamp-deep, var(--w-ink))}
+.gd-pebble-counter{font-size:.72rem;font-weight:700;font-variant-numeric:tabular-nums;transform:translate(2px,-2px);color:var(--w-lamp-deep, var(--w-ink))}
 .gd-pebble-status{width:7px;height:7px;border-radius:50%;transform:translate(2px,-2px);background:var(--w-success, var(--w-lamp));box-shadow:0 0 6px var(--w-success, var(--w-lamp))}
 .gd-pebble-status[data-state="busy"]{background:var(--w-lamp);box-shadow:0 0 6px var(--w-lamp)}
 .gd-pebble-status[data-state="syncing"]{background:var(--w-focus);box-shadow:0 0 6px var(--w-focus)}
 .gd-pebble-menu{position:absolute;top:calc(100% - .2rem);right:0;min-width:155px;background:var(--w-ground);border:1px solid var(--w-line);box-shadow:0 10px 30px -4px color-mix(in srgb, var(--w-ink) 22%, transparent);border-radius:.85rem;padding:.35rem;display:flex;flex-direction:column;gap:.25rem;z-index:40;animation:gdPebblePop .14s cubic-bezier(.16,1,.3,1)}
 @keyframes gdPebblePop{from{opacity:0;transform:translateY(-4px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
 .gd-pebble-menu-item{display:flex;align-items:center;gap:.55rem;padding:.45rem .75rem;border-radius:.55rem;font-size:.76rem;font-weight:500;color:var(--w-ink);background:transparent;border:none;cursor:pointer;text-align:left;transition:background .12s ease,color .12s ease}
-.gd-pebble-menu-item:hover{background:color-mix(in srgb,var(--w-lamp) 16%,var(--w-ground));color:var(--w-lamp)}
+.gd-pebble-menu-item:hover{background:color-mix(in srgb,var(--w-lamp) 16%,var(--w-ground));color:var(--w-lamp-deep, var(--w-ink))}
 .gd-pebble-tooltip{position:absolute;bottom:calc(100% + 4px);right:0;background:var(--w-ink);color:var(--w-ground);font-size:.7rem;font-weight:500;padding:.25rem .6rem;border-radius:.45rem;white-space:nowrap;pointer-events:none;z-index:50;box-shadow:0 4px 14px color-mix(in srgb, var(--w-ink) 18%, transparent);animation:gdPebblePop .12s ease}
 .gd-pebble[data-gear="compact"],@container (max-width: 114px){.gd-pebble{padding:.8rem .4rem .7rem .4rem}.gd-pebble-emoji{font-size:1.55rem}.gd-pebble-title{font-size:.78rem}.gd-pebble-rhythm{display:none!important}.gd-pebble-sticker{width:1.65rem;height:1.65rem;padding:0 0 .15rem .15rem}.gd-pebble-glyph{font-size:.78rem;transform:translate(1px,-1px)}.gd-pebble-counter{font-size:.65rem;transform:translate(1px,-1px)}.gd-pebble-status{width:6px;height:6px;transform:translate(1px,-1px)}}
 .gd-rail{display:flex;flex-direction:column;gap:var(--gd-gap-inside,8px);min-width:0}.gd-rail-label{margin:0}
@@ -585,7 +614,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-notice-words{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px}.gd-notice-title{margin:0;font-family:var(--w-text-label-font);font-size:var(--w-text-label-size);font-weight:var(--w-text-label-weight)}.gd-notice-message{margin:0;font-family:var(--w-text-body-font);font-size:var(--w-text-body-size);line-height:var(--w-text-body-lh)}
 .gd-notice-dismiss,.gd-search-clear{appearance:none;border:0;margin:0;background:none;color:inherit;flex:none;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:20px;display:grid;place-items:center}.gd-notice-dismiss:focus-visible,.gd-search-clear:focus-visible{outline:2px solid var(--w-focus);outline-offset:-2px}
 .gd-search{display:flex;flex-direction:column;gap:6px}.gd-search-well{display:flex;align-items:center;gap:8px;min-height:44px;border-radius:22px;padding:0 4px 0 14px;background:var(--w-sunken);color:var(--w-ink-soft);box-shadow:inset 0 0 0 1px var(--w-line);transition:box-shadow var(--w-light-ms)}
-.gd-search-well:focus-within,.gd-search-well[data-focused="true"]{box-shadow:0 0 0 3px color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, transparent), 0 2px 8px rgba(0, 0, 0, 0.2);border-color:var(--w-lamp, #e2c37a);color:var(--w-lamp, #e2c37a)}.gd-search-clear{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:9999px;border:0;background:color-mix(in srgb, var(--w-ink, #fff) 15%, transparent);color:var(--w-ink, #fff);font-size:14px;cursor:pointer;transition:all 0.15s ease;flex-shrink:0}.gd-search-clear:hover{background:var(--w-lamp, #e2c37a);color:#111;transform:scale(1.08)}.gd-search-kbd{font-size:0.68rem;font-family:monospace;font-weight:600;padding:0.1rem 0.35rem;border-radius:0.3rem;background:color-mix(in srgb, var(--w-ink, #fff) 8%, transparent);border:1px solid var(--w-line, rgba(255, 255, 255, 0.08));color:var(--w-ink-soft, rgba(255, 255, 255, 0.5));flex-shrink:0}.gd-search-input{flex:1;min-width:0;border:0;background:none;outline:none;font-family:var(--w-field-value-font);font-size:var(--w-field-value-size);color:var(--w-ink);padding:8px 0}.gd-search-input::-webkit-search-cancel-button{display:none}
+.gd-search-well:focus-within,.gd-search-well[data-focused="true"]{box-shadow:0 0 0 3px color-mix(in srgb, var(--w-lamp) 25%, transparent), 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 20%, transparent);border-color:var(--w-lamp);color:var(--w-lamp)}.gd-search-clear{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:9999px;border:0;background:color-mix(in srgb, var(--w-ink) 15%, transparent);color:var(--w-ink);font-size:14px;cursor:pointer;transition:all 0.15s ease;flex-shrink:0}.gd-search-clear:hover{background:var(--w-lamp);color:var(--w-on-lamp);transform:scale(1.08)}.gd-search-kbd{font-size:0.68rem;font-family:monospace;font-weight:600;padding:0.1rem 0.35rem;border-radius:0.3rem;background:color-mix(in srgb, var(--w-ink) 8%, transparent);border:1px solid var(--w-line);color:var(--w-ink-soft);flex-shrink:0}.gd-search-input{flex:1;min-width:0;border:0;background:none;outline:none;font-family:var(--w-field-value-font);font-size:var(--w-field-value-size);color:var(--w-ink);padding:8px 0}.gd-search-input::-webkit-search-cancel-button{display:none}
 .gd-search-count{margin:0;font-family:var(--w-text-caption-font);font-size:var(--w-text-caption-size);color:var(--w-ink-soft)}.gd-search-count:empty{display:none}
 .gd-number{display:flex;flex-direction:column;gap:6px;align-items:flex-start}.gd-number-well{display:inline-flex;align-items:center;padding:3px;border-radius:var(--w-button-radius);background:var(--w-sunken)}
 .gd-number-step{appearance:none;border:0;margin:0;width:44px;height:44px;border-radius:var(--w-button-radius);background:none;color:var(--w-ink);font-size:20px;cursor:pointer;transition:background-color var(--w-light-ms)}.gd-number-step:hover:not(:disabled){background:var(--w-raised)}.gd-number-step:disabled{opacity:.35;cursor:default}.gd-number-step:focus-visible{outline:2px solid var(--w-focus);outline-offset:-2px}
@@ -697,6 +726,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-scrollarea[data-orientation="vertical"] > .gd-scrollarea-mask-end{bottom:0;left:0;right:8px;height:2.5rem;background:linear-gradient(to top, color-mix(in srgb, var(--w-ground) 98%, transparent), transparent)}
 .gd-scrollarea > .gd-scrollarea-track{position:absolute;z-index:10;user-select:none;-webkit-user-select:none;touch-action:none;box-sizing:border-box}
 .gd-scrollarea[data-variant="native"] > .gd-scrollarea-track{display:none}
+@media (pointer:coarse){.gd-scrollarea > .gd-scrollarea-track{display:none}}
 .gd-scrollarea > .gd-scrollarea-track[data-axis="horizontal"]{left:2px;right:2px;bottom:2px;height:6px}
 .gd-scrollarea > .gd-scrollarea-track[data-axis="vertical"]{top:2px;right:2px;bottom:2px;width:6px}
 .gd-scrollarea-rail{position:absolute;inset:0;box-sizing:border-box}
@@ -1143,9 +1173,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.5rem;
   padding: 0.28rem 0.65rem;
   border-radius: var(--w-radius-md, 0.65rem);
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
-  background: var(--w-surface, color-mix(in srgb, var(--paper, #141522) 94%, var(--ink, #fff) 4%));
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--w-line);
+  background: var(--w-surface, color-mix(in srgb, var(--w-ground) 94%, var(--w-ink) 4%));
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--w-shadow-tint) 12%, transparent);
   user-select: none;
 }
 
@@ -1153,7 +1183,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
 }
 
 .gd-time-liveClockSvg {
@@ -1173,20 +1203,20 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-time-timeDigitalBtn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--w-ink, #fff) 8%, transparent);
+  background: color-mix(in srgb, var(--w-ink) 8%, transparent);
 }
 
 .gd-time-digitalNumbers {
   font: 700 0.95rem var(--w-font-mono, monospace, ui-monospace);
   letter-spacing: 0.05em;
-  color: var(--w-ink, #fff);
+  color: var(--w-ink);
   white-space: nowrap;
 }
 
 .gd-time-periodBadge {
   font-size: 0.65rem;
   font-weight: 700;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
   letter-spacing: 0.04em;
 }
 
@@ -1197,7 +1227,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-time-formatTag {
   font: 600 0.62rem system-ui, sans-serif;
-  color: var(--w-ink-soft, rgba(255, 255, 255, 0.45));
+  color: var(--w-ink-soft);
   text-transform: uppercase;
 }
 
@@ -1222,9 +1252,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--paper-light, #171825) 90%, transparent) 40%, color-mix(in srgb, var(--paper, #0e101a) 95%, transparent));
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+  background: radial-gradient(circle, color-mix(in srgb, var(--w-raised) 90%, transparent) 40%, color-mix(in srgb, var(--w-ground) 95%, transparent));
+  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--w-shadow-tint) 40%, transparent), 0 4px 16px color-mix(in srgb, var(--w-shadow-tint) 20%, transparent);
+  border: 1px solid var(--w-line);
 }
 
 .gd-circadian-clockSvg {
@@ -1235,44 +1265,44 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-circadian-outerRim {
   fill: none;
-  stroke: color-mix(in srgb, var(--w-line, rgba(255, 255, 255, 0.12)) 80%, transparent);
+  stroke: color-mix(in srgb, var(--w-line) 80%, transparent);
   stroke-width: 1;
 }
 
 .gd-circadian-solarBead {
-  fill: var(--w-lamp, #e2c37a);
-  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--w-lamp, #e2c37a) 80%, transparent));
+  fill: var(--w-lamp);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--w-lamp) 80%, transparent));
 }
 
 .gd-circadian-cardinalTick {
-  stroke: var(--w-lamp, #e2c37a);
+  stroke: var(--w-lamp);
   stroke-width: 2;
   stroke-linecap: round;
 }
 
 .gd-circadian-minorTick {
-  stroke: var(--ink-soft, rgba(255, 255, 255, 0.3));
+  stroke: var(--w-ink-soft);
   stroke-width: 1;
   stroke-linecap: round;
 }
 
 .gd-circadian-hourHand {
-  stroke: var(--ink, #fff);
+  stroke: var(--w-ink);
   stroke-width: 2.8;
   stroke-linecap: round;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .gd-circadian-minuteHand {
-  stroke: var(--w-lamp, #e2c37a);
+  stroke: var(--w-lamp);
   stroke-width: 1.8;
   stroke-linecap: round;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .gd-circadian-centerPivot {
-  fill: var(--paper, #11121d);
-  stroke: var(--w-lamp, #e2c37a);
+  fill: var(--w-ground);
+  stroke: var(--w-lamp);
   stroke-width: 1.5;
 }
 
@@ -1286,7 +1316,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-circadian-digitalTime {
   font: 700 1.15rem monospace;
   letter-spacing: 0.04em;
-  color: var(--ink, #fff);
+  color: var(--w-ink);
 }
 
 .gd-circadian-phaseLabel {
@@ -1294,7 +1324,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   align-items: center;
   gap: 0.3rem;
   font: 600 0.72rem system-ui, sans-serif;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -1312,17 +1342,17 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   font-family: monospace;
   font-weight: 600;
   border-radius: 0.35rem;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
-  background: color-mix(in srgb, var(--paper-light, #1f202e) 80%, transparent);
-  color: var(--ink-soft, rgba(255, 255, 255, 0.75));
+  border: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 80%, transparent);
+  color: var(--w-ink-soft);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .gd-circadian-stepBtn:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 18%, transparent);
-  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 18%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 40%, transparent);
+  color: var(--w-lamp);
 }
 
 
@@ -1364,11 +1394,11 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   padding: 0.15rem 0.4rem;
   min-height: 1.95rem;
   border-radius: var(--w-radius-sm, 4px);
-  border: 1px solid var(--w-line, rgba(19, 30, 39, 0.14));
-  background: color-mix(in srgb, var(--w-surface, #ffffff) 90%, transparent);
+  border: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 90%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 1px 2px rgba(19, 30, 39, 0.04);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--w-shadow-tint) 4%, transparent);
   user-select: none;
   white-space: nowrap;
   max-width: 100%;
@@ -1384,27 +1414,27 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   border-radius: var(--w-radius-sm, 3px);
   border: 1px solid transparent;
   background: transparent;
-  color: var(--w-ink, #131e27);
+  color: var(--w-ink);
   cursor: pointer;
   transition: all 0.15s ease;
   touch-action: manipulation;
 }
 
 .gd-combo-nanoClockBtn:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 20%, transparent);
-  border-color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 20%, transparent);
+  border-color: var(--w-lamp);
   transform: translateY(-1px);
 }
 
 .gd-combo-nanoClockBtn:focus-visible {
-  outline: 2px solid var(--w-lamp, #e2c37a);
+  outline: 2px solid var(--w-lamp);
   outline-offset: 2px;
 }
 
 .gd-combo-nanoClockTime {
   font: 700 0.72rem var(--w-font-mono, monospace, ui-monospace);
   letter-spacing: 0.04em;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp-deep);
 }
 
 /* COMPACT TWO-ROW QUIET STACK */
@@ -1415,9 +1445,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.35rem;
   padding: 0.35rem 0.6rem;
   border-radius: var(--w-radius-lg, 0.85rem);
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
-  background: var(--w-surface, color-mix(in srgb, var(--paper, #141522) 94%, var(--ink, #fff) 4%));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--w-line);
+  background: var(--w-surface, color-mix(in srgb, var(--w-ground) 94%, var(--w-ink) 4%));
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 12%, transparent);
   user-select: none;
   box-sizing: border-box;
 }
@@ -1440,9 +1470,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: clamp(0.45rem, 1.2vw, 0.75rem);
   padding: clamp(0.6rem, 1.8vw, 1.25rem);
   border-radius: var(--w-radius-lg, clamp(0.75rem, 1.8vw, 1.25rem));
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
-  background: var(--w-surface, color-mix(in srgb, var(--paper, #141522) 94%, var(--ink, #fff) 4%));
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--w-line);
+  background: var(--w-surface, color-mix(in srgb, var(--w-ground) 94%, var(--w-ink) 4%));
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--w-shadow-tint) 18%, transparent);
   width: 100%;
   max-width: 48rem;
   box-sizing: border-box;
@@ -1456,7 +1486,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   flex-wrap: wrap;
   gap: 0.5rem;
   padding-bottom: 0.45rem;
-  border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  border-bottom: 1px solid var(--w-line);
 }
 
 .gd-combo-comboTitleRow {
@@ -1469,12 +1499,12 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   font: 700 clamp(0.72rem, 1.5vw, 0.82rem) system-ui, sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
 }
 
 .gd-combo-comboSubtitle {
   font-size: 0.65rem;
-  color: var(--ink-soft, rgba(255, 255, 255, 0.45));
+  color: var(--w-ink-soft);
 }
 
 .gd-combo-togglePillsGroup {
@@ -1486,23 +1516,23 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-combo-togglePill {
   padding: 0.2rem 0.55rem;
   border-radius: 9999px;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
-  background: color-mix(in srgb, var(--paper-light, #25201a) 60%, transparent);
-  color: var(--ink-soft, rgba(255, 255, 255, 0.65));
+  border: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 60%, transparent);
+  color: var(--w-ink-soft);
   font: 600 0.72rem system-ui, sans-serif;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .gd-combo-togglePill:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
+  color: var(--w-lamp);
 }
 
 .gd-combo-togglePill[data-active="true"] {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 20%, transparent);
-  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 20%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 40%, transparent);
+  color: var(--w-lamp);
 }
 
 .gd-combo-comboBody {
@@ -1520,7 +1550,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-combo-comboDivider {
   width: 1px;
   align-self: stretch;
-  background: var(--line, rgba(255, 255, 255, 0.08));
+  background: var(--w-line);
 }
 
 .gd-combo-clockSegment {
@@ -1536,8 +1566,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.4rem;
   padding: 0.75rem 1rem;
   border-radius: 1rem;
-  background: color-mix(in srgb, var(--paper-light, #1b1c2b) 80%, transparent);
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.06));
+  background: color-mix(in srgb, var(--w-raised) 80%, transparent);
+  border: 1px solid var(--w-line);
 }
 
 .gd-combo-clockCardTop {
@@ -1555,8 +1585,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.75rem;
   padding: 0.45rem 0.75rem;
   border-radius: 0.75rem;
-  background: color-mix(in srgb, var(--paper-light, #1d1e2e) 85%, transparent);
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  background: color-mix(in srgb, var(--w-raised) 85%, transparent);
+  border: 1px solid var(--w-line);
 }
 
 .gd-combo-timeReadoutGroup {
@@ -1572,16 +1602,16 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
-  background: color-mix(in srgb, var(--paper, #141522) 80%, transparent);
+  border: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-ground) 80%, transparent);
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .gd-combo-clockIconBtn:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, transparent);
-  border-color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 25%, transparent);
+  border-color: var(--w-lamp);
   transform: scale(1.05);
 }
 
@@ -1598,20 +1628,20 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-combo-digitalNumbersBtn:hover {
-  background: color-mix(in srgb, var(--ink, #fff) 8%, transparent);
+  background: color-mix(in srgb, var(--w-ink) 8%, transparent);
 }
 
 .gd-combo-digitalNumbers {
   font: 700 clamp(0.88rem, 2.2vw, 1.05rem) var(--font-mono, monospace, ui-monospace);
   letter-spacing: 0.05em;
-  color: var(--ink, #fff);
+  color: var(--w-ink);
   white-space: nowrap;
 }
 
 .gd-combo-periodBadge {
   font-size: 0.65rem;
   font-weight: 700;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
   letter-spacing: 0.04em;
 }
 
@@ -1625,8 +1655,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.2rem;
   padding: 0.1rem 0.35rem;
   border-radius: 0.4rem;
-  background: color-mix(in srgb, var(--paper, #141522) 80%, transparent);
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  background: color-mix(in srgb, var(--w-ground) 80%, transparent);
+  border: 1px solid var(--w-line);
 }
 
 .gd-combo-formatBtn {
@@ -1635,23 +1665,23 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   padding: 0.1rem 0.25rem;
   border-radius: 0.25rem;
   font: 600 0.66rem system-ui, sans-serif;
-  color: var(--ink-soft, rgba(255, 255, 255, 0.5));
+  color: var(--w-ink-soft);
   cursor: pointer;
   transition: all 0.12s ease;
 }
 
 .gd-combo-formatBtn:hover {
-  color: var(--ink, #fff);
+  color: var(--w-ink);
 }
 
 .gd-combo-formatBtn[data-active="true"] {
-  color: var(--w-lamp, #e2c37a);
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
+  color: var(--w-lamp);
+  background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
 }
 
 .gd-combo-formatDivider {
   font-size: 0.6rem;
-  color: var(--line, rgba(255, 255, 255, 0.2));
+  color: var(--w-line);
   user-select: none;
 }
 
@@ -1661,8 +1691,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   align-items: center;
   padding: 0.75rem;
   border-radius: 0.75rem;
-  background: color-mix(in srgb, var(--paper-light, #1b1c2b) 70%, transparent);
-  border: 1px dashed var(--line, rgba(255, 255, 255, 0.12));
+  background: color-mix(in srgb, var(--w-raised) 70%, transparent);
+  border: 1px dashed var(--w-line);
   animation: fadeInDial 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1681,13 +1711,13 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   font: 600 0.68rem system-ui, sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
 }
 
 .gd-combo-closeSegmentBtn {
   background: transparent;
   border: 0;
-  color: var(--ink-soft, rgba(255, 255, 255, 0.5));
+  color: var(--w-ink-soft);
   font-size: 0.75rem;
   cursor: pointer;
   padding: 0.1rem 0.3rem;
@@ -1696,8 +1726,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-combo-closeSegmentBtn:hover {
-  background: color-mix(in srgb, var(--ink, #fff) 10%, transparent);
-  color: var(--ink, #fff);
+  background: color-mix(in srgb, var(--w-ink) 10%, transparent);
+  color: var(--w-ink);
 }
 
 /* Responsive Stacking for Mobile and Tablet */
@@ -1829,9 +1859,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   height: 2rem;
   padding: 0;
   border-radius: var(--w-radius-sm, 0.42rem);
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.16));
-  background: var(--w-surface, color-mix(in srgb, var(--paper, #141522) 92%, var(--ink, #fff) 6%));
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--w-line);
+  background: var(--w-surface, color-mix(in srgb, var(--w-ground) 92%, var(--w-ink) 6%));
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--w-shadow-tint) 18%, transparent);
   cursor: pointer;
   overflow: hidden;
   transition: all 0.18s ease;
@@ -1841,12 +1871,12 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-date-nanoDayBadge:hover {
   transform: translateY(-1px);
-  border-color: var(--w-lamp, #e2c37a);
-  box-shadow: 0 2px 8px rgba(226, 195, 122, 0.3);
+  border-color: var(--w-lamp);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-lamp) 30%, transparent);
 }
 
 .gd-date-nanoDayBadge:focus-visible {
-  outline: 2px solid var(--w-lamp, #e2c37a);
+  outline: 2px solid var(--w-lamp);
   outline-offset: 2px;
 }
 
@@ -1858,27 +1888,27 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 0.05rem 0;
-  color: var(--w-on-lamp, #fff);
-  background: var(--w-lamp, color-mix(in srgb, var(--paper, #141522) 80%, var(--ink, #fff) 20%));
+  color: var(--w-on-lamp);
+  background: var(--w-lamp, color-mix(in srgb, var(--w-ground) 80%, var(--w-ink) 20%));
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .gd-date-nanoDayHeader[data-intent="current"] {
-  background: var(--w-lamp, #10b981);
+  background: var(--w-lamp);
 }
 
 .gd-date-nanoDayHeader[data-intent="review"] {
-  background: color-mix(in srgb, var(--w-lamp, #f59e0b) 60%, var(--w-ink-soft, #888));
+  background: color-mix(in srgb, var(--w-lamp) 60%, var(--w-ink-soft));
 }
 
 .gd-date-nanoDayHeader[data-intent="plan"] {
-  background: color-mix(in srgb, var(--w-lamp, #8b5cf6) 85%, var(--w-surface, #222));
+  background: color-mix(in srgb, var(--w-lamp) 85%, var(--w-raised));
 }
 
 .gd-date-nanoDayNumber {
   font: 700 0.85rem var(--w-font-mono, monospace, ui-monospace);
   line-height: 1.1;
-  color: var(--w-ink, #fff);
+  color: var(--w-ink);
 }
 
 /* --------------------------------------------------------------------------
@@ -1890,9 +1920,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.15rem;
   padding: 0.12rem 0.28rem;
   border-radius: 9999px;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
-  background: color-mix(in srgb, var(--paper, #1a1610) 92%, var(--ink, #fff) 4%);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-ground) 92%, var(--w-ink) 4%);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-shadow-tint) 10%, transparent);
   backdrop-filter: blur(12px);
   user-select: none;
   font-size: 0.72rem;
@@ -1914,11 +1944,11 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-date-compactDateBtn:hover {
-  background: color-mix(in srgb, var(--ink, #fff) 8%, transparent);
+  background: color-mix(in srgb, var(--w-ink) 8%, transparent);
 }
 
 .gd-date-compactDateBtn:focus-visible {
-  outline: 2px solid var(--w-lamp, #e2c37a);
+  outline: 2px solid var(--w-lamp);
   outline-offset: 2px;
 }
 
@@ -1941,11 +1971,11 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-date-chevronBtn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--ink, #fff) 10%, transparent);
+  background: color-mix(in srgb, var(--w-ink) 10%, transparent);
 }
 
 .gd-date-chevronBtn:focus-visible {
-  outline: 2px solid var(--w-lamp, #e2c37a);
+  outline: 2px solid var(--w-lamp);
   outline-offset: 2px;
 }
 
@@ -1964,18 +1994,18 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-date-phasePip[data-intent="current"] {
-  background: #10b981;
-  box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+  background: var(--w-success);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--w-success) 50%, transparent);
 }
 
 .gd-date-phasePip[data-intent="review"] {
-  background: #f59e0b;
-  box-shadow: 0 0 5px rgba(245, 158, 11, 0.4);
+  background: var(--w-lamp-deep);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--w-lamp-deep) 40%, transparent);
 }
 
 .gd-date-phasePip[data-intent="plan"] {
-  background: #8b5cf6;
-  box-shadow: 0 0 5px rgba(139, 92, 246, 0.4);
+  background: var(--w-ornament);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--w-ornament) 40%, transparent);
 }
 
 /* --------------------------------------------------------------------------
@@ -1987,9 +2017,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.45rem;
   padding: 0.3rem 0.65rem;
   border-radius: var(--w-radius-md, 0.85rem);
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
-  background: var(--w-surface, color-mix(in srgb, var(--paper, #1a1610) 92%, var(--ink, #fff) 4%));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--w-line);
+  background: var(--w-surface, color-mix(in srgb, var(--w-ground) 92%, var(--w-ink) 4%));
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 15%, transparent);
   user-select: none;
 }
 
@@ -2001,15 +2031,15 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   border-radius: 0.5rem;
   border: 1px solid transparent;
   background: transparent;
-  color: var(--ink, #fff);
+  color: var(--w-ink);
   font: 700 0.88rem Georgia, serif;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .gd-date-mediumDateTrigger:hover {
-  background: color-mix(in srgb, var(--paper-light, #25201a) 80%, transparent);
-  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
+  background: color-mix(in srgb, var(--w-raised) 80%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 30%, transparent);
 }
 
 .gd-date-mediumDayBadge {
@@ -2021,9 +2051,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   height: 1.85rem;
   padding: 0;
   border-radius: 0.38rem;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
-  background: color-mix(in srgb, var(--paper-light, #1b1c2b) 95%, transparent);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 95%, transparent);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--w-shadow-tint) 15%, transparent);
   cursor: pointer;
   overflow: hidden;
   transition: all 0.15s ease;
@@ -2032,8 +2062,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-date-mediumDayBadge:hover {
   transform: translateY(-1px);
-  border-color: var(--w-lamp, #e2c37a);
-  box-shadow: 0 2px 6px rgba(226, 195, 122, 0.25);
+  border-color: var(--w-lamp);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--w-lamp) 25%, transparent);
 }
 
 .gd-date-mediumDayBadgeHeader {
@@ -2044,27 +2074,27 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 0.05rem 0;
-  color: var(--w-on-lamp, #fff);
-  background: var(--w-lamp, color-mix(in srgb, var(--paper, #141522) 80%, var(--ink, #fff) 20%));
+  color: var(--w-on-lamp);
+  background: var(--w-lamp, color-mix(in srgb, var(--w-ground) 80%, var(--w-ink) 20%));
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .gd-date-mediumDayBadgeHeader[data-intent="current"] {
-  background: var(--w-lamp, #10b981);
+  background: var(--w-lamp);
 }
 
 .gd-date-mediumDayBadgeHeader[data-intent="review"] {
-  background: color-mix(in srgb, var(--w-lamp, #f59e0b) 60%, var(--w-ink-soft, #888));
+  background: color-mix(in srgb, var(--w-lamp) 60%, var(--w-ink-soft));
 }
 
 .gd-date-mediumDayBadgeHeader[data-intent="plan"] {
-  background: color-mix(in srgb, var(--w-lamp, #8b5cf6) 85%, var(--w-surface, #222));
+  background: color-mix(in srgb, var(--w-lamp) 85%, var(--w-raised));
 }
 
 .gd-date-mediumDayBadgeNumber {
   font: 700 0.8rem var(--w-font-mono, monospace, ui-monospace);
   line-height: 1.1;
-  color: var(--w-ink, #fff);
+  color: var(--w-ink);
 }
 
 .gd-date-mediumPhasePill {
@@ -2073,9 +2103,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.25rem;
   padding: 0.15rem 0.45rem;
   border-radius: 9999px;
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
-  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 30%, transparent);
+  color: var(--w-lamp);
   font: 600 0.72rem system-ui, sans-serif;
   cursor: pointer;
 }
@@ -2087,16 +2117,16 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   width: 1.65rem;
   height: 1.65rem;
   border-radius: 0.45rem;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
-  background: color-mix(in srgb, var(--paper-light, #25201a) 70%, transparent);
+  border: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 70%, transparent);
   cursor: pointer;
   font-size: 0.85rem;
   transition: all 0.15s ease;
 }
 
 .gd-date-mediumCalendarBtn:hover {
-  background: var(--w-lamp, #e2c37a);
-  border-color: var(--w-lamp, #e2c37a);
+  background: var(--w-lamp);
+  border-color: var(--w-lamp);
 }
 
 /* --------------------------------------------------------------------------
@@ -2108,9 +2138,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: clamp(0.35rem, 1vw, 0.5rem);
   padding: clamp(0.5rem, 1.5vw, 0.85rem) clamp(0.65rem, 1.8vw, 1.1rem);
   border-radius: var(--w-radius-lg, clamp(0.85rem, 1.8vw, 1.25rem));
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.12));
-  background: var(--w-surface, color-mix(in srgb, var(--paper, #1a1610) 92%, var(--ink, #fff) 4%));
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--w-line);
+  background: var(--w-surface, color-mix(in srgb, var(--w-ground) 92%, var(--w-ink) 4%));
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--w-shadow-tint) 12%, transparent);
   user-select: none;
   width: 100%;
   max-width: 48rem;
@@ -2126,7 +2156,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   justify-content: space-between;
   gap: clamp(0.4rem, 1.2vw, 0.75rem);
   padding-bottom: clamp(0.35rem, 1vw, 0.5rem);
-  border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  border-bottom: 1px solid var(--w-line);
   white-space: nowrap;
 }
 
@@ -2145,7 +2175,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 /* Pure Date Heading */
 .gd-date-pureDateHeading {
   font: 700 clamp(0.95rem, 2.5vw, 1.22rem) Georgia, "Times New Roman", serif;
-  color: var(--ink, #fff);
+  color: var(--w-ink);
   letter-spacing: -0.01em;
   white-space: nowrap;
   overflow: hidden;
@@ -2161,17 +2191,17 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   height: clamp(1.65rem, 3.5vw, 2rem);
   padding: 0;
   border-radius: clamp(0.4rem, 1vw, 0.6rem);
-  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, var(--line, rgba(255, 255, 255, 0.12)));
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 10%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 25%, var(--w-line));
+  background: color-mix(in srgb, var(--w-lamp) 10%, transparent);
+  color: var(--w-lamp);
   cursor: pointer;
   transition: all 0.18s ease;
 }
 
 .gd-date-calendarIconBtn:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, transparent);
-  border-color: var(--w-lamp, #e2c37a);
-  color: var(--w-on-lamp, #1a1608);
+  background: color-mix(in srgb, var(--w-lamp) 25%, transparent);
+  border-color: var(--w-lamp);
+  color: var(--w-on-lamp);
   transform: translateY(-1px);
 }
 
@@ -2179,13 +2209,13 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   width: clamp(0.85rem, 2vw, 1.05rem);
   height: clamp(0.85rem, 2vw, 1.05rem);
   color: currentColor;
-  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent));
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--w-lamp) 40%, transparent));
 }
 
 .gd-date-calendarGlyph {
   font-size: clamp(0.8rem, 2vw, 1rem);
   line-height: 1;
-  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent));
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--w-lamp) 40%, transparent));
 }
 
 /* Stepper Chevrons on Top Flanks */
@@ -2196,8 +2226,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   width: clamp(1.7rem, 3.8vw, 2.1rem);
   height: clamp(1.7rem, 3.8vw, 2.1rem);
   border-radius: clamp(0.45rem, 1vw, 0.65rem);
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
-  background: color-mix(in srgb, var(--paper-light, #25201a) 80%, transparent);
+  border: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 80%, transparent);
   color: var(--ink, currentColor);
   font-size: 1.2rem;
   line-height: 1;
@@ -2206,9 +2236,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-date-stepperBtnFlank:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 20%, transparent);
-  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 20%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 40%, transparent);
+  color: var(--w-lamp);
 }
 
 .gd-date-stepperBtnFlank:disabled {
@@ -2237,8 +2267,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   flex: 1;
   max-width: 22rem;
   border-radius: clamp(0.55rem, 1vw, 0.75rem);
-  background: color-mix(in srgb, var(--paper, #1a1610) 75%, var(--ink, #fff) 8%);
-  border: 1px solid color-mix(in srgb, var(--line, rgba(255, 255, 255, 0.1)) 60%, transparent);
+  background: color-mix(in srgb, var(--w-ground) 75%, var(--w-ink) 8%);
+  border: 1px solid color-mix(in srgb, var(--w-line) 60%, transparent);
   isolation: isolate;
   white-space: nowrap;
 }
@@ -2250,9 +2280,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   left: 2px;
   width: calc((100% - 4px) / 3);
   border-radius: 0.6rem;
-  background: var(--paper-light, #25201a);
-  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, var(--line, rgba(255, 255, 255, 0.15)));
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  background: var(--w-raised);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 25%, var(--w-line));
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--w-shadow-tint) 15%, transparent);
   transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -2277,14 +2307,14 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   border: 0;
   border-radius: 0.6rem;
   background: transparent;
-  color: var(--ink-soft, rgba(255, 255, 255, 0.6));
+  color: var(--w-ink-soft);
   cursor: pointer;
   white-space: nowrap;
   transition: color 0.18s ease;
 }
 
 .gd-date-phaseBtn[aria-pressed="true"] {
-  color: var(--ink, #fff);
+  color: var(--w-ink);
 }
 
 .gd-date-phaseBtnContent {
@@ -2315,14 +2345,14 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-date-phaseSvg {
   display: inline-block;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
   opacity: 0.9;
-  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent));
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--w-lamp) 40%, transparent));
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease, color 0.15s ease;
 }
 
 .gd-date-phaseBtn[aria-pressed="true"] .gd-date-phaseSvg {
-  color: var(--w-on-lamp, #1a1608);
+  color: var(--w-on-lamp);
   opacity: 1;
 }
 
@@ -2341,7 +2371,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-date-phaseEmoji {
   font-size: clamp(0.64rem, 1.5vw, 0.76rem);
   opacity: 0.9;
-  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent));
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--w-lamp) 40%, transparent));
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
 }
 
@@ -2372,17 +2402,17 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   height: clamp(1.7rem, 3.8vw, 2.1rem);
   padding: 0;
   border-radius: clamp(0.45rem, 1vw, 0.6rem);
-  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, var(--line, rgba(255, 255, 255, 0.12)));
-  background: color-mix(in srgb, var(--paper-light, #25201a) 80%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 25%, var(--w-line));
+  background: color-mix(in srgb, var(--w-raised) 80%, transparent);
+  color: var(--w-lamp);
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .gd-date-datePickerIconBtn:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 22%, transparent);
-  border-color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 22%, transparent);
+  border-color: var(--w-lamp);
   transform: scale(1.08);
 }
 
@@ -2393,16 +2423,16 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   margin-right: 0.5rem;
   padding: 0.2rem 0.45rem;
   border-radius: 0.4rem;
-  background: #111;
-  color: var(--w-lamp, #e2c37a);
+  background: var(--w-sunken);
+  color: var(--w-lamp);
   font: 600 0.7rem system-ui, sans-serif;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
   transform: translateX(4px);
   transition: opacity 0.15s ease, transform 0.15s ease;
-  border: 1px solid color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid color-mix(in srgb, var(--w-lamp) 30%, transparent);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 30%, transparent);
 }
 
 .gd-date-pickerZone:hover .gd-date-datePickerTooltip {
@@ -2420,9 +2450,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 .gd-date-dateDirectInput {
   padding: 0.25rem 0.55rem;
   border-radius: 0.55rem;
-  border: 1px solid var(--w-lamp, #e2c37a);
-  background: var(--paper, #11121d);
-  color: var(--ink, #fff);
+  border: 1px solid var(--w-lamp);
+  background: var(--w-ground);
+  color: var(--w-ink);
   font: 600 0.85rem monospace;
   outline: none;
   width: 7.8rem;
@@ -2440,13 +2470,13 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-date-dateDirectConfirmBtn {
-  background: var(--w-lamp, #e2c37a);
-  color: #111;
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
 }
 
 .gd-date-dateDirectCancelBtn {
-  background: color-mix(in srgb, var(--ink, #fff) 12%, transparent);
-  color: var(--ink, #fff);
+  background: color-mix(in srgb, var(--w-ink) 12%, transparent);
+  color: var(--w-ink);
 }
 
 /* --------------------------------------------------------------------------
@@ -2457,7 +2487,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   align-items: center;
   justify-content: flex-start;
   padding-top: 0.45rem;
-  border-top: 1px dashed var(--line, rgba(255, 255, 255, 0.08));
+  border-top: 1px dashed var(--w-line);
   animation: leapsSlideIn 180ms ease-out;
 }
 
@@ -2476,9 +2506,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.25rem;
   padding: 0.22rem 0.55rem;
   border-radius: 9999px;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
-  background: color-mix(in srgb, var(--paper-light, #25201a) 70%, transparent);
-  color: var(--ink-soft, rgba(255, 255, 255, 0.7));
+  border: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 70%, transparent);
+  color: var(--w-ink-soft);
   font: 600 0.72rem system-ui, sans-serif;
   cursor: pointer;
   white-space: nowrap;
@@ -2486,15 +2516,15 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-date-leapPillBtn:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
-  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 35%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 35%, transparent);
+  color: var(--w-lamp);
 }
 
 .gd-date-leapPillBtn[data-active="true"] {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 20%, transparent);
-  border-color: var(--w-lamp, #e2c37a);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 20%, transparent);
+  border-color: var(--w-lamp);
+  color: var(--w-lamp);
 }
 
 .gd-date-leapEmoji {
@@ -2509,9 +2539,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   max-width: 24rem;
   padding: 0.85rem;
   border-radius: var(--w-radius-lg, 1rem);
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.15));
-  background: var(--w-surface-elevated, var(--paper-light, #25201a));
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--w-line);
+  background: var(--w-surface-elevated, var(--w-raised));
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--w-shadow-tint) 28%, transparent);
   animation: traySlideDown 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -2534,7 +2564,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   width: 2rem;
   height: 2rem;
   border-radius: var(--w-radius-sm, 0.5rem);
-  border: 1px solid var(--w-line, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--w-line);
   background: transparent;
   color: var(--w-ink, currentColor);
   font-size: 1.1rem;
@@ -2543,14 +2573,14 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-date-trayNavBtn:hover {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
-  border-color: var(--w-lamp, #e2c37a);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
+  border-color: var(--w-lamp);
+  color: var(--w-lamp);
 }
 
 .gd-date-monthTitle {
   font: 700 0.95rem var(--w-font-display, Georgia, "Times New Roman", serif);
-  color: var(--w-ink, #fff);
+  color: var(--w-ink);
 }
 
 /* Weekday Labels */
@@ -2564,7 +2594,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-date-weekdayLabel {
   font: 600 0.7rem system-ui, sans-serif;
-  color: var(--w-ink-soft, rgba(255, 255, 255, 0.45));
+  color: var(--w-ink-soft);
   text-transform: uppercase;
 }
 
@@ -2592,9 +2622,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-date-dayCell:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--w-lamp, #e2c37a) 15%, transparent);
-  border-color: color-mix(in srgb, var(--w-lamp, #e2c37a) 30%, transparent);
-  color: var(--w-lamp, #e2c37a);
+  background: color-mix(in srgb, var(--w-lamp) 15%, transparent);
+  border-color: color-mix(in srgb, var(--w-lamp) 30%, transparent);
+  color: var(--w-lamp);
 }
 
 .gd-date-dayCell[data-outside="true"] {
@@ -2603,16 +2633,16 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-date-dayCell[data-today="true"] {
   font-weight: 700;
-  border-color: var(--w-lamp, #e2c37a);
-  color: var(--w-lamp, #e2c37a);
+  border-color: var(--w-lamp);
+  color: var(--w-lamp);
 }
 
 .gd-date-dayCell[data-selected="true"] {
-  background: var(--w-lamp, #e2c37a);
-  color: var(--w-on-lamp, #111);
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
   font-weight: 700;
-  border-color: var(--w-lamp, #e2c37a);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--w-lamp, #e2c37a) 40%, transparent);
+  border-color: var(--w-lamp);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--w-lamp) 40%, transparent);
 }
 
 .gd-date-dayCell:disabled {
@@ -2626,11 +2656,11 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   width: 3px;
   height: 3px;
   border-radius: 9999px;
-  background: var(--w-lamp, #e2c37a);
+  background: var(--w-lamp);
 }
 
 .gd-date-dayCell[data-selected="true"] .gd-date-dayPip {
-  background: var(--w-on-lamp, #111);
+  background: var(--w-on-lamp);
 }
 
 /* --------------------------------------------------------------------------
@@ -2735,18 +2765,18 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   gap: 0.5rem;
   padding: 0.35rem 0.75rem;
   border-radius: 0.85rem;
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
-  background: color-mix(in srgb, var(--paper-light, #1c1d2c) 80%, transparent);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--w-line);
+  background: color-mix(in srgb, var(--w-raised) 80%, transparent);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--w-shadow-tint) 10%, transparent);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   width: 100%;
 }
 
 .gd-searchbar-searchWell[data-focused="true"] {
-  border-color: var(--w-lamp, #e2c37a);
-  background: color-mix(in srgb, var(--paper-light, #1c1d2c) 95%, transparent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--w-lamp, #e2c37a) 25%, transparent),
-              0 2px 8px rgba(0, 0, 0, 0.2);
+  border-color: var(--w-lamp);
+  background: color-mix(in srgb, var(--w-raised) 95%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--w-lamp) 25%, transparent),
+              0 2px 8px color-mix(in srgb, var(--w-shadow-tint) 20%, transparent);
 }
 
 .gd-searchbar-searchIcon {
@@ -2758,7 +2788,7 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 
 .gd-searchbar-searchWell[data-focused="true"] .gd-searchbar-searchIcon {
   opacity: 1;
-  color: var(--w-lamp, #e2c37a);
+  color: var(--w-lamp);
 }
 
 .gd-searchbar-searchInput {
@@ -2766,13 +2796,13 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   min-width: 0;
   border: 0;
   background: transparent;
-  color: var(--ink, #fff);
+  color: var(--w-ink);
   font: 500 0.88rem system-ui, -apple-system, sans-serif;
   outline: none;
 }
 
 .gd-searchbar-searchInput::placeholder {
-  color: var(--ink-soft, rgba(255, 255, 255, 0.45));
+  color: var(--w-ink-soft);
 }
 
 /* Remove default webkit search decoration cancel buttons */
@@ -2790,8 +2820,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   height: 1.35rem;
   border-radius: 9999px;
   border: 0;
-  background: color-mix(in srgb, var(--ink, #fff) 15%, transparent);
-  color: var(--ink, #fff);
+  background: color-mix(in srgb, var(--w-ink) 15%, transparent);
+  color: var(--w-ink);
   font-size: 0.72rem;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -2799,8 +2829,8 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
 }
 
 .gd-searchbar-clearBtn:hover {
-  background: var(--w-lamp, #e2c37a);
-  color: #111;
+  background: var(--w-lamp);
+  color: var(--w-on-lamp);
   transform: scale(1.08);
 }
 
@@ -2810,9 +2840,9 @@ button.gd-notification-main:focus-visible,.gd-notification-read:focus-visible{ou
   font-weight: 600;
   padding: 0.1rem 0.35rem;
   border-radius: 0.3rem;
-  background: color-mix(in srgb, var(--ink, #fff) 8%, transparent);
-  border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
-  color: var(--ink-soft, rgba(255, 255, 255, 0.5));
+  background: color-mix(in srgb, var(--w-ink) 8%, transparent);
+  border: 1px solid var(--w-line);
+  color: var(--w-ink-soft);
   flex-shrink: 0;
 }
 

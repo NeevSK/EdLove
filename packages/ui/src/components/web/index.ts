@@ -14,6 +14,7 @@
 
 export { initialsOf } from '../shared/initials';
 export { toast } from '../shared/toasts';
+export { listenForFeedback } from '../shared/feedbackToasts';
 export {
   ApprovalCard,
   ArtifactCard,
@@ -71,6 +72,7 @@ export {
 } from './Media/Capture';
 export { DocumentView, type DocumentViewProps } from './Media/DocumentView';
 export { FILE_CARD_ENGLISH, FileCard, type FileCardProps } from './Media/FileCard';
+export { H5pView, type H5pViewProps } from './Media/H5pView';
 export { Markdown, type MarkdownProps } from './Media/Markdown';
 export { Media, type MediaProps } from './Media/Media';
 export { RichTextEditor, type RichTextEditorProps } from './Media/RichTextEditor';
@@ -102,6 +104,7 @@ export {
   type LinkRowProps,
 } from './Settings/SettingsRows';
 export { Sheet, type SheetProps } from './Sheet/Sheet';
+export { SidePanel, type SidePanelProps } from './SidePanel/SidePanel';
 export { AppHeader, type AppHeaderProps } from './Shell/AppHeader';
 export { NotificationItem, type NotificationItemProps } from './Shell/NotificationItem';
 export { SwitchRow, type SwitchRowProps } from './Shell/SwitchRow';
@@ -172,3 +175,4 @@ export {
   type ScrollAreaProps,
 } from './ScrollArea/ScrollArea';
 
+export { Radar, type RadarProps } from './Radar/Radar';

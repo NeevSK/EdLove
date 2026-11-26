@@ -14,7 +14,7 @@
 }
 
 .eyebrow {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -225,7 +225,7 @@
   align-items: center;
   padding: 0.25rem 0.65rem;
   border-radius: 9999px;
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -267,7 +267,7 @@
 }
 
 .detailLabel {
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   font-weight: 600;
   text-transform: uppercase;
   color: var(--color-ink-muted, #8b7d72);
@@ -398,7 +398,7 @@
 }
 
 .balanceLabel {
-  font-size: 0.72rem;
+  font-size: 0.875rem;
   font-weight: 600;
   text-transform: uppercase;
   color: var(--color-ink-muted, #8b7d72);
@@ -411,7 +411,7 @@
 }
 
 .classesLabel {
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   font-weight: 600;
   text-transform: uppercase;
   color: var(--color-ink-muted, #8b7d72);
@@ -423,7 +423,7 @@
   border: 1px solid var(--color-border, #e8ddd3);
   border-radius: 0.35rem;
   padding: 0.2rem 0.5rem;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   color: var(--color-ink-soft, #62564d);
   margin-right: 0.35rem;
   margin-bottom: 0.35rem;

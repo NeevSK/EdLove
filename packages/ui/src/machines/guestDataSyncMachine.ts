@@ -1,6 +1,12 @@
-import type { GuestDataTransferAvailability } from '@repo/core/native/guestDataTransferPolicy';
-import { Cause, Effect, Exit } from 'effect';
-import { createActor, createMachine, types } from 'xstate';
+import { GuestDataSync } from '@repo/core/native/guestDataSync';
+import {
+  createActor,
+  createAsyncLogic,
+  createCallbackLogic,
+  type EventObject,
+  setup,
+  types,
+} from 'xstate';
 import { z } from 'zod';
 
 export const SyncSummarySchema = z.object({
@@ -30,17 +36,6 @@ export const GuestDataSyncContextSchema = z.object({
 
 export type GuestDataSyncContext = z.infer<typeof GuestDataSyncContextSchema>;
 
-export type GuestDataSyncEvents =
-  | { type: 'START_LOADING' }
-  | { type: 'SET_SUMMARY'; summary: SyncSummary }
-  | { type: 'START_SYNC' }
-  | { type: 'UPDATE_PROGRESS'; current: number; total: number; step: string }
-  | { type: 'SET_COMPLETED' }
-  | { type: 'SET_ERROR'; message: string }
-  | { type: 'TRIGGER_CONFIRM_SKIP' }
-  | { type: 'CANCEL_CONFIRM_SKIP' }
-  | { type: 'RESET' };
-
 export const initialGuestDataSyncContext: GuestDataSyncContext = {
   userId: null,
   summary: {
@@ -58,99 +53,142 @@ export const initialGuestDataSyncContext: GuestDataSyncContext = {
   error: null,
 };
 
-export const guestDataSyncMachine = createMachine({
-  id: 'guestDataSync',
-  initial: 'idle',
+const messageOf = (error: unknown, fallback: string) =>
+  error instanceof Error && error.message ? error.message : fallback;
+
+/** Events the transfer actor sends back while it runs. */
+type TransferEvent =
+  | { type: 'TRANSFER_PROGRESS'; current: number; total: number; step: string }
+  | { type: 'TRANSFER_DONE' }
+  | { type: 'TRANSFER_FAILED'; message: string };
+
+/**
+ * Counts what the guest left on this device. Runs while the machine is `loading`; leaving that
+ * state (closing the modal) aborts it.
+ */
+export const loadGuestDataSummary = createAsyncLogic<SyncSummary, void>({
+  run: async () => {
+    const summary = await GuestDataSync.getGuestDataSummary();
+    return SyncSummarySchema.parse(summary);
+  },
+});
+
+/**
+ * Moves the guest's data to the account, reporting progress back to the machine. Runs while the
+ * machine is `syncing`; once that state is left, late progress and results are ignored.
+ */
+export const transferGuestData = createCallbackLogic<EventObject, { userId: string }>(
+  ({ input, sendBack }) => {
+    let active = true;
+    const send = (event: TransferEvent) => {
+      if (active) sendBack(event);
+    };
+    GuestDataSync.syncAllData(input.userId, (progress) =>
+      send({
+        type: 'TRANSFER_PROGRESS',
+        current: progress.completed,
+        total: progress.total,
+        step: progress.currentStep,
+      }),
+    ).then(
+      (result) =>
+        send(
+          result.success
+            ? { type: 'TRANSFER_DONE' }
+            : {
+                type: 'TRANSFER_FAILED',
+                message: result.errors.join(', ') || 'Failed to sync all guest data.',
+              },
+        ),
+      (error: unknown) =>
+        send({
+          type: 'TRANSFER_FAILED',
+          message: messageOf(error, 'An unexpected error occurred during sync.'),
+        }),
+    );
+    return () => {
+      active = false;
+    };
+  },
+);
+
+/**
+ * The guest data modal: count what's on the device, then move it to the account or discard it.
+ * The machine runs both jobs itself (`invoke`), so a screen only sends what the person chose.
+ * Tests replace the jobs with `guestDataSyncMachine.provide({ actors: { ... } })`.
+ */
+export const guestDataSyncMachine = setup({
   schemas: {
     context: GuestDataSyncContextSchema,
+    input: types<Partial<GuestDataSyncContext> | undefined>(),
     events: {
       START_LOADING: types<void>(),
-      SET_SUMMARY: types<{ summary: SyncSummary }>(),
       START_SYNC: types<void>(),
-      UPDATE_PROGRESS: types<{ current: number; total: number; step: string }>(),
-      SET_COMPLETED: types<void>(),
-      SET_ERROR: types<{ message: string }>(),
       TRIGGER_CONFIRM_SKIP: types<void>(),
       CANCEL_CONFIRM_SKIP: types<void>(),
+      SET_ERROR: types<{ message: string }>(),
       RESET: types<void>(),
+      TRANSFER_PROGRESS: types<{ current: number; total: number; step: string }>(),
+      TRANSFER_DONE: types<void>(),
+      TRANSFER_FAILED: types<{ message: string }>(),
     },
   },
-  context: ({ input }: { input?: Partial<GuestDataSyncContext> }) => ({
-    ...initialGuestDataSyncContext,
-    ...input,
-  }),
+  actors: { loadSummary: loadGuestDataSummary, transfer: transferGuestData },
+}).createMachine({
+  id: 'guestDataSync',
+  initial: 'idle',
+  context: ({ input }) => ({ ...initialGuestDataSyncContext, ...input }),
   states: {
     idle: {
       on: {
-        START_LOADING: {
-          target: 'loading',
-        },
-        START_SYNC: {
-          target: 'syncing',
-        },
+        START_LOADING: { target: 'loading' },
+        START_SYNC: { target: 'syncing' },
       },
     },
     loading: {
-      on: {
-        SET_SUMMARY: ({ context, event }) => ({
+      invoke: {
+        src: 'loadSummary',
+        onDone: ({ context, event }) => ({
           target: 'ready',
-          context: {
-            ...context,
-            summary: event.summary,
-            error: null,
-          },
+          context: { ...context, summary: event.output, error: null },
         }),
-        SET_ERROR: ({ context, event }) => ({
+        onError: ({ context, event }) => ({
           target: 'error',
           context: {
             ...context,
-            error: event.message,
+            error: messageOf(event.error, 'Failed to retrieve guest data summary.'),
           },
         }),
       },
     },
     ready: {
       on: {
-        START_SYNC: {
-          target: 'syncing',
-        },
-        TRIGGER_CONFIRM_SKIP: {
-          target: 'confirm_skip',
-        },
-        START_LOADING: {
-          target: 'loading',
-        },
+        START_SYNC: { target: 'syncing' },
+        TRIGGER_CONFIRM_SKIP: { target: 'confirm_skip' },
+        START_LOADING: { target: 'loading' },
       },
     },
     confirm_skip: {
       on: {
-        CANCEL_CONFIRM_SKIP: {
-          target: 'ready',
-        },
+        CANCEL_CONFIRM_SKIP: { target: 'ready' },
       },
     },
     syncing: {
+      invoke: {
+        src: 'transfer',
+        input: ({ context }) => ({ userId: context.userId ?? '' }),
+      },
       on: {
-        UPDATE_PROGRESS: ({ context, event }) => ({
-          target: undefined,
+        TRANSFER_PROGRESS: ({ context, event }) => ({
           context: {
             ...context,
-            progress: {
-              current: event.current,
-              total: event.total,
-              step: event.step,
-            },
+            progress: { current: event.current, total: event.total, step: event.step },
           },
         }),
-        SET_COMPLETED: {
-          target: 'completed',
-        },
-        SET_ERROR: ({ context, event }) => ({
+        TRANSFER_DONE: { target: 'completed' },
+        TRANSFER_FAILED: ({ context, event }) => ({
           target: 'error',
-          context: {
-            ...context,
-            error: event.message,
-          },
+          context: { ...context, error: event.message },
         }),
       },
     },
@@ -159,15 +197,9 @@ export const guestDataSyncMachine = createMachine({
     },
     error: {
       on: {
-        START_SYNC: {
-          target: 'syncing',
-        },
-        START_LOADING: {
-          target: 'loading',
-        },
-        TRIGGER_CONFIRM_SKIP: {
-          target: 'confirm_skip',
-        },
+        START_SYNC: { target: 'syncing' },
+        START_LOADING: { target: 'loading' },
+        TRIGGER_CONFIRM_SKIP: { target: 'confirm_skip' },
       },
     },
   },
@@ -178,116 +210,21 @@ export const guestDataSyncMachine = createMachine({
     }),
     SET_ERROR: ({ context, event }) => ({
       target: '.error',
-      context: {
-        ...context,
-        error: event.message,
-      },
+      context: { ...context, error: event.message },
     }),
   },
 });
 
-export type GuestDataSyncMachine = typeof guestDataSyncMachine;
+/** The machine, or a copy with other jobs from `guestDataSyncMachine.provide(...)`. */
+export type GuestDataSyncMachine =
+  | typeof guestDataSyncMachine
+  | ReturnType<(typeof guestDataSyncMachine)['provide']>;
 export type GuestDataSyncActor = ReturnType<typeof createGuestDataSyncActor>;
 
-/**
- * Creates and starts a GuestDataSync actor.
- */
-export function createGuestDataSyncActor(initial?: Partial<GuestDataSyncContext>) {
-  const actor = createActor(guestDataSyncMachine, {
-    input: initial,
-  });
-  actor.start();
-  return actor;
-}
-
-/**
- * Effect-TS v4 runner for loading guest data summary.
- */
-export async function executeFetchGuestDataSummaryEffect(
-  actor: GuestDataSyncActor,
-  fetchFn: () => Promise<SyncSummary>,
-): Promise<{ success: boolean; summary?: SyncSummary; error?: string }> {
-  actor.send({ type: 'START_LOADING' });
-
-  const program = Effect.tryPromise({
-    try: () => fetchFn(),
-    catch: (err: unknown) => (err instanceof Error ? err.message : String(err)),
-  });
-
-  const exit = await Effect.runPromiseExit(program);
-
-  return Exit.match(exit, {
-    onSuccess: (summary) => {
-      if (actor.getSnapshot().status === 'stopped') {
-        return { success: true, summary };
-      }
-      actor.send({ type: 'SET_SUMMARY', summary });
-      return { success: true, summary };
-    },
-    onFailure: (cause) => {
-      const errOption = Cause.findErrorOption(cause);
-      const message =
-        errOption._tag === 'Some' ? errOption.value : 'Failed to retrieve guest data summary.';
-      if (actor.getSnapshot().status === 'stopped') {
-        return { success: false, error: message };
-      }
-      actor.send({ type: 'SET_ERROR', message });
-      return { success: false, error: message };
-    },
-  });
-}
-
-/**
- * Effect-TS v4 runner for syncing all guest data.
- */
-export async function executeGuestDataSyncEffect(
-  actor: GuestDataSyncActor,
-  userId: string,
-  syncFn: (
-    userId: string,
-    onProgress: (prog: { completed: number; total: number; currentStep: string }) => void,
-  ) => Promise<{ success: boolean; errors?: string[] }>,
-): Promise<{ success: boolean; error?: string }> {
-  actor.send({ type: 'START_SYNC' });
-
-  const program = Effect.tryPromise({
-    try: () =>
-      syncFn(userId, (prog) => {
-        if (actor.getSnapshot().status === 'stopped') return;
-        actor.send({
-          type: 'UPDATE_PROGRESS',
-          current: prog.completed,
-          total: prog.total,
-          step: prog.currentStep,
-        });
-      }),
-    catch: (err: unknown) => (err instanceof Error ? err.message : String(err)),
-  });
-
-  const exit = await Effect.runPromiseExit(program);
-
-  return Exit.match(exit, {
-    onSuccess: (result) => {
-      if (result.success) {
-        if (actor.getSnapshot().status !== 'stopped') {
-          actor.send({ type: 'SET_COMPLETED' });
-        }
-        return { success: true };
-      }
-      const message = result.errors?.join(', ') || 'Failed to sync all guest data.';
-      if (actor.getSnapshot().status !== 'stopped') {
-        actor.send({ type: 'SET_ERROR', message });
-      }
-      return { success: false, error: message };
-    },
-    onFailure: (cause) => {
-      const errOption = Cause.findErrorOption(cause);
-      const message =
-        errOption._tag === 'Some' ? errOption.value : 'An unexpected error occurred during sync.';
-      if (actor.getSnapshot().status !== 'stopped') {
-        actor.send({ type: 'SET_ERROR', message });
-      }
-      return { success: false, error: message };
-    },
-  });
+/** Creates and starts a guest data sync actor. Pass `machine` to run it with other jobs (tests). */
+export function createGuestDataSyncActor(
+  initial?: Partial<GuestDataSyncContext>,
+  machine: GuestDataSyncMachine = guestDataSyncMachine,
+) {
+  return createActor(machine, { input: initial }).start();
 }

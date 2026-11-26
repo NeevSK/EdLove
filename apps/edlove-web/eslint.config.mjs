@@ -2,6 +2,17 @@ import { config } from '@repo/eslint-config/base';
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
+  {
+    ignores: [
+      'dist/**',
+      '.next/**',
+      'app/**',
+      'lib/**',
+      'tests/**',
+      'next-env.d.ts',
+      'next.config.ts',
+    ],
+  },
   ...config,
   {
     // `astro:*` modules are injected by the Astro build/runtime and have no

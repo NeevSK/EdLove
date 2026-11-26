@@ -22,8 +22,8 @@ export class AsyncStorageAdapter implements IStorage {
   private async init() {
     const hydrationEpoch = this.clearEpoch;
     const keys = await AsyncStorage.getAllKeys();
-    const pairs = await AsyncStorage.multiGet(keys);
-    pairs.forEach(([key, value]) => {
+    const pairs = await AsyncStorage.getMany(keys);
+    for (const [key, value] of Object.entries(pairs)) {
       // A synchronous legacy write may happen before hydration finishes. Its
       // in-memory value is newer than the snapshot being loaded here.
       if (value !== null && hydrationEpoch === this.clearEpoch && !this.keyRevisions.has(key)) {
@@ -33,7 +33,7 @@ export class AsyncStorageAdapter implements IStorage {
           this.cache.set(key, Number(value));
         else this.cache.set(key, value);
       }
-    });
+    }
   }
 
   private enqueue<T>(operation: () => Promise<T>): Promise<T> {

@@ -1,0 +1,1133 @@
+{
+  "metadata": {
+    "generator": "pluggable-screen-tree-runner",
+    "version": "2.1.0",
+    "surface": "explore",
+    "mode": "smoke",
+    "targetScreen": "/settings",
+    "baseUrl": "http://explore.localhost:3000",
+    "maxDepth": 3,
+    "chaos": "none",
+    "idempotency": false,
+    "nuance": false,
+    "startTime": "2026-11-18T11:39:46.065Z",
+    "endTime": "2026-11-18T11:40:16.399Z",
+    "status": "SUCCESS"
+  },
+  "nodes": {
+    "7a8679e5": {
+      "hash": "7a8679e5",
+      "url": "http://explore.localhost:3000/settings",
+      "path": "/settings",
+      "title": "Settings | Gurudevi Sanctuary",
+      "depth": 0,
+      "quality": {
+        "standard": "WCAG_3_APCA_AND_WCAG_2_DUAL",
+        "hasHorizontalOverflow": false,
+        "wcag2": {
+          "passed": 60,
+          "failed": 0,
+          "complianceRate": "100%",
+          "samples": [
+            {
+              "tag": "a",
+              "text": "Skip to content",
+              "ratio": "12.76:1",
+              "requiredRatio": "3:1",
+              "passWcag2": true,
+              "fontSize": "19px",
+              "fontWeight": 450
+            },
+            {
+              "tag": "button",
+              "text": "🪷",
+              "ratio": "13.33:1",
+              "requiredRatio": "3:1",
+              "passWcag2": true,
+              "fontSize": "19px",
+              "fontWeight": 450
+            },
+            {
+              "tag": "span",
+              "text": "🪷",
+              "ratio": "13.33:1",
+              "requiredRatio": "4.5:1",
+              "passWcag2": true,
+              "fontSize": "18px",
+              "fontWeight": 450
+            },
+            {
+              "tag": "button",
+              "text": "Ctrl+K",
+              "ratio": "7.07:1",
+              "requiredRatio": "3:1",
+              "passWcag2": true,
+              "fontSize": "12px",
+              "fontWeight": 450
+            },
+            {
+              "tag": "button",
+              "text": "Forest canopy",
+              "ratio": "13.98:1",
+              "requiredRatio": "3:1",
+              "passWcag2": true,
+              "fontSize": "14px",
+              "fontWeight": 600
+            },
+            {
+              "tag": "span",
+              "text": "Forest canopy",
+              "ratio": "13.98:1",
+              "requiredRatio": "4.5:1",
+              "passWcag2": true,
+              "fontSize": "14px",
+              "fontWeight": 600
+            }
+          ]
+        },
+        "apca": {
+          "bronze": {
+            "passed": 60,
+            "failed": 0
+          },
+          "silver": {
+            "passed": 59,
+            "failed": 1
+          },
+          "gold": {
+            "passed": 48,
+            "failed": 12
+          },
+          "samples": [
+            {
+              "tag": "a",
+              "text": "Skip to content",
+              "lc": -92.2,
+              "absLc": 92.2,
+              "reqBronze": 45,
+              "reqSilver": 60,
+              "reqGold": 75,
+              "passBronze": true,
+              "passSilver": true,
+              "passGold": true,
+              "fontSize": "19px",
+              "fontWeight": 450,
+              "polarity": "WoB",
+              "fg": "rgb(238,237,218)",
+              "bg": "rgb(28,42,22)"
+            },
+            {
+              "tag": "button",
+              "text": "🪷",
+              "lc": 93.5,
+              "absLc": 93.5,
+              "reqBronze": 45,
+              "reqSilver": 60,
+              "reqGold": 75,
+              "passBronze": true,
+              "passSilver": true,
+              "passGold": true,
+              "fontSize": "19px",
+              "fontWeight": 450,
+              "polarity": "BoW",
+              "fg": "rgb(28,42,22)",
+              "bg": "rgb(238,243,226)"
+            },
+            {
+              "tag": "span",
+              "text": "🪷",
+              "lc": 93.5,
+              "absLc": 93.5,
+              "reqBronze": 45,
+              "reqSilver": 60,
+              "reqGold": 75,
+              "passBronze": true,
+              "passSilver": true,
+              "passGold": true,
+              "fontSize": "18px",
+              "fontWeight": 450,
+              "polarity": "BoW",
+              "fg": "rgb(28,42,22)",
+              "bg": "rgb(238,243,226)"
+            },
+            {
+              "tag": "button",
+              "text": "Ctrl+K",
+              "lc": 81.2,
+              "absLc": 81.2,
+              "reqBronze": 30,
+              "reqSilver": 45,
+              "reqGold": 60,
+              "passBronze": true,
+              "passSilver": true,
+              "passGold": true,
+              "fontSize": "12px",
+              "fontWeight": 450,
+              "polarity": "BoW",
+              "fg": "rgb(70,89,58)",
+              "bg": "rgb(247,247,235)"
+            },
+            {
+              "tag": "button",
+              "text": "Forest canopy",
+              "lc": 96.7,
+              "absLc": 96.7,
+              "reqBronze": 45,
+              "reqSilver": 60,
+              "reqGold": 75,
+              "passBronze": true,
+              "passSilver": true,
+              "passGold": true,
+              "fontSize": "14px",
+              "fontWeight": 600,
+              "polarity": "BoW",
+              "fg": "rgb(28,42,22)",
+              "bg": "rgb(247,247,235)"
+            },
+            {
+              "tag": "span",
+              "text": "Forest canopy",
+              "lc": 96.7,
+              "absLc": 96.7,
+              "reqBronze": 45,
+              "reqSilver": 60,
+              "reqGold": 75,
+              "passBronze": true,
+              "passSilver": true,
+              "passGold": true,
+              "fontSize": "14px",
+              "fontWeight": 600,
+              "polarity": "BoW",
+              "fg": "rgb(28,42,22)",
+              "bg": "rgb(247,247,235)"
+            },
+            {
+              "tag": "span",
+              "text": "5",
+              "lc": -73.6,
+              "absLc": 73.6,
+              "reqBronze": 60,
+              "reqSilver": 75,
+              "reqGold": 90,
+              "passBronze": true,
+              "passSilver": false,
+              "passGold": false,
+              "fontSize": "11px",
+              "fontWeight": 800,
+              "polarity": "WoB",
+              "fg": "rgb(238,237,218)",
+              "bg": "rgb(74,106,28)"
+            }
+          ]
+        },
+        "touchTargets": {
+          "gold": 27,
+          "silver": 8,
+          "bronze": 13,
+          "subBronze": 4,
+          "subBronzeSamples": [
+            {
+              "tag": "a",
+              "role": "a",
+              "size": "1x1px",
+              "text": "Skip to main content"
+            },
+            {
+              "tag": "a",
+              "role": "a",
+              "size": "97x15px",
+              "text": "← Gurudevi.app"
+            },
+            {
+              "tag": "a",
+              "role": "a",
+              "size": "115x15px",
+              "text": "Go to Sanctuary →"
+            }
+          ]
+        },
+        "semantics": {
+          "missingAccessibleNames": 0,
+          "missingAccessibleNamesSamples": [],
+          "brokenAriaReferences": 0,
+          "brokenAriaReferencesSamples": [],
+          "placeholderOnlyInputs": 0,
+          "placeholderOnlyInputsSamples": [],
+          "controlsWithHints": 8,
+          "hintsSamples": [
+            {
+              "tag": "button",
+              "hint": "Close menu",
+              "type": "title"
+            },
+            {
+              "tag": "button",
+              "hint": "Search Gurudevi (Ctrl+K)",
+              "type": "title"
+            },
+            {
+              "tag": "button",
+              "hint": "World: Forest canopy, light: follows dev",
+              "type": "title"
+            }
+          ],
+          "hiddenFocusableElements": 0,
+          "hiddenFocusableSamples": [],
+          "positiveTabIndexElements": 0,
+          "positiveTabIndexSamples": [],
+          "duplicateIds": 0,
+          "duplicateIdSamples": [],
+          "liveRegionsCount": 0
+        },
+        "scorecard": {
+          "wcag2AA": true,
+          "bronzeTier": false,
+          "silverTier": false,
+          "goldTier": false
+        },
+        "axe": {
+          "violationsCount": 0,
+          "violations": [],
+          "passesCount": 23,
+          "incompleteCount": 3
+        }
+      },
+      "pjc": {
+        "flowId": "flow:dynamic",
+        "stepId": "dynamic_scene_step",
+        "scenarioId": "scenario:custom.scene",
+        "featureId": "feature:dynamic",
+        "title": "Dynamic Scene Floor"
+      },
+      "breadcrumbs": [
+        "/settings"
+      ],
+      "minedSpokesCount": 50,
+      "forwardSpokesCount": 49,
+      "reverseSpokesCount": 1,
+      "exploredAt": "2026-11-18T11:39:51.164Z"
+    },
+    "034524d7": {
+      "hash": "034524d7",
+      "url": "http://sanctuary.localhost:3000/welcome",
+      "path": "/welcome",
+      "title": "Gurudevi",
+      "depth": 1,
+      "quality": {
+        "standard": "WCAG_3_APCA_AND_WCAG_2_DUAL",
+        "hasHorizontalOverflow": false,
+        "wcag2": {
+          "passed": 0,
+          "failed": 0,
+          "complianceRate": "0%",
+          "samples": []
+        },
+        "apca": {
+          "bronze": {
+            "passed": 0,
+            "failed": 0
+          },
+          "silver": {
+            "passed": 0,
+            "failed": 0
+          },
+          "gold": {
+            "passed": 0,
+            "failed": 0
+          },
+          "samples": []
+        },
+        "touchTargets": {
+          "gold": 0,
+          "silver": 0,
+          "bronze": 0,
+          "subBronze": 0,
+          "subBronzeSamples": []
+        },
+        "semantics": {
+          "missingAccessibleNames": 0,
+          "missingAccessibleNamesSamples": [],
+          "brokenAriaReferences": 0,
+          "brokenAriaReferencesSamples": [],
+          "placeholderOnlyInputs": 0,
+          "placeholderOnlyInputsSamples": [],
+          "controlsWithHints": 0,
+          "hintsSamples": [],
+          "hiddenFocusableElements": 0,
+          "hiddenFocusableSamples": [],
+          "positiveTabIndexElements": 0,
+          "positiveTabIndexSamples": [],
+          "duplicateIds": 0,
+          "duplicateIdSamples": [],
+          "liveRegionsCount": 0
+        },
+        "scorecard": {
+          "wcag2AA": true,
+          "bronzeTier": true,
+          "silverTier": true,
+          "goldTier": false
+        },
+        "axe": {
+          "violationsCount": 0,
+          "violations": [],
+          "passesCount": 5,
+          "incompleteCount": 0
+        }
+      },
+      "pjc": {
+        "flowId": "flow:entry:web_sanctuary",
+        "stepId": "guest_house_welcome",
+        "scenarioId": "scenario:welcome.explore_entry",
+        "featureId": "feature:entry.web_sanctuary",
+        "title": "Sanctuary Guest House Welcome & Role Selection"
+      },
+      "breadcrumbs": [
+        "/settings",
+        "/welcome"
+      ],
+      "minedSpokesCount": 0,
+      "forwardSpokesCount": 0,
+      "reverseSpokesCount": 0,
+      "exploredAt": "2026-11-18T11:39:56.062Z"
+    },
+    "583b0d44": {
+      "hash": "583b0d44",
+      "url": "http://sanctuary.localhost:3000/sign-in",
+      "path": "/sign-in",
+      "title": "Gurudevi",
+      "depth": 1,
+      "quality": {
+        "standard": "WCAG_3_APCA_AND_WCAG_2_DUAL",
+        "hasHorizontalOverflow": false,
+        "wcag2": {
+          "passed": 0,
+          "failed": 0,
+          "complianceRate": "0%",
+          "samples": []
+        },
+        "apca": {
+          "bronze": {
+            "passed": 0,
+            "failed": 0
+          },
+          "silver": {
+            "passed": 0,
+            "failed": 0
+          },
+          "gold": {
+            "passed": 0,
+            "failed": 0
+          },
+          "samples": []
+        },
+        "touchTargets": {
+          "gold": 0,
+          "silver": 0,
+          "bronze": 0,
+          "subBronze": 0,
+          "subBronzeSamples": []
+        },
+        "semantics": {
+          "missingAccessibleNames": 0,
+          "missingAccessibleNamesSamples": [],
+          "brokenAriaReferences": 0,
+          "brokenAriaReferencesSamples": [],
+          "placeholderOnlyInputs": 0,
+          "placeholderOnlyInputsSamples": [],
+          "controlsWithHints": 0,
+          "hintsSamples": [],
+          "hiddenFocusableElements": 0,
+          "hiddenFocusableSamples": [],
+          "positiveTabIndexElements": 0,
+          "positiveTabIndexSamples": [],
+          "duplicateIds": 0,
+          "duplicateIdSamples": [],
+          "liveRegionsCount": 0
+        },
+        "scorecard": {
+          "wcag2AA": true,
+          "bronzeTier": true,
+          "silverTier": true,
+          "goldTier": false
+        },
+        "axe": {
+          "violationsCount": 0,
+          "violations": [],
+          "passesCount": 5,
+          "incompleteCount": 0
+        }
+      },
+      "pjc": {
+        "flowId": "flow:dynamic",
+        "stepId": "dynamic_scene_step",
+        "scenarioId": "scenario:custom.scene",
+        "featureId": "feature:dynamic",
+        "title": "Dynamic Scene Floor"
+      },
+      "breadcrumbs": [
+        "/settings",
+        "/sign-in"
+      ],
+      "minedSpokesCount": 0,
+      "forwardSpokesCount": 0,
+      "reverseSpokesCount": 0,
+      "exploredAt": "2026-11-18T11:40:02.492Z"
+    },
+    "2e78ca6e": {
+      "hash": "2e78ca6e",
+      "url": "http://sanctuary.localhost:3000/self",
+      "path": "/self",
+      "title": "Self | Gurudevi Sanctuary",
+      "depth": 2,
+      "quality": {
+        "standard": "WCAG_3_APCA_AND_WCAG_2_DUAL",
+        "hasHorizontalOverflow": false,
+        "wcag2": {
+          "passed": 59,
+          "failed": 1,
+          "complianceRate": "98%",
+          "samples": [
+            {
+              "tag": "a",
+              "text": "Skip to content",
+              "ratio": "12.76:1",
+              "requiredRatio": "3:1",
+              "passWcag2": true,
+              "fontSize": "19px",
+              "fontWeight": 450
+            },
+            {
+              "tag": "button",
+              "text": "🪷",
+              "ratio": "13.33:1",
+              "requiredRatio": "3:1",
+              "passWcag2": true,
+              "fontSize": "19px",
+              "fontWeight": 450
+            },
+            {
+              "tag": "span",
+              "text": "🪷",
+              "ratio": "13.33:1",
+              "requiredRatio": "4.5:1",
+              "passWcag2": true,
+              "fontSize": "18px",
+              "fontWeight": 450
+            },
+            {
+              "tag": "span",
+              "text": "Checking",
+              "ratio": "6.75:1",
+              "requiredRatio": "4.5:1",
+              "passWcag2": true,
+              "fontSize": "14px",
+              "fontWeight": 400
+            },
+            {
+              "tag": "button",
+              "text": "Ctrl+K",
+              "ratio": "7.07:1",
+              "requiredRatio": "3:1",
+              "passWcag2": true,
+              "fontSize": "12px",
+              "fontWeight": 450
+            },
+            {
+              "tag": "button",
+              "text": "Forest canopy",
+              "ratio": "13.98:1",
+              "requiredRatio": "3:1",
+              "passWcag2": true,
+              "fontSize": "14px",
+              "fontWeight": 600
+            },
+            {
+              "tag": "span",
+              "text": "Tutii · Life Wellbeing Concier",
+              "ratio": "1.82:1",
+              "requiredRatio": "4.5:1",
+              "passWcag2": false,
+              "fontSize": "12px",
+              "fontWeight": 700
+            }
+          ]
+        },
+        "apca": {
+          "bronze": {
+            "passed": 58,
+            "failed": 2
+          },
+          "silver": {
+            "passed": 55,
+            "failed": 5
+          },
+          "gold": {
+            "passed": 46,
+            "failed": 14
+          },
+          "samples": [
+            {
+              "tag": "a",
+              "text": "Skip to content",
+              "lc": -92.2,
+              "absLc": 92.2,
+              "reqBronze": 45,
+              "reqSilver": 60,
+              "reqGold": 75,
+              "passBronze": true,
+              "passSilver": true,
+              "passGold": true,
+              "fontSize": "19px",
+              "fontWeight": 450,
+              "polarity": "WoB",
+              "fg": "rgb(238,237,218)",
+              "bg": "rgb(28,42,22)"
+            },
+            {
+              "tag": "button",
+              "text": "🪷",
+              "lc": 93.5,
+              "absLc": 93.5,
+              "reqBronze": 45,
+              "reqSilver": 60,
+              "reqGold": 75,
+              "passBronze": true,
+              "passSilver": true,
+              "passGold": true,
+              "fontSize": "19px",
+              "fontWeight": 450,
+              "polarity": "BoW",
+              "fg": "rgb(28,42,22)",
+              "bg": "rgb(238,243,226)"
+            },
+            {
+              "tag": "span",
+              "text": "🪷",
+              "lc": 93.5,
+              "absLc": 93.5,
+              "reqBronze": 45,
+              "reqSilver": 60,
+              "reqGold": 75,
+              "passBronze": true,
+              "passSilver": true,
+              "passGold": true,
+              "fontSize": "18px",
+              "fontWeight": 450,
+              "polarity": "BoW",
+              "fg": "rgb(28,42,22)",
+              "bg": "rgb(238,243,226)"
+            },
+            {
+              "tag": "span",
+              "text": "Checking",
+              "lc": 78,
+              "absLc": 78,
+              "reqBronze": 60,
+              "reqSilver": 75,
+              "reqGold": 90,
+              "passBronze": true,
+              "passSilver": true,
+              "passGold": false,
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "polarity": "BoW",
+              "fg": "rgb(70,89,58)",
+              "bg": "rgb(238,243,226)"
+            },
+            {
+              "tag": "button",
+              "text": "Ctrl+K",
+              "lc": 81.2,
+              "absLc": 81.2,
+              "reqBronze": 30,
+              "reqSilver": 45,
+              "reqGold": 60,
+              "passBronze": true,
+              "passSilver": true,
+              "passGold": true,
+              "fontSize": "12px",
+              "fontWeight": 450,
+              "polarity": "BoW",
+              "fg": "rgb(70,89,58)",
+              "bg": "rgb(247,247,235)"
+            },
+            {
+              "tag": "button",
+              "text": "Forest canopy",
+              "lc": 96.7,
+              "absLc": 96.7,
+              "reqBronze": 45,
+              "reqSilver": 60,
+              "reqGold": 75,
+              "passBronze": true,
+              "passSilver": true,
+              "passGold": true,
+              "fontSize": "14px",
+              "fontWeight": 600,
+              "polarity": "BoW",
+              "fg": "rgb(28,42,22)",
+              "bg": "rgb(247,247,235)"
+            },
+            {
+              "tag": "span",
+              "text": "2",
+              "lc": -73.6,
+              "absLc": 73.6,
+              "reqBronze": 60,
+              "reqSilver": 75,
+              "reqGold": 90,
+              "passBronze": true,
+              "passSilver": false,
+              "passGold": false,
+              "fontSize": "11px",
+              "fontWeight": 800,
+              "polarity": "WoB",
+              "fg": "rgb(238,237,218)",
+              "bg": "rgb(74,106,28)"
+            },
+            {
+              "tag": "span",
+              "text": "17:10",
+              "lc": 72.5,
+              "absLc": 72.5,
+              "reqBronze": 60,
+              "reqSilver": 75,
+              "reqGold": 90,
+              "passBronze": true,
+              "passSilver": false,
+              "passGold": false,
+              "fontSize": "12px",
+              "fontWeight": 700,
+              "polarity": "BoW",
+              "fg": "rgb(74,106,28)",
+              "bg": "rgb(238,243,226)"
+            },
+            {
+              "tag": "span",
+              "text": "We",
+              "lc": 59.8,
+              "absLc": 59.8,
+              "reqBronze": 60,
+              "reqSilver": 75,
+              "reqGold": 90,
+              "passBronze": false,
+              "passSilver": false,
+              "passGold": false,
+              "fontSize": "8px",
+              "fontWeight": 700,
+              "polarity": "BoW",
+              "fg": "rgb(28,42,22)",
+              "bg": "rgb(156,194,58)"
+            },
+            {
+              "tag": "span",
+              "text": "Tutii · Life Wellbeing Concier",
+              "lc": 31.6,
+              "absLc": 31.6,
+              "reqBronze": 60,
+              "reqSilver": 75,
+              "reqGold": 90,
+              "passBronze": false,
+              "passSilver": false,
+              "passGold": false,
+              "fontSize": "12px",
+              "fontWeight": 700,
+              "polarity": "BoW",
+              "fg": "rgb(156,194,58)",
+              "bg": "rgb(238,243,226)"
+            }
+          ]
+        },
+        "touchTargets": {
+          "gold": 30,
+          "silver": 26,
+          "bronze": 23,
+          "subBronze": 1,
+          "subBronzeSamples": [
+            {
+              "tag": "a",
+              "role": "a",
+              "size": "1x1px",
+              "text": "Skip to main content"
+            }
+          ]
+        },
+        "semantics": {
+          "missingAccessibleNames": 0,
+          "missingAccessibleNamesSamples": [],
+          "brokenAriaReferences": 0,
+          "brokenAriaReferencesSamples": [],
+          "placeholderOnlyInputs": 0,
+          "placeholderOnlyInputsSamples": [],
+          "controlsWithHints": 61,
+          "hintsSamples": [
+            {
+              "tag": "button",
+              "hint": "Close menu",
+              "type": "title"
+            },
+            {
+              "tag": "button",
+              "hint": "Search Gurudevi (Ctrl+K)",
+              "type": "title"
+            },
+            {
+              "tag": "button",
+              "hint": "World: Forest canopy, light: follows dev",
+              "type": "title"
+            }
+          ],
+          "hiddenFocusableElements": 0,
+          "hiddenFocusableSamples": [],
+          "positiveTabIndexElements": 0,
+          "positiveTabIndexSamples": [],
+          "duplicateIds": 1,
+          "duplicateIdSamples": [
+            {
+              "id": "self-floor-title",
+              "count": 2
+            }
+          ],
+          "liveRegionsCount": 3
+        },
+        "scorecard": {
+          "wcag2AA": false,
+          "bronzeTier": false,
+          "silverTier": false,
+          "goldTier": false
+        },
+        "axe": {
+          "violationsCount": 2,
+          "violations": [
+            {
+              "id": "label-content-name-mismatch",
+              "impact": "serious",
+              "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+              "help": "Elements must have their visible text as part of their accessible name",
+              "nodesCount": 1,
+              "sampleTarget": ".gd-date-nanoDayBadge"
+            },
+            {
+              "id": "nested-interactive",
+              "impact": "serious",
+              "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+              "help": "Interactive controls must not be nested",
+              "nodesCount": 25,
+              "sampleTarget": "._sortableSectionWrapper_1tnlc_401"
+            }
+          ],
+          "passesCount": 28,
+          "incompleteCount": 4
+        }
+      },
+      "pjc": {
+        "flowId": "flow:self:student_daily_prep",
+        "stepId": "morning_situational_brief",
+        "scenarioId": "scenario:self.morning_situational_brief",
+        "featureId": "feature:self.learner_growth",
+        "title": "Personal Self Floor & Situational Brief"
+      },
+      "breadcrumbs": [
+        "/settings",
+        "/sign-in",
+        "/self"
+      ],
+      "minedSpokesCount": 72,
+      "forwardSpokesCount": 72,
+      "reverseSpokesCount": 0,
+      "exploredAt": "2026-11-18T11:40:08.420Z"
+    }
+  },
+  "edges": [
+    {
+      "type": "IN_PAGE_CONTROL",
+      "from": "7a8679e5",
+      "to": "0de1848e",
+      "label": "Horizontal row Recommended · keeps the workspace w",
+      "fromUrl": "http://explore.localhost:3000/settings",
+      "toUrl": "http://explore.localhost:3000/settings",
+      "actionEffects": [
+        "Live feedback notice: \"✓ Navigation layout updated\""
+      ],
+      "effectVerified": true,
+      "timestamp": "2026-11-18T11:39:52.594Z",
+      "success": true
+    },
+    {
+      "type": "IN_PAGE_CONTROL",
+      "from": "7a8679e5",
+      "to": "0de1848e",
+      "label": "Side rail A familiar vertical menu for desktop",
+      "fromUrl": "http://explore.localhost:3000/settings",
+      "toUrl": "http://explore.localhost:3000/settings",
+      "actionEffects": [
+        "aria-pressed: \"false\" -> \"true\"",
+        "data-selected: \"false\" -> \"true\""
+      ],
+      "effectVerified": true,
+      "timestamp": "2026-11-18T11:39:53.120Z",
+      "success": true
+    },
+    {
+      "type": "IN_PAGE_CONTROL",
+      "from": "7a8679e5",
+      "to": "0de1848e",
+      "label": "Day (Light) Crisp high-readability daylight surfac",
+      "fromUrl": "http://explore.localhost:3000/settings",
+      "toUrl": "http://explore.localhost:3000/settings",
+      "actionEffects": [
+        "data-selected: \"false\" -> \"true\"",
+        "Live feedback notice: \"✓ Light appearance updated to Day\""
+      ],
+      "effectVerified": true,
+      "timestamp": "2026-11-18T11:39:53.602Z",
+      "success": true
+    },
+    {
+      "type": "IN_PAGE_CONTROL",
+      "from": "7a8679e5",
+      "to": "0de1848e",
+      "label": "Night (Dark) Deep contemplative dark surface with ",
+      "fromUrl": "http://explore.localhost:3000/settings",
+      "toUrl": "http://explore.localhost:3000/settings",
+      "actionEffects": [
+        "data-selected: \"false\" -> \"true\"",
+        "diurnal mode: \"light\" -> \"dark\"",
+        "Live feedback notice: \"✓ Light appearance updated to Night\""
+      ],
+      "effectVerified": true,
+      "timestamp": "2026-11-18T11:39:54.104Z",
+      "success": true
+    },
+    {
+      "type": "IN_PAGE_CONTROL",
+      "from": "7a8679e5",
+      "to": "0de1848e",
+      "label": "Follow Device Automatically synchronizes with your",
+      "fromUrl": "http://explore.localhost:3000/settings",
+      "toUrl": "http://explore.localhost:3000/settings",
+      "actionEffects": [
+        "data-selected: \"false\" -> \"true\"",
+        "diurnal mode: \"dark\" -> \"light\"",
+        "Live feedback notice: \"✓ Light appearance updated to Device\""
+      ],
+      "effectVerified": true,
+      "timestamp": "2026-11-18T11:39:54.658Z",
+      "success": true
+    },
+    {
+      "type": "NAVIGATION_SPOKE",
+      "from": "7a8679e5",
+      "to": "42299bd3",
+      "label": "Go to Sanctuary →",
+      "fromUrl": "http://explore.localhost:3000/settings",
+      "toUrl": "http://sanctuary.localhost:3000/welcome",
+      "actionEffects": [
+        "Route transition: http://explore.localhost:3000/settings -> http://sanctuary.localhost:3000/welcome"
+      ],
+      "effectVerified": true,
+      "timestamp": "2026-11-18T11:39:55.575Z",
+      "success": true
+    },
+    {
+      "type": "NAVIGATION_SPOKE",
+      "from": "7a8679e5",
+      "to": "1e318e3a",
+      "label": "Enter Sanctuary to Sync ↗",
+      "fromUrl": "http://explore.localhost:3000/settings",
+      "toUrl": "http://sanctuary.localhost:3000/sign-in",
+      "actionEffects": [
+        "Route transition: http://explore.localhost:3000/settings -> http://sanctuary.localhost:3000/sign-in"
+      ],
+      "effectVerified": true,
+      "timestamp": "2026-11-18T11:40:01.484Z",
+      "success": true
+    },
+    {
+      "type": "ACTION",
+      "from": "3ff4242e",
+      "to": "1e318e3a",
+      "label": "G Continue with Google",
+      "fromUrl": "http://sanctuary.localhost:3000/sign-in",
+      "toUrl": "http://sanctuary.localhost:3000/sign-in",
+      "actionEffects": [
+        "Live feedback notice: \"Sign in is unavailable because this environment is missing its public Supabase settings.\""
+      ],
+      "effectVerified": true,
+      "timestamp": "2026-11-18T11:40:03.677Z",
+      "success": true
+    },
+    {
+      "type": "ACTION",
+      "from": "3ff4242e",
+      "to": "1e318e3a",
+      "label": " Continue with Apple",
+      "fromUrl": "http://sanctuary.localhost:3000/sign-in",
+      "toUrl": "http://sanctuary.localhost:3000/sign-in",
+      "actionEffects": [],
+      "effectVerified": false,
+      "timestamp": "2026-11-18T11:40:04.130Z",
+      "success": true
+    },
+    {
+      "type": "ACTION",
+      "from": "3ff4242e",
+      "to": "1e318e3a",
+      "label": "✉ Continue with email",
+      "fromUrl": "http://sanctuary.localhost:3000/sign-in",
+      "toUrl": "http://sanctuary.localhost:3000/sign-in",
+      "actionEffects": [
+        "class updated: \"null\""
+      ],
+      "effectVerified": true,
+      "timestamp": "2026-11-18T11:40:04.602Z",
+      "success": true
+    },
+    {
+      "type": "ACTION",
+      "from": "3ff4242e",
+      "to": "1e318e3a",
+      "label": "📲 Sign in with Phone QR Code",
+      "fromUrl": "http://sanctuary.localhost:3000/sign-in",
+      "toUrl": "http://sanctuary.localhost:3000/sign-in",
+      "actionEffects": [
+        "Modal dialog opened: \"Link with Gurudevi Mobile\"",
+        "Focus trap verified (2 items)",
+        "Focus restored to trigger"
+      ],
+      "effectVerified": true,
+      "timestamp": "2026-11-18T11:40:05.107Z",
+      "success": true
+    },
+    {
+      "type": "NAVIGATION_SPOKE",
+      "from": "3ff4242e",
+      "to": "1e318e3a",
+      "label": "EdLove Foundation",
+      "fromUrl": "http://sanctuary.localhost:3000/sign-in",
+      "toUrl": "http://sanctuary.localhost:3000/sign-in",
+      "actionEffects": [],
+      "effectVerified": false,
+      "timestamp": "2026-11-18T11:40:05.905Z",
+      "success": true
+    },
+    {
+      "type": "SHELL_NAV",
+      "from": "3ff4242e",
+      "to": "2f7a0a7b",
+      "label": "Gurudevi",
+      "fromUrl": "http://sanctuary.localhost:3000/sign-in",
+      "toUrl": "http://sanctuary.localhost:3000/self",
+      "actionEffects": [
+        "Route transition: http://sanctuary.localhost:3000/sign-in -> http://sanctuary.localhost:3000/self"
+      ],
+      "effectVerified": true,
+      "timestamp": "2026-11-18T11:40:06.389Z",
+      "success": true
+    },
+    {
+      "type": "PRIMARY_ACTION",
+      "from": "2e78ca6e",
+      "to": "2f7a0a7b",
+      "label": "⋮⋮ Personal Shelf & History QUICK ACCESS & HISTORY",
+      "fromUrl": "http://sanctuary.localhost:3000/self",
+      "toUrl": "http://sanctuary.localhost:3000/self",
+      "actionEffects": [],
+      "effectVerified": false,
+      "timestamp": "2026-11-18T11:40:10.453Z",
+      "success": true
+    },
+    {
+      "type": "IN_PAGE_CONTROL",
+      "from": "2e78ca6e",
+      "to": "2f7a0a7b",
+      "label": "🏠 Home",
+      "fromUrl": "http://sanctuary.localhost:3000/self",
+      "toUrl": "http://sanctuary.localhost:3000/self",
+      "actionEffects": [],
+      "effectVerified": false,
+      "timestamp": "2026-11-18T11:40:11.050Z",
+      "success": true
+    },
+    {
+      "type": "IN_PAGE_CONTROL",
+      "from": "2e78ca6e",
+      "to": "2f7a0a7b",
+      "label": "☀️ Clear & Energized Alert mind, high vital energy",
+      "fromUrl": "http://sanctuary.localhost:3000/self",
+      "toUrl": "http://sanctuary.localhost:3000/self",
+      "actionEffects": [
+        "class updated: \"null\"",
+        "Modal dialog opened: \"Wisdom Seeds\"",
+        "Focus trap verified (1 items)"
+      ],
+      "effectVerified": true,
+      "timestamp": "2026-11-18T11:40:11.616Z",
+      "success": true
+    }
+  ],
+  "roundTrips": [
+    {
+      "anchorUrl": "http://explore.localhost:3000/settings",
+      "childUrl": "http://sanctuary.localhost:3000/welcome",
+      "spoke": "Go to Sanctuary →",
+      "reconstitutedUrl": "http://explore.localhost:3000/settings",
+      "passed": true
+    },
+    {
+      "anchorUrl": "http://sanctuary.localhost:3000/sign-in",
+      "childUrl": "http://sanctuary.localhost:3000/self",
+      "spoke": "Gurudevi",
+      "reconstitutedUrl": "http://sanctuary.localhost:3000/sign-in",
+      "passed": true
+    },
+    {
+      "anchorUrl": "http://explore.localhost:3000/settings",
+      "childUrl": "http://sanctuary.localhost:3000/sign-in",
+      "spoke": "Enter Sanctuary to Sync ↗",
+      "reconstitutedUrl": "http://explore.localhost:3000/settings",
+      "passed": true
+    }
+  ],
+  "pjcEvidence": {
+    "tier": "G4",
+    "tool": "screen-anchored-tree-runner",
+    "scenariosVerified": [
+      "scenario:custom.scene",
+      "scenario:welcome.explore_entry",
+      "scenario:self.morning_situational_brief"
+    ],
+    "verifiedAt": "2026-11-18T11:39:46.066Z"
+  },
+  "summary": {
+    "totalAnchorsExplored": 4,
+    "totalSpokesTested": 16,
+    "inPageControlsTested": 13,
+    "inPageEffectsVerified": 9,
+    "deadClicksDetected": 4,
+    "roundTripsPassed": 3,
+    "roundTripsFailed": 0,
+    "axePassesCount": 61,
+    "axeViolationsCount": 2,
+    "focusTrapsTested": 2,
+    "focusTrapsPassed": 2,
+    "sequentialJourneysVerified": 0,
+    "wcag2AAPassCount": 3,
+    "bronzeTierPassCount": 2,
+    "silverTierPassCount": 2,
+    "goldTierPassCount": 0,
+    "totalMissingLabels": 0,
+    "totalBrokenAriaRefs": 0,
+    "totalControlsWithHints": 69,
+    "totalHiddenFocusables": 0,
+    "totalPositiveTabIndex": 0,
+    "totalDuplicateIds": 1,
+    "totalLiveRegions": 3,
+    "dualThemeTestedCount": 0,
+    "dualThemeStableCount": 0,
+    "uncaughtErrorsCount": 0,
+    "networkErrorsCount": 0
+  },
+  "uncaughtExceptions": [],
+  "networkErrors": []
+}

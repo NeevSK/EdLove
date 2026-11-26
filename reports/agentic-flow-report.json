@@ -1,0 +1,99 @@
+{
+  "metadata": {
+    "runner": "agentic-flow-runner",
+    "engine": "playwright",
+    "baseUrl": "http://explore.localhost:3000",
+    "startTime": "2026-11-18T12:37:27.208Z",
+    "endTime": "2026-11-18T12:37:40.936Z",
+    "status": "SUCCESS"
+  },
+  "summary": {
+    "totalFlows": 1,
+    "passedFlows": 1,
+    "failedFlows": 0,
+    "totalStepsExecuted": 3,
+    "totalAssertionsPassed": 3,
+    "totalAssertionsFailed": 0,
+    "totalAxePasses": 123,
+    "totalAxeViolations": 18
+  },
+  "flows": [
+    {
+      "id": "pjc:student.daily_prep",
+      "title": "PJC: Manage Tomorrow's Preparation",
+      "description": "In the evening during the wind-down phase, a learner opens Self to set three intentional things to prepare for tomorrow.",
+      "pjc": {
+        "featureId": "feature:self.learner_growth",
+        "intentId": "intent:student.daily_prep",
+        "journeyId": "journey:student.daily_prep",
+        "invariants": [
+          "Daily prep must remain simple and non-coercive (encouraging 3 gentle things, avoiding overwhelming backlog pressure).",
+          "Tasks sync offline-first with zero lag."
+        ]
+      },
+      "startTime": "2026-11-18T12:37:27.442Z",
+      "endTime": "2026-11-18T12:37:40.869Z",
+      "status": "PASSED",
+      "steps": [
+        {
+          "stepIndex": 1,
+          "name": "[step:student.open_self] Open Self Workspace",
+          "route": "/workspace",
+          "startTime": "2026-11-18T12:37:27.442Z",
+          "status": "PASSED",
+          "assertion": {
+            "passed": true,
+            "actual": "DOM intact and mounted",
+            "expected": "DOM intact and mounted",
+            "message": "Step \"Open Self Workspace\" reached and rendered cleanly"
+          },
+          "axeQuality": {
+            "passesCount": 41,
+            "violationsCount": 6
+          },
+          "error": null,
+          "endTime": "2026-11-18T12:37:36.775Z"
+        },
+        {
+          "stepIndex": 2,
+          "name": "[step:student.add_prep_goal] Add Prep Item",
+          "route": null,
+          "startTime": "2026-11-18T12:37:36.775Z",
+          "status": "PASSED",
+          "assertion": {
+            "passed": true,
+            "actual": "DOM intact and mounted",
+            "expected": "DOM intact and mounted",
+            "message": "Step \"Add Prep Item\" reached and rendered cleanly"
+          },
+          "axeQuality": {
+            "passesCount": 41,
+            "violationsCount": 6
+          },
+          "error": null,
+          "endTime": "2026-11-18T12:37:38.889Z"
+        },
+        {
+          "stepIndex": 3,
+          "name": "[step:student.complete_prep_goal] Complete Prep Item",
+          "route": null,
+          "startTime": "2026-11-18T12:37:38.889Z",
+          "status": "PASSED",
+          "assertion": {
+            "passed": true,
+            "actual": "DOM intact and mounted",
+            "expected": "DOM intact and mounted",
+            "message": "Step \"Complete Prep Item\" reached and rendered cleanly"
+          },
+          "axeQuality": {
+            "passesCount": 41,
+            "violationsCount": 6
+          },
+          "error": null,
+          "endTime": "2026-11-18T12:37:40.869Z"
+        }
+      ],
+      "error": null
+    }
+  ]
+}

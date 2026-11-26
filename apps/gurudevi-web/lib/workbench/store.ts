@@ -113,6 +113,9 @@ export class DomainWorkbenchStore {
   }
 
   private replaceState(state: DomainWorkbenchState): void {
+    // An operation that changes nothing (opening a task at capacity) must stay silent: announcing
+    // it makes every listening store rehydrate, re-render and run the same operation again.
+    if (state === this.state) return;
     this.state = state;
     this.storage.save(state);
     this.listeners.forEach((listener) => listener());

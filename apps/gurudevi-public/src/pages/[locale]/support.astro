@@ -1,0 +1,15 @@
+---
+import { LocalizedSection } from '../../components/sections/LocalizedSection';
+import PublicLayout from '../../layouts/PublicLayout.astro';
+import { LOCALIZED_MARKETING } from '../../content/localized';
+
+// English support lives in the app; Sinhala and Tamil readers get this page.
+export function getStaticPaths() {
+  return [{ params: { locale: 'si' } }, { params: { locale: 'ta' } }] as const;
+}
+const { locale } = Astro.params;
+const page = LOCALIZED_MARKETING[locale].pages.support;
+---
+<PublicLayout locale={locale} path="/support" locales={['si', 'ta']} title={page.title} description={page.description}>
+  <LocalizedSection locale={locale} section="support" />
+</PublicLayout>

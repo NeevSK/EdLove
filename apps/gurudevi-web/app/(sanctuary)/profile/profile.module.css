@@ -4,6 +4,8 @@
   width: 100%;
   margin: 0 auto;
   padding: clamp(0.75rem, 2vw, 1.75rem);
+  container-name: profile-floor;
+  container-type: inline-size;
 }
 
 .intro {
@@ -13,7 +15,7 @@
 
 .eyebrow {
   color: #9a5b2d;
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   margin: 0 0 0.65rem;
@@ -37,10 +39,12 @@
 }
 
 .identity {
-  background: #fffdfa;
-  border: 1px solid #e6d9ce;
+  background: var(--paper-light, #fffdfa);
+  border: 1px solid var(--line, #e6d9ce);
+  border-top: 1px solid color-mix(in srgb, var(--w-lamp, #9a5b2d) 26%, var(--line, #e6d9ce));
   border-radius: 1rem;
-  box-shadow: 0 0.8rem 2rem rgb(59 38 24 / 8%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--w-lamp, #9a5b2d) 16%, transparent),
+              0 0.8rem 2rem rgb(59 38 24 / 6%);
   margin-top: 1.5rem;
   padding: 1.5rem;
 }
@@ -55,7 +59,9 @@
 .identity dl > div {
   background: #faf6f0;
   border: 1px solid #eee2d8;
+  border-top: 1px solid color-mix(in srgb, var(--w-lamp, #9a5b2d) 18%, #eee2d8);
   border-radius: 0.75rem;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--w-lamp, #9a5b2d) 10%, transparent);
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -70,7 +76,7 @@
 
 .identity dt {
   color: #74675d;
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -120,8 +126,8 @@
   cursor: pointer;
   font: inherit;
   font-weight: 700;
-  min-height: 2.75rem;
-  padding: 0.5rem 0.85rem;
+  min-height: 48px;
+  padding: 0.6rem 1rem;
 }
 
 .deletion button:disabled {
@@ -171,9 +177,13 @@
   border: 1.5px solid #e6d9ce;
   border-radius: 0.5rem;
   color: #2d2018;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
   font-weight: 700;
-  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  padding: 0.6rem 1.15rem;
   text-decoration: none;
   transition: all 0.15s ease;
 }
@@ -206,7 +216,7 @@
 
 .sectionsRailTitle {
   margin: 0 0 0.5rem;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -217,7 +227,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  min-height: 2.75rem;
+  min-height: 48px;
   padding: 0.6rem 0.85rem;
   border: 1px solid transparent;
   border-radius: 0.5rem;
@@ -272,14 +282,14 @@
   flex-direction: column;
   align-items: center;
   gap: 0.35rem;
-  min-height: 3.5rem;
+  min-height: 48px;
   padding: 0.75rem 0.5rem;
   border: 1px solid #e6d9ce;
   border-radius: 0.75rem;
   background: #fffdfa;
   color: #2d2018;
   font: inherit;
-  font-size: 0.85rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -307,15 +317,15 @@
 }
 
 .motionToggle {
-  min-height: 2.75rem;
+  min-height: 48px;
   min-width: 5.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.15rem;
   border: 1px solid #e6d9ce;
   border-radius: 9999px;
   background: #fffdfa;
   color: #2d2018;
   font: inherit;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -355,14 +365,14 @@
   }
 
   .mobilePill {
-    min-height: 2.75rem;
-    padding: 0.5rem 1rem;
+    min-height: 48px;
+    padding: 0.5rem 1.15rem;
     border: 1px solid #e6d9ce;
     border-radius: 9999px;
     background: #fffdfa;
     color: #62564d;
     font: inherit;
-    font-size: 0.88rem;
+    font-size: 0.9375rem;
     font-weight: 600;
     white-space: nowrap;
     cursor: pointer;
@@ -441,7 +451,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   color: var(--ink-soft, #62564d);
 }
 
@@ -468,7 +478,7 @@
 }
 
 .statLabel {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--ink-soft, #74675d);
   margin-top: 0.25rem;
 }
@@ -478,7 +488,7 @@
 }
 
 .tagsTitle {
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   font-weight: 700;
   color: #74675d;
   margin-bottom: 0.5rem;
@@ -493,11 +503,11 @@
 }
 
 .tagPill {
-  padding: 0.3rem 0.75rem;
+  padding: 0.35rem 0.85rem;
   background: #fdf6ec;
   border: 1px solid #e9d3b6;
   border-radius: 999px;
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #744321;
 }
@@ -525,21 +535,25 @@
 }
 
 .qrDesc {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   color: #74675d;
   margin: 0 0 0.75rem;
   line-height: 1.4;
 }
 
 .copyQrBtn {
-  padding: 0.35rem 0.85rem;
+  padding: 0.5rem 1rem;
+  min-height: 44px;
   border-radius: 999px;
   border: 1px solid #9a5b2d;
   background: transparent;
   color: #9a5b2d;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 700;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.15s ease;
 }
 
@@ -570,19 +584,20 @@
 }
 
 .formField label {
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #74675d;
 }
 
 .formInput,
 .formTextarea {
-  padding: 0.6rem 0.85rem;
+  padding: 0.65rem 0.85rem;
+  min-height: 48px;
   border: 1px solid #e6d9ce;
   border-radius: 0.5rem;
   background: #fff;
   font: inherit;
-  font-size: 0.9rem;
+  font-size: 16px;
   color: #2d2018;
 }
 
@@ -740,12 +755,13 @@
 }
 
 .quickBtn {
-  padding: 0.45rem 0.9rem;
+  padding: 0.6rem 1rem;
+  min-height: 48px;
   border-radius: 999px;
   border: 1px solid #e6d9ce;
   background: #fffdfa;
   color: #2d2018;
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -802,11 +818,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.3rem 0.65rem;
+  padding: 0.35rem 0.75rem;
   background: #f0ebe1;
   border: 1px solid #dcd1c2;
   border-radius: 0.4rem;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #453c35;
 }
@@ -815,11 +831,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.3rem 0.65rem;
+  padding: 0.35rem 0.75rem;
   background: rgba(154, 91, 45, 0.08);
   border: 1px solid rgba(154, 91, 45, 0.25);
   border-radius: 0.4rem;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #9a5b2d;
 }
@@ -835,11 +851,11 @@
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  padding: 0.5rem 0.75rem;
+  padding: 0.6rem 0.85rem;
   background: #faf6ef;
   border-left: 3px solid #9a5b2d;
   border-radius: 0 0.5rem 0.5rem 0;
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   color: #2d2018;
 }
 
@@ -870,6 +886,65 @@
   width: 100%;
   padding: 1.75rem;
   box-shadow: 0 1.5rem 3rem rgba(45, 32, 24, 0.22);
+}
+
+/* ─── 4-Gear Container Degradation (UI Kit & Intentional UI) ─── */
+@container profile-floor (max-width: 519px) {
+  /* Gear 2: Single-column stack & full-width actions */
+  .identity dl {
+    grid-template-columns: 1fr;
+  }
+
+  .action,
+  .deletion button {
+    min-height: 48px;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@container profile-floor (max-width: 379px) {
+  /* Gear 1: Vertical touch ergonomics, strict >= 48px touch targets */
+  .profile,
+  .state {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .identity {
+    padding: 1rem;
+    border-radius: 0.75rem;
+  }
+
+  .identity dl > div {
+    padding: 0.75rem 1rem;
+  }
+
+  .energyModal {
+    padding: 1rem;
+  }
+
+  .certBadge,
+  .subjectBadge {
+    font-size: 0.75rem;
+  }
+}
+
+@container profile-floor (max-width: 319px) {
+  /* Gear 0: Ultra-narrow fallback */
+  .identity {
+    padding: 0.75rem;
+  }
+
+  .profile h1,
+  .state h1 {
+    font-size: 1.65rem;
+  }
+
+  .timelineItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
 }
 
 

@@ -10,7 +10,7 @@ import {
   moodToScore,
   scoreToMood,
 } from '@repo/self/data/wellbeing.data';
-import type { MoodLog } from '@repo/self/types';
+import type { MoodLog } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const MOOD_CACHE_KEY = 'gurudevi-mood-cache';

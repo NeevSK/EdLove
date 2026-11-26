@@ -6,6 +6,8 @@
   width: 100%;
   margin: 0 auto;
   font-family: var(--font-ui-grotesque, "Outfit", sans-serif);
+  container-name: settings-floor;
+  container-type: inline-size;
 }
 
 .headerBar {
@@ -22,7 +24,7 @@
 
 .headerBar p {
   color: var(--color-ink-soft, #453c35);
-  font-size: 0.85rem;
+  font-size: 0.9375rem;
   margin: 0.25rem 0 0;
 }
 
@@ -46,7 +48,9 @@
   border-radius: 0.75rem;
   background: var(--color-paper-light, #fffdf8);
   border: 1px solid var(--color-line, rgba(104, 94, 85, 0.14));
-  box-shadow: 0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
+  border-top: 1px solid color-mix(in srgb, var(--color-action, #a85022) 24%, var(--color-line, rgba(104, 94, 85, 0.14)));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-action, #a85022) 14%, transparent),
+              0 2px 6px var(--shadow-sanctuary-soft, rgba(69, 60, 53, 0.04));
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -63,7 +67,7 @@
 }
 
 .sectionDescription {
-  font-size: 0.85rem;
+  font-size: 0.9375rem;
   color: var(--color-ink-soft, #453c35);
   margin: 0;
   line-height: 1.5;
@@ -76,7 +80,7 @@
 }
 
 .optionCard {
-  min-height: 44px;
+  min-height: 48px;
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
@@ -101,13 +105,13 @@
 }
 
 .optionLabel {
-  font-size: 0.85rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: var(--color-ink, #131e27);
 }
 
 .optionSub {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--color-ink-soft, #453c35);
 }
 
@@ -121,25 +125,25 @@
 }
 
 .toggleLabel {
-  font-size: 0.85rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--color-ink, #131e27);
 }
 
 .toggleDescription {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--color-ink-soft, #453c35);
 }
 
 .toggleButton {
-  min-height: 44px;
-  min-width: 44px;
-  padding: 0.4rem 1rem;
+  min-height: 48px;
+  min-width: 48px;
+  padding: 0.5rem 1.15rem;
   border-radius: 999px;
   border: 1px solid var(--color-line, rgba(104, 94, 85, 0.2));
   background: var(--color-paper, #f7f2e8);
   color: var(--color-ink, #131e27);
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -332,14 +336,14 @@
 .textInput {
   flex: 1;
   min-width: 220px;
-  min-height: 42px;
-  padding: 0.5rem 0.85rem;
+  min-height: 48px;
+  padding: 0.6rem 0.85rem;
   border-radius: 0.5rem;
   border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
   background: var(--color-paper, #f7f2e8);
   color: var(--color-ink, #131e27);
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: 16px;
   outline: none;
 }
 
@@ -349,13 +353,13 @@
 }
 
 .actionButton {
-  min-height: 42px;
-  padding: 0.5rem 1rem;
+  min-height: 48px;
+  padding: 0.6rem 1.15rem;
   border-radius: 0.5rem;
   border: 1px solid var(--color-action, #a85022);
   background: var(--color-action, #a85022);
   color: #fff;
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.15s ease;
@@ -366,13 +370,13 @@
 }
 
 .secondaryButton {
-  min-height: 42px;
-  padding: 0.5rem 1rem;
+  min-height: 48px;
+  padding: 0.6rem 1.15rem;
   border-radius: 0.5rem;
   border: 1px solid var(--color-line, rgba(104, 94, 85, 0.25));
   background: var(--color-paper, #f7f2e8);
   color: var(--color-ink, #131e27);
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -382,13 +386,13 @@
 }
 
 .dangerButton {
-  min-height: 42px;
-  padding: 0.5rem 1rem;
+  min-height: 48px;
+  padding: 0.6rem 1.15rem;
   border-radius: 0.5rem;
   border: 1px solid var(--color-danger, #b23b3b);
   background: transparent;
   color: var(--color-danger, #b23b3b);
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -427,6 +431,272 @@
   font-size: 1.25rem;
   color: var(--color-ink, #131e27);
   margin: 0;
+}
+
+/* Safe Actions & Account Session */
+.accountCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border-radius: var(--w-radius-md, 0.75rem);
+  background: var(--w-surface, var(--color-paper, #f7f2e8));
+  border: 1px solid var(--w-line, var(--color-line, rgba(104, 94, 85, 0.2)));
+  flex-wrap: wrap;
+}
+
+.accountIdentity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.accountAvatar {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--w-radius-full, 999px);
+  background: color-mix(in srgb, var(--w-accent, #a85022) 15%, var(--w-surface, #fffdf8));
+  border: 1.5px solid var(--w-line, rgba(104, 94, 85, 0.25));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--w-ink, #131e27);
+  flex-shrink: 0;
+}
+
+.accountDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.accountName {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--w-ink, #131e27);
+}
+
+.accountBadges {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.capacityBadge {
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--w-radius-full, 999px);
+  background: var(--w-surface-elevated, var(--color-paper-light, #fffdf8));
+  border: 1px solid var(--w-line, rgba(104, 94, 85, 0.2));
+  font-size: 0.72rem;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--w-ink, #131e27);
+}
+
+.sessionBadge {
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--w-radius-full, 999px);
+  background: color-mix(in srgb, var(--w-accent, #a85022) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--w-accent, #a85022) 25%, transparent);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--w-ink, #131e27);
+}
+
+.accountIdText {
+  font-size: 0.72rem;
+  color: var(--w-ink-subtle, #7a6e5f);
+  font-family: monospace;
+}
+
+.safeActionsRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+/* Danger Zone */
+.dangerZoneSection {
+  grid-column: 1 / -1;
+  padding: 1.5rem;
+  border-radius: var(--w-radius-md, 0.75rem);
+  background: color-mix(in srgb, var(--w-danger, #b3261e) 3%, var(--color-paper-light, #fffdf8));
+  border: 1px solid color-mix(in srgb, var(--w-danger, #b3261e) 35%, transparent);
+  border-left: 5px solid var(--w-danger, #b3261e);
+  box-shadow: 0 2px 10px rgba(179, 38, 30, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+:global([data-appearance="night"]) .dangerZoneSection {
+  background: color-mix(in srgb, var(--w-danger, #b3261e) 7%, #1a1512);
+  border-color: color-mix(in srgb, var(--w-danger, #b3261e) 45%, transparent);
+  border-left-color: var(--w-danger, #e57373);
+}
+
+.dangerTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--w-danger, #b3261e);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+:global([data-appearance="night"]) .dangerTitle {
+  color: #ff8a80;
+}
+
+.dangerDescription {
+  font-size: 0.85rem;
+  color: var(--w-ink-subtle, #5c5042);
+  margin: 0;
+  line-height: 1.55;
+}
+
+.dangerBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border-radius: var(--w-radius-sm, 0.5rem);
+  background: var(--w-surface, var(--color-paper-light, #fffdf8));
+  border: 1px solid color-mix(in srgb, var(--w-danger, #b3261e) 20%, var(--w-line, rgba(104, 94, 85, 0.2)));
+}
+
+.dangerBoxHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.dangerBoxTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--w-ink, #131e27);
+  margin: 0;
+}
+
+.dangerBoxText {
+  font-size: 0.82rem;
+  color: var(--w-ink-subtle, #5c5042);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.dangerActionFooter {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ─── 4-Gear Container Degradation (UI Kit & Intentional UI) ─── */
+@container settings-floor (max-width: 519px) {
+  /* Gear 2: Single-column stack & full-width controls */
+  .sectionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .optionsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .textInput {
+    min-width: 100%;
+    width: 100%;
+  }
+
+  .toggleButton {
+    min-height: 48px;
+  }
+
+  .actionButton,
+  .secondaryButton,
+  .dangerButton {
+    min-height: 48px;
+  }
+}
+
+@container settings-floor (max-width: 379px) {
+  /* Gear 1: Vertical stacking, strict >= 48px touch targets */
+  .settingSection,
+  .dangerZoneSection,
+  .accountCard {
+    padding: 1rem;
+    border-radius: 0.65rem;
+  }
+
+  .toggleRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  .toggleButton {
+    width: 100%;
+    text-align: center;
+  }
+
+  .accountCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .safeActionsRow,
+  .dangerActionFooter {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actionButton,
+  .secondaryButton,
+  .dangerButton {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@container settings-floor (max-width: 319px) {
+  /* Gear 0: Ultra-narrow fallback */
+  .settingSection {
+    padding: 0.75rem;
+  }
+
+  .sectionTitle {
+    font-size: 1rem;
+  }
+
+  .optionCard {
+    padding: 0.6rem 0.75rem;
+  }
 }
 
 

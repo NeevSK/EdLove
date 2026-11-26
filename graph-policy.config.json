@@ -1,0 +1,71 @@
+{
+  "activeTarget": "full",
+  "targets": [
+    {
+      "id": "full",
+      "label": "Full Monorepo (All Packages & Apps)",
+      "paths": ["packages", "apps"],
+      "tsconfig": "tsconfig.json",
+      "skipScip": true
+    },
+    {
+      "id": "core",
+      "label": "@repo/core (Shared Spine)",
+      "paths": ["packages/core/src"],
+      "tsconfig": "packages/core/tsconfig.json"
+    },
+    {
+      "id": "mobile",
+      "label": "@repo/core + gurudevi-mobile",
+      "paths": ["packages/core/src", "apps/gurudevi-mobile/src", "apps/gurudevi-mobile/app"],
+      "tsconfig": "apps/gurudevi-mobile/tsconfig.json"
+    },
+    {
+      "id": "api",
+      "label": "@repo/core + sanctuary-api",
+      "paths": ["packages/core/src", "apps/sanctuary-api/src"],
+      "tsconfig": "apps/sanctuary-api/tsconfig.json"
+    }
+  ],
+  "analyzers": {
+    "dependencyCruiser": {
+      "enabled": true,
+      "config": ".dependency-cruiser.cjs"
+    },
+    "scip": {
+      "enabled": true,
+      "tool": "@sourcegraph/scip-typescript"
+    },
+    "treeSitter": {
+      "enabled": false,
+      "reason": "Enable for non-TS files or structural AST containment fallback"
+    },
+    "joern": {
+      "enabled": false,
+      "cpgPath": ".tmp/joern-cpg.bin"
+    },
+    "codeql": {
+      "enabled": false,
+      "dbPath": ".tmp/codeql-db"
+    }
+  },
+  "ontology": {
+    "canonical": "linkml",
+    "codeSchema": "packages/graph-pipeline/ontology/code-graph.linkml.yaml",
+    "shaclConstraints": "packages/graph-pipeline/ontology/constraints.shacl.ttl",
+    "nvidiaAutoOntology": {
+      "enabled": false,
+      "endpoint": "http://localhost:8000",
+      "mcpServer": "nvidia-auto-ontology"
+    }
+  },
+  "storageBackend": {
+    "active": "json-postgres",
+    "available": ["json-postgres", "rdflib-sparql", "neo4j-n10s"]
+  },
+  "renderer": {
+    "active": "cards",
+    "available": ["cards", "3d", "cytoscape", "g6", "sparnatural"],
+    "layout": "elk"
+  }
+}

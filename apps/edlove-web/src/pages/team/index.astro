@@ -1,0 +1,163 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CinematicBackground from '../../components/CinematicBackground.astro';
+import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
+import { absoluteUrl } from '../../lib/site';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'Our Team & Contributors — EdLove Foundation',
+  description: 'The researchers, builders, educators, and fellows stewarding the EdLove Foundation.',
+  url: absoluteUrl('/team'),
+};
+
+const teamMembers = [
+  {
+    name: 'Naveen',
+    role: 'Founder & Lead Custodian',
+    affiliation: 'EdLove Foundation & Intuitui Labs',
+    bio: 'Philosopher, builder, and writer focused on educational ontology, critical realism, convivial offline technology, and teacher sovereignty. Author of canonical monographs including The Noble Lie and The Triadic Processual Model of Learning.',
+    avatarEmoji: '🌱',
+    link: '/authors/naveen',
+    linkLabel: 'View Author Profile',
+  },
+  {
+    name: 'EdLove Research & Field Group',
+    role: 'Diagnostic & Empirical Research Guild',
+    affiliation: 'EdResearch (Colombo & Regional Hubs)',
+    bio: 'A multidisciplinary team of field researchers, sociologists, and former classroom teachers conducting ground-truth diagnostics into government schooling disparities, the Rs. 122B–210B shadow tuition economy, and teacher stress.',
+    avatarEmoji: '🏛️',
+    link: '/research',
+    linkLabel: 'Explore Research Monographs',
+  },
+  {
+    name: 'Intuitui Labs',
+    role: 'Technical & Systems Architecture',
+    affiliation: 'Technical Stewards of EdTech',
+    bio: 'The research engineering studio building Gurudevi and convivial offline learning instruments. Dedicated to local-first, zero-surveillance, and high-craft software honoring teacher dignity and human stillness.',
+    avatarEmoji: '⚡',
+    link: 'https://intuituilabs.studio',
+    linkLabel: 'Intuitui Labs Studio ↗',
+  },
+  {
+    name: 'The Sangha Circle Stewards',
+    role: 'Educator Fellowship & Mutual Aid',
+    affiliation: 'EdCare Communities',
+    bio: 'Regional teacher fellowship facilitators and community elders organizing restorative circles, peer accompaniment, and material aid across provincial and plantation-sector primary schools.',
+    avatarEmoji: '🕊️',
+    link: '/care/sangha',
+    linkLabel: 'Discover The Sangha',
+  },
+];
+---
+
+<Layout
+  title="Our Team & Stewards — EdLove Foundation"
+  description="Meet the thinkers, builders, researchers, and educators stewarding the EdLove Foundation."
+  structuredData={structuredData}
+>
+  <div class="relative min-h-screen text-[var(--color-primaryInk)] pt-32 pb-32 overflow-hidden">
+    <CinematicBackground />
+
+    <article class="sanctuary-container relative z-10 max-w-4xl mx-auto px-6 sm:px-8 space-y-24">
+      
+      <!-- Minimalist Header in Pure Typographic Presence -->
+      <header class="pt-8 sm:pt-14 space-y-6 text-center animate-fade-in-up">
+        <h1 class="text-4xl sm:text-6xl md:text-7xl font-serif font-light text-[var(--color-primaryInk)] tracking-tight leading-[1.08]">
+          Stewards of the Sanctuary.
+        </h1>
+
+        <p class="font-serif italic text-xl sm:text-2xl text-[var(--color-mutedInk)] leading-relaxed max-w-2xl mx-auto">
+          &ldquo;A multidisciplinary fellowship of philosophers, researchers, software craftsmen, and classroom educators.&rdquo;
+        </p>
+      </header>
+
+      <!-- Philosophical Stance on Leadership -->
+      <section class="border-y border-[var(--color-primaryInk)]/12 py-16 space-y-8 animate-fade-in-up delay-100">
+        <div class="prose-drop-cap font-serif text-xl sm:text-2xl text-[var(--color-primaryInk)] leading-[1.75] space-y-6">
+          <p>
+            EdLove is not organized as a hierarchical corporate entity with celebrity executives. We operate as a quiet sanctuary and stewardship council. Those who hold the work do so out of care for the generational transmission of human wisdom, dignity, and flourishing.
+          </p>
+          <p class="text-lg sm:text-xl text-[var(--color-secondaryInk)] leading-relaxed">
+            From the field researchers auditing rural school funding to the engineers building offline mesh toolkits and the teachers facilitating weekly restorative circles—every contributor is united by the sacred conviction that education is a form of love.
+          </p>
+        </div>
+      </section>
+
+      <!-- The Core Stewardship Guild -->
+      <section class="space-y-10">
+        <div class="space-y-2">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">The Fellowship</span>
+          <h2 class="text-3xl sm:text-4xl font-heading font-bold text-[var(--color-primaryInk)]">
+            Core Stewards &amp; Partner Collectives
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+          {teamMembers.map((member) => (
+            <div class="bg-[#FCFBF9] border border-[var(--color-primaryInk)]/12 p-8 rounded-2xl shadow-xs space-y-5 flex flex-col justify-between hover:border-[var(--color-gold)]/40 transition-colors">
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="text-3xl">{member.avatarEmoji}</span>
+                  <span class="text-xs font-mono font-semibold text-[var(--color-gold)] uppercase tracking-wider">
+                    {member.affiliation}
+                  </span>
+                </div>
+
+                <div>
+                  <h3 class="text-2xl font-heading font-bold text-[var(--color-primaryInk)]">
+                    {member.name}
+                  </h3>
+                  <span class="text-sm font-heading font-semibold text-[var(--color-secondaryInk)] block pt-0.5">
+                    {member.role}
+                  </span>
+                </div>
+
+                <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">
+                  {member.bio}
+                </p>
+              </div>
+
+              <div class="pt-4 border-t border-[var(--color-primaryInk)]/10">
+                <a 
+                  href={member.link} 
+                  class="inline-flex items-center gap-2 text-sm font-heading font-bold text-[var(--color-primaryInk)] hover:text-[var(--color-secondaryInk)] transition-colors"
+                >
+                  <span>{member.linkLabel}</span>
+                  <span>&rarr;</span>
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Join or Collaborate -->
+      <section class="text-center pt-8 space-y-6">
+        <h3 class="text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+          Join the Circle of Stewards
+        </h3>
+        <p class="font-serif text-lg text-[var(--color-secondaryInk)] max-w-xl mx-auto leading-relaxed">
+          We welcome educators, field researchers, translators, and donors who share our commitment to non-extractive, truthful education.
+        </p>
+        <div class="flex flex-wrap justify-center gap-4 pt-2">
+          <a href="/contact" class="px-8 py-3.5 rounded-full bg-[var(--color-primaryInk)] text-white font-heading font-semibold text-sm hover:bg-[var(--color-secondaryInk)] transition-all shadow-xs">
+            Reach Out to Collaborate &rarr;
+          </a>
+          <a href="/care/sangha" class="px-8 py-3.5 rounded-full bg-white border border-[var(--color-primaryInk)]/20 font-heading font-semibold text-sm text-[var(--color-primaryInk)] hover:bg-black/5 transition-all">
+            Explore Teacher Sangha &rarr;
+          </a>
+        </div>
+      </section>
+
+      <!-- Provenance Colophon -->
+      <ProvenanceColophon 
+        version="Foundation Team v1.0"
+        canonicalUrl="https://edlove.org/team"
+        readingTime={3}
+        customNote="The fellowship, researchers, and technical custodians of EdLove Foundation."
+      />
+    </article>
+  </div>
+</Layout>

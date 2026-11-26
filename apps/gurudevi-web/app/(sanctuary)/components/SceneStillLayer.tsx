@@ -1,5 +1,3 @@
-'use client';
-
 import type { SceneRoom } from '@repo/ui/theme/scene';
 import React from 'react';
 import { WorldGroundSurface } from './WorldGroundSurface';

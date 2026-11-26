@@ -64,6 +64,7 @@ To prevent architectural entropy across `@repo/core`, `@repo/ui`, and `apps/guru
   - Native worklets integration via `runOnJS`.
 * **Verdict**: **KEEP `SanctuaryToast`**. Do NOT replace with `sonner-native`.
 * **Refinement Plan**: Upgrade `SanctuaryToast` to support a stacked queue mechanism (allowing multiple toasts to stack vertically with depth-scaling) while preserving our existing Sanctuary design tokens.
+* **Update (2026-11-14, owner-directed)**: The decision to own the toast stands; its home moved to the UI kit. `sonner-native` was checked again (alive, 0.27.0, peers fit Expo 58), but it is a second, native-only engine outside the world recipes, so it was removed from the app and `@repo/ui`. One engine now serves both platforms: the queue in `packages/ui/src/components/shared/toasts.ts` (tones, sizes `pill`/`card`/`banner`, keys that merge repeats, `promise`, pause and resume, at most three visible with important ones waiting first) and a `ToastHost` per platform (`components/native`, `components/web`) that draws in the world's surfaces and motion: a gathered stack that fans out, banners at the top, swipe to dismiss. Core's `showToast` reaches it through `listenForFeedback`; the older `useSanctuaryToast`/`useToast` hook is a thin facade over the same queue, and the Gluestack toast no longer draws anything (its file stays in the frozen legacy barrel). New code calls `toast` from the kit.
 
 ---
 

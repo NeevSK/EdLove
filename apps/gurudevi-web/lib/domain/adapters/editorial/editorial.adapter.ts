@@ -6,7 +6,7 @@
  * and handles the student submission -> faculty TIC review -> edge publish lifecycle.
  */
 
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import type { IWebEditorialPort, SchoolEditorialDraft } from '../../ports/editorial.port';
 
 const EDITORIAL_STORAGE_KEY = 'gurudevi:domain:school:editorial:drafts:v1';

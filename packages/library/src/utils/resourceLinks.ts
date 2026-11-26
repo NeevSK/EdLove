@@ -1,4 +1,4 @@
-import type { LibraryResource } from '@repo/library/types';
+import type { LibraryResource } from '@repo/core/types/Library';
 
 import { GURUDEVI_APP } from '@repo/ui/utils';
 

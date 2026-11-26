@@ -7,6 +7,7 @@ export interface Props {
   scribe?: string;
   scribeNote?: string;
   publishDate?: Date | string;
+  createdDate?: Date | string;
   updatedDate?: Date | string;
   cadence?: ContentCadence;
   version?: string;
@@ -25,7 +26,8 @@ const {
   author = 'EdLove Working Group',
   scribe = 'Antigravity',
   scribeNote,
-  publishDate,
+  publishDate: publishDateProp,
+  createdDate,
   updatedDate,
   cadence = 'living-document',
   version = 'v1.0',
@@ -38,6 +40,8 @@ const {
   language = 'en',
   class: className = '',
 } = Astro.props;
+
+const publishDate = publishDateProp ?? createdDate;
 
 const parsedPublished = publishDate ? (publishDate instanceof Date ? publishDate : new Date(publishDate)) : null;
 const parsedUpdated = updatedDate ? (updatedDate instanceof Date ? updatedDate : new Date(updatedDate)) : null;

@@ -49,6 +49,8 @@
     "src/**/*"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/*.web.ts",
+    "**/*.web.tsx"
   ]
 }

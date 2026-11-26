@@ -25,7 +25,8 @@ export const ThoughtRecordSchema = makeModelSchema('ThoughtRecord');
  */
 export const UserPreferencesSchema = makeModelSchema('UserPreferences');
 
-export type MoodLog = z.infer<typeof MoodLogSchema>;
-export type FireJournalEntry = z.infer<typeof FireJournalEntrySchema>;
-export type ThoughtRecord = z.infer<typeof ThoughtRecordSchema>;
-export type SelfUserPreferences = z.infer<typeof UserPreferencesSchema>;
+/** Database rows (ZenStack models). The domain shapes live in types/Wellbeing.ts and types/reflection.ts. */
+export type MoodLogRow = z.infer<typeof MoodLogSchema>;
+export type FireJournalEntryRow = z.infer<typeof FireJournalEntrySchema>;
+export type ThoughtRecordRow = z.infer<typeof ThoughtRecordSchema>;
+export type UserPreferencesRow = z.infer<typeof UserPreferencesSchema>;

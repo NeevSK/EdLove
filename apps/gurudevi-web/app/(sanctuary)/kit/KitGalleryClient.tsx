@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useMemo } from 'react';
 import * as webKit from '@repo/ui/components/web';
 import { WorldScope } from '@repo/ui/theme/web';
@@ -1014,7 +1012,7 @@ export function KitGalleryClient() {
                     steps={[
                       { label: 'Check TypeScript types', state: 'done' },
                       { label: 'Run Vitest naming tests', state: 'done' },
-                      { label: 'Compile Next.js route', state: 'running' },
+                      { label: 'Build the route', state: 'running' },
                     ]}
                     elapsed="4.5s"
                   />

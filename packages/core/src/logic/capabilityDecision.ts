@@ -1,15 +1,17 @@
 import type { IdentityMode } from '@repo/core/logic/auth/identityState';
-import type { AuthorizationDecision } from '@repo/core/logic/ports/authz.port';
 import {
-  type EntitlementReadiness,
-  type EntitlementRequirement,
-  type EntitlementSnapshot,
   meetsSubscriptionTier,
   resolveScopedEntitlement,
+} from '@repo/core/logic/permissions/entitlement';
+import type { AuthorizationDecision } from '@repo/core/logic/ports/authz.port';
+import type {
+  EntitlementReadiness,
+  EntitlementRequirement,
+  EntitlementSnapshot,
 } from '@repo/core/logic/ports/entitlement.port';
-import type { CitizenshipLevel } from '@repo/core/logic/registry/citizenship';
-import { meetsCitizenship } from '@repo/core/logic/registry/citizenship';
-import type { FeatureState } from '@repo/core/logic/registry/domainEntry';
+import type { CitizenshipLevel } from '@repo/core/types/citizenship';
+import { meetsCitizenship } from '@repo/core/types/citizenship';
+import type { FeatureState } from '@repo/core/types/domainEntry';
 
 /** The common interaction vocabulary that a feature may declare. */
 export type CapabilityOperation = 'read' | 'create' | 'update' | 'delete' | 'export';

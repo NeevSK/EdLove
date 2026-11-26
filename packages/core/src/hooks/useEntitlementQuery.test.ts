@@ -14,7 +14,7 @@ vi.mock('@repo/core/adapters/supabase/supabaseEntitlement.adapter', () => ({
   },
 }));
 
-vi.mock('@repo/core/lib/storageWrapper', () => ({
+vi.mock('@repo/core/lib/storageWrapper.adapter', () => ({
   SafeZustandStorage: {
     getItem: (key: string) => fixture.persisted.get(key) ?? null,
     setItem: async (key: string, value: string) => void fixture.persisted.set(key, value),
@@ -26,7 +26,7 @@ import {
   createEntitlementQueryOptions,
   ENTITLEMENT_SNAPSHOT_MAX_AGE_MS,
   type EntitlementIdentity,
-} from './useEntitlementQuery';
+} from '../store/queries/entitlementQuery';
 
 const entitlement = (refreshedAt = new Date().toISOString()) => ({
   pricingTier: 'PRO' as const,
@@ -80,18 +80,25 @@ describe('qualified entitlement query', () => {
     cache(identity);
     fixture.getEntitlements.mockRejectedValue(new Error('offline'));
 
-    await expect(client.fetchQuery(createEntitlementQueryOptions(wrongIdentity))).rejects.toThrow('offline');
-    expect(client.getQueryData(createEntitlementQueryOptions(wrongIdentity).queryKey)).toBeUndefined();
+    await expect(client.fetchQuery(createEntitlementQueryOptions(wrongIdentity))).rejects.toThrow(
+      'offline',
+    );
+    expect(
+      client.getQueryData(createEntitlementQueryOptions(wrongIdentity).queryKey),
+    ).toBeUndefined();
   });
 
   it.each([
     ['expired', new Date(Date.now() - ENTITLEMENT_SNAPSHOT_MAX_AGE_MS - 1).toISOString()],
-    ['future dated', new Date(Date.now() + 1_000).toISOString()],
+    // An hour ahead, so a slow module load can't turn it into a past timestamp before the case runs.
+    ['future dated', new Date(Date.now() + 60 * 60 * 1000).toISOString()],
   ])('rejects a %s persisted timestamp', async (_label, timestamp) => {
     cache(identity, entitlement(timestamp));
     fixture.getEntitlements.mockRejectedValue(new Error('offline'));
 
-    await expect(client.fetchQuery(createEntitlementQueryOptions(identity))).rejects.toThrow('offline');
+    await expect(client.fetchQuery(createEntitlementQueryOptions(identity))).rejects.toThrow(
+      'offline',
+    );
     expect(client.getQueryData(createEntitlementQueryOptions(identity).queryKey)).toBeUndefined();
   });
 

@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useState } from 'react';
 import { resolveSurfaceUrl } from '@/lib/surface-urls';
 import styles from './create-account-guidance-modal.module.css';

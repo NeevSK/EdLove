@@ -1,20 +1,4 @@
-export {
-  FlowTriggerSchema,
-  FlowFallbackConditionSchema,
-  FlowFallbackEdgeSchema,
-  FlowNodeStepSchema,
-  FeatureJTBDGraphSchema,
-} from '@repo/core/logic/registry/domainEntry';
-
-export type {
-  FlowTrigger,
-  FlowFallbackCondition,
-  FlowFallbackEdge,
-  FlowNodeStep,
-  FeatureJTBDGraph,
-} from '@repo/core/logic/registry/domainEntry';
-
-import type { FeatureJTBDGraph, FlowNodeStep } from '@repo/core/logic/registry/domainEntry';
+import type { FeatureJTBDGraph, FlowNodeStep } from '@repo/core/types/domainEntry';
 
 /**
  * Validates that a JTBD flow forms a valid Directed Acyclic Graph (DAG)

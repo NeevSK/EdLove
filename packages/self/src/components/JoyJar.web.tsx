@@ -8,7 +8,7 @@
  */
 
 import { useJoyJar } from '@repo/self/hooks/useJoyJar';
-import type { JoyMoment } from '@repo/self/types';
+import type { JoyMoment } from '@repo/core/types/Wellbeing';
 import { Plus, Sparkles } from '@repo/ui/icons';
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';

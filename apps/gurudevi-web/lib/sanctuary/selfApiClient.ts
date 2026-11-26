@@ -3,7 +3,7 @@ import {
   resolvePersistenceWriteDecision,
 } from '@repo/core/lib/persistenceBoundary';
 import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
-import { isEdloveAccountId } from '@repo/core/logic/utils/edloveUuidV8';
+import { isEdloveAccountId } from '@repo/core/logic/schemas/edloveUuidV8';
 import { createBrowserSupabaseClient } from '../supabase/browser';
 
 type ORPCResponse<T> = Readonly<{ json?: T }>;
@@ -23,7 +23,7 @@ type AccountSelfProcedureInputs = Readonly<{
 }>;
 
 function apiOrigin(): string | null {
-  const value = process.env.NEXT_PUBLIC_API_URL?.trim();
+  const value = (process.env.VITE_API_URL || process.env.NEXT_PUBLIC_API_URL)?.trim();
   if (!value) return null;
   assertSecureApiUrl(value);
   return value.replace(/\/+$/, '');

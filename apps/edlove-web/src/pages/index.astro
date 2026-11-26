@@ -1,65 +1,253 @@
 ---
+import { getImage } from 'astro:assets';
 import { absoluteUrl } from '../lib/site';
 import Layout from '../layouts/Layout.astro';
 import CinematicBackground from '../components/CinematicBackground.astro';
-import FloatingParticles from '../components/FloatingParticles.astro';
+import HeroVideo from '../components/media/HeroVideo.astro';
+import ResponsivePicture from '../components/media/ResponsivePicture.astro';
+import Carousel, { type VoiceSlide } from '../components/media/Carousel.svelte';
+
+import heroPeradeniya from '../assets/home/hero-peradeniya.jpg';
+import storyGalleStudents from '../assets/home/story-galle-students.jpg';
+import storyPeradeniyaStudents from '../assets/home/story-peradeniya-students.jpg';
+import storyClassroomWide from '../assets/home/story-classroom-wide.jpg';
+import armReading from '../assets/home/arm-reading.jpg';
+
+const [slide1Img, slide2Img, slide3Img] = await Promise.all([
+  getImage({ src: storyPeradeniyaStudents, format: 'webp', width: 1080, quality: 82 }),
+  getImage({ src: armReading, format: 'webp', width: 1080, quality: 82 }),
+  getImage({ src: storyClassroomWide, format: 'webp', width: 1080, quality: 82 }),
+]);
+
+const voiceSlides: VoiceSlide[] = [
+  {
+    id: 'voice-peradeniya',
+    quote:
+      'When a school feels like a garden rather than a sorting machine, children ask questions they never dared to ask for marks.',
+    attribution: 'Sanctuary Field Note',
+    role: 'Primary & Middle Learning Circles',
+    place: 'Central Highlands · Peradeniya',
+    imageSrc: slide1Img.src,
+    imageAlt: 'Three Sri Lankan schoolgirls in white uniforms walking together across green lawns under a rain tree in Peradeniya',
+    credit: 'Photo: Wikimedia Commons (CC0)',
+    isPlaceholderQuote: true,
+  },
+  {
+    id: 'voice-reading',
+    quote:
+      'True stewardship begins by listening—pairing material solidarity with the quiet dignity of shared books and unhurried time.',
+    attribution: 'EdCare · EdKind & EdLife',
+    role: 'Community Libraries & Patronage',
+    place: 'Island-wide Reading Rooms',
+    imageSrc: slide2Img.src,
+    imageAlt: 'Three Sri Lankan students in white uniforms reading Sinhala newspapers together at a wooden library table',
+    credit: 'Photo: Wikimedia Commons (CC BY-SA 4.0)',
+    isPlaceholderQuote: true,
+  },
+  {
+    id: 'voice-north-east',
+    quote:
+      'Technology is only convivial when it leaves the room warmer than it found it—serving the teacher and student, never replacing their bond.',
+    attribution: 'EdTech · Convivial Tools',
+    role: 'Gurudevi & Open Knowledge',
+    place: 'Rural & Multilingual Classrooms',
+    imageSrc: slide3Img.src,
+    imageAlt: 'A smiling Sri Lankan Tamil student standing in the warm morning light of a rural school veranda',
+    credit: 'Photo: Wikimedia Commons (CC BY 2.0)',
+    isPlaceholderQuote: true,
+  },
+];
 
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'AboutPage',
-  name: 'EdLove',
+  name: 'EdLove Foundation',
   description:
-    'EdLove is the educational transformation ecosystem reimagining education with love through philosophy, care, local context, resources, community, and the epistemic core.',
+    'EdLove is a not-for-profit educational foundation: Education is a form of love — giving love to the next generation, for flourishing in their environment and developing themselves.',
   url: absoluteUrl('/'),
-  about: {
-    '@type': 'Thing',
-    name: 'Educational Transformation',
-  },
 };
 ---
 
 <Layout
-  title="EdLove | The Educational Transformation Ecosystem"
-  description="EdLove is a digital sanctuary for educational transformation, connecting philosophy, Sri Lankan ground realities, Gurudevi, resources, community, and the epistemic core."
+  title="EdLove Foundation — Education is a Ripple of Love"
+  description="Education is a ripple of love: loving the next generation into flourishing—rooted in their place, becoming themselves."
   structuredData={structuredData}
 >
-  <div class="relative z-10 min-h-[calc(100vh-var(--spacing-nav-height))] flex flex-col justify-center items-center px-[var(--space-4)] overflow-hidden">
-    <!-- Cinematic Background Video/Gradient -->
-    <CinematicBackground showVideo={true} />
-    <FloatingParticles />
+  <CinematicBackground showVideo={false} />
 
-    <div class="max-w-6xl w-full text-center space-y-[var(--space-6)] animate-fade-in-up">
-      
-      <div class="space-y-[var(--space-3)]">
-        <h1 class="text-6xl md:text-8xl font-heading font-bold text-[var(--color-midnightInk)] leading-none tracking-tighter opacity-90">
-          EdLove
-        </h1>
-        <p class="font-body italic text-xl md:text-3xl text-[var(--color-midnightInk)]/60 tracking-wide max-w-2xl mx-auto">
-           Reimagining Education, <span class="text-[var(--color-gold)] font-bold not-italic">With Love.</span>
+  <div class="relative z-10 text-[var(--color-primaryInk)] overflow-x-clip">
+    <!-- 1. SEAMLESS FULL-BLEED HERO (melts into #FCFBF9 below) -->
+    <section class="relative w-full min-h-[86vh] sm:min-h-[90vh] flex items-end overflow-hidden -mt-[var(--spacing-nav-height)] pt-36 pb-28 sm:pb-36">
+      <HeroVideo
+        posterImage={heroPeradeniya}
+        posterAlt="Lush green rain-tree canopy and sunlit lawns at Peradeniya, Sri Lanka"
+        videoSrc="/assets/nature-loop.mp4"
+        class="absolute inset-0 w-full h-full"
+      />
+
+      <div class="relative z-10 w-full px-6 sm:px-12 lg:px-20">
+        <div class="max-w-4xl space-y-6 animate-fade-in-up text-[#fcfbf9]">
+          <p class="font-ui text-xs uppercase tracking-[0.22em] text-[#fde68a]">
+            EdLove Foundation
+          </p>
+
+          <h1 class="font-display text-5xl sm:text-7xl md:text-8xl font-light tracking-tight leading-[1.02] text-white">
+            Education is <br />
+            <span class="italic font-normal text-[#fde68a]">a ripple of love.</span>
+          </h1>
+
+          <p class="font-text italic text-xl sm:text-2xl md:text-[28px] text-[#fcfbf9]/95 leading-[1.45] max-w-2xl">
+            &ldquo;Loving the next generation into flourishing&mdash;rooted in their place, becoming themselves.&rdquo;
+          </p>
+
+          <div class="pt-4 flex flex-wrap items-center gap-8 font-ui text-sm">
+            <a
+              href="/foundation"
+              class="inline-flex items-center gap-3 min-h-[44px] text-white font-semibold border-b border-[#fde68a] pb-1 hover:text-[#fde68a] transition-colors focus-ring"
+            >
+              <span>Read Foundation Manifesto</span>
+              <span aria-hidden="true">&rarr;</span>
+            </a>
+            <a
+              href="/journal"
+              class="inline-flex items-center gap-2 min-h-[44px] text-[#fcfbf9]/85 hover:text-white border-b border-transparent hover:border-white/50 pb-1 transition-colors focus-ring"
+            >
+              <span>Journal</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. ONE CONTINUOUS ALABASTER CANVAS: PLACE + THE THREE ARMS -->
+    <section class="py-16 sm:py-28 space-y-20 sm:space-y-28">
+      <!-- Left edge-bleed photo paired with the Three Arms in one quiet movement -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div class="lg:col-span-7 pr-6 sm:pr-12 lg:pr-0">
+          <ResponsivePicture
+            src={storyGalleStudents}
+            alt="Sri Lankan school students in white uniforms walking with colorful umbrellas along the stone ramparts in Galle"
+            aspectClass="aspect-[16/10]"
+            sizes="(max-width: 1024px) 100vw, 58vw"
+            caption="Morning walk to school along the Galle Fort ramparts."
+            credit="CC BY-SA 4.0"
+          />
+        </div>
+
+        <div class="lg:col-span-5 px-6 sm:px-12 lg:pr-20 lg:pl-4 space-y-8">
+          <div class="space-y-3">
+            <span class="font-ui text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-gold)] block">
+              One Living Sanctuary
+            </span>
+            <h2 class="font-display text-3xl sm:text-5xl font-normal tracking-tight text-[var(--color-primaryInk)] leading-[1.08]">
+              A place to learn, <br />
+              <span class="italic text-[var(--color-secondaryInk)]">belong, and become.</span>
+            </h2>
+          </div>
+
+          <!-- Hairline-divided Three Arms (quiet, editorial, zero boxes) -->
+          <div class="divide-y divide-[var(--color-primaryInk)]/12 border-t border-b border-[var(--color-primaryInk)]/12">
+            <a href="/research" class="group py-4 flex items-baseline justify-between gap-4 hover:pl-2 transition-all">
+              <div>
+                <span class="font-ui text-xs font-semibold text-[var(--color-gold)] mr-3">01</span>
+                <span class="font-display text-xl sm:text-2xl text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors">EdResearch</span>
+                <p class="font-text text-sm sm:text-base text-[var(--color-mutedInk)] mt-1">
+                  Understanding how learning truly happens&mdash;and what quietly stands in its way.
+                </p>
+              </div>
+              <span class="font-ui text-sm text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] shrink-0" aria-hidden="true">&rarr;</span>
+            </a>
+
+            <a href="/care" class="group py-4 flex items-baseline justify-between gap-4 hover:pl-2 transition-all">
+              <div>
+                <span class="font-ui text-xs font-semibold text-[var(--color-gold)] mr-3">02</span>
+                <span class="font-display text-xl sm:text-2xl text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors">EdCare</span>
+                <p class="font-text text-sm sm:text-base text-[var(--color-mutedInk)] mt-1">
+                  Standing beside learners with what they need today (EdKind), and room to grow tomorrow (EdLife).
+                </p>
+              </div>
+              <span class="font-ui text-sm text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] shrink-0" aria-hidden="true">&rarr;</span>
+            </a>
+
+            <a href="/tech" class="group py-4 flex items-baseline justify-between gap-4 hover:pl-2 transition-all">
+              <div>
+                <span class="font-ui text-xs font-semibold text-[var(--color-gold)] mr-3">03</span>
+                <span class="font-display text-xl sm:text-2xl text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors">EdTech</span>
+                <p class="font-text text-sm sm:text-base text-[var(--color-mutedInk)] mt-1">
+                  Quiet, convivial tools&mdash;including Gurudevi&mdash;built to serve the bond between teacher and child.
+                </p>
+              </div>
+              <span class="font-ui text-sm text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] shrink-0" aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Staggered asymmetric human spread (Peradeniya + Tamil veranda) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-start">
+        <div class="lg:col-span-5 px-6 sm:px-12 lg:pl-20 lg:pr-4 lg:pt-16">
+          <ResponsivePicture
+            src={storyPeradeniyaStudents}
+            alt="Three Sri Lankan Muslim schoolgirls walking and smiling across sunlit green grass in Peradeniya"
+            aspectClass="aspect-[4/3]"
+            sizes="(max-width: 1024px) 100vw, 40vw"
+            caption="Shared fellowship under the trees in Peradeniya."
+            credit="CC0"
+          />
+        </div>
+
+        <div class="lg:col-span-7 pl-6 sm:pl-12 lg:pl-0">
+          <ResponsivePicture
+            src={storyClassroomWide}
+            alt="A smiling Sri Lankan Tamil student outside a rural school veranda with Tamil chalk lettering on the wall"
+            aspectClass="aspect-[16/10]"
+            sizes="(max-width: 1024px) 100vw, 58vw"
+            caption="Dignity and warmth in a rural Tamil-medium veranda."
+            credit="CC BY 2.0"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. VOICES FROM THE FIELD (SAME ALABASTER CANVAS, UNBOXED) -->
+    <section class="py-16 sm:py-24 px-6 sm:px-12 lg:px-20 max-w-[1440px] mx-auto border-t border-[var(--color-primaryInk)]/10 space-y-12">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div class="space-y-2">
+          <span class="font-ui text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-gold)] block">
+            Voices &amp; Perspectives
+          </span>
+          <h2 class="font-display text-3xl sm:text-5xl font-normal tracking-tight text-[var(--color-primaryInk)]">
+            Inquiry illuminates giving.
+          </h2>
+        </div>
+        <p class="font-ui text-xs text-[var(--color-mutedInk)]">
+          Swipe or use arrow keys
         </p>
       </div>
 
-      <div class="flex flex-col sm:flex-row flex-wrap gap-[var(--space-3)] justify-center items-center pt-[var(--space-4)]">
-        <!-- Call to Action -->
-        <a href="/cosmos" class="group relative px-8 py-3.5 bg-[var(--color-midnightInk)] text-[var(--color-warmPaper)] rounded-full overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-2xl w-full sm:w-auto">
-          <span class="relative z-10 font-heading text-xs font-bold uppercase tracking-[0.2em] group-hover:tracking-[0.3em] transition-all duration-500">Enter Cosmos</span>
-          <div class="absolute inset-0 bg-[var(--color-gold)] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out"></div>
-        </a>
+      <Carousel client:visible slides={voiceSlides} label="Voices and field perspectives" />
+    </section>
 
-        <!-- Focus Link -->
-        <a href="/focus" class="group relative px-8 py-3.5 bg-white/40 hover:bg-white/80 text-[var(--color-midnightInk)] border border-[var(--color-midnightInk)]/15 rounded-full overflow-hidden transition-all duration-500 hover:scale-105 hover:border-[var(--color-gold)] shadow-xs hover:shadow-lg w-full sm:w-auto">
-          <span class="font-heading text-xs font-bold uppercase tracking-[0.2em] group-hover:text-[var(--color-gold)] transition-colors duration-300">Our Focus</span>
-        </a>
-        
-        <!-- Vision Link -->
-        <a href="/vision" class="group flex items-center gap-3 px-6 py-3.5 transition-all duration-300">
-           <span class="w-6 h-px bg-[var(--color-midnightInk)]/30 group-hover:w-12 transition-all duration-500"></span>
-           <span class="font-body text-base italic text-[var(--color-midnightInk)]/70 group-hover:text-[var(--color-midnightInk)]">Our Vision</span>
+    <!-- 4. QUIET CLOSING INVITATION -->
+    <section class="py-20 sm:py-28 px-6 sm:px-12 lg:px-20 max-w-[1440px] mx-auto border-t border-[var(--color-primaryInk)]/10">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div class="max-w-2xl space-y-3">
+          <p class="font-display italic text-3xl sm:text-5xl font-light text-[var(--color-primaryInk)] leading-tight">
+            Every act of care sends a ripple forward.
+          </p>
+          <p class="font-text text-lg text-[var(--color-mutedInk)]">
+            A sanctuary for the soul of education&mdash;rooted in Sri Lanka, open to the world.
+          </p>
+        </div>
+
+        <a
+          href="/foundation"
+          class="inline-flex items-center gap-3 min-h-[48px] px-8 py-4 rounded-full bg-[var(--color-primaryInk)] text-[#fcfbf9] hover:bg-[var(--color-gold)] hover:text-[#0f172a] transition-colors duration-200 font-ui text-sm font-semibold tracking-wide focus-ring self-start md:self-auto"
+        >
+          <span>Explore the Foundation</span>
+          <span aria-hidden="true">&rarr;</span>
         </a>
       </div>
-
-    </div>
-
-    <!-- Scroll Invitation -->
+    </section>
   </div>
 </Layout>

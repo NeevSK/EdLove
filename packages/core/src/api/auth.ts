@@ -126,7 +126,7 @@ export const authAPI = {
   onAuthStateChange(
     callback: (
       event: import('@repo/core/logic/ports/auth.port').AuthChangeEvent,
-      session: import('@repo/core/logic/ports/auth.port').AuthSession | null,
+      session: import('@repo/core/types/authSession').AuthSession | null,
     ) => void | Promise<void>,
   ) {
     return auth.onAuthStateChange(callback);

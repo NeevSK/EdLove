@@ -1,0 +1,25 @@
+---
+import { About } from '../../components/about/About';
+import PublicLayout from '../../layouts/PublicLayout.astro';
+import { LOCALIZED_MARKETING } from '../../content/localized';
+import type { SupportedLocale } from '../../site';
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: undefined } },
+    { params: { locale: 'si' } },
+    { params: { locale: 'ta' } },
+  ];
+}
+const locale = (Astro.params.locale ?? 'en') as SupportedLocale;
+const page = locale === 'en' ? null : LOCALIZED_MARKETING[locale].pages.about;
+---
+<PublicLayout
+  locale={locale}
+  path="/about"
+  title={page?.title ?? 'The Ecology & Philosophy'}
+  description={page?.description ??
+    'Gurudevi is an education ecology support system and sanctuary for education in Sri Lanka.'}
+>
+  <About locale={locale} />
+</PublicLayout>

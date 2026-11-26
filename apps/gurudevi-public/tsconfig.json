@@ -1,0 +1,24 @@
+{
+  "extends": "../../packages/typescript-config/base.json",
+  "compilerOptions": {
+    "declaration": false,
+    "declarationMap": false,
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+    "types": ["astro/client", "vitest/globals"]
+  },
+  "contentMappers": [
+    {
+      "package": "@astrojs/ts-content-mapper",
+      "extensions": [".astro"]
+    }
+  ],
+  "include": [
+    ".astro/types.d.ts",
+    "src/**/*",
+    "tests/**/*",
+    "astro.config.mjs",
+    "vitest.config.ts"
+  ],
+  "exclude": ["dist"]
+}

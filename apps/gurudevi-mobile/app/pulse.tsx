@@ -1,9 +1,12 @@
 import { useUIStore } from '@repo/core/store';
 import { BrandPulse } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { Button, Text } from '@repo/ui/components/native';
+import { alpha } from '@repo/ui/theme';
+import { useWorld } from '@repo/ui/theme/native';
+import { View } from 'react-native';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
@@ -16,17 +19,14 @@ export { RouteErrorBoundary as ErrorBoundary };
  * to eliminate double-layer screen clutter.
  */
 export default function PulseRoute() {
-  const router = useRouter();
+  const router = useNavigator();
   const isBreathingOpen = useUIStore((s) => s.isBreathingOpen);
   const setBreathingOpen = useUIStore((s) => s.setBreathingOpen);
   const hasOpenedRef = useRef(false);
+  const ground = useWorld().tokens.ground;
 
   const handleReturn = useCallback(() => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/');
-    }
+    router.back('/');
   }, [router]);
 
   useEffect(() => {
@@ -44,32 +44,31 @@ export default function PulseRoute() {
 
   return (
     <ErrorBoundary name="PulseRoute">
-      <View style={styles.container}>
-        <View className="items-center justify-center flex-1 px-6">
-          <BrandPulse accessibilityLabel="Sanctuary Pulse Breathing Space Active" />
-          <Text className="mt-6 text-center text-lg font-semibold text-phase-text-primary">
-            Sanctuary Pulse Active
-          </Text>
-          <Text className="mt-2 text-center text-sm text-phase-text-secondary">
-            Breathe in rhythm with the gentle lantern.
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Return to Sanctuary"
-            className="mt-8 rounded-full bg-phase-interactive px-6 py-3"
-            onPress={handleReturn}
-          >
-            <Text className="font-semibold text-white">Return to App</Text>
-          </Pressable>
-        </View>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 10,
+          paddingHorizontal: 24,
+          backgroundColor: alpha(ground, 0.94),
+        }}
+      >
+        <BrandPulse accessibilityLabel="Sanctuary Pulse Breathing Space Active" />
+        <Text kind="title" align="center" style={{ marginTop: 14 }}>
+          Sanctuary Pulse Active
+        </Text>
+        <Text kind="body" tone="soft" align="center">
+          Breathe in rhythm with the gentle lantern.
+        </Text>
+        <Button
+          label="Return to App"
+          variant="primary"
+          accessibilityLabel="Return to Sanctuary"
+          onPress={handleReturn}
+          style={{ marginTop: 18 }}
+        />
       </View>
     </ErrorBoundary>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'rgba(26, 16, 11, 0.98)',
-  },
-});

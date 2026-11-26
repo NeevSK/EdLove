@@ -28,28 +28,23 @@ vi.mock('@repo/core/auth', () => ({
   },
 }));
 
-vi.mock('@repo/ui/components/SanctuaryModal', () => ({
-  default: ({
+vi.mock('@repo/ui/components/native', () => ({
+  Dialog: ({
     children,
-    isOpen,
+    open,
     onClose,
   }: {
     children: React.ReactNode;
-    isOpen: boolean;
+    open: boolean;
     onClose: () => void;
-  }) => (isOpen ? <div {...{ onClose }}>{children}</div> : null),
-}));
-
-vi.mock('@repo/ui/primitives', () => ({
-  Button: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
-    <button {...props}>{children}</button>
+  }) => (open ? <div {...{ onClose }}>{children}</div> : null),
+  Button: ({ label, ...props }: { label: string } & Record<string, unknown>) => (
+    <button {...props}>
+      <span>{label}</span>
+    </button>
   ),
-  ButtonSpinner: () => <span>saving</span>,
-  ButtonText: ({ children }: React.PropsWithChildren) => <span>{children}</span>,
-  Input: ({ children }: React.PropsWithChildren) => <>{children}</>,
-  InputField: (props: Record<string, unknown>) => <input {...props} />,
+  TextField: ({ label: _label, ...props }: Record<string, unknown>) => <input {...props} />,
   Text: ({ children }: React.PropsWithChildren) => <span>{children}</span>,
-  VStack: ({ children }: React.PropsWithChildren) => <>{children}</>,
 }));
 
 import { PasswordRecoveryBoundary } from '@/entry/PasswordRecoveryBoundary';

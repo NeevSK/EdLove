@@ -1,11 +1,11 @@
-import { Effect } from 'effect';
+import * as Effect from 'effect/Effect';
 import { describe, expect, it } from 'vitest';
 import {
   type ClassroomRow,
   CoordinationGapSchema,
   checkSectionReliefGapsEffect,
   detectAttendanceGapsEffect,
-} from '../index';
+} from '../agents.adapter';
 
 describe('AI Agent Resilience Pipelines', () => {
   describe('detectAttendanceGapsEffect', () => {

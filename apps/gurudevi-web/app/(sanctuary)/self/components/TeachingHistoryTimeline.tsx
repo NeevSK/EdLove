@@ -1,5 +1,3 @@
-'use client';
-
 import { getSandboxSamples } from '@repo/core/logic/modes/sandboxDataset';
 import { Award, BookOpen, Calendar, School, Users } from 'lucide-react';
 import { useTeacherProfessionalHistory } from '../../../../lib/sanctuary/useTeacherProfessionalHistory';

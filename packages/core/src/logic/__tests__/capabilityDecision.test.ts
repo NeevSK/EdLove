@@ -5,7 +5,7 @@ import {
   type ResolveCapabilityDecisionInput,
   resolveCapabilityDecision,
 } from '@repo/core/logic/capabilityDecision';
-import { CITIZENSHIP } from '@repo/core/logic/registry/citizenship';
+import { CITIZENSHIP } from '@repo/core/types/citizenship';
 import { describe, expect, it } from 'vitest';
 
 const feature: CapabilityFeatureDefinition = {

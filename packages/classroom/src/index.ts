@@ -5,6 +5,6 @@ export * from '@repo/classroom/constants/classroomRegistry';
 export * from './machines/bulkStudentCreationMachine';
 export * from './machines/classroomSpaceNavigatorMachine';
 export * from './machines/gradebookBatchMachine';
-export * from './machines/schoolProvisioningMachine';
+export * from '@repo/admin/machines/schoolProvisioningMachine';
 export * from './machines/studentClaimMachine';
 export * from './machines/studentVerificationMachine';

@@ -1,0 +1,41 @@
+---
+import { absoluteUrl, SITE_URL } from '@repo/core/site';
+import { JournalEntry } from '../../components/journal/JournalEntry';
+import PublicLayout from '../../layouts/PublicLayout.astro';
+import { journalEntries } from '../../content/journal';
+import {
+  generateArticleJsonLd,
+  generateBreadcrumbJsonLd,
+  sanitizeJsonLd,
+} from '../../lib/schema-org';
+
+export function getStaticPaths() {
+  return journalEntries.map((entry) => ({ params: { slug: entry.slug }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const url = absoluteUrl(`/journal/${entry.slug}`);
+const article = generateArticleJsonLd(entry, url);
+const breadcrumb = generateBreadcrumbJsonLd([
+  { name: 'Home', url: SITE_URL },
+  { name: 'Journal', url: absoluteUrl('/journal') },
+  { name: entry.title, url },
+]);
+---
+<PublicLayout
+  locale="en"
+  locales={['en']}
+  path={`/journal/${entry.slug}`}
+  title={`${entry.title} | Gurudevi Journal`}
+  description={entry.subtitle}
+  ogType="article"
+>
+  <Fragment slot="head">
+    <meta property="article:published_time" content={`${entry.publishDate}T00:00:00Z`} />
+    {entry.topics.map((topic) => <meta property="article:tag" content={topic} />)}
+    <script type="application/ld+json" set:html={sanitizeJsonLd(article)} />
+    <script type="application/ld+json" set:html={sanitizeJsonLd(breadcrumb)} />
+  </Fragment>
+  <main id="main-content" class="mx-auto max-w-3xl px-4 pb-24 pt-20 sm:px-8 lg:pt-28">
+    <JournalEntry entry={entry} locale="en" />
+  </main>
+</PublicLayout>

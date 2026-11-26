@@ -26,17 +26,13 @@ import {
 } from '@repo/ui/components/native';
 import { useWorld } from '@repo/ui/theme/native';
 import * as LocalAuthentication from 'expo-local-authentication';
-import { useRouter } from 'expo-router';
 import * as ScreenCapture from 'expo-screen-capture';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import type { NetworkLimit } from '@repo/core/verger';
 import { useVergerSnapshot } from '@repo/verger-react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Platform, ScrollView, View } from 'react-native';
-
-interface SettingsNavigation {
-  navigate: (route: string, params?: Record<string, unknown>) => void;
-}
+import { useNavigator } from '../components/native/navigation';
 
 interface ChoiceChipRowProps<T extends string> {
   choices: readonly { id: T; label: string; lang?: 'en' | 'si' | 'ta' }[];
@@ -119,13 +115,9 @@ const NETWORK_LIMIT_LABEL: Readonly<Record<NetworkLimit, string>> = {
   offline: 'Offline',
 };
 
-const AppSettingsScreen = memo(function AppSettingsScreen({
-  navigation,
-}: {
-  navigation?: SettingsNavigation;
-}) {
+const AppSettingsScreen = memo(function AppSettingsScreen() {
   const { t, i18n } = useTranslation();
-  const router = useRouter();
+  const router = useNavigator();
   const world = useWorld();
   const { gutter, maxWidth } = useResponsiveGrid();
 
@@ -486,43 +478,16 @@ const AppSettingsScreen = memo(function AppSettingsScreen({
 
   const handlePreviewProfile = useCallback(() => {
     hapticLight();
-    if (navigation && typeof navigation.navigate === 'function') {
-      try {
-        navigation.navigate('Community', {
-          screen: 'UserProfile',
-          params: { userId: user?.id, userName: user?.display_name },
-        });
-        return;
-      } catch (err) {
-        console.warn('[handlePreviewProfile] navigation error:', err);
-      }
-    }
     router.push('/community');
-  }, [navigation, router, user]);
+  }, [router]);
 
   const handleTrubeLab = useCallback(() => {
-    if (navigation && typeof navigation.navigate === 'function') {
-      try {
-        navigation.navigate('TrubeLab');
-        return;
-      } catch (err) {
-        console.warn('[handleTrubeLab] navigation error:', err);
-      }
-    }
-    router.push('/trube-lab');
-  }, [navigation, router]);
+    router.follow('/trube-lab', 'settings');
+  }, [router]);
 
   const handleIconLab = useCallback(() => {
-    if (navigation && typeof navigation.navigate === 'function') {
-      try {
-        navigation.navigate('icon-lab');
-        return;
-      } catch (err) {
-        console.warn('[handleIconLab] navigation error:', err);
-      }
-    }
     router.push('/icon-lab');
-  }, [navigation, router]);
+  }, [router]);
 
   const handleDevClearAllCache = useCallback(async () => {
     try {

@@ -1,6 +1,4 @@
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
-import { scopeStorageKey } from '@repo/core/lib/accountScope';
-import { storage } from '@repo/core/lib/storage';
+import { deviceStorage, eventBus, sessionScope } from '@repo/core/effect/bindings/state';
 import {
   createScopeSessionSnapshot,
   PERSONAL_SCOPE_PERSPECTIVE,
@@ -8,7 +6,7 @@ import {
   useScopeSessionStore,
 } from '@repo/core/store/scopeSession';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
-import type { Bond } from '@repo/core/types/Identity';
+import type { Bond } from '@repo/core/logic/schemas/identity.schema';
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
 
 export interface ScopeSessionTransitionInput {
@@ -28,7 +26,7 @@ interface ScopeAvailabilityHint {
 }
 
 function availabilityHintKey(principalId: string): string {
-  return scopeStorageKey('scope-availability-v1', principalId);
+  return sessionScope.accountKey('scope-availability-v1', principalId);
 }
 
 async function persistAvailabilityHint(snapshot: ScopeSessionSnapshot): Promise<void> {
@@ -38,12 +36,12 @@ async function persistAvailabilityHint(snapshot: ScopeSessionSnapshot): Promise<
     principalId: snapshot.principalId,
     perspectives: snapshot.availablePerspectives,
   };
-  await storage.setAsync(availabilityHintKey(snapshot.principalId), JSON.stringify(hint));
+  await deviceStorage.setAsync(availabilityHintKey(snapshot.principalId), JSON.stringify(hint));
 }
 
 async function readAvailabilityHint(principalId: string): Promise<readonly SanctuaryPerspective[]> {
   try {
-    const raw = await storage.getStringAsync(availabilityHintKey(principalId));
+    const raw = await deviceStorage.getStringAsync(availabilityHintKey(principalId));
     if (!raw) return [];
     const parsed: unknown = JSON.parse(raw);
     if (
@@ -120,7 +118,7 @@ export async function transitionScopeSession(
 
   try {
     useCedarDecisionStore.getState().clearDecisions();
-    sovereignBus.emit('perspective:transition_started', {
+    eventBus.emit('perspective:transition_started', {
       from: previousScope?.activePerspective ?? PERSONAL_SCOPE_PERSPECTIVE,
       to: next.activePerspective,
     });
@@ -144,7 +142,7 @@ export async function transitionScopeSession(
     } catch (error) {
       console.warn('[ScopeSessionCoordinator] Availability hint could not be saved.', error);
     }
-    sovereignBus.emit('perspective:transition_completed', {
+    eventBus.emit('perspective:transition_completed', {
       activePerspective: next.activePerspective,
     });
     return next;
@@ -237,8 +235,7 @@ export async function commitIdentityScopeSession(input: {
     ...restoredWorkspaceHints,
   ];
   const selectedScopeBond =
-    activePerspective.kind === 'institutional' ||
-    selectedBond?.entity_type === 'PERSONAL'
+    activePerspective.kind === 'institutional' || selectedBond?.entity_type === 'PERSONAL'
       ? selectedBond
       : null;
   return transitionScopeSession({

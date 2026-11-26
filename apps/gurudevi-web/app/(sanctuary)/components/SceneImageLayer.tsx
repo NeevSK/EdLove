@@ -1,5 +1,3 @@
-'use client';
-
 import type { WorkspaceWallpaper } from '@repo/core/types';
 import { type WallpaperPresentation, wallpaperOf } from '@repo/core/verger';
 import { useGurudeviView } from '../../../lib/runtime/useGurudeviView';

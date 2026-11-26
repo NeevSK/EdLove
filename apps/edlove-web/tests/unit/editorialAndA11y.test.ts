@@ -14,7 +14,7 @@ import {
   transitionDelivery,
 } from '../../lib/editorial';
 
-describe('@repo/editorial Domain Contracts in Next.js', () => {
+describe('@repo/editorial Domain Contracts in EdLove Web', () => {
   it('recognizes both canonical publications', () => {
     const pub1: Publication = 'edlove';
     const pub2: Publication = 'gurudevi';
@@ -50,7 +50,7 @@ describe('@repo/editorial Domain Contracts in Next.js', () => {
   });
 });
 
-describe('@intuitui-labs/a11y-gate Perceptual & Spatial Governance in Next.js', () => {
+describe('@intuitui-labs/a11y-gate Perceptual & Spatial Governance in EdLove Web', () => {
   it('evaluates APCA lightness contrast correctly', () => {
     // Dawn vellum (#fff6e8) with Midnight ink (#131e27)
     const apca = evaluateApca('#131e27', '#fff6e8');

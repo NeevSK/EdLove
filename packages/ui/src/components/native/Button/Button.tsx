@@ -13,8 +13,10 @@ import {
 import Animated from 'react-native-reanimated';
 import type { ButtonContract } from '../../../theme/contracts';
 import { useFeedback } from '../../../theme/native/feedback';
+import { useFocusRing } from '../../../theme/native/focus';
 import { usePressMotion } from '../../../theme/native/motion';
 import {
+  systemTextAllowance,
   edgeStyle,
   glowStyle,
   insetRadius,
@@ -50,8 +52,12 @@ export function Button({
   style,
   ref,
   accessibilityHint,
+  onFocus,
+  onBlur,
   ...rest
 }: ButtonProps) {
+  // A hardware keyboard's focus shows as a ring in the world's focus colour.
+  const focusRing = useFocusRing(onFocus, onBlur);
   const { world, language } = useWorldContext();
   const feedback = useFeedback();
   const press = usePressMotion();
@@ -104,9 +110,12 @@ export function Button({
           press.pressOut();
           onPressOut?.(event);
         }}
+        onFocus={focusRing.onFocus}
+        onBlur={focusRing.onBlur}
         style={({ pressed }) => [
           styles.base,
           container,
+          focusRing.ring,
           pressed && !isDisabled ? { opacity: recipe.pressedOpacity } : null,
           isDisabled && !loading ? { opacity: recipe.disabledOpacity } : null,
           style,
@@ -166,7 +175,11 @@ export function Button({
           ) : Icon ? (
             <Icon size={Math.round(dims.fontSize * 1.2)} color={v.ink} />
           ) : null}
-          <RNText numberOfLines={1} style={[labelStyle, { color: v.ink }]}>
+          <RNText
+            numberOfLines={1}
+            maxFontSizeMultiplier={systemTextAllowance()}
+            style={[labelStyle, { color: v.ink }]}
+          >
             {label}
           </RNText>
         </View>

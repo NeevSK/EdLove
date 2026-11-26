@@ -1,4 +1,4 @@
-import type { StudentGrade } from '@repo/core/logic/schemas/grading.schema';
+import type { StudentGradeRow } from '@repo/core/logic/schemas/grading.schema';
 import {
   type GPACalculationOptions,
   type GradebookEntry,
@@ -54,7 +54,7 @@ export class GPACalculator {
   /**
    * Calculate GPA from a list of grades
    */
-  public calculateGPA(grades: StudentGrade[], options: GPACalculationOptions = {}): number {
+  public calculateGPA(grades: StudentGradeRow[], options: GPACalculationOptions = {}): number {
     if (grades.length === 0) return 0.0;
 
     let totalPoints = 0;
@@ -83,7 +83,7 @@ export class GPACalculator {
     periodGPAs: { [periodId: string]: number };
     cumulativeGPA: number;
   } {
-    const periodGPAs: { [periodId: string]: StudentGrade[] } = {};
+    const periodGPAs: { [periodId: string]: StudentGradeRow[] } = {};
 
     // Group grades by period
     for (const entry of gradebookEntries) {
@@ -137,7 +137,7 @@ export class GPACalculator {
    * Predict GPA based on current performance trends
    */
   public predictGPA(
-    currentGrades: StudentGrade[],
+    currentGrades: StudentGradeRow[],
     remainingAssignments: { maxMarks: number; weight: number }[],
     options: GPACalculationOptions = {},
   ): { predictedGPA: number; minGPA: number; maxGPA: number } {
@@ -192,7 +192,7 @@ export class GPACalculator {
   /**
    * Get grade distribution for a class
    */
-  public getGradeDistribution(grades: StudentGrade[]): {
+  public getGradeDistribution(grades: StudentGradeRow[]): {
     [grade: string]: number;
   } {
     const distribution: { [grade: string]: number } = {};

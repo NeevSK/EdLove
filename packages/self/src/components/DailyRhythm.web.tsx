@@ -5,7 +5,7 @@
  */
 
 import { useTimetable } from '@repo/self/hooks/useTimetable';
-import type { Period } from '@repo/self/types';
+import type { Period } from '@repo/core/types/Wellbeing';
 import { Calendar, ChevronDown, Clock, MapPin, Plus, Trash2 } from '@repo/ui/icons';
 import {
   Box,

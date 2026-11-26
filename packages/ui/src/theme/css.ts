@@ -11,6 +11,7 @@
  */
 
 import { alpha, rgbTriple } from './color';
+import { generateFluidClamp } from '@intuitui-labs/a11y-gate';
 import { phaseTokens, resolveWorld } from './resolve';
 import { PHASE_START_HOUR, skyPaletteAt } from './scene/sky';
 import type {
@@ -79,10 +80,17 @@ export function boxShadowCss(parts: ShadowParts): string {
 }
 
 function typeVars(prefix: string, t: TypeStyle | Omit<TypeStyle, 'color'>): Record<string, string> {
+  const isFluid = 'minSize' in t && t.minSize && t.maxSize && t.minSize !== t.maxSize;
+  const sizeVal = isFluid
+    ? generateFluidClamp({ minSizePx: t.minSize!, maxSizePx: t.maxSize!, minViewportPx: 360, maxViewportPx: 1280 })
+    : px(t.size);
+  const unitlessLh = Number((t.lineHeight / t.size).toFixed(3));
+
   const v: Record<string, string> = {
     [`${prefix}-font`]: `var(--w-font-${t.family})`,
-    [`${prefix}-size`]: px(t.size),
-    [`${prefix}-lh`]: px(t.lineHeight),
+    [`${prefix}-size`]: sizeVal,
+    [`${prefix}-lh`]: `${unitlessLh}`,
+    [`${prefix}-lh-px`]: px(t.lineHeight),
     [`${prefix}-weight`]: t.weight,
     [`${prefix}-ls`]: `${t.letterSpacing}px`,
     [`${prefix}-style`]: t.italic ? 'italic' : 'normal',
@@ -137,6 +145,17 @@ export function worldCssVariables(w: ResolvedWorld): Record<string, string> {
   });
 
   for (const role of TEXT_ROLES) Object.assign(v, typeVars(`--w-text-${role}`, r.text[role]));
+
+  // Mobile-First Fluid Continuum Variables (Utopia continuous curves from 360px phone -> 1280px desktop)
+  v['--w-text-display-size-fluid'] = generateFluidClamp({ minSizePx: 28, maxSizePx: 36, minViewportPx: 360, maxViewportPx: 1280 });
+  v['--w-text-title-size-fluid'] = generateFluidClamp({ minSizePx: 18, maxSizePx: 22, minViewportPx: 360, maxViewportPx: 1280 });
+  v['--w-text-body-size-fluid'] = generateFluidClamp({ minSizePx: 16, maxSizePx: 17, minViewportPx: 360, maxViewportPx: 1280 });
+
+  // Web Mobile Safe-Area Insets (guarantee bottom navigation & sheets avoid phone home indicators)
+  v['--safe-area-top'] = 'env(safe-area-inset-top, 0px)';
+  v['--safe-area-bottom'] = 'env(safe-area-inset-bottom, 0px)';
+  v['--safe-area-left'] = 'env(safe-area-inset-left, 0px)';
+  v['--safe-area-right'] = 'env(safe-area-inset-right, 0px)';
 
   // Button.
   v['--w-button-radius'] = radiusCss(r.button.radius);
@@ -472,7 +491,8 @@ function boundaryRules(
 
 /** Component rules: they only read variables, so they are the same for every world. */
 const COMPONENT_CSS = `
-:root{--w-font-serif:"Newsreader","Noto Serif Sinhala","Noto Serif Tamil",Georgia,serif;--w-font-sans:"Inter","Noto Sans Sinhala","Noto Sans Tamil",system-ui,sans-serif}
+:root{--w-font-serif:"Newsreader","Noto Serif Sinhala","Noto Serif Tamil",Georgia,serif;--w-font-sans:"Inter","Noto Sans Sinhala","Noto Sans Tamil",system-ui,sans-serif;--safe-area-top:env(safe-area-inset-top,0px);--safe-area-bottom:env(safe-area-inset-bottom,0px);--safe-area-left:env(safe-area-inset-left,0px);--safe-area-right:env(safe-area-inset-right,0px)}
+.safe-area-pad{padding-top:var(--safe-area-top);padding-bottom:var(--safe-area-bottom);padding-left:var(--safe-area-left);padding-right:var(--safe-area-right)}
 .gd-page{container:gd-page/inline-size;background:var(--w-ground);color:var(--w-ink)}
 .gd-text{margin:0}
 ${TEXT_ROLES.map(

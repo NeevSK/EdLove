@@ -90,6 +90,7 @@ export interface WorkspaceLayoutPatchAssessment {
 export function projectWorkspaceLayoutPatchValues<TSurfaceId extends string>(
   layout: WorkspaceLayoutPatchSource<TSurfaceId>,
 ): WorkspaceLayoutPatchValues {
+  // contract-check: checks the values this function just projected
   return WorkspaceLayoutPatchValuesSchema.parse({
     arrangement: {
       order: [...layout.order],
@@ -97,6 +98,7 @@ export function projectWorkspaceLayoutPatchValues<TSurfaceId extends string>(
       pinned: [...layout.pinned],
       zoneBySurface: Object.fromEntries(
         Object.entries(layout.zoneBySurface).map(([surfaceId, zone]) => {
+          // contract-check: keeps only zone values the contract allows
           const parsed = WorkspaceLayoutPatchZoneValueSchema.safeParse(zone);
           if (!parsed.success) {
             throw new TypeError(`Workspace layout zone is not patch-compatible: ${surfaceId}`);
@@ -106,6 +108,7 @@ export function projectWorkspaceLayoutPatchValues<TSurfaceId extends string>(
       ),
     },
     appearance: {
+      // contract-check: fills appearance defaults from the contract
       ...WorkspaceAppearanceSchema.parse(
         layout.appearance?.wallpaper === null
           ? { ...layout.appearance, wallpaper: undefined }
@@ -153,6 +156,7 @@ export async function assessWorkspaceLayoutPatch<TSurfaceId extends string>(
   layout: WorkspaceLayoutPatchSource<TSurfaceId>,
   patch: WorkspaceLayoutPatch,
 ): Promise<WorkspaceLayoutPatchAssessment> {
+  // contract-check: a patch is a typed command; this enforces its invariants (non-empty, known groups)
   const parsedPatch = WorkspaceLayoutPatchSchema.parse(patch);
   const currentValues = projectWorkspaceLayoutPatchValues(layout);
   const changedGroups = Object.keys(parsedPatch.changes) as WorkspaceLayoutPatchGroup[];
@@ -178,6 +182,7 @@ export function applyWorkspaceLayoutPatchValues<TSurfaceId extends string>(
   layout: WorkspaceLayoutPatchSource<TSurfaceId>,
   patch: WorkspaceLayoutPatch,
 ): WorkspaceLayoutPatchSource {
+  // contract-check: a patch is a typed command; this enforces its invariants (non-empty, known groups)
   const parsedPatch = WorkspaceLayoutPatchSchema.parse(patch);
   const appearanceChange = parsedPatch.changes.appearance?.value;
   const nextAppearance = appearanceChange

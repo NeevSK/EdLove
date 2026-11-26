@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import { createBrowserSupabaseClient } from '../../../lib/supabase/browser';
 import { loadWorkspaceScopes, selectWorkspaceScope } from '../../../lib/sanctuary/workspaceScopes';

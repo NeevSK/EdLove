@@ -1,0 +1,162 @@
+---
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  posterImage: ImageMetadata;
+  posterAlt: string;
+  videoSrc?: string;
+  webmSrc?: string;
+  class?: string;
+}
+
+const {
+  posterImage,
+  posterAlt,
+  videoSrc = '/assets/nature-loop.mp4',
+  webmSrc,
+  class: className = 'relative',
+} = Astro.props;
+
+const optimizedPoster = await getImage({
+  src: posterImage,
+  format: 'webp',
+  width: 1600,
+  quality: 80,
+});
+---
+
+<div
+  class:list={['overflow-hidden bg-[#1e293b]', className]}
+  data-hero-video-wrapper
+>
+  <!-- Crisp WebP poster always renders immediately for instant LCP -->
+  <img
+    src={optimizedPoster.src}
+    alt={posterAlt}
+    width={optimizedPoster.attributes.width}
+    height={optimizedPoster.attributes.height}
+    loading="eager"
+    decoding="sync"
+    fetchpriority="high"
+    class="absolute inset-0 w-full h-full object-cover"
+  />
+
+  <!-- Progressive ambient video layer (skipped on Save-Data or prefers-reduced-motion) -->
+  <video
+    data-hero-video
+    data-mp4-src={videoSrc}
+    data-webm-src={webmSrc ?? ''}
+    poster={optimizedPoster.src}
+    muted
+    loop
+    playsinline
+    preload="none"
+    aria-hidden="true"
+    class="relative z-[1] w-full h-full object-cover opacity-0 transition-opacity duration-1000 ease-out"
+  ></video>
+
+  <!-- Subtle dark scrim for text contrast + seamless bottom melt into #FCFBF9 -->
+  <div
+    class="absolute inset-0 z-[2] pointer-events-none"
+    style="background: linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.64) 76%, rgba(252, 251, 249, 0.92) 95%, #FCFBF9 100%);"
+    aria-hidden="true"
+  ></div>
+
+  <!-- Accessible Play/Pause control -->
+  <button
+    type="button"
+    data-hero-video-toggle
+    aria-pressed="false"
+    aria-label="Pause background video"
+    class="absolute bottom-8 right-6 z-[3] inline-flex items-center gap-2 min-h-[44px] px-3.5 py-2 rounded-full bg-[#0f172a]/75 hover:bg-[#0f172a]/90 text-[#fcfbf9] border border-white/20 backdrop-blur-md text-xs font-ui font-medium transition-colors focus-ring cursor-pointer"
+  >
+    <span data-toggle-icon aria-hidden="true">❚❚</span>
+    <span data-toggle-label>Pause motion</span>
+  </button>
+</div>
+
+<script>
+  function initHeroVideos() {
+    const wrappers = document.querySelectorAll('[data-hero-video-wrapper]');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    const saveData = Boolean(conn?.saveData);
+
+    wrappers.forEach((wrapper) => {
+      const video = wrapper.querySelector('[data-hero-video]') as HTMLVideoElement | null;
+      const toggle = wrapper.querySelector('[data-hero-video-toggle]') as HTMLButtonElement | null;
+      const icon = toggle?.querySelector('[data-toggle-icon]');
+      const label = toggle?.querySelector('[data-toggle-label]');
+      if (!video || !toggle) return;
+
+      const setUiPaused = (paused: boolean) => {
+        toggle.setAttribute('aria-pressed', paused ? 'true' : 'false');
+        toggle.setAttribute('aria-label', paused ? 'Play background video' : 'Pause background video');
+        if (icon) icon.textContent = paused ? '▶' : '❚❚';
+        if (label) label.textContent = paused ? 'Play motion' : 'Pause motion';
+      };
+
+      if (reducedMotion || saveData) {
+        setUiPaused(true);
+        toggle.classList.add('hidden');
+        return;
+      }
+
+      const loadAndPlay = () => {
+        if (!video.dataset.loaded) {
+          const webm = video.dataset.webmSrc;
+          const mp4 = video.dataset.mp4Src;
+          if (webm) {
+            const s1 = document.createElement('source');
+            s1.src = webm;
+            s1.type = 'video/webm';
+            video.appendChild(s1);
+          }
+          if (mp4) {
+            const s2 = document.createElement('source');
+            s2.src = mp4;
+            s2.type = 'video/mp4';
+            video.appendChild(s2);
+          }
+          video.dataset.loaded = 'true';
+        }
+        video.play().then(() => {
+          video.classList.remove('opacity-0');
+          video.classList.add('opacity-100');
+          setUiPaused(false);
+        }).catch(() => {
+          setUiPaused(true);
+        });
+      };
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting && !video.dataset.userPaused) {
+              loadAndPlay();
+            } else if (!entry.isIntersecting && !video.paused) {
+              video.pause();
+            }
+          }
+        },
+        { threshold: 0.15 }
+      );
+      observer.observe(wrapper);
+
+      toggle.addEventListener('click', () => {
+        if (video.paused) {
+          delete video.dataset.userPaused;
+          loadAndPlay();
+        } else {
+          video.dataset.userPaused = 'true';
+          video.pause();
+          setUiPaused(true);
+        }
+      });
+    });
+  }
+
+  initHeroVideos();
+  document.addEventListener('astro:page-load', initHeroVideos);
+</script>

@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const values = vi.hoisted(() => new Map<string, string>());
 const getAllKeys = vi.hoisted(() => vi.fn(async () => [...values.keys()]));
-const multiGet = vi.hoisted(() =>
-  vi.fn(async (keys: string[]) => keys.map((key) => [key, values.get(key) ?? null])),
+const getMany = vi.hoisted(() =>
+  vi.fn(async (keys: string[]) => Object.fromEntries(keys.map((key) => [key, values.get(key) ?? null]))),
 );
 const setItem = vi.hoisted(() =>
   vi.fn(async (key: string, value: string) => values.set(key, value)),
@@ -13,7 +13,7 @@ const removeItem = vi.hoisted(() => vi.fn(async (key: string) => values.delete(k
 vi.mock('@react-native-async-storage/async-storage', () => ({
   default: {
     getAllKeys,
-    multiGet,
+    getMany,
     getItem: async (key: string) => values.get(key) ?? null,
     setItem,
     removeItem,
@@ -28,8 +28,8 @@ describe('AsyncStorageAdapter acknowledged writes', () => {
     values.clear();
     getAllKeys.mockReset();
     getAllKeys.mockImplementation(async () => [...values.keys()]);
-    multiGet.mockReset();
-    multiGet.mockImplementation(async (keys) => keys.map((key) => [key, values.get(key) ?? null]));
+    getMany.mockReset();
+    getMany.mockImplementation(async (keys) => Object.fromEntries(keys.map((key) => [key, values.get(key) ?? null])));
     setItem.mockReset();
     setItem.mockImplementation(async (key, value) => {
       values.set(key, value);
@@ -102,17 +102,17 @@ describe('AsyncStorageAdapter acknowledged writes', () => {
 
   it('does not let an older hydration snapshot overwrite an early synchronous write', async () => {
     values.set('same-key', 'old-durable');
-    let finishHydration!: (rows: [string, string | null][]) => void;
-    multiGet.mockImplementationOnce(
+    let finishHydration!: (rows: Record<string, string | null>) => void;
+    getMany.mockImplementationOnce(
       () =>
         new Promise((resolve) => {
           finishHydration = resolve;
         }),
     );
     const adapter = new AsyncStorageAdapter();
-    await vi.waitFor(() => expect(multiGet).toHaveBeenCalled());
+    await vi.waitFor(() => expect(getMany).toHaveBeenCalled());
     adapter.set('same-key', 'new-synchronous');
-    finishHydration([['same-key', 'old-durable']]);
+    finishHydration({ 'same-key': 'old-durable' });
 
     await adapter.setAsync('barrier', 'done');
     expect(adapter.getString('same-key')).toBe('new-synchronous');
@@ -120,17 +120,17 @@ describe('AsyncStorageAdapter acknowledged writes', () => {
 
   it('does not let a pending hydration snapshot repopulate cache after clear', async () => {
     values.set('same-key', 'old-durable');
-    let finishHydration!: (rows: [string, string | null][]) => void;
-    multiGet.mockImplementationOnce(
+    let finishHydration!: (rows: Record<string, string | null>) => void;
+    getMany.mockImplementationOnce(
       () =>
         new Promise((resolve) => {
           finishHydration = resolve;
         }),
     );
     const adapter = new AsyncStorageAdapter();
-    await vi.waitFor(() => expect(multiGet).toHaveBeenCalled());
+    await vi.waitFor(() => expect(getMany).toHaveBeenCalled());
     adapter.clearAll();
-    finishHydration([['same-key', 'old-durable']]);
+    finishHydration({ 'same-key': 'old-durable' });
 
     await adapter.setAsync('barrier', 'done');
     expect(adapter.getString('same-key')).toBeUndefined();

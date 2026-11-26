@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import { isReferenceOnly } from '../tooling/reference-only.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SyntaxKind } from 'typescript/ast';
@@ -25,18 +26,13 @@ const admittedHostFiles = new Set([
   'apps/sanctuary-api/src/node-server.ts',
   'apps/sanctuary-api/src/platform.ts',
   'apps/sanctuary-api/src/security/security.ts',
-  'apps/sanctuary-api/src/security/syncCredentials.ts',
+  // The short-lived PowerSync token (identity.syncGrant).
+  'apps/sanctuary-api/src/security/syncGrant.ts',
+  // The account's own deletion request (identity.deletion), moved from the retired Next server.
+  'apps/sanctuary-api/src/security/accountDeletion.ts',
   'apps/sanctuary-api/src/operations/store.ts',
   'apps/sanctuary-api/src/operations/dispatcher.ts',
   'apps/sanctuary-api/src/modules/catalog.ts',
-  // Capability conformance: read-only checks of the catalog, never on the request path.
-  // docs: apps/sanctuary-api/docs/implementation/2026-11-08-capability-conformance-plan.md
-  'apps/sanctuary-api/src/modules/contractPaths.ts',
-  'apps/sanctuary-api/src/conformance/cards.adapter.ts',
-  'apps/sanctuary-api/src/conformance/consumers.adapter.ts',
-  'apps/sanctuary-api/src/conformance/docTables.adapter.ts',
-  'apps/sanctuary-api/src/conformance/evidence.ts',
-  'apps/sanctuary-api/src/conformance/reconcile.ts',
 ]);
 const visit = (node, fn) => {
   fn(node);
@@ -163,7 +159,6 @@ export function auditComposition(files) {
         file.startsWith('apps/sanctuary-api/scripts/') &&
         ![
           'apps/sanctuary-api/scripts/audit-contracts.ts',
-          'apps/sanctuary-api/scripts/capability-conformance.ts',
           'apps/sanctuary-api/scripts/test-foundation-database.ts',
         ].includes(file)
       )
@@ -222,7 +217,12 @@ export function auditComposition(files) {
             scopes: nativeProcedure,
             entry: nativeProcedure,
             createInitialBond: nativeProcedure,
-            syncCredentials: nativeProcedure,
+            syncGrant: nativeProcedure,
+            deletion: {
+              status: nativeProcedure,
+              request: nativeProcedure,
+              cancel: nativeProcedure,
+            },
           },
           authority: { refreshSnapshot: nativeProcedure },
         }) ||
@@ -282,7 +282,12 @@ export function auditComposition(files) {
             scopes: (node) => nativeHandler(node, 'identity.scopes'),
             entry: (node) => nativeHandler(node, 'identity.entry'),
             createInitialBond: (node) => nativeHandler(node, 'identity.createInitialBond'),
-            syncCredentials: (node) => nativeHandler(node, 'identity.syncCredentials'),
+            syncGrant: (node) => nativeHandler(node, 'identity.syncGrant'),
+            deletion: {
+              status: (node) => nativeHandler(node, 'identity.deletion.status'),
+              request: (node) => nativeHandler(node, 'identity.deletion.request'),
+              cancel: (node) => nativeHandler(node, 'identity.deletion.cancel'),
+            },
           },
           authority: {
             refreshSnapshot: (node) => nativeHandler(node, 'authority.refreshSnapshot'),
@@ -352,8 +357,9 @@ export function auditComposition(files) {
           security: (node) => accessPath(node)?.join('.') === 'options.platform.security',
           executeAccountCommand: (node) =>
             accessPath(node)?.join('.') === 'options.platform.executeAccountCommand',
-          syncCredentials: (node) =>
-            accessPath(node)?.join('.') === 'options.platform.syncCredentials',
+          syncGrants: (node) => accessPath(node)?.join('.') === 'options.platform.syncGrants',
+          withAccountData: (node) =>
+            accessPath(node)?.join('.') === 'options.platform.withAccountData',
         });
       if (nativeCalls.length !== 1 || !projection)
         add(
@@ -437,7 +443,7 @@ function collect(dir, files) {
   for (const entry of fs.readdirSync(absolute, { withFileTypes: true })) {
     const relative = `${dir}/${entry.name}`;
     if (entry.isDirectory()) collect(relative, files);
-    else if (entry.isFile() && /\.(?:ts|tsx|js|mjs)$/.test(entry.name))
+    else if (entry.isFile() && /\.(?:ts|tsx|js|mjs)$/.test(entry.name) && !isReferenceOnly(relative))
       files[relative] = fs.readFileSync(path.join(root, relative), 'utf8');
   }
 }

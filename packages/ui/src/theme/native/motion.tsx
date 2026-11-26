@@ -70,10 +70,10 @@ export function WorldEnter({ children, index = 0, style }: WorldEnterProps) {
 
   const { x, y } = m.from;
   const animated = useAnimatedStyle(() => {
-    const rest = 1 - progress.value;
+    const rest = 1 - progress.get();
     return {
       // Opacity never overshoots, even when the position does.
-      opacity: Math.min(1, progress.value),
+      opacity: Math.min(1, progress.get()),
       transform: [{ translateX: x * rest }, { translateY: y * rest }],
     };
   });

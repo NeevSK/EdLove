@@ -23,7 +23,7 @@ and actuates; every decision is made by `@repo/verger-core` in JavaScript. It kn
 | Network | `NetworkSignals.kt` | Transport, validation, metering, bucketed bandwidth and Data Saver to payloads; held to `contract/native-events.json`. |
 | Levers | `HardwareLevers.kt` | Refresh cap (preferred display mode) and the ADPF hint session; released on stop, destroy and reload. |
 | Sensors | `VergerSense.kt` | FrameMetrics stages, thermal, memory, battery saver, thread load; one thread; only changes cross; a sensor switched off registers nothing. |
-| Binding | `VergerModule.kt` | Expo Modules 2.0 Android: nine synchronous methods and eleven explicitly named events, preserving the existing JS API. |
+| Binding | `VergerModule.kt` | Expo Modules 2.0 Android: eleven synchronous methods (the original nine plus `readMonotonicMs` and `traceCounters`) and eleven explicitly named events, preserving the existing JS API. |
 | JS | `index.ts`, `src/mapping.ts` | `createVergerAndroidPort()`: a `RuntimePort` for verger-core. |
 
 A host app adds this package as a dependency; Expo autolinking finds `expo-module.config.json`.

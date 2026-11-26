@@ -64,6 +64,8 @@
     "promise/no-multiple-resolved": "off"
   },
   "ignorePatterns": [
+    "**/*.web.ts",
+    "**/*.web.tsx",
     "node_modules",
     "dist",
     "build",

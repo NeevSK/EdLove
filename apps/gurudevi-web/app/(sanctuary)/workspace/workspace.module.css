@@ -2,6 +2,8 @@
   display: grid;
   gap: clamp(1.5rem, 4vw, 3rem);
   color: var(--ink, #29251f);
+  container-name: workspace-floor;
+  container-type: inline-size;
 }
 .workbench {
   display: grid;
@@ -47,7 +49,7 @@
 .eyebrow {
   margin: 0;
   color: var(--sanctuary-saffron, #a45d25);
-  font-size: 0.72rem;
+  font-size: 0.875rem;
   font-weight: 750;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -58,9 +60,15 @@
   gap: 1.35rem;
   padding: clamp(1rem, 3vw, 2rem);
   border: 1px solid var(--border, #ded8cf);
+  border-top: 1px solid color-mix(in srgb, var(--sanctuary-saffron, #9d5b25) 28%, var(--border, #ded8cf));
   border-radius: 1.25rem;
   background: var(--glass-surface, #fffdf8);
-  box-shadow: 0 1rem 3.5rem #3023150a;
+  background-image: radial-gradient(120% 100% at 50% 25%, color-mix(in srgb, var(--w-glow, #fff) 14%, transparent), transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--sanctuary-saffron, #9d5b25) 18%, transparent),
+              inset 0 0 0 1px var(--border, #ded8cf),
+              0 1rem 3.5rem #3023150a;
+  container-name: workspace-card;
+  container-type: inline-size;
 }
 .overview h2,
 .attendance h2 {
@@ -127,7 +135,7 @@
 .classPicker {
   display: grid;
   gap: 0.35rem;
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   color: var(--ink-ghost, #71695f);
 }
 .classPicker select {
@@ -198,8 +206,8 @@
   align-items: center;
   justify-content: center;
   margin-left: 0.35rem;
-  padding: 0.1rem 0.35rem;
-  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.8125rem;
   font-family: monospace;
   font-weight: 700;
   border-radius: 0.25rem;
@@ -309,8 +317,8 @@
   text-decoration: underline;
 }
 .shadowPill {
-  font-size: 0.7rem;
-  padding: 0.15rem 0.45rem;
+  font-size: 0.8125rem;
+  padding: 0.2rem 0.55rem;
   border-radius: 999px;
   background: #f2efe9;
   color: #71695f;
@@ -539,24 +547,30 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
+  border: 1px solid var(--line, rgba(44, 40, 37, 0.12));
+  border-top: 1px solid color-mix(in srgb, var(--sanctuary-saffron, #9d5b25) 24%, var(--line, rgba(44, 40, 37, 0.12)));
   border-radius: 1rem;
+  background: var(--glass-surface, #fffdfa);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--sanctuary-saffron, #9d5b25) 14%, transparent),
+              0 2px 8px rgba(48, 35, 21, 0.04);
   transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
 }
 
 .workspaceCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(48, 35, 21, 0.08);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--sanctuary-saffron, #9d5b25) 28%, transparent),
+              0 8px 24px rgba(48, 35, 21, 0.08);
 }
 
 .roleTag {
-  font-size: 0.7rem;
+  font-size: 0.8125rem;
   font-family: inherit;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--ink-soft, #71695f);
   background: rgba(44, 40, 37, 0.05);
   border: 1px solid var(--line, rgba(44, 40, 37, 0.1));
-  padding: 0.15rem 0.5rem;
+  padding: 0.2rem 0.55rem;
   border-radius: 9999px;
   font-weight: 500;
 }
@@ -582,4 +596,67 @@
 .catalogOpenLink:hover {
   color: var(--ink, #1f1b18);
   text-decoration: underline;
+}
+
+/* ─── 4-Gear Container Degradation (UI Kit & Intentional UI) ─── */
+@container workspace-floor (max-width: 519px) {
+  /* Gear 2: Single-column stack & full-width selects */
+  .attendanceHeading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .classPicker select {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .bulkActions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@container workspace-floor (max-width: 379px) {
+  /* Gear 1: Vertical stacking & ergonomic mobile tap targets */
+  .overview,
+  .attendance {
+    padding: 1rem 0.85rem;
+    border-radius: 1rem;
+  }
+
+  .workspaceGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary,
+  .counts {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .roster li {
+    padding: 0.65rem 0.75rem;
+    gap: 0.6rem;
+  }
+
+  .studentName {
+    font-size: 0.92rem;
+  }
+}
+
+@container workspace-floor (max-width: 319px) {
+  /* Gear 0: Ultra-narrow mobile fallback */
+  .status {
+    min-width: 5rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .primary,
+  .secondary {
+    width: 100%;
+    text-align: center;
+  }
 }

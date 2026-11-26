@@ -1,14 +1,5 @@
 import { knowledgeDB } from '@repo/library/api/database';
-import type {
-  Bookmark,
-  BookmarkRow,
-  ReadingProgress,
-  ReadingProgressRow,
-  TextHighlight,
-  TextHighlightRow,
-  TextNote,
-  TextNoteRow,
-} from '@repo/library/types';
+import type { Bookmark, BookmarkRow, ReadingProgress, ReadingProgressRow, TextHighlight, TextHighlightRow, TextNote, TextNoteRow } from '@repo/core/types/Library';
 import { v7 as uuidv7 } from 'uuid';
 
 function toHighlight(highlight: TextHighlightRow): TextHighlight {

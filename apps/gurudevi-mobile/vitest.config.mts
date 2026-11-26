@@ -10,6 +10,9 @@ export default defineConfig({
     // Keeping this here avoids a separate vite-tsconfig-paths plugin and its
     // config-loader warning while preserving the mobile test import contract.
     tsconfigPaths: true,
+    // Metro resolves one copy of each package from the app (disableHierarchicalLookup); shared
+    // packages resolve their own expo-router here otherwise, and a test's mock would miss it.
+    dedupe: ['expo-router'],
     alias: [
       {
         // The package export picks this by platform condition; the general alias would miss it.

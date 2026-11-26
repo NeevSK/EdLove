@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import { CANONICAL_CIVIC_ROLES, type CivicRoleOption } from '@repo/core/types';
 import styles from './role-card-grid.module.css';

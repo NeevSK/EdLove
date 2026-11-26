@@ -2,7 +2,7 @@ import type {
   EntitlementReadiness,
   EntitlementSnapshot,
 } from '@repo/core/logic/ports/entitlement.port';
-import type { CitizenshipLevel } from '@repo/core/logic/registry/citizenship';
+import type { CitizenshipLevel } from '@repo/core/types/citizenship';
 
 /**
  * Shared, pure access context consumed by local presentation and operation

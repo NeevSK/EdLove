@@ -1,34 +1,26 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
 import { ScrollArea } from '@repo/ui/components/web';
+import { linkOptions, useRouter } from '@tanstack/react-router';
 import {
   type KeyboardEvent as ReactKeyboardEvent,
   useCallback,
   useEffect,
   useId,
+  useMemo,
   useRef,
   useState,
 } from 'react';
+import { isOfferedTo } from '../workspace/workspaceFeatureRegistry';
 
-export type CommandItem = Readonly<{
-  id: string;
-  title: string;
-  description: string;
-  symbol: string;
-  section: 'Navigation' | 'Academic' | 'Tools' | 'Account';
-  href?: string;
-  action?: () => void;
-}>;
+type CommandSection = 'Navigation' | 'Academic' | 'Tools' | 'Account' | 'Admin';
 
-const defaultCommands: readonly CommandItem[] = [
+const commands = [
   {
     id: 'nav-self',
     title: 'Self Floor',
     description: 'Personal reflection, fire journal, and wellbeing practice',
     symbol: '♥',
     section: 'Navigation',
-    href: '/self',
+    link: linkOptions({ to: '/self' }),
   },
   {
     id: 'nav-workspace',
@@ -36,7 +28,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Classroom attendance, circles, and active duties',
     symbol: '◇',
     section: 'Navigation',
-    href: '/workspace',
+    link: linkOptions({ to: '/workspace' }),
   },
   {
     id: 'nav-community',
@@ -44,7 +36,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'School forest, peer circles, and shared spaces',
     symbol: '○',
     section: 'Navigation',
-    href: '/community',
+    link: linkOptions({ to: '/community' }),
   },
   {
     id: 'nav-library',
@@ -52,7 +44,15 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Curricula, pedagogical books, and shared materials',
     symbol: '▤',
     section: 'Navigation',
-    href: '/library',
+    link: linkOptions({ to: '/library' }),
+  },
+  {
+    id: 'academic-attendance',
+    title: 'Daily Attendance Roll Call',
+    description: 'Pastoral morning census, head-count, and presence register',
+    symbol: '🗓️',
+    section: 'Academic',
+    link: linkOptions({ to: '/workspace/attendance' }),
   },
   {
     id: 'academic-gradebook',
@@ -60,7 +60,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Student competencies, evaluations, and grading matrix',
     symbol: '📊',
     section: 'Academic',
-    href: '/workspace/gradebook',
+    link: linkOptions({ to: '/workspace/gradebook' }),
   },
   {
     id: 'academic-timetable',
@@ -68,7 +68,223 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Weekly schedule, periods, and room assignments',
     symbol: '📅',
     section: 'Academic',
-    href: '/workspace/timetable',
+    link: linkOptions({ to: '/workspace/timetable' }),
+  },
+  {
+    id: 'academic-submissions',
+    title: 'Homework Submissions',
+    description: 'Review student work, worksheets, assignments, and grades',
+    symbol: '📥',
+    section: 'Academic',
+    link: linkOptions({ to: '/workspace/submissions' }),
+  },
+  {
+    id: 'academic-plan',
+    title: 'Curriculum & Term Planner',
+    description: 'Term scheme of work, learning competency pacing, and syllabus',
+    symbol: '📝',
+    section: 'Academic',
+    link: linkOptions({ to: '/workspace/plan' }),
+  },
+  {
+    id: 'academic-workforce',
+    title: 'Staff Relief & Substitution',
+    description: 'Manage teacher absences, relief allocations, and campus duties',
+    symbol: '👥',
+    section: 'Academic',
+    link: linkOptions({ to: '/workspace/workforce' }),
+  },
+  {
+    id: 'academic-climate',
+    title: 'Class Climate Sensing',
+    description: 'Classroom sentiment, somatic energy, and drift awareness',
+    symbol: '🌱',
+    section: 'Academic',
+    link: linkOptions({ to: '/workspace/climate' }),
+  },
+  {
+    id: 'academic-events',
+    title: 'School Events Calendar',
+    description: 'Inter-house meets, term exams, excursions, and public holidays',
+    symbol: '🎪',
+    section: 'Academic',
+    link: linkOptions({ to: '/workspace/events' }),
+  },
+  {
+    id: 'self-breathing',
+    title: 'Mindful Breathing Practice',
+    description: 'Somatic pacing, grounding breaths, and restorative pause',
+    symbol: '🌬️',
+    section: 'Tools',
+    link: linkOptions({ to: '/self', search: { practice: 'breath' } }),
+  },
+  {
+    id: 'self-journal',
+    title: 'Fire Journal',
+    description: 'Private cathartic release, evening unburdening, and sacred burning',
+    symbol: '🔥',
+    section: 'Tools',
+    link: linkOptions({ to: '/self', search: { practice: 'journal' } }),
+  },
+  {
+    id: 'self-mood',
+    title: 'Mood Lotus Check-In',
+    description: 'Emotional weather sensing, petal reflections, and somatic anchoring',
+    symbol: '🪷',
+    section: 'Tools',
+    link: linkOptions({ to: '/self', search: { practice: 'mood' } }),
+  },
+  {
+    id: 'self-pulse',
+    title: 'Daily Pulse Dashboard',
+    description: 'Living morning threshold, daily energy forecast, and focus anchors',
+    symbol: '⚡',
+    section: 'Tools',
+    link: linkOptions({ to: '/self', search: { practice: 'pulse' } }),
+  },
+  {
+    id: 'self-sleep',
+    title: 'Sleep & Rest Tracker',
+    description: 'Restorative cycles, evening unwind journal, and circadian rhythm',
+    symbol: '🌙',
+    section: 'Tools',
+    link: linkOptions({ to: '/self', search: { practice: 'sleep' } }),
+  },
+  {
+    id: 'self-prep',
+    title: 'Tomorrow Preparation Ritual',
+    description: 'Next-day pedagogy prep, mental clarity, and daily rhythm',
+    symbol: '🌅',
+    section: 'Tools',
+    link: linkOptions({ to: '/self', search: { practice: 'prep' } }),
+  },
+  {
+    id: 'self-goals',
+    title: 'Personal & Student Goals',
+    description: 'Academic objectives, competency milestones, and growth tracking',
+    symbol: '🎯',
+    section: 'Tools',
+    link: linkOptions({ to: '/self', search: { practice: 'goals' } }),
+  },
+  {
+    id: 'self-seeds',
+    title: 'Wisdom Seeds',
+    description: 'Spontaneous pedagogical insights, grounding reminders, and daily quotes',
+    symbol: '🌱',
+    section: 'Tools',
+    link: linkOptions({ to: '/self', search: { practice: 'seeds' } }),
+  },
+  {
+    id: 'self-joy',
+    title: 'Joy Jar Moments',
+    description: 'Preserve classroom breakthrough moments and joyful connections',
+    symbol: '🍯',
+    section: 'Tools',
+    link: linkOptions({ to: '/self', search: { practice: 'joy' } }),
+  },
+  {
+    id: 'self-gratitude',
+    title: 'Gratitude Glimmers',
+    description: 'Capture student growth, colleague support, and quiet personal wins',
+    symbol: '✨',
+    section: 'Tools',
+    link: linkOptions({ to: '/self', search: { practice: 'gratitude' } }),
+  },
+  {
+    id: 'self-decisions',
+    title: 'Decision Journal',
+    description: 'Structured pedagogical and leadership decisions with rationale',
+    symbol: '⚖️',
+    section: 'Tools',
+    link: linkOptions({ to: '/self', search: { practice: 'decisions' } }),
+  },
+  {
+    id: 'self-rhythm',
+    title: 'Daily Rhythm & Sadhana',
+    description: 'Diurnal schedule, morning/evening practices, and focus cycles',
+    symbol: '⌛',
+    section: 'Tools',
+    link: linkOptions({ to: '/self', search: { practice: 'rhythm' } }),
+  },
+  {
+    id: 'library-map',
+    title: 'Library Map & Centers',
+    description: 'Interactive visual geography of island knowledge centers',
+    symbol: '🗺️',
+    section: 'Navigation',
+    link: linkOptions({ to: '/library/map' }),
+  },
+  {
+    id: 'library-tools',
+    title: 'Tools Workbench',
+    description: 'Pedagogical tools, calculators, and teaching appliances',
+    symbol: '📐',
+    section: 'Tools',
+    link: linkOptions({ to: '/library/tools' }),
+  },
+  {
+    id: 'library-curator',
+    title: 'Curator Review Studio',
+    description: 'Inspect staged resources, repair broken links, and publish to the live library',
+    symbol: '✨',
+    section: 'Tools',
+    link: linkOptions({ to: '/library/curator' }),
+  },
+  {
+    id: 'academic-classroom',
+    title: 'Grade 10-A Classroom Hub',
+    description: 'Student roster, lessons, assignments, and holistic observations',
+    symbol: '🏫',
+    section: 'Academic',
+    link: linkOptions({ to: '/workspace/classroom/$id', params: { id: 'cls_10a_math' } }),
+  },
+  {
+    id: 'academic-notices',
+    title: 'School Notices & Circulars',
+    description: 'Official department circulars, bulletins, and staff announcements',
+    symbol: '📢',
+    section: 'Academic',
+    link: linkOptions({ to: '/workspace/notices' }),
+  },
+  {
+    id: 'academic-badges',
+    title: 'Student Badges & Recognitions',
+    description: 'Merit badges, competency awards, and student commendations',
+    symbol: '🏅',
+    section: 'Academic',
+    link: linkOptions({ to: '/workspace/badges' }),
+  },
+  {
+    id: 'nav-notifications',
+    title: 'Notifications & Dispatches',
+    description: 'System alerts, school broadcasts, and activity alerts',
+    symbol: '🔔',
+    section: 'Navigation',
+    link: linkOptions({ to: '/notifications' }),
+  },
+  {
+    id: 'nav-support',
+    title: 'Support & Care Desk',
+    description: 'Help docs, platform feedback, and sanctuary guidance',
+    symbol: '💬',
+    section: 'Navigation',
+    link: linkOptions({ to: '/support' }),
+  },
+  {
+    id: 'account-security',
+    title: 'Security & Recovery Keys',
+    description: 'Session security, passkeys, and account recovery bonds',
+    symbol: '🔒',
+    section: 'Account',
+    link: linkOptions({ to: '/profile/security' }),
+  },
+  {
+    id: 'tools-atlas',
+    title: 'Screen & Capability Atlas',
+    description: 'Complete directory and functional cartography of all school screens',
+    symbol: '🧭',
+    section: 'Tools',
+    link: linkOptions({ to: '/atlas' }),
   },
   {
     id: 'ai-tutii-dm',
@@ -76,7 +292,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Direct mentor conversation with persistent memory and guidance',
     symbol: '✨',
     section: 'Tools',
-    href: '/community?pillar=messages&dm=tutii',
+    link: linkOptions({ to: '/community', search: { pillar: 'messages', dm: 'tutii' } }),
   },
   {
     id: 'ai-workspace',
@@ -84,7 +300,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Multi-turn agent reasoning, tool proposals, and human-in-the-loop plans',
     symbol: '⚡',
     section: 'Tools',
-    href: '/community?pillar=messages',
+    link: linkOptions({ to: '/community', search: { pillar: 'messages' } }),
   },
   {
     id: 'ai-incognito',
@@ -92,7 +308,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Zero-trace, non-persisted inquiry with instant ephemeral scratchpad',
     symbol: '🕶️',
     section: 'Tools',
-    href: '/community?pillar=messages&mode=incognito',
+    link: linkOptions({ to: '/community', search: { pillar: 'messages', mode: 'incognito' } }),
   },
   {
     id: 'tools-agent-lab',
@@ -100,7 +316,7 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Durable Agent scenario executions and runtime traces',
     symbol: '✦',
     section: 'Tools',
-    href: '/agent-lab',
+    link: linkOptions({ to: '/agent-lab' }),
   },
   {
     id: 'tools-icon-lab',
@@ -108,7 +324,111 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Brand design tokens, icons, and APCA contrast inspector',
     symbol: '🎨',
     section: 'Tools',
-    href: '/icon-lab',
+    link: linkOptions({ to: '/icon-lab' }),
+  },
+  {
+    id: 'admin-principal',
+    title: 'Principal Command Center',
+    description: 'Executive oversight, school census, faculty relief, and institutional policies',
+    symbol: '🏛️',
+    section: 'Admin',
+    link: linkOptions({ to: '/admin/principal' }),
+  },
+  {
+    id: 'admin-analytics',
+    title: 'Institutional Analytics',
+    description: 'Longitudinal attendance, cohort velocity, and academic performance telemetry',
+    symbol: '📈',
+    section: 'Admin',
+    link: linkOptions({ to: '/admin/analytics' }),
+  },
+  {
+    id: 'admin-documents',
+    title: 'Circulars & Documents Management',
+    description: 'Ministry regulations, circular archive, and school-wide documentation',
+    symbol: '📁',
+    section: 'Admin',
+    link: linkOptions({ to: '/admin/documents' }),
+  },
+  {
+    id: 'admin-founder',
+    title: 'Founder Command Studio',
+    description: 'System-level authority, platform governance, and architecture control',
+    symbol: '👑',
+    section: 'Admin',
+    link: linkOptions({ to: '/admin/founder' }),
+  },
+  {
+    id: 'admin-forms-builder',
+    title: 'Form Builder & Surveys',
+    description: 'Author custom institutional forms, student surveys, and consent requests',
+    symbol: '📋',
+    section: 'Admin',
+    link: linkOptions({ to: '/admin/forms/builder' }),
+  },
+  {
+    id: 'workspace-guardian',
+    title: 'Guardian & Parent Portal',
+    description: 'Ward attendance tracking, medical excuses, and school communications',
+    symbol: '👨‍👩‍👧',
+    section: 'Academic',
+    link: linkOptions({ to: '/workspace/guardian' }),
+  },
+  {
+    id: 'workspace-tuition',
+    title: 'Tuition & Fees Ledger',
+    description: 'Student term fees, facilities dues, and receipt tracking',
+    symbol: '💳',
+    section: 'Academic',
+    link: linkOptions({ to: '/workspace/tuition' }),
+  },
+  {
+    id: 'workspace-kiosk',
+    title: 'Doorway Ingress Kiosk',
+    description: 'Rapid barcode/QR badge scanner for morning school entry gates',
+    symbol: '🚪',
+    section: 'Tools',
+    link: linkOptions({ to: '/workspace/kiosk' }),
+  },
+  {
+    id: 'workspace-editorial',
+    title: 'Editorial Commons',
+    description: 'Pedagogical writings, essays, and faculty research journal',
+    symbol: '📰',
+    section: 'Academic',
+    link: linkOptions({ to: '/workspace/editorial' }),
+  },
+  {
+    id: 'workspace-school',
+    title: 'School Profile & Campus Grounds',
+    description: 'School institutional identity, crest, history, and official leadership',
+    symbol: '🏫',
+    section: 'Academic',
+    link: linkOptions({ to: '/workspace/school' }),
+  },
+  {
+    id: 'workspace-claim',
+    title: 'Student Spot Claiming',
+    description: 'Claim shadow student profiles and link provisional records to identity',
+    symbol: '🎟️',
+    section: 'Academic',
+    link: linkOptions({ to: '/workspace/claim' }),
+  },
+  {
+    id: 'community-forest',
+    title: 'Community Forest & Circles',
+    description: 'Open peer dialogue, collective wisdom, and regional educator circles',
+    symbol: '🌳',
+    section: 'Navigation',
+    link: linkOptions({ to: '/community/forest' }),
+  },
+  {
+    id: 'community-announcements',
+    title: 'School Announcements',
+    description: 'Broadcast notices, pastoral updates, and assembly announcements',
+    symbol: '📣',
+    section: 'Navigation',
+    link: linkOptions({ to: '/community/announcements' }),
   },
   {
     id: 'account-profile',
@@ -116,17 +436,42 @@ const defaultCommands: readonly CommandItem[] = [
     description: 'Account settings, institutional bonds, and privacy',
     symbol: '◉',
     section: 'Account',
-    href: '/profile',
+    link: linkOptions({ to: '/profile' }),
   },
-];
+  {
+    id: 'account-settings',
+    title: 'Comfort & Settings',
+    description: 'Diurnal theme preferences, sensory comforts, and display sizing',
+    symbol: '⚙',
+    section: 'Account',
+    link: linkOptions({ to: '/settings' }),
+  },
+] satisfies readonly Readonly<{
+  id: string;
+  title: string;
+  description: string;
+  symbol: string;
+  section: CommandSection;
+  link: { to: string; search?: Record<string, unknown>; params?: Record<string, unknown> };
+}>[];
+
+type CommandItem = (typeof commands)[number];
 
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
-  navigationPrefix?: string;
+  /** The person's capacity: Workspace commands come only from its floor. */
+  capacity?: string | null;
+  /** In Explore mode, allow searching and test-driving all sandbox features. */
+  isExplore?: boolean;
 }
 
-export function CommandPalette({ isOpen, onClose, navigationPrefix = '' }: CommandPaletteProps) {
+export function CommandPalette({
+  isOpen,
+  onClose,
+  capacity,
+  isExplore = false,
+}: CommandPaletteProps) {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -134,22 +479,49 @@ export function CommandPalette({ isOpen, onClose, navigationPrefix = '' }: Comma
   const listRef = useRef<HTMLUListElement>(null);
   const listId = useId();
 
-  const filteredCommands = defaultCommands.filter((cmd) => {
-    if (!query.trim()) return true;
-    const q = query.toLowerCase();
-    return (
-      cmd.title.toLowerCase().includes(q) ||
-      cmd.description.toLowerCase().includes(q) ||
-      cmd.section.toLowerCase().includes(q)
-    );
-  });
+  const filteredCommands = useMemo(() => {
+    const list = commands.filter((cmd) => {
+      if (!isExplore && !isOfferedTo(capacity, cmd.link.to)) return false;
+      if (!query.trim()) return true;
+      const q = query.toLowerCase();
+      return (
+        cmd.title.toLowerCase().includes(q) ||
+        cmd.description.toLowerCase().includes(q) ||
+        cmd.section.toLowerCase().includes(q)
+      );
+    });
+
+    const q = query.toLowerCase().trim();
+    if (!q) return list;
+
+    return [...list].sort((a, b) => {
+      const aTitle = a.title.toLowerCase();
+      const bTitle = b.title.toLowerCase();
+      const aStarts = aTitle.startsWith(q);
+      const bStarts = bTitle.startsWith(q);
+      if (aStarts && !bStarts) return -1;
+      if (!aStarts && bStarts) return 1;
+      const aIncludes = aTitle.includes(q);
+      const bIncludes = bTitle.includes(q);
+      if (aIncludes && !bIncludes) return -1;
+      if (!aIncludes && bIncludes) return 1;
+      return 0;
+    });
+  }, [capacity, isExplore, query]);
 
   useEffect(() => {
-    if (isOpen) {
-      setQuery('');
-      setSelectedIndex(0);
-      setTimeout(() => inputRef.current?.focus(), 50);
+    const activeEl = listRef.current?.querySelector(`[aria-selected="true"]`);
+    if (activeEl && typeof activeEl.scrollIntoView === 'function') {
+      activeEl.scrollIntoView({ block: 'nearest' });
     }
+  }, [selectedIndex]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setQuery('');
+    setSelectedIndex(0);
+    const timer = setTimeout(() => inputRef.current?.focus(), 50);
+    return () => clearTimeout(timer);
   }, [isOpen]);
 
   useEffect(() => {
@@ -159,14 +531,9 @@ export function CommandPalette({ isOpen, onClose, navigationPrefix = '' }: Comma
   const executeCommand = useCallback(
     (cmd: CommandItem) => {
       onClose();
-      if (cmd.action) {
-        cmd.action();
-      } else if (cmd.href) {
-        const fullHref = `${navigationPrefix}${cmd.href}`;
-        router.push(fullHref);
-      }
+      void router.navigate(cmd.link);
     },
-    [navigationPrefix, onClose, router],
+    [onClose, router],
   );
 
   function handleKeyDown(event: ReactKeyboardEvent) {

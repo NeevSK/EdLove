@@ -9,10 +9,8 @@ export interface UserAccessContext {
   roles: SelfViewRole[];
 }
 
-export interface AccessibleFeature extends SelfFeatureDefinition {
-  roleAffinity: number;
-  isGeneral: boolean;
-}
+/** A feature this person is offered: related to one of their roles, and every capability granted. */
+export type AccessibleFeature = SelfFeatureDefinition;
 
 export type FeatureAccessDenial = 'capability' | 'citizenship';
 
@@ -38,6 +36,12 @@ class CapabilityPolicy implements Policy {
     return feature.requiredCapabilities.every((c) => caps.has(c));
   }
 }
+/** Product relevance: the feature is for one of the person's roles. */
+class RolePolicy implements Policy {
+  isAllowed(feature: SelfFeatureDefinition, ctx: UserAccessContext): boolean {
+    return feature.roles.some((role) => ctx.roles.includes(role));
+  }
+}
 class CitizenshipPolicy implements Policy {
   isAllowed(feature: SelfFeatureDefinition, ctx: UserAccessContext): boolean {
     return feature.minCitizenship === undefined || ctx.citizenshipLevel <= feature.minCitizenship;
@@ -50,6 +54,7 @@ class AccessPolicyComposite implements Policy {
   }
 }
 const defaultComposite = new AccessPolicyComposite([
+  new RolePolicy(),
   new CapabilityPolicy(),
   new CitizenshipPolicy(),
 ]);
@@ -62,18 +67,10 @@ export function resolveAccessibleFeatures(
   composite: AccessPolicyComposite = defaultComposite,
 ): AccessibleFeature[] {
   const caps = new Set(context.capabilities);
-  const roles = context.roles;
-  return (Object.values(FEATURE_CATALOG) as SelfFeatureDefinition[])
-    .filter((f) => composite.isAllowed(f, context, caps))
-    .map((feature) => {
-      const weights = feature.roleWeights ?? {};
-      const isGeneral = Object.keys(weights).length === 0;
-      const roleAffinity = isGeneral ? 50 : Math.max(0, ...roles.map((r) => weights[r] ?? 0));
-      return { ...feature, roleAffinity, isGeneral } as AccessibleFeature;
-    });
+  return Object.values(FEATURE_CATALOG).filter((f) => composite.isAllowed(f, context, caps));
 }
 
-export { AccessPolicyComposite, CapabilityPolicy, CitizenshipPolicy };
+export { AccessPolicyComposite, CapabilityPolicy, CitizenshipPolicy, RolePolicy };
 
 /**
  * Derive roles from capabilities using a pure fallback (mirrors roleResolution.ts but supports multi-role).
@@ -169,9 +166,7 @@ export function createSelfAccessContext(
     guardian: [],
   };
 
-  const collectedRoleCapabilities = resolvedRoles.flatMap(
-    (r) => roleCapabilities[r] ?? [],
-  );
+  const collectedRoleCapabilities = resolvedRoles.flatMap((r) => roleCapabilities[r] ?? []);
 
   const capabilities = isGuestOrExplore
     ? [

@@ -1,5 +1,6 @@
 import type { SovereignContract } from '@repo/core/api/contracts';
-import { ClassroomSchema, LessonSchema } from '@repo/core/logic/schemas/classroom.schema';
+import { ClassroomSchema } from '@repo/core/logic/schemas/classroom.schema';
+import { LessonSchema } from '@repo/core/logic/schemas/lesson.schema';
 import {
   ClassroomNoteLifecycleEventSchema,
   ClassroomNoteSchema,

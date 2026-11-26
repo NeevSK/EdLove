@@ -1,4 +1,4 @@
-import type { PredictionRequest, PredictionResult } from '@repo/analytics/types/AnalyticsTypes';
+import type { PredictionRequest, PredictionResult } from '@repo/core/types/Analytics';
 
 export interface DatabaseClient {
   from: (table: string) => any;

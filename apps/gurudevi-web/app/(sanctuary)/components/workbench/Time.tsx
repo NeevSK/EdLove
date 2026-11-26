@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState, useEffect } from 'react';
 import type { TimeContract } from '@repo/ui/theme';
 import styles from './time.module.css';

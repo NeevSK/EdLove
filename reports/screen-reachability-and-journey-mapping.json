@@ -1,0 +1,4870 @@
+{
+  "metrics": {
+    "totalScreensBuilt": 106,
+    "ghostScreensCount": 0,
+    "flowMappedCount": 41,
+    "darkScreensCount": 65,
+    "totalRoutesCataloged": 108,
+    "islandRoutesCount": 14
+  },
+  "ghostScreens": [],
+  "islandRoutes": [
+    {
+      "route": "/c/[code]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/community/dm/[userId]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/library/reader/[bookId]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/library/video/[videoId]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/school/[id]/articles/[slug]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/(dev)/kit",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/(dev)/kit/KitGalleryNative",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/(modal)/create-form",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/(tabs)/self/wisdom/[id]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/(tabs)/workspace/commercial/[batchId]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/form-builder",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/public-form/[slug]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/tutii-dance-preview",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/ui-showcase",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    }
+  ],
+  "flowMappedScreens": [
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/TeacherWorkspaceFloor.tsx",
+      "type": "web_floor",
+      "name": "TeacherWorkspaceFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/TeacherWorkspaceFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx",
+      "type": "web_floor",
+      "name": "WorkspaceFloor",
+      "inDegree": 7,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/TeacherWorkspaceFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/TeacherWorkspaceFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/index.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
+      "type": "mobile_screen",
+      "name": "atlas",
+      "inDegree": 194,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/api/atlas/route.ts",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/school/[census_no]/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasCharitiesTab.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasCompassArchetypes.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+      "type": "mobile_screen",
+      "name": "demo-fee",
+      "inDegree": 5,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/capabilities/webCapabilityRegistry.ts",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+        "apps/gurudevi-mobile/src/components/shell/WorkspaceHome.tsx",
+        "apps/gurudevi-mobile/src/lib/capabilities/webCapabilityRegistry.ts"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/events.tsx",
+      "type": "mobile_screen",
+      "name": "events",
+      "inDegree": 538,
+      "importers": [
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/vercel-optimize/lib/cost-coverage.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs",
+        ".agents/skills/vercel-optimize/lib/gates/index.mjs",
+        ".agents/skills/vercel-optimize/lib/gates/observability-events-attribution.mjs"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
+      "type": "mobile_screen",
+      "name": "index",
+      "inDegree": 1476,
+      "importers": [
+        ".agents/gate.mjs",
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/expo-ui/scripts/list-components.js",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/inventory.tsx",
+      "type": "mobile_screen",
+      "name": "inventory",
+      "inDegree": 150,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/events.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/scripts/audit-css-interop-inventory.mjs",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/security/SecurityFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/events/EventsFloor.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/peers.tsx",
+      "type": "mobile_screen",
+      "name": "peers",
+      "inDegree": 57,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/peers.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/StudentOnboardingView.web.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/welfare.tsx",
+      "type": "mobile_screen",
+      "name": "welfare",
+      "inDegree": 30,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasFinanceTab.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_types/atlas.types.ts",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/src/pages/llms-full.txt.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/welfare.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/workforce-role.tsx",
+      "type": "mobile_screen",
+      "name": "workforce-role",
+      "inDegree": 5,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+        "apps/gurudevi-mobile/src/components/shell/WorkspaceHome.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+      "type": "mobile_screen",
+      "name": "_layout",
+      "inDegree": 43,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/globalErrorHandlers.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/workspaceLayoutRepository.ts",
+        ".tmp-worktrees/exp-e1/scripts/audit-flow-dag.mjs"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/+native-intent.tsx",
+      "type": "mobile_screen",
+      "name": "+native-intent",
+      "inDegree": 26,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/+native-intent.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/providers/DeepLinkProvider.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js",
+        "apps/gurudevi-mobile/dist-dev/_expo/static/js/web/entry-07b69b71aa00b6229b4644eec51e0d91.js",
+        "apps/gurudevi-mobile/dist-final-check/_expo/static/js/web/entry-f4313f41aaa5ef541d22a7d737c74718.js"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/a-i-assistant.tsx",
+      "type": "mobile_screen",
+      "name": "a-i-assistant",
+      "inDegree": 31,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/core/src/ai/platformManifest.ts",
+        ".tmp-worktrees/exp-e1/packages/core/src/flows/ai/aiAssistant.flow.ts",
+        ".tmp-worktrees/exp-e1/packages/self/src/screens/SelfScreen.unified.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/account-recovery.tsx",
+      "type": "mobile_screen",
+      "name": "account-recovery",
+      "inDegree": 35,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/auth.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/GuestPersistenceNotice.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/page.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/atlas.tsx",
+      "type": "mobile_screen",
+      "name": "atlas",
+      "inDegree": 194,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/api/atlas/route.ts",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/school/[census_no]/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasCharitiesTab.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasCompassArchetypes.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/auth.tsx",
+      "type": "mobile_screen",
+      "name": "auth",
+      "inDegree": 1599,
+      "importers": [
+        ".agents/skills/vercel-optimize/lib/auth-route.mjs",
+        ".agents/skills/vercel-optimize/lib/extract-claims.mjs",
+        ".agents/skills/vercel-optimize/lib/gates/middleware-heavy.mjs",
+        ".agents/skills/vercel-optimize/lib/gates/region-misconfig.mjs",
+        ".agents/skills/vercel-optimize/lib/investigation-brief.mjs"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/companions.tsx",
+      "type": "mobile_screen",
+      "name": "companions",
+      "inDegree": 6,
+      "importers": [
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        "apps/gurudevi-mobile/src/boot/PersonalPreferences.tsx",
+        "apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        "apps/gurudevi-mobile/src/screens/personal/CompanionsScreen.tsx",
+        "packages/ui/src/components/native/Shell/YouSheet.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/form-builder.tsx",
+      "type": "mobile_screen",
+      "name": "form-builder",
+      "inDegree": 130,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(modal)/create-form.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/form-builder.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/public-form/[slug].tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/boot/registerAppCatalog.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/icon-lab.tsx",
+      "type": "mobile_screen",
+      "name": "icon-lab",
+      "inDegree": 34,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/CommandPalette.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/AppSettingsScreen.shared.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js",
+        "apps/gurudevi-mobile/dist-dev/_expo/static/js/web/entry-07b69b71aa00b6229b4644eec51e0d91.js"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/index.tsx",
+      "type": "mobile_screen",
+      "name": "index",
+      "inDegree": 1476,
+      "importers": [
+        ".agents/gate.mjs",
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/expo-ui/scripts/list-components.js",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/onboarding.tsx",
+      "type": "mobile_screen",
+      "name": "onboarding",
+      "inDegree": 300,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-marketingWeb/src/lib/a11y-engine.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/onboarding.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/welcome.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/boot/startupTelemetry.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/brand/mascotArtwork.ts"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/pulse.tsx",
+      "type": "mobile_screen",
+      "name": "pulse",
+      "inDegree": 333,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/components/ThemeToggle.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/+native-intent.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/pulse.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/backgroundSync.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/navigation/registries/selfRegistry.ts"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/reading.tsx",
+      "type": "mobile_screen",
+      "name": "reading",
+      "inDegree": 303,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/cosmos/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/cosmos/[slug]/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/font-lab/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/innovations/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/innovations/[slug]/page.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/shell-lab.tsx",
+      "type": "mobile_screen",
+      "name": "shell-lab",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/runtime/lab/VergerLabScreen.tsx",
+        "apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        "apps/gurudevi-mobile/src/runtime/lab/VergerLabScreen.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/tutii-dance-preview.tsx",
+      "type": "mobile_screen",
+      "name": "tutii-dance-preview",
+      "inDegree": 1,
+      "importers": [
+        "apps/gurudevi-mobile/src/entry/EntryShell.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/ui-showcase.tsx",
+      "type": "mobile_screen",
+      "name": "ui-showcase",
+      "inDegree": 1,
+      "importers": [
+        "apps/gurudevi-mobile/src/entry/EntryShell.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/verger-diagnostics.tsx",
+      "type": "mobile_screen",
+      "name": "verger-diagnostics",
+      "inDegree": 6,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/runtime/lab/VergerLabScreen.tsx",
+        "apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        "apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/verger-lab.tsx",
+      "type": "mobile_screen",
+      "name": "verger-lab",
+      "inDegree": 9,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        "apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        "apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/welcome.tsx",
+      "type": "mobile_screen",
+      "name": "welcome",
+      "inDegree": 204,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/account-recovery.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/auth.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/onboarding.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/welcome.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/scripts/diag-scroll.mjs"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/world-showcase.tsx",
+      "type": "mobile_screen",
+      "name": "world-showcase",
+      "inDegree": 2,
+      "importers": [
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        "apps/gurudevi-mobile/src/entry/EntryShell.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/_layout.tsx",
+      "type": "mobile_screen",
+      "name": "_layout",
+      "inDegree": 43,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/globalErrorHandlers.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/workspaceLayoutRepository.ts",
+        ".tmp-worktrees/exp-e1/scripts/audit-flow-dag.mjs"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "packages/admin/src/components/principal/PrincipalOnboardingView.tsx",
+      "type": "package_screen",
+      "name": "PrincipalOnboardingView",
+      "inDegree": 30,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/admin/src/components/index.ts",
+        ".tmp-worktrees/exp-e1/packages/admin/src/components/onboarding/PrincipalOnboardingView.tsx",
+        ".tmp-worktrees/exp-e1/packages/admin/src/components/principal/PrincipalOnboardingView.tsx",
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/PrincipalOnboardingView.web.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:founder.triage_support_and_broadcast",
+          "title": "Triage Feedback & Ecosystem Broadcast",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "packages/admin/src/screens/AnalyticsDashboardScreen.tsx",
+      "type": "package_screen",
+      "name": "AnalyticsDashboardScreen",
+      "inDegree": 7,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/AnalyticsDashboardScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/index.ts",
+        ".tmp-worktrees/exp-e1/scripts/purge-global-header.mjs",
+        ".tmp-worktrees/exp-e1/scripts/purge-remaining-screen-wrappers.mjs",
+        "packages/admin/src/screens/index.ts"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        }
+      ]
+    },
+    {
+      "path": "packages/admin/src/screens/DocumentListScreen.tsx",
+      "type": "package_screen",
+      "name": "DocumentListScreen",
+      "inDegree": 7,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/DocumentListScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/DocumentListScreen.web.tsx",
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/index.ts",
+        ".tmp-worktrees/exp-e1/scripts/purge-last-package-screen-wrappers.mjs",
+        "packages/admin/src/screens/DocumentListScreen.web.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        }
+      ]
+    },
+    {
+      "path": "packages/admin/src/screens/FounderVisionScreen.tsx",
+      "type": "package_screen",
+      "name": "FounderVisionScreen",
+      "inDegree": 10,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/admin/src/index.ts",
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/FounderVisionScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/index.ts",
+        "apps/gurudevi-mobile/dist-dev/_expo/static/js/web/entry-07b69b71aa00b6229b4644eec51e0d91.js",
+        "apps/gurudevi-mobile/dist-final-check/_expo/static/js/web/entry-f4313f41aaa5ef541d22a7d737c74718.js"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        }
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/AppSettingsScreen.tsx",
+      "type": "package_screen",
+      "name": "AppSettingsScreen",
+      "inDegree": 37,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/settings.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/AppSettingsScreen.shared.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/AppSettingsScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/AppSettingsScreen.web.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        }
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/AuthScreen.tsx",
+      "type": "package_screen",
+      "name": "AuthScreen",
+      "inDegree": 34,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/auth.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/googleSignIn.web.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/screens/AuthScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/AuthScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/AuthScreen.web.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        }
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/ComponentShowcaseScreen.tsx",
+      "type": "package_screen",
+      "name": "ComponentShowcaseScreen",
+      "inDegree": 5,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/ui-showcase.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/ComponentShowcaseScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/index.ts",
+        "apps/gurudevi-mobile/app/ui-showcase.tsx",
+        "packages/ui/src/screens/index.ts"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        }
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/NotificationsScreen.tsx",
+      "type": "package_screen",
+      "name": "NotificationsScreen",
+      "inDegree": 31,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/notifications.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/index.ts",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/NotificationsScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/NotificationsScreen.web.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/notifications.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        }
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/SanctuaryWelcomeScreen.tsx",
+      "type": "package_screen",
+      "name": "SanctuaryWelcomeScreen",
+      "inDegree": 7,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/index.ts",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/SanctuaryWelcomeScreen.tsx",
+        ".tmp-worktrees/exp-e1/scripts/audit-device-evidence.mjs",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        }
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/WelcomeScreen.tsx",
+      "type": "package_screen",
+      "name": "WelcomeScreen",
+      "inDegree": 39,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/welcome.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/screens/WelcomeScreen.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/index.ts",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/SanctuaryWelcomeScreen.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        }
+      ]
+    }
+  ],
+  "darkScreens": [
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/account-recovery/AccountRecoveryFloor.tsx",
+      "type": "web_floor",
+      "name": "AccountRecoveryFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/account-recovery/AccountRecoveryFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/account-recovery/page.tsx",
+        "apps/gurudevi-web/spa/routes/_account/account-recovery.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+      "type": "web_floor",
+      "name": "EnhancedAnalyticsFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/analytics/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/admin/analytics.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx",
+      "type": "web_floor",
+      "name": "DocumentListFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/documents/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/admin/documents.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx",
+      "type": "web_floor",
+      "name": "FormBuilderFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/admin/forms/builder.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx",
+      "type": "web_floor",
+      "name": "FounderFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/founder/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/admin/founder.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/admin/principal/PrincipalFloor.tsx",
+      "type": "web_floor",
+      "name": "PrincipalFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/principal/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/principal/PrincipalFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/admin/principal.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/atlas/AtlasFloor.tsx",
+      "type": "web_floor",
+      "name": "AtlasFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/AtlasFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/atlas.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/community/announcements/AnnouncementsFloor.tsx",
+      "type": "web_floor",
+      "name": "AnnouncementsFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/announcements/AnnouncementsFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/announcements/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/community/announcements.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/community/chat/[groupId]/GroupChatFloor.tsx",
+      "type": "web_floor",
+      "name": "GroupChatFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/chat/[groupId]/GroupChatFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/chat/[groupId]/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/community/chat/$groupId.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+      "type": "web_floor",
+      "name": "CommunityFeedFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/community/index.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/community/components/CommunityDirectMessagesStage.tsx",
+      "type": "web_floor",
+      "name": "CommunityDirectMessagesStage",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/components/CommunityDirectMessagesStage.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/community/dm/[userId]/DirectMessageFloor.tsx",
+      "type": "web_floor",
+      "name": "DirectMessageFloor",
+      "inDegree": 2,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/dm/[userId]/DirectMessageFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/dm/[userId]/page.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/community/forest/SchoolForestFloor.tsx",
+      "type": "web_floor",
+      "name": "SchoolForestFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/forest/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/forest/SchoolForestFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/community/forest.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/collections/[id]/CollectionShelfDesk.tsx",
+      "type": "web_floor",
+      "name": "CollectionShelfDesk",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/collections/[id]/CollectionShelfDesk.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/collections/[id]/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/collections/$id.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/contribute/ContributeDesk.tsx",
+      "type": "web_floor",
+      "name": "ContributeDesk",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/contribute/ContributeDesk.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/contribute/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/contribute.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/curator/CuratorReviewDesk.tsx",
+      "type": "web_floor",
+      "name": "CuratorReviewDesk",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/curator/CuratorReviewDesk.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/curator/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/curator.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor.tsx",
+      "type": "web_floor",
+      "name": "LibraryFloor",
+      "inDegree": 5,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/page.tsx",
+        ".tmp-worktrees/exp-e1/packages/library/src/components/LibraryThumbnailCard.web.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/index.tsx",
+        "packages/library/src/components/LibraryThumbnailCard.web.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/map/LibraryAtlasDesk.tsx",
+      "type": "web_floor",
+      "name": "LibraryAtlasDesk",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/map/LibraryAtlasDesk.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/map/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/map.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/DocumentReaderDesk.tsx",
+      "type": "web_floor",
+      "name": "DocumentReaderDesk",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/DocumentReaderDesk.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/reader/$bookId.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/tools/ToolsWorkbenchDesk.tsx",
+      "type": "web_floor",
+      "name": "ToolsWorkbenchDesk",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/tools/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/tools/ToolsWorkbenchDesk.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/tools.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/video/[videoId]/VideoPlayerDesk.tsx",
+      "type": "web_floor",
+      "name": "VideoPlayerDesk",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/video/[videoId]/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/video/[videoId]/VideoPlayerDesk.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/video/$videoId.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/notifications/NotificationsFloor.tsx",
+      "type": "web_floor",
+      "name": "NotificationsFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/notifications/NotificationsFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/notifications/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/notifications.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx",
+      "type": "web_floor",
+      "name": "ProfileFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/profile/index.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/profile/security/SecurityFloor.tsx",
+      "type": "web_floor",
+      "name": "SecurityFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/security/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/security/SecurityFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/profile/security.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/school/[id]/SchoolPublicFloor.tsx",
+      "type": "web_floor",
+      "name": "SchoolPublicFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/school/[id]/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/school/[id]/SchoolPublicFloor.tsx",
+        "apps/gurudevi-web/spa/routes/school/$id/index.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx",
+      "type": "web_floor",
+      "name": "SelfFloor",
+      "inDegree": 11,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/components/self/SelfFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/hooks/useSelfCanvas.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/self/components/SelfOverview.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/self/page.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+      "type": "web_floor",
+      "name": "SettingsFloor",
+      "inDegree": 7,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/privacy/consent.ts",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/welcome/WelcomeStage.tsx",
+      "type": "web_floor",
+      "name": "WelcomeStage",
+      "inDegree": 4,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/welcome/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/welcome/WelcomeStage.tsx",
+        "apps/gurudevi-web/spa/routes/welcome.tsx",
+        "tooling/portal/server/portalServer.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/badges/BadgeSheetFloor.tsx",
+      "type": "web_floor",
+      "name": "BadgeSheetFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/badges/BadgeSheetFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/badges/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/badges.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/claim/ClaimSpotFloor.tsx",
+      "type": "web_floor",
+      "name": "ClaimSpotFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/claim/ClaimSpotFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/claim/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/claim.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/classroom/[id]/ClassroomDetailFloor.tsx",
+      "type": "web_floor",
+      "name": "ClassroomDetailFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/classroom/[id]/ClassroomDetailFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/classroom/[id]/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/classroom/$id.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/climate/ClimateSensingFloor.tsx",
+      "type": "web_floor",
+      "name": "ClimateSensingFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/climate/ClimateSensingFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/climate/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/climate.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/editorial/EditorialCommonsFloor.tsx",
+      "type": "web_floor",
+      "name": "EditorialCommonsFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/editorial/EditorialCommonsFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/editorial/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/editorial.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/editorial/EditorialFloor.tsx",
+      "type": "web_floor",
+      "name": "EditorialFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/editorial/EditorialFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/editorial/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/editorial.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/events/EventsFloor.tsx",
+      "type": "web_floor",
+      "name": "EventsFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/events/EventsFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/events/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/events.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/gradebook/GradebookFloor.tsx",
+      "type": "web_floor",
+      "name": "GradebookFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/gradebook/GradebookFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/gradebook/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/gradebook.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/guardian/GuardianFloor.tsx",
+      "type": "web_floor",
+      "name": "GuardianFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/guardian/GuardianFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/guardian/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/guardian.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/kiosk/KioskFloor.tsx",
+      "type": "web_floor",
+      "name": "KioskFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/kiosk/KioskFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/kiosk/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/kiosk.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/notices/NoticesFloor.tsx",
+      "type": "web_floor",
+      "name": "NoticesFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/notices/NoticesFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/notices/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/notices.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/plan/PlanFloor.tsx",
+      "type": "web_floor",
+      "name": "PlanFloor",
+      "inDegree": 4,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/plan/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/plan/PlanFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/plan.tsx",
+        "tooling/portal/server/portalServer.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/school/SchoolFloor.tsx",
+      "type": "web_floor",
+      "name": "SchoolFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/school/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/school/SchoolFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/school.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/submissions/SubmissionsFloor.tsx",
+      "type": "web_floor",
+      "name": "SubmissionsFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/submissions/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/submissions/SubmissionsFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/submissions.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/timetable/TimetableFloor.tsx",
+      "type": "web_floor",
+      "name": "TimetableFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/timetable/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/timetable/TimetableFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/timetable.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/tuition/TuitionFloor.tsx",
+      "type": "web_floor",
+      "name": "TuitionFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/tuition/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/tuition/TuitionFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/tuition.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/workforce/WorkforceFloor.tsx",
+      "type": "web_floor",
+      "name": "WorkforceFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workforce/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workforce/WorkforceFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/workforce.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(dev)/kit/index.tsx",
+      "type": "mobile_screen",
+      "name": "index",
+      "inDegree": 1476,
+      "importers": [
+        ".agents/gate.mjs",
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/expo-ui/scripts/list-components.js",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx",
+      "type": "mobile_screen",
+      "name": "KitGalleryNative",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(dev)/kit/index.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx",
+        "apps/gurudevi-mobile/app/(dev)/kit/index.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(modal)/create-form.tsx",
+      "type": "mobile_screen",
+      "name": "create-form",
+      "inDegree": 2,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(modal)/_layout.tsx",
+        "apps/gurudevi-mobile/app/(modal)/_layout.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(modal)/_layout.tsx",
+      "type": "mobile_screen",
+      "name": "_layout",
+      "inDegree": 43,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/globalErrorHandlers.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/workspaceLayoutRepository.ts",
+        ".tmp-worktrees/exp-e1/scripts/audit-flow-dag.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/community/index.tsx",
+      "type": "mobile_screen",
+      "name": "index",
+      "inDegree": 1476,
+      "importers": [
+        ".agents/gate.mjs",
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/expo-ui/scripts/list-components.js",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/library/index.tsx",
+      "type": "mobile_screen",
+      "name": "index",
+      "inDegree": 1476,
+      "importers": [
+        ".agents/gate.mjs",
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/expo-ui/scripts/list-components.js",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/notifications.tsx",
+      "type": "mobile_screen",
+      "name": "notifications",
+      "inDegree": 216,
+      "importers": [
+        ".tmp-guest-g4-export/sw.js",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/src/constants/Theme.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/public/sw.js",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/components/navigation/NativeShellTabs.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/profile/index.tsx",
+      "type": "mobile_screen",
+      "name": "index",
+      "inDegree": 1476,
+      "importers": [
+        ".agents/gate.mjs",
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/expo-ui/scripts/list-components.js",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+      "type": "mobile_screen",
+      "name": "index",
+      "inDegree": 1476,
+      "importers": [
+        ".agents/gate.mjs",
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/expo-ui/scripts/list-components.js",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx",
+      "type": "mobile_screen",
+      "name": "[id]",
+      "inDegree": 157,
+      "importers": [
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs",
+        ".agents/skills/vercel-optimize/lib/render-report.mjs",
+        ".agents/skills/vercel-optimize/scripts/scan-codebase.mjs",
+        ".tmp-worktrees/exp-e1/.agents/skills/vercel-optimize/lib/deep-dive.mjs",
+        ".tmp-worktrees/exp-e1/.agents/skills/vercel-optimize/lib/render-report.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/self/_layout.tsx",
+      "type": "mobile_screen",
+      "name": "_layout",
+      "inDegree": 43,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/globalErrorHandlers.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/workspaceLayoutRepository.ts",
+        ".tmp-worktrees/exp-e1/scripts/audit-flow-dag.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/settings.tsx",
+      "type": "mobile_screen",
+      "name": "settings",
+      "inDegree": 328,
+      "importers": [
+        ".agents/skills/vercel-optimize/lib/gates/build-minutes-fanout.mjs",
+        ".agents/skills/vercel-optimize/lib/investigation-brief.mjs",
+        ".agents/skills/vercel-optimize/lib/scanners/turbo-force-bypass.mjs",
+        ".tmp-guest-g4-export/@powersync/worker.js",
+        ".tmp-worktrees/exp-e1/.agents/skills/vercel-optimize/lib/gates/build-minutes-fanout.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx",
+      "type": "mobile_screen",
+      "name": "[batchId]",
+      "inDegree": 6,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/sync/tuition.ts",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+      "type": "mobile_screen",
+      "name": "_layout",
+      "inDegree": 43,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/globalErrorHandlers.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/workspaceLayoutRepository.ts",
+        ".tmp-worktrees/exp-e1/scripts/audit-flow-dag.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/auth/callback.tsx",
+      "type": "mobile_screen",
+      "name": "callback",
+      "inDegree": 348,
+      "importers": [
+        ".tmp-guest-g4-export/@powersync/worker.js",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/+native-intent.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/auth/callback.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/boot/nativeSplashHandoff.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/boot/nativeSplashService.ts"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/public-form/[slug].tsx",
+      "type": "mobile_screen",
+      "name": "[slug]",
+      "inDegree": 28,
+      "importers": [
+        ".agents/skills/vercel-optimize/scripts/scan-codebase.mjs",
+        ".tmp-worktrees/exp-e1/.agents/skills/vercel-optimize/scripts/scan-codebase.mjs",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js",
+        "apps/gurudevi-mobile/dist-dev/_expo/static/js/web/entry-07b69b71aa00b6229b4644eec51e0d91.js"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "packages/admin/src/components/onboarding/PrincipalOnboardingView.tsx",
+      "type": "package_screen",
+      "name": "PrincipalOnboardingView",
+      "inDegree": 30,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/admin/src/components/index.ts",
+        ".tmp-worktrees/exp-e1/packages/admin/src/components/onboarding/PrincipalOnboardingView.tsx",
+        ".tmp-worktrees/exp-e1/packages/admin/src/components/principal/PrincipalOnboardingView.tsx",
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/PrincipalOnboardingView.web.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "packages/admin/src/screens/guardian/GuardianCommunicationBridgeScreen.tsx",
+      "type": "package_screen",
+      "name": "GuardianCommunicationBridgeScreen",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/guardian/GuardianCommunicationBridgeScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/guardian/index.ts",
+        "packages/admin/src/screens/guardian/index.ts"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "packages/classroom/src/components/onboarding/StudentOnboardingView.tsx",
+      "type": "package_screen",
+      "name": "StudentOnboardingView",
+      "inDegree": 28,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/index.ts",
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/StudentOnboardingView.tsx",
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/StudentOnboardingView.web.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js",
+        "apps/gurudevi-mobile/dist-dev/_expo/static/js/web/entry-07b69b71aa00b6229b4644eec51e0d91.js"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "packages/classroom/src/components/onboarding/TeacherOnboardingView.tsx",
+      "type": "package_screen",
+      "name": "TeacherOnboardingView",
+      "inDegree": 28,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/index.ts",
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/TeacherOnboardingView.tsx",
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/TeacherOnboardingView.web.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js",
+        "apps/gurudevi-mobile/dist-dev/_expo/static/js/web/entry-07b69b71aa00b6229b4644eec51e0d91.js"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    }
+  ],
+  "allScreens": [
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/account-recovery/AccountRecoveryFloor.tsx",
+      "type": "web_floor",
+      "name": "AccountRecoveryFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/account-recovery/AccountRecoveryFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/account-recovery/page.tsx",
+        "apps/gurudevi-web/spa/routes/_account/account-recovery.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+      "type": "web_floor",
+      "name": "EnhancedAnalyticsFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/analytics/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/admin/analytics.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx",
+      "type": "web_floor",
+      "name": "DocumentListFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/documents/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/admin/documents.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx",
+      "type": "web_floor",
+      "name": "FormBuilderFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/admin/forms/builder.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx",
+      "type": "web_floor",
+      "name": "FounderFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/founder/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/admin/founder.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/admin/principal/PrincipalFloor.tsx",
+      "type": "web_floor",
+      "name": "PrincipalFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/principal/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/principal/PrincipalFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/admin/principal.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/atlas/AtlasFloor.tsx",
+      "type": "web_floor",
+      "name": "AtlasFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/AtlasFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/atlas.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/community/announcements/AnnouncementsFloor.tsx",
+      "type": "web_floor",
+      "name": "AnnouncementsFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/announcements/AnnouncementsFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/announcements/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/community/announcements.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/community/chat/[groupId]/GroupChatFloor.tsx",
+      "type": "web_floor",
+      "name": "GroupChatFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/chat/[groupId]/GroupChatFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/chat/[groupId]/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/community/chat/$groupId.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+      "type": "web_floor",
+      "name": "CommunityFeedFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/community/index.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/community/components/CommunityDirectMessagesStage.tsx",
+      "type": "web_floor",
+      "name": "CommunityDirectMessagesStage",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/components/CommunityDirectMessagesStage.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/community/dm/[userId]/DirectMessageFloor.tsx",
+      "type": "web_floor",
+      "name": "DirectMessageFloor",
+      "inDegree": 2,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/dm/[userId]/DirectMessageFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/dm/[userId]/page.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/community/forest/SchoolForestFloor.tsx",
+      "type": "web_floor",
+      "name": "SchoolForestFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/forest/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/forest/SchoolForestFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/community/forest.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/collections/[id]/CollectionShelfDesk.tsx",
+      "type": "web_floor",
+      "name": "CollectionShelfDesk",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/collections/[id]/CollectionShelfDesk.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/collections/[id]/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/collections/$id.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/contribute/ContributeDesk.tsx",
+      "type": "web_floor",
+      "name": "ContributeDesk",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/contribute/ContributeDesk.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/contribute/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/contribute.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/curator/CuratorReviewDesk.tsx",
+      "type": "web_floor",
+      "name": "CuratorReviewDesk",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/curator/CuratorReviewDesk.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/curator/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/curator.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor.tsx",
+      "type": "web_floor",
+      "name": "LibraryFloor",
+      "inDegree": 5,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/page.tsx",
+        ".tmp-worktrees/exp-e1/packages/library/src/components/LibraryThumbnailCard.web.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/index.tsx",
+        "packages/library/src/components/LibraryThumbnailCard.web.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/map/LibraryAtlasDesk.tsx",
+      "type": "web_floor",
+      "name": "LibraryAtlasDesk",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/map/LibraryAtlasDesk.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/map/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/map.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/DocumentReaderDesk.tsx",
+      "type": "web_floor",
+      "name": "DocumentReaderDesk",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/DocumentReaderDesk.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/reader/$bookId.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/tools/ToolsWorkbenchDesk.tsx",
+      "type": "web_floor",
+      "name": "ToolsWorkbenchDesk",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/tools/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/tools/ToolsWorkbenchDesk.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/tools.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/library/video/[videoId]/VideoPlayerDesk.tsx",
+      "type": "web_floor",
+      "name": "VideoPlayerDesk",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/video/[videoId]/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/video/[videoId]/VideoPlayerDesk.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/video/$videoId.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/notifications/NotificationsFloor.tsx",
+      "type": "web_floor",
+      "name": "NotificationsFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/notifications/NotificationsFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/notifications/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/notifications.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx",
+      "type": "web_floor",
+      "name": "ProfileFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/profile/index.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/profile/security/SecurityFloor.tsx",
+      "type": "web_floor",
+      "name": "SecurityFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/security/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/security/SecurityFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/profile/security.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/school/[id]/SchoolPublicFloor.tsx",
+      "type": "web_floor",
+      "name": "SchoolPublicFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/school/[id]/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/school/[id]/SchoolPublicFloor.tsx",
+        "apps/gurudevi-web/spa/routes/school/$id/index.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx",
+      "type": "web_floor",
+      "name": "SelfFloor",
+      "inDegree": 11,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/components/self/SelfFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/hooks/useSelfCanvas.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/self/components/SelfOverview.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/self/page.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+      "type": "web_floor",
+      "name": "SettingsFloor",
+      "inDegree": 7,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/privacy/consent.ts",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/welcome/WelcomeStage.tsx",
+      "type": "web_floor",
+      "name": "WelcomeStage",
+      "inDegree": 4,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/welcome/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/welcome/WelcomeStage.tsx",
+        "apps/gurudevi-web/spa/routes/welcome.tsx",
+        "tooling/portal/server/portalServer.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/badges/BadgeSheetFloor.tsx",
+      "type": "web_floor",
+      "name": "BadgeSheetFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/badges/BadgeSheetFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/badges/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/badges.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/claim/ClaimSpotFloor.tsx",
+      "type": "web_floor",
+      "name": "ClaimSpotFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/claim/ClaimSpotFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/claim/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/claim.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/classroom/[id]/ClassroomDetailFloor.tsx",
+      "type": "web_floor",
+      "name": "ClassroomDetailFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/classroom/[id]/ClassroomDetailFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/classroom/[id]/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/classroom/$id.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/climate/ClimateSensingFloor.tsx",
+      "type": "web_floor",
+      "name": "ClimateSensingFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/climate/ClimateSensingFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/climate/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/climate.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/editorial/EditorialCommonsFloor.tsx",
+      "type": "web_floor",
+      "name": "EditorialCommonsFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/editorial/EditorialCommonsFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/editorial/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/editorial.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/editorial/EditorialFloor.tsx",
+      "type": "web_floor",
+      "name": "EditorialFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/editorial/EditorialFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/editorial/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/editorial.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/events/EventsFloor.tsx",
+      "type": "web_floor",
+      "name": "EventsFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/events/EventsFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/events/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/events.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/gradebook/GradebookFloor.tsx",
+      "type": "web_floor",
+      "name": "GradebookFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/gradebook/GradebookFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/gradebook/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/gradebook.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/guardian/GuardianFloor.tsx",
+      "type": "web_floor",
+      "name": "GuardianFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/guardian/GuardianFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/guardian/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/guardian.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/kiosk/KioskFloor.tsx",
+      "type": "web_floor",
+      "name": "KioskFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/kiosk/KioskFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/kiosk/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/kiosk.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/notices/NoticesFloor.tsx",
+      "type": "web_floor",
+      "name": "NoticesFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/notices/NoticesFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/notices/page.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/notices.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/plan/PlanFloor.tsx",
+      "type": "web_floor",
+      "name": "PlanFloor",
+      "inDegree": 4,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/plan/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/plan/PlanFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/plan.tsx",
+        "tooling/portal/server/portalServer.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/school/SchoolFloor.tsx",
+      "type": "web_floor",
+      "name": "SchoolFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/school/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/school/SchoolFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/school.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/submissions/SubmissionsFloor.tsx",
+      "type": "web_floor",
+      "name": "SubmissionsFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/submissions/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/submissions/SubmissionsFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/submissions.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/TeacherWorkspaceFloor.tsx",
+      "type": "web_floor",
+      "name": "TeacherWorkspaceFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/TeacherWorkspaceFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/timetable/TimetableFloor.tsx",
+      "type": "web_floor",
+      "name": "TimetableFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/timetable/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/timetable/TimetableFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/timetable.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/tuition/TuitionFloor.tsx",
+      "type": "web_floor",
+      "name": "TuitionFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/tuition/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/tuition/TuitionFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/tuition.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/workforce/WorkforceFloor.tsx",
+      "type": "web_floor",
+      "name": "WorkforceFloor",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workforce/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workforce/WorkforceFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/workforce.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx",
+      "type": "web_floor",
+      "name": "WorkspaceFloor",
+      "inDegree": 7,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/TeacherWorkspaceFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/TeacherWorkspaceFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app/workspace/index.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(dev)/kit/index.tsx",
+      "type": "mobile_screen",
+      "name": "index",
+      "inDegree": 1476,
+      "importers": [
+        ".agents/gate.mjs",
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/expo-ui/scripts/list-components.js",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx",
+      "type": "mobile_screen",
+      "name": "KitGalleryNative",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(dev)/kit/index.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx",
+        "apps/gurudevi-mobile/app/(dev)/kit/index.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(modal)/create-form.tsx",
+      "type": "mobile_screen",
+      "name": "create-form",
+      "inDegree": 2,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(modal)/_layout.tsx",
+        "apps/gurudevi-mobile/app/(modal)/_layout.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(modal)/_layout.tsx",
+      "type": "mobile_screen",
+      "name": "_layout",
+      "inDegree": 43,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/globalErrorHandlers.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/workspaceLayoutRepository.ts",
+        ".tmp-worktrees/exp-e1/scripts/audit-flow-dag.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/community/index.tsx",
+      "type": "mobile_screen",
+      "name": "index",
+      "inDegree": 1476,
+      "importers": [
+        ".agents/gate.mjs",
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/expo-ui/scripts/list-components.js",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/library/index.tsx",
+      "type": "mobile_screen",
+      "name": "index",
+      "inDegree": 1476,
+      "importers": [
+        ".agents/gate.mjs",
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/expo-ui/scripts/list-components.js",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/notifications.tsx",
+      "type": "mobile_screen",
+      "name": "notifications",
+      "inDegree": 216,
+      "importers": [
+        ".tmp-guest-g4-export/sw.js",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/src/constants/Theme.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/public/sw.js",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/components/navigation/NativeShellTabs.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/profile/index.tsx",
+      "type": "mobile_screen",
+      "name": "index",
+      "inDegree": 1476,
+      "importers": [
+        ".agents/gate.mjs",
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/expo-ui/scripts/list-components.js",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+      "type": "mobile_screen",
+      "name": "index",
+      "inDegree": 1476,
+      "importers": [
+        ".agents/gate.mjs",
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/expo-ui/scripts/list-components.js",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx",
+      "type": "mobile_screen",
+      "name": "[id]",
+      "inDegree": 157,
+      "importers": [
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs",
+        ".agents/skills/vercel-optimize/lib/render-report.mjs",
+        ".agents/skills/vercel-optimize/scripts/scan-codebase.mjs",
+        ".tmp-worktrees/exp-e1/.agents/skills/vercel-optimize/lib/deep-dive.mjs",
+        ".tmp-worktrees/exp-e1/.agents/skills/vercel-optimize/lib/render-report.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/self/_layout.tsx",
+      "type": "mobile_screen",
+      "name": "_layout",
+      "inDegree": 43,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/globalErrorHandlers.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/workspaceLayoutRepository.ts",
+        ".tmp-worktrees/exp-e1/scripts/audit-flow-dag.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/settings.tsx",
+      "type": "mobile_screen",
+      "name": "settings",
+      "inDegree": 328,
+      "importers": [
+        ".agents/skills/vercel-optimize/lib/gates/build-minutes-fanout.mjs",
+        ".agents/skills/vercel-optimize/lib/investigation-brief.mjs",
+        ".agents/skills/vercel-optimize/lib/scanners/turbo-force-bypass.mjs",
+        ".tmp-guest-g4-export/@powersync/worker.js",
+        ".tmp-worktrees/exp-e1/.agents/skills/vercel-optimize/lib/gates/build-minutes-fanout.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/atlas.tsx",
+      "type": "mobile_screen",
+      "name": "atlas",
+      "inDegree": 194,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/api/atlas/route.ts",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/school/[census_no]/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasCharitiesTab.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasCompassArchetypes.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx",
+      "type": "mobile_screen",
+      "name": "[batchId]",
+      "inDegree": 6,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/sync/tuition.ts",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+      "type": "mobile_screen",
+      "name": "demo-fee",
+      "inDegree": 5,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/capabilities/webCapabilityRegistry.ts",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+        "apps/gurudevi-mobile/src/components/shell/WorkspaceHome.tsx",
+        "apps/gurudevi-mobile/src/lib/capabilities/webCapabilityRegistry.ts"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/events.tsx",
+      "type": "mobile_screen",
+      "name": "events",
+      "inDegree": 538,
+      "importers": [
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/vercel-optimize/lib/cost-coverage.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs",
+        ".agents/skills/vercel-optimize/lib/gates/index.mjs",
+        ".agents/skills/vercel-optimize/lib/gates/observability-events-attribution.mjs"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
+      "type": "mobile_screen",
+      "name": "index",
+      "inDegree": 1476,
+      "importers": [
+        ".agents/gate.mjs",
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/expo-ui/scripts/list-components.js",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/inventory.tsx",
+      "type": "mobile_screen",
+      "name": "inventory",
+      "inDegree": 150,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/events.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/scripts/audit-css-interop-inventory.mjs",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/security/SecurityFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/events/EventsFloor.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/peers.tsx",
+      "type": "mobile_screen",
+      "name": "peers",
+      "inDegree": 57,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/peers.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/StudentOnboardingView.web.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/welfare.tsx",
+      "type": "mobile_screen",
+      "name": "welfare",
+      "inDegree": 30,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasFinanceTab.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_types/atlas.types.ts",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/src/pages/llms-full.txt.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/welfare.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/workforce-role.tsx",
+      "type": "mobile_screen",
+      "name": "workforce-role",
+      "inDegree": 5,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+        "apps/gurudevi-mobile/src/components/shell/WorkspaceHome.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/workspace/_layout.tsx",
+      "type": "mobile_screen",
+      "name": "_layout",
+      "inDegree": 43,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/globalErrorHandlers.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/workspaceLayoutRepository.ts",
+        ".tmp-worktrees/exp-e1/scripts/audit-flow-dag.mjs"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        },
+        {
+          "id": "journey:classroom.teacher_first_workspace.legacy",
+          "title": "Start teaching in a workspace",
+          "actor": "teacher"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+      "type": "mobile_screen",
+      "name": "_layout",
+      "inDegree": 43,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/globalErrorHandlers.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/workspaceLayoutRepository.ts",
+        ".tmp-worktrees/exp-e1/scripts/audit-flow-dag.mjs"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/+native-intent.tsx",
+      "type": "mobile_screen",
+      "name": "+native-intent",
+      "inDegree": 26,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/+native-intent.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/providers/DeepLinkProvider.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js",
+        "apps/gurudevi-mobile/dist-dev/_expo/static/js/web/entry-07b69b71aa00b6229b4644eec51e0d91.js",
+        "apps/gurudevi-mobile/dist-final-check/_expo/static/js/web/entry-f4313f41aaa5ef541d22a7d737c74718.js"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/a-i-assistant.tsx",
+      "type": "mobile_screen",
+      "name": "a-i-assistant",
+      "inDegree": 31,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/core/src/ai/platformManifest.ts",
+        ".tmp-worktrees/exp-e1/packages/core/src/flows/ai/aiAssistant.flow.ts",
+        ".tmp-worktrees/exp-e1/packages/self/src/screens/SelfScreen.unified.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/account-recovery.tsx",
+      "type": "mobile_screen",
+      "name": "account-recovery",
+      "inDegree": 35,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/auth.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/GuestPersistenceNotice.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/page.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/atlas.tsx",
+      "type": "mobile_screen",
+      "name": "atlas",
+      "inDegree": 194,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/api/atlas/route.ts",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/school/[census_no]/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasCharitiesTab.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/_components/AtlasCompassArchetypes.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/auth/callback.tsx",
+      "type": "mobile_screen",
+      "name": "callback",
+      "inDegree": 348,
+      "importers": [
+        ".tmp-guest-g4-export/@powersync/worker.js",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/+native-intent.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/auth/callback.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/boot/nativeSplashHandoff.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/boot/nativeSplashService.ts"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/auth.tsx",
+      "type": "mobile_screen",
+      "name": "auth",
+      "inDegree": 1599,
+      "importers": [
+        ".agents/skills/vercel-optimize/lib/auth-route.mjs",
+        ".agents/skills/vercel-optimize/lib/extract-claims.mjs",
+        ".agents/skills/vercel-optimize/lib/gates/middleware-heavy.mjs",
+        ".agents/skills/vercel-optimize/lib/gates/region-misconfig.mjs",
+        ".agents/skills/vercel-optimize/lib/investigation-brief.mjs"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/companions.tsx",
+      "type": "mobile_screen",
+      "name": "companions",
+      "inDegree": 6,
+      "importers": [
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        "apps/gurudevi-mobile/src/boot/PersonalPreferences.tsx",
+        "apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        "apps/gurudevi-mobile/src/screens/personal/CompanionsScreen.tsx",
+        "packages/ui/src/components/native/Shell/YouSheet.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/form-builder.tsx",
+      "type": "mobile_screen",
+      "name": "form-builder",
+      "inDegree": 130,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(modal)/create-form.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/form-builder.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/public-form/[slug].tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/boot/registerAppCatalog.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/icon-lab.tsx",
+      "type": "mobile_screen",
+      "name": "icon-lab",
+      "inDegree": 34,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/CommandPalette.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/AppSettingsScreen.shared.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js",
+        "apps/gurudevi-mobile/dist-dev/_expo/static/js/web/entry-07b69b71aa00b6229b4644eec51e0d91.js"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/index.tsx",
+      "type": "mobile_screen",
+      "name": "index",
+      "inDegree": 1476,
+      "importers": [
+        ".agents/gate.mjs",
+        ".agents/skills/algorithmic-art/templates/generator_template.js",
+        ".agents/skills/expo-ui/scripts/list-components.js",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/deep-dive.mjs"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/onboarding.tsx",
+      "type": "mobile_screen",
+      "name": "onboarding",
+      "inDegree": 300,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-marketingWeb/src/lib/a11y-engine.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/onboarding.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/welcome.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/boot/startupTelemetry.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/brand/mascotArtwork.ts"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/public-form/[slug].tsx",
+      "type": "mobile_screen",
+      "name": "[slug]",
+      "inDegree": 28,
+      "importers": [
+        ".agents/skills/vercel-optimize/scripts/scan-codebase.mjs",
+        ".tmp-worktrees/exp-e1/.agents/skills/vercel-optimize/scripts/scan-codebase.mjs",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js",
+        "apps/gurudevi-mobile/dist-dev/_expo/static/js/web/entry-07b69b71aa00b6229b4644eec51e0d91.js"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/pulse.tsx",
+      "type": "mobile_screen",
+      "name": "pulse",
+      "inDegree": 333,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/components/ThemeToggle.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/+native-intent.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/pulse.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/backgroundSync.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/navigation/registries/selfRegistry.ts"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/reading.tsx",
+      "type": "mobile_screen",
+      "name": "reading",
+      "inDegree": 303,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/cosmos/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/cosmos/[slug]/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/font-lab/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/innovations/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/innovations/[slug]/page.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/shell-lab.tsx",
+      "type": "mobile_screen",
+      "name": "shell-lab",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/runtime/lab/VergerLabScreen.tsx",
+        "apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        "apps/gurudevi-mobile/src/runtime/lab/VergerLabScreen.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/tutii-dance-preview.tsx",
+      "type": "mobile_screen",
+      "name": "tutii-dance-preview",
+      "inDegree": 1,
+      "importers": [
+        "apps/gurudevi-mobile/src/entry/EntryShell.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/ui-showcase.tsx",
+      "type": "mobile_screen",
+      "name": "ui-showcase",
+      "inDegree": 1,
+      "importers": [
+        "apps/gurudevi-mobile/src/entry/EntryShell.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/verger-diagnostics.tsx",
+      "type": "mobile_screen",
+      "name": "verger-diagnostics",
+      "inDegree": 6,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/runtime/lab/VergerLabScreen.tsx",
+        "apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        "apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/verger-lab.tsx",
+      "type": "mobile_screen",
+      "name": "verger-lab",
+      "inDegree": 9,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        "apps/gurudevi-mobile/src/entry/EntryShell.tsx",
+        "apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/welcome.tsx",
+      "type": "mobile_screen",
+      "name": "welcome",
+      "inDegree": 204,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/account-recovery.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/auth.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/onboarding.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/welcome.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/scripts/diag-scroll.mjs"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/world-showcase.tsx",
+      "type": "mobile_screen",
+      "name": "world-showcase",
+      "inDegree": 2,
+      "importers": [
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        "apps/gurudevi-mobile/src/entry/EntryShell.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "apps/gurudevi-mobile/app/_layout.tsx",
+      "type": "mobile_screen",
+      "name": "_layout",
+      "inDegree": 43,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/globalErrorHandlers.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/adapters/supabase/workspaceLayoutRepository.ts",
+        ".tmp-worktrees/exp-e1/scripts/audit-flow-dag.mjs"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        },
+        {
+          "id": "journey:founder.consult_mentor_agent",
+          "title": "Consult Platform AI Mentor",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "packages/admin/src/components/onboarding/PrincipalOnboardingView.tsx",
+      "type": "package_screen",
+      "name": "PrincipalOnboardingView",
+      "inDegree": 30,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/admin/src/components/index.ts",
+        ".tmp-worktrees/exp-e1/packages/admin/src/components/onboarding/PrincipalOnboardingView.tsx",
+        ".tmp-worktrees/exp-e1/packages/admin/src/components/principal/PrincipalOnboardingView.tsx",
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/PrincipalOnboardingView.web.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "packages/admin/src/components/principal/PrincipalOnboardingView.tsx",
+      "type": "package_screen",
+      "name": "PrincipalOnboardingView",
+      "inDegree": 30,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/admin/src/components/index.ts",
+        ".tmp-worktrees/exp-e1/packages/admin/src/components/onboarding/PrincipalOnboardingView.tsx",
+        ".tmp-worktrees/exp-e1/packages/admin/src/components/principal/PrincipalOnboardingView.tsx",
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/PrincipalOnboardingView.web.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:founder.triage_support_and_broadcast",
+          "title": "Triage Feedback & Ecosystem Broadcast",
+          "actor": "founder"
+        }
+      ]
+    },
+    {
+      "path": "packages/admin/src/screens/AnalyticsDashboardScreen.tsx",
+      "type": "package_screen",
+      "name": "AnalyticsDashboardScreen",
+      "inDegree": 7,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/AnalyticsDashboardScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/index.ts",
+        ".tmp-worktrees/exp-e1/scripts/purge-global-header.mjs",
+        ".tmp-worktrees/exp-e1/scripts/purge-remaining-screen-wrappers.mjs",
+        "packages/admin/src/screens/index.ts"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        }
+      ]
+    },
+    {
+      "path": "packages/admin/src/screens/DocumentListScreen.tsx",
+      "type": "package_screen",
+      "name": "DocumentListScreen",
+      "inDegree": 7,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/DocumentListScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/DocumentListScreen.web.tsx",
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/index.ts",
+        ".tmp-worktrees/exp-e1/scripts/purge-last-package-screen-wrappers.mjs",
+        "packages/admin/src/screens/DocumentListScreen.web.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        }
+      ]
+    },
+    {
+      "path": "packages/admin/src/screens/FounderVisionScreen.tsx",
+      "type": "package_screen",
+      "name": "FounderVisionScreen",
+      "inDegree": 10,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/admin/src/index.ts",
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/FounderVisionScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/index.ts",
+        "apps/gurudevi-mobile/dist-dev/_expo/static/js/web/entry-07b69b71aa00b6229b4644eec51e0d91.js",
+        "apps/gurudevi-mobile/dist-final-check/_expo/static/js/web/entry-f4313f41aaa5ef541d22a7d737c74718.js"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:admin.school_connection.legacy",
+          "title": "Connect to a school",
+          "actor": "principal"
+        }
+      ]
+    },
+    {
+      "path": "packages/admin/src/screens/guardian/GuardianCommunicationBridgeScreen.tsx",
+      "type": "package_screen",
+      "name": "GuardianCommunicationBridgeScreen",
+      "inDegree": 3,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/guardian/GuardianCommunicationBridgeScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/admin/src/screens/guardian/index.ts",
+        "packages/admin/src/screens/guardian/index.ts"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "packages/classroom/src/components/onboarding/StudentOnboardingView.tsx",
+      "type": "package_screen",
+      "name": "StudentOnboardingView",
+      "inDegree": 28,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/index.ts",
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/StudentOnboardingView.tsx",
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/StudentOnboardingView.web.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js",
+        "apps/gurudevi-mobile/dist-dev/_expo/static/js/web/entry-07b69b71aa00b6229b4644eec51e0d91.js"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "packages/classroom/src/components/onboarding/TeacherOnboardingView.tsx",
+      "type": "package_screen",
+      "name": "TeacherOnboardingView",
+      "inDegree": 28,
+      "importers": [
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/index.ts",
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/TeacherOnboardingView.tsx",
+        ".tmp-worktrees/exp-e1/packages/classroom/src/components/onboarding/TeacherOnboardingView.web.tsx",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js",
+        "apps/gurudevi-mobile/dist-dev/_expo/static/js/web/entry-07b69b71aa00b6229b4644eec51e0d91.js"
+      ],
+      "status": "DARK_FEATURE",
+      "mappedJourneys": []
+    },
+    {
+      "path": "packages/ui/src/screens/AppSettingsScreen.tsx",
+      "type": "package_screen",
+      "name": "AppSettingsScreen",
+      "inDegree": 37,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/settings.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/AppSettingsScreen.shared.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/AppSettingsScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/AppSettingsScreen.web.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        }
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/AuthScreen.tsx",
+      "type": "package_screen",
+      "name": "AuthScreen",
+      "inDegree": 34,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/auth.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/googleSignIn.web.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/screens/AuthScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/AuthScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/AuthScreen.web.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        }
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/ComponentShowcaseScreen.tsx",
+      "type": "package_screen",
+      "name": "ComponentShowcaseScreen",
+      "inDegree": 5,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/ui-showcase.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/ComponentShowcaseScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/index.ts",
+        "apps/gurudevi-mobile/app/ui-showcase.tsx",
+        "packages/ui/src/screens/index.ts"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        }
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/NotificationsScreen.tsx",
+      "type": "package_screen",
+      "name": "NotificationsScreen",
+      "inDegree": 31,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/notifications.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/index.ts",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/NotificationsScreen.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/NotificationsScreen.web.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/notifications.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        }
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/SanctuaryWelcomeScreen.tsx",
+      "type": "package_screen",
+      "name": "SanctuaryWelcomeScreen",
+      "inDegree": 7,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/index.ts",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/SanctuaryWelcomeScreen.tsx",
+        ".tmp-worktrees/exp-e1/scripts/audit-device-evidence.mjs",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        }
+      ]
+    },
+    {
+      "path": "packages/ui/src/screens/WelcomeScreen.tsx",
+      "type": "package_screen",
+      "name": "WelcomeScreen",
+      "inDegree": 39,
+      "importers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/welcome.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/screens/WelcomeScreen.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/index.ts",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/SanctuaryWelcomeScreen.tsx"
+      ],
+      "status": "FLOW_MAPPED",
+      "mappedJourneys": [
+        {
+          "id": "journey:ai.assistant_companion",
+          "title": "Unified AI Ingress and Execution Journey",
+          "actor": "authenticated user (student, teacher, or community member)"
+        }
+      ]
+    }
+  ],
+  "allRoutes": [
+    {
+      "route": "/",
+      "inDegree": 931,
+      "incomingCallers": [
+        ".agents/gate.mjs",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/extract-claims.mjs"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/account-recovery",
+      "inDegree": 29,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/auth.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/GuestPersistenceNotice.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/page.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/admin/analytics",
+      "inDegree": 7,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/analytics/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/principal/PrincipalFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/flows/admin/principalTermSetup.flow.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/admin/documents",
+      "inDegree": 5,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/documents/page.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/flows/admin/principalTermSetup.flow.ts",
+        "apps/gurudevi-web/spa/generated/routeTree.explore.gen.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/admin/forms/builder",
+      "inDegree": 3,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/page.tsx",
+        "apps/gurudevi-web/spa/generated/routeTree.explore.gen.ts",
+        "apps/gurudevi-web/spa/generated/routeTree.gen.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/admin/founder",
+      "inDegree": 6,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/founder/page.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/flows/founder/founderCommandDeck.flow.ts",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/admin/principal",
+      "inDegree": 8,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(marketing)/intro/IntroClient.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/agent-lab",
+      "inDegree": 7,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/CommandPalette.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        "apps/gurudevi-web/app/(sanctuary)/components/CommandPalette.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/architecture",
+      "inDegree": 6,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/architecture-lab/ArchitectureLabClient.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        "apps/gurudevi-web/app/(sanctuary)/architecture-lab/ArchitectureLabClient.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/architecture-lab",
+      "inDegree": 7,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/atlas",
+      "inDegree": 21,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/school/[census_no]/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/components/HeaderNav.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/focus/page.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/auth/callback",
+      "inDegree": 17,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/+native-intent.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/logic/auth/bootstrapRoutes.ts",
+        ".tmp-worktrees/exp-e1/packages/core/src/logic/deeplink/deepLinkPolicyPipeline.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/auth/complete",
+      "inDegree": 9,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/auth/PasswordlessEntry.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/auth/RecoveryForm.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/logic/deeplink/deepLinkPolicyPipeline.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/c/[code]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/community",
+      "inDegree": 77,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/src/pages/knowledge.json.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/community/announcements",
+      "inDegree": 6,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        ".tmp-worktrees/exp-e1/packages/community/src/navigation/communityRoutes.ts",
+        "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/community/chat/[groupId]",
+      "inDegree": 1,
+      "incomingCallers": [
+        "packages/community/src/components/CreateGroupModal.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/community/dm/[userId]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/community/forest",
+      "inDegree": 7,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/forest/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/explore-intro",
+      "inDegree": 5,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        "apps/gurudevi-web/lib/host-routing.ts",
+        "apps/gurudevi-web/spa/generated/routeTree.explore.gen.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/icon-lab",
+      "inDegree": 9,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/CommandPalette.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/AppSettingsScreen.shared.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/invitation-welcome",
+      "inDegree": 10,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        ".tmp-worktrees/exp-e1/packages/community/src/navigation/communityRoutes.ts",
+        ".tmp-worktrees/exp-e1/packages/core/src/flows/entry/mobileEntry.flow.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/kit",
+      "inDegree": 12,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/kit/components/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/kit/components/temporal-horizon/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/kit/floor-redesign/FloorRedesignClient.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/kit/components",
+      "inDegree": 4,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/kit/components/temporal-horizon/page.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/temporal-horizon/TemporalHorizonComparison.tsx",
+        "apps/gurudevi-web/spa/generated/routeTree.explore.gen.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/kit/components/temporal-horizon",
+      "inDegree": 7,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/kit/components/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/kit/kitNavigationData.ts",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/KitComponentsDirectory.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/kit/floor-redesign",
+      "inDegree": 4,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/kit/kitNavigationData.ts",
+        "apps/gurudevi-web/app/(sanctuary)/kit/kitNavigationData.ts",
+        "apps/gurudevi-web/spa/generated/routeTree.explore.gen.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/kit/self",
+      "inDegree": 4,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/kit/kitNavigationData.ts",
+        "apps/gurudevi-web/app/(sanctuary)/kit/kitNavigationData.ts",
+        "apps/gurudevi-web/spa/generated/routeTree.explore.gen.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/library",
+      "inDegree": 97,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/src/pages/knowledge.json.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/library/collections/[id]",
+      "inDegree": 23,
+      "incomingCallers": [
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js",
+        "apps/gurudevi-mobile/dist-dev/_expo/static/js/web/entry-07b69b71aa00b6229b4644eec51e0d91.js",
+        "apps/gurudevi-mobile/dist-final-check/_expo/static/js/web/entry-f4313f41aaa5ef541d22a7d737c74718.js"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/library/contribute",
+      "inDegree": 7,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(marketing)/(support)/supportData.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/contribute/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/library/curator",
+      "inDegree": 7,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/curator/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/review/page.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/library/map",
+      "inDegree": 30,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts",
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/library/reader/[bookId]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/library/review",
+      "inDegree": 25,
+      "incomingCallers": [
+        "apps/gurudevi-mobile/dist-debug/_expo/static/js/web/entry-52fab150ea0f7a6d2776509c987c5fea.js",
+        "apps/gurudevi-mobile/dist-dev/_expo/static/js/web/entry-07b69b71aa00b6229b4644eec51e0d91.js",
+        "apps/gurudevi-mobile/dist-final-check/_expo/static/js/web/entry-f4313f41aaa5ef541d22a7d737c74718.js"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/library/tools",
+      "inDegree": 7,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/library/tools/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/library/video/[videoId]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/notifications",
+      "inDegree": 42,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/navigation/appNavigation.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/onboarding",
+      "inDegree": 67,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/onboarding.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/GuestPersistenceNotice.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/profile",
+      "inDegree": 52,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/CommandPalette.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/profile/security",
+      "inDegree": 7,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/security/page.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/flows/account/linkedProviders.flow.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/recovery",
+      "inDegree": 17,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/auth/ResetPasswordForm.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        ".tmp-worktrees/exp-e1/packages/core/src/routing/routeManifest.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/reset-password",
+      "inDegree": 10,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/auth/RecoveryForm.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/auth/complete/route.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/school/[id]",
+      "inDegree": 2,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        "apps/gurudevi-web/lib/host-routing.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/school/[id]/articles/[slug]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/self",
+      "inDegree": 132,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/settings",
+      "inDegree": 48,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/navigation/appNavigation.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/sign-in",
+      "inDegree": 40,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(marketing)/MarketingFooter.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/CreateAccountGuidanceModal.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/support",
+      "inDegree": 19,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-marketingWeb/src/pages/knowledge.json.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(marketing)/intro/IntroClient.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(marketing)/intro/TuttiInteractiveSandbox.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/verger-lab",
+      "inDegree": 6,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        "apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/welcome",
+      "inDegree": 103,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/account-recovery.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/auth.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/onboarding.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace",
+      "inDegree": 130,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/firstValueRoute.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/atlas",
+      "inDegree": 3,
+      "incomingCallers": [
+        "apps/gurudevi-mobile/src/components/shell/WorkspaceHome.tsx",
+        "apps/gurudevi-web/spa/generated/routeTree.explore.gen.ts",
+        "apps/gurudevi-web/spa/generated/routeTree.gen.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/attendance",
+      "inDegree": 13,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(marketing)/intro/IntroClient.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        ".tmp-worktrees/exp-e1/packages/core/src/flows/classroom/teacherRollCall.flow.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/badges",
+      "inDegree": 9,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/kiosk/KioskFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/claim",
+      "inDegree": 7,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/classroom/[id]",
+      "inDegree": 4,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/packages/core/src/flows/classroom/studentProfileSoulView.flow.ts",
+        ".tmp-worktrees/exp-e1/packages/core/src/flows/classroom/teacherStudentRadarAttunement.flow.ts",
+        "packages/core/src/flows/classroom/studentProfileSoulView.flow.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/climate",
+      "inDegree": 7,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/editorial",
+      "inDegree": 7,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/school/SchoolFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/events",
+      "inDegree": 11,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/gradebook",
+      "inDegree": 15,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/CommandPalette.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/guardian",
+      "inDegree": 33,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+        ".tmp-worktrees/exp-e1/packages/admin/src/constants/adminRegistry.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/kiosk",
+      "inDegree": 12,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/badges/BadgeSheetFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/school/SchoolFloor.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/notices",
+      "inDegree": 9,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/plan",
+      "inDegree": 9,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/school",
+      "inDegree": 14,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/submissions",
+      "inDegree": 10,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/TeacherWorkspaceFloor.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/timetable",
+      "inDegree": 14,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/CommandPalette.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/tuition",
+      "inDegree": 5,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/workspace/workforce",
+      "inDegree": 10,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/admin/principal/PrincipalFloor.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/",
+      "inDegree": 931,
+      "incomingCallers": [
+        ".agents/gate.mjs",
+        ".agents/skills/vercel-optimize/lib/dedup-recs.mjs",
+        ".agents/skills/vercel-optimize/lib/extract-claims.mjs"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/(dev)/kit",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/(dev)/kit/KitGalleryNative",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/(modal)/create-form",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/(tabs)/community",
+      "inDegree": 66,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/src/pages/knowledge.json.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/(tabs)/library",
+      "inDegree": 81,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/src/pages/knowledge.json.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/(tabs)/notifications",
+      "inDegree": 44,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/navigation/appNavigation.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/(tabs)/profile",
+      "inDegree": 50,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/CommandPalette.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/(tabs)/self",
+      "inDegree": 128,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/(tabs)/self/wisdom/[id]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/(tabs)/settings",
+      "inDegree": 46,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/navigation/appNavigation.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/(tabs)/workspace",
+      "inDegree": 112,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/firstValueRoute.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/(tabs)/workspace/atlas",
+      "inDegree": 3,
+      "incomingCallers": [
+        "apps/gurudevi-mobile/src/components/shell/WorkspaceHome.tsx",
+        "apps/gurudevi-web/spa/generated/routeTree.explore.gen.ts",
+        "apps/gurudevi-web/spa/generated/routeTree.gen.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/(tabs)/workspace/commercial/[batchId]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/(tabs)/workspace/demo-fee",
+      "inDegree": 3,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/lib/capabilities/webCapabilityRegistry.ts",
+        "apps/gurudevi-mobile/src/components/shell/WorkspaceHome.tsx",
+        "apps/gurudevi-mobile/src/lib/capabilities/webCapabilityRegistry.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/(tabs)/workspace/events",
+      "inDegree": 8,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/sanctuary-nav.ts",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/workspace/workspaceFeatureRegistry.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/(tabs)/workspace/inventory",
+      "inDegree": 3,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/(tabs)/workspace/events.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/events.tsx",
+        "apps/gurudevi-mobile/src/components/shell/WorkspaceHome.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/(tabs)/workspace/peers",
+      "inDegree": 1,
+      "incomingCallers": [
+        "apps/gurudevi-mobile/src/components/shell/WorkspaceHome.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/(tabs)/workspace/welfare",
+      "inDegree": 3,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        "apps/gurudevi-mobile/src/components/shell/WorkspaceHome.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/(tabs)/workspace/workforce-role",
+      "inDegree": 3,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts",
+        "apps/gurudevi-mobile/src/components/shell/WorkspaceHome.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/atlas/atlasData.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/a-i-assistant",
+      "inDegree": 30,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/packages/core/src/ai/platformManifest.ts",
+        ".tmp-worktrees/exp-e1/packages/core/src/flows/ai/aiAssistant.flow.ts",
+        ".tmp-worktrees/exp-e1/packages/self/src/screens/SelfScreen.unified.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/account-recovery",
+      "inDegree": 29,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/auth.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/GuestPersistenceNotice.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/community/page.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/atlas",
+      "inDegree": 21,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/atlas/school/[census_no]/page.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/components/HeaderNav.tsx",
+        ".tmp-worktrees/exp-e1/apps/edlove-web/app/focus/page.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/auth",
+      "inDegree": 75,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/auth/callback.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/welcome.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/GuestPersistenceNotice.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/auth/callback",
+      "inDegree": 17,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/+native-intent.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/logic/auth/bootstrapRoutes.ts",
+        ".tmp-worktrees/exp-e1/packages/core/src/logic/deeplink/deepLinkPolicyPipeline.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/companions",
+      "inDegree": 1,
+      "incomingCallers": [
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/form-builder",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/icon-lab",
+      "inDegree": 9,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/app/(sanctuary)/components/CommandPalette.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        ".tmp-worktrees/exp-e1/packages/ui/src/screens/AppSettingsScreen.shared.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/onboarding",
+      "inDegree": 67,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/onboarding.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/GuestPersistenceNotice.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/public-form/[slug]",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/pulse",
+      "inDegree": 6,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/+native-intent.tsx",
+        ".tmp-worktrees/exp-e1/packages/core/src/logic/deeplink/deepLinkPolicyPipeline.ts",
+        ".tmp-worktrees/exp-e1/packages/core/src/routing/routeManifest.ts"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/reading",
+      "inDegree": 2,
+      "incomingCallers": [
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx",
+        "apps/gurudevi-mobile/src/screens/personal/WorldShowcaseScreen.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/shell-lab",
+      "inDegree": 2,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/runtime/lab/VergerLabScreen.tsx",
+        "apps/gurudevi-mobile/src/runtime/lab/VergerLabScreen.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/tutii-dance-preview",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/ui-showcase",
+      "inDegree": 0,
+      "incomingCallers": [],
+      "isIsland": true
+    },
+    {
+      "route": "/verger-diagnostics",
+      "inDegree": 4,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/runtime/lab/VergerLabScreen.tsx",
+        "apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/verger-lab",
+      "inDegree": 6,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-web/lib/host-routing.ts",
+        "apps/gurudevi-mobile/src/entry/SessionRouteGate.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/welcome",
+      "inDegree": 103,
+      "incomingCallers": [
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/account-recovery.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/auth.tsx",
+        ".tmp-worktrees/exp-e1/apps/gurudevi-mobile/app/onboarding.tsx"
+      ],
+      "isIsland": false
+    },
+    {
+      "route": "/world-showcase",
+      "inDegree": 1,
+      "incomingCallers": [
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ],
+      "isIsland": false
+    }
+  ]
+}

@@ -8,35 +8,55 @@ import { useUIStore } from '@repo/core/store';
 import { inMemoryHealthAdapter } from '@repo/self';
 import { LayoutLoopSentinel, MascotProvider } from '@repo/ui';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
-import { LotusPetalFAB } from '@repo/ui/components/LotusPetalFAB';
-import { CircadianProvider, EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
+import {
+  KeypadHost,
+  registerFloorPictures,
+  TypingBar,
+  ToastHost,
+  WorldMomentHost,
+  WorldStage,
+} from '@repo/ui/components/native';
+import {
+  CircadianProvider,
+  EnvironmentProvider,
+  ExternalLinkProvider,
+  FidelityProvider,
+} from '@repo/ui/context';
 import { FABProvider } from '@repo/ui/context/FABContext';
 import { Box, PortalProvider, Pressable, Text } from '@repo/ui/primitives';
 import { FeatureProvider, ToastProvider } from '@repo/ui/providers';
 import { sensoryFeedback } from '@repo/ui/sensory';
 import { reportVergerInteraction } from '@repo/verger-react';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { Stack, useGlobalSearchParams, usePathname } from 'expo-router';
+import { type Href, Stack, useGlobalSearchParams, usePathname } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { handoffNativeSplashAfterCommit, NATIVE_SPLASH_MAX_HOLD_MS } from '@/boot/nativeSplashService';
-import { OptionalStartupServices } from '@/boot/OptionalStartupServices';
+import {
+  handoffNativeSplashAfterCommit,
+  NATIVE_SPLASH_MAX_HOLD_MS,
+} from '@/boot/nativeSplashService';
 import {
   observeDevelopmentInteractions,
   observeDevelopmentTimings,
   recordDevelopmentTrace,
 } from '@/boot/startupTelemetry';
+import { PersonalPreferences } from '@/boot/PersonalPreferences';
 import { WorldFonts } from '@/boot/WorldFonts';
 import { fireflyMascotConfig } from '@/brand/mascotArtwork';
 import { AppVersionGateOverlay } from '@/components/AppVersionGateOverlay';
+import { AppLockOverlay } from '@/entry/AppLockOverlay';
 import { AuthQueryCacheBoundary } from '@/entry/AuthQueryCacheBoundary';
+import { BootstrapSessionProvider } from '@/entry/BootstrapSessionProvider';
+import { ColdPushIntentBridge } from '@/entry/ColdPushIntentBridge';
 import { GuestConversionBoundary } from '@/entry/GuestConversionBoundary';
 import { GuestPersistenceNotice } from '@/entry/GuestPersistenceNotice';
 import { PasswordRecoveryBoundary } from '@/entry/PasswordRecoveryBoundary';
+import { useEntryAccess } from '@/entry/entryAccess';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
-import { getCurrentFabTab } from '@/lib/navigation/fabTab';
+import { FLOOR_PICTURES, FLOOR_PICTURES_WIDE } from '@/generated/floorPictures';
 import { queryClient } from '@/lib/queryClient';
 import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
 import { GurudeviVerger } from '@/runtime/GurudeviVerger';
@@ -51,6 +71,9 @@ import { useSomaticShake } from '@/somatic/useSomaticShake';
  * Optional native services stay outside this route host so their failure cannot
  * turn a public launch into a blank surface.
  */
+// Small phones show each world's floor as a baked picture instead of drawing it.
+registerFloorPictures(FLOOR_PICTURES, FLOOR_PICTURES_WIDE);
+
 const readLocalGuestId = async () => (await readLocalGuestSession())?.id ?? null;
 
 export function EntryShell() {
@@ -119,66 +142,70 @@ export function EntryShell() {
     >
       <ErrorBoundary name="EntryShell">
         <SafeAreaProvider>
-          <QueryClientProvider client={queryClient}>
-            <GlobalProvider readLocalGuestId={readLocalGuestId}>
-              <EnvironmentProvider>
-                <GurudeviVerger>
-                  <OptionalStartupServices phase="public-ready" />
-                  <WorldFonts />
-                  <CircadianProvider>
-                    <PortalProvider>
-                      <ToastProvider>
-                        <ExternalLinkProvider>
-                          <DeepLinkProvider>
-                            <AuthQueryCacheBoundary />
-                            <FABProvider>
-                              <MascotProvider config={fireflyMascotConfig}>
-                                <LayoutLoopSentinel name="RootShell" style={styles.root}>
-                                  <Box className="flex-1 bg-phase-canvas">
-                                    <AppVersionGateOverlay />
-                                    <GuestPersistenceNotice />
-                                      <GuestConversionBoundary />
-                                      <PasswordRecoveryBoundary />
-                                      <SessionRouteGate appServices={<AuthenticatedAppServices />}>
-                                        <Stack screenOptions={{ headerShown: false }}>
-                                          <Stack.Screen name="index" />
-                                          <Stack.Screen name="welcome" />
-                                          <Stack.Screen name="auth" />
-                                          <Stack.Screen name="account-recovery" />
-                                          <Stack.Screen name="onboarding" />
-                                          <Stack.Screen name="public-form/[slug]" />
-                                          <Stack.Screen name="verger-lab" />
-                                          <Stack.Screen name="verger-diagnostics" />
-                                          <Stack.Screen name="(tabs)" />
-                                          <Stack.Screen
-                                            name="(modal)"
-                                            options={{ presentation: 'modal' }}
-                                          />
-                                        </Stack>
-                                      </SessionRouteGate>
-                                    <LotusPetalFAB currentTab={getCurrentFabTab(pathname)} />
-                                    <SanctuaryPulseOverlay
-                                      visible={isBreathingOpen}
-                                      onDismiss={() => setBreathingOpen(false)}
-                                      isPlayfulMode={true}
-                                      onSessionComplete={(seconds) => {
-                                        void inMemoryHealthAdapter.recordMindfulSession(seconds);
-                                        sensoryFeedback.emit('success');
-                                      }}
-                                    />
-                                  </Box>
-                                </LayoutLoopSentinel>
-                              </MascotProvider>
-                            </FABProvider>
-                          </DeepLinkProvider>
-                        </ExternalLinkProvider>
-                      </ToastProvider>
-                    </PortalProvider>
-                  </CircadianProvider>
-                </GurudeviVerger>
-              </EnvironmentProvider>
-            </GlobalProvider>
-          </QueryClientProvider>
+          {/* One keyboard model for the app: fields stay in view, the typing bar rides on top. */}
+          <KeyboardProvider>
+            <QueryClientProvider client={queryClient}>
+              <GlobalProvider readLocalGuestId={readLocalGuestId}>
+                <EnvironmentProvider>
+                  <FidelityProvider>
+                    <GurudeviVerger>
+                      <WorldFonts />
+                      <PersonalPreferences />
+                      <CircadianProvider>
+                        <PortalProvider>
+                          <ToastProvider>
+                            <ExternalLinkProvider>
+                              <DeepLinkProvider>
+                                <AuthQueryCacheBoundary />
+                                <FABProvider>
+                                  <MascotProvider config={fireflyMascotConfig}>
+                                    <LayoutLoopSentinel name="RootShell" style={styles.root}>
+                                      {/* One floor under every screen: the world draws it, verger sets how richly. */}
+                                      <WorldStage>
+                                        <AppVersionGateOverlay />
+                                        <GuestPersistenceNotice />
+                                        <GuestConversionBoundary />
+                                        <PasswordRecoveryBoundary />
+                                        <BootstrapSessionProvider>
+                                          <ColdPushIntentBridge />
+                                          <AppLockOverlay />
+                                          <SessionRouteGate
+                                            appServices={<AuthenticatedAppServices />}
+                                          >
+                                            <EntryStack />
+                                          </SessionRouteGate>
+                                        </BootstrapSessionProvider>
+                                        <SanctuaryPulseOverlay
+                                          visible={isBreathingOpen}
+                                          onDismiss={() => setBreathingOpen(false)}
+                                          isPlayfulMode={true}
+                                          onSessionComplete={(seconds) => {
+                                            void inMemoryHealthAdapter.recordMindfulSession(
+                                              seconds,
+                                            );
+                                            sensoryFeedback.emit('success');
+                                          }}
+                                        />
+                                        <WorldMomentHost />
+                                        <ToastHost bottomOffset={120} />
+                                        {/* Typing: our keypad for numbers, and the bar above the phone's keyboard. */}
+                                        <KeypadHost />
+                                        <TypingBar />
+                                      </WorldStage>
+                                    </LayoutLoopSentinel>
+                                  </MascotProvider>
+                                </FABProvider>
+                              </DeepLinkProvider>
+                            </ExternalLinkProvider>
+                          </ToastProvider>
+                        </PortalProvider>
+                      </CircadianProvider>
+                    </GurudeviVerger>
+                  </FidelityProvider>
+                </EnvironmentProvider>
+              </GlobalProvider>
+            </QueryClientProvider>
+          </KeyboardProvider>
         </SafeAreaProvider>
       </ErrorBoundary>
     </GestureHandlerRootView>
@@ -225,3 +252,83 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+/**
+ * The app's root routes. The tabs and their modals sit inside `Stack.Protected`, so the router
+ * itself refuses them for anyone the entry gate hasn't admitted (expo-router 58 renders a redirect
+ * in their place, before the screen mounts). The gate still owns the splash handoff, the restoring
+ * and transition surfaces, and replaying a pending deep link after sign-in.
+ */
+/** Top-level app screens outside the tabs: only for admitted people. */
+const APP_SCREENS = [
+  'a-i-assistant',
+  'atlas',
+  'companions',
+  'form-builder',
+  'icon-lab',
+  'reading',
+  'shell-lab',
+  'tutii-dance-preview',
+  'ui-showcase',
+  'world-showcase',
+] as const;
+
+function EntryStack() {
+  const access = useEntryAccess();
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: 'transparent' },
+      }}
+    >
+      {/* Zone 0: Always-open routes (boot root, OAuth callback, public forms, somatic pulse, dev labs). */}
+      <Stack.Screen name="index" />
+      <Stack.Screen name="auth/callback" />
+      <Stack.Screen name="public-form/[slug]" />
+      <Stack.Screen name="pulse" />
+      {__DEV__ ? <Stack.Screen name="verger-lab" /> : null}
+      {__DEV__ ? <Stack.Screen name="verger-diagnostics" /> : null}
+      {__DEV__ ? <Stack.Screen name="(dev)" /> : null}
+
+      {/* Zone 1: Public & Auth routes (also open to admitted guests upgrading to a cloud account). */}
+      <Stack.Protected guard={access.publicAuthRoutes} redirectTo={access.appEntryHref as Href}>
+        <Stack.Screen name="welcome" />
+        <Stack.Screen name="auth" />
+      </Stack.Protected>
+
+      {/* Zone 2: Account recovery (inactive cloud accounts or user-initiated recovery from auth). */}
+      <Stack.Protected guard={access.recoveryRoutes} redirectTo={access.appEntryHref as Href}>
+        <Stack.Screen name="account-recovery" />
+      </Stack.Protected>
+
+      {/* Zone 3: Onboarding (unmounts automatically from back stack once completed). */}
+      <Stack.Protected guard={access.onboardingRoutes} redirectTo={access.appEntryHref as Href}>
+        <Stack.Screen name="onboarding" />
+      </Stack.Protected>
+
+      {/* Zone 4: Admitted app routes — strictly mounted when decision === 'app'. */}
+      {/* Every app screen is declared here: a Stack mounts undeclared routes too, outside the guard. */}
+      {/* `access.redirectTo` passed checkInternalHref; this is where it becomes the router's type. */}
+      <Stack.Protected guard={access.appRoutes} redirectTo={access.redirectTo as Href}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(modal)" options={{ presentation: 'modal' }} />
+        {APP_SCREENS.map((name) => (
+          <Stack.Screen
+            key={name}
+            name={name}
+            options={
+              name === 'atlas'
+                ? {
+                    headerShown: true,
+                    title: 'School Atlas',
+                    headerBackButtonDisplayMode: 'minimal',
+                  }
+                : undefined
+            }
+          />
+        ))}
+      </Stack.Protected>
+    </Stack>
+  );
+}

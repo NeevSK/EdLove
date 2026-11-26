@@ -4,8 +4,8 @@ import {
   type ReflectionDb,
   type ThoughtRecordRpcPort,
   thoughtRecordCodec,
-} from '../records';
-import type { ThoughtRecord } from '../types';
+} from '../records.adapter';
+import type { ThoughtRecord } from '../../../types/reflection';
 
 vi.mock('../../../lib/sync', () => ({
   useMutationQueue: {

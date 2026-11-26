@@ -1,5 +1,5 @@
-import { storage } from '@repo/core/lib/storage';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { storage } from '@repo/core/lib/storage.adapter';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { academicAdapter } from '../../lib/domain/adapters/academic/academic.adapter';
 import { tuitionAdapter } from '../../lib/domain/adapters/tuition/tuition.adapter';

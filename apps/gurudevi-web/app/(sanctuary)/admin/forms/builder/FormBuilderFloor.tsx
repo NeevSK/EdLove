@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useState } from 'react';
 import styles from './builder.module.css';
 
@@ -158,7 +156,7 @@ export function FormBuilderFloor({ displayName, capacity }: Readonly<FormBuilder
         <div className={styles.titleArea}>
           <div style={{ marginBottom: '0.25rem' }}>
             <Link
-              href="/workspace"
+              to="/workspace"
               style={{
                 fontSize: '0.75rem',
                 fontWeight: 650,

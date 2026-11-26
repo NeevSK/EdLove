@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Re-export TemporalHorizonRefined as standard, zero-drama "Date"
  * conforming to DateContract.

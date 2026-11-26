@@ -3,7 +3,7 @@ import {
   APP_ROUTES,
   isValidAppRoutePath,
 } from '@repo/core/routing/routeManifest';
-import { Effect } from 'effect';
+import * as Effect from 'effect/Effect';
 import { describe, expect, it } from 'vitest';
 import {
   classifyRouteIntent,
@@ -52,6 +52,18 @@ describe('routeManifest & deepLinkPolicyPipeline (G0 Contract & Pure Logic Tests
         validateDeepLinkEffect('https://gurudevi.app/auth/callback?code=test-code'),
       );
       expect(result).toBe('https://gurudevi.app/auth/callback?code=test-code');
+    });
+
+    it('succeeds for valid Cloudflare Pages preview deployments and localhost subdomains', async () => {
+      const previewResult = await Effect.runPromise(
+        validateDeepLinkEffect('https://preview-123.gurudevi-web.pages.dev/auth/complete?code=test-code'),
+      );
+      expect(previewResult).toBe('https://preview-123.gurudevi-web.pages.dev/auth/complete?code=test-code');
+
+      const localResult = await Effect.runPromise(
+        validateDeepLinkEffect('http://sanctuary.localhost:3000/auth/complete?code=test-code'),
+      );
+      expect(localResult).toBe('http://sanctuary.localhost:3000/auth/complete?code=test-code');
     });
 
     it('fails with DeepLinkLengthError on overlong URLs (> 8192 chars)', async () => {

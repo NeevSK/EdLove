@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import * as webKit from '@repo/ui/components/web';
 import { Check, ChevronDown, Globe } from 'lucide-react';

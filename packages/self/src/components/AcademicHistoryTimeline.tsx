@@ -1,7 +1,7 @@
-import { View, Text, ScrollView } from 'react-native';
 import { useStudentAcademicHistory } from '@repo/profile';
 import { WorldSkeleton } from '@repo/ui/components/native';
 import { Calendar, GraduationCap, School } from '@repo/ui/icons';
+import { ScrollView, Text, View } from 'react-native';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 
 type AcademicRecord = {
@@ -25,7 +25,7 @@ export default function AcademicHistoryTimeline({ userId }: AcademicHistoryTimel
 
   if (isLoading) {
     return (
-      <View space="md">
+      <View className="gap-4">
         <WorldSkeleton height={100} />
         <WorldSkeleton height={100} />
       </View>
@@ -45,7 +45,7 @@ export default function AcademicHistoryTimeline({ userId }: AcademicHistoryTimel
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
-      <View space="lg" className="pb-10">
+      <View className="gap-6 pb-10">
         {history.map((record: AcademicRecord, index: number) => (
           <Animated.View key={record.id} entering={FadeInRight.delay(index * 100)}>
             <View className="p-6 rounded-[32px] bg-white/3 border border-white/5 overflow-hidden">

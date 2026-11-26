@@ -1,3 +1,4 @@
+import { type ConnectionStatus, Text } from '@repo/ui/components/native';
 import { alpha, mix } from '@repo/ui/theme';
 import { typeStyle, useWorldContext, useWorldMotion } from '@repo/ui/theme/native';
 import { NativeTabs } from 'expo-router/native-tabs';
@@ -6,7 +7,12 @@ import { View } from 'react-native';
 
 /** Admitted tabs, in the same order as the custom tab bar. */
 const TABS = [
-  { name: 'library', title: 'Library', sf: 'books.vertical', md: 'local_library' },
+  {
+    name: 'library',
+    title: 'Library',
+    sf: 'books.vertical',
+    md: 'local_library',
+  },
   { name: 'workspace', title: 'Workspace', sf: 'graduationcap', md: 'school' },
   { name: 'self', title: 'Self', sf: 'heart', md: 'favorite' },
   { name: 'community', title: 'Community', sf: 'person.2', md: 'group' },
@@ -22,6 +28,32 @@ export interface NativeShellTabsProps {
   showLabels?: boolean;
   /** A short badge per tab ("3", "•"); the system tab bar says it to screen readers. */
   badges?: Partial<Record<ShellTab, string>>;
+  /** Room names in the person's language; the work room is named for their role. */
+  labels?: Partial<Record<ShellTab, string>>;
+  /** Connection / sync status for the native iOS bottom accessory. */
+  status?: ConnectionStatus;
+}
+
+function SyncBottomAccessory({ status }: { status: ConnectionStatus }) {
+  const placement = NativeTabs.BottomAccessory.usePlacement();
+  const t = useWorldContext().world.tokens;
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: placement === 'inline' ? 10 : 14,
+        paddingVertical: placement === 'inline' ? 4 : 6,
+        backgroundColor: mix(t.ground, t.lamp, 0.12),
+        borderRadius: 999,
+      }}
+    >
+      <Text kind="caption" style={{ color: t.lampDeep }}>
+        {placement === 'inline' ? status.short : status.label}
+      </Text>
+    </View>
+  );
 }
 
 /**
@@ -31,7 +63,14 @@ export interface NativeShellTabsProps {
  * person asks for less transparency. Inactive tabs stop drawing (`activityEnabled`).
  * Long-press on a tab (the feature catalog) has no native equivalent here.
  */
-export function NativeShellTabs({ header, onTabPress, showLabels = true, badges }: NativeShellTabsProps) {
+export function NativeShellTabs({
+  header,
+  onTabPress,
+  showLabels = true,
+  badges,
+  labels,
+  status,
+}: NativeShellTabsProps) {
   const { world, language } = useWorldContext();
   const { animates } = useWorldMotion();
   const t = world.tokens;
@@ -61,17 +100,26 @@ export function NativeShellTabs({ header, onTabPress, showLabels = true, badges 
           selected: { ...label, color: lit },
         }}
         labelVisibilityMode={showLabels ? 'labeled' : 'unlabeled'}
-        screenListeners={({ route }) => ({ tabPress: () => onTabPress(route.name) })}
+        screenListeners={({ route }) => ({
+          tabPress: () => onTabPress(route.name),
+        })}
       >
         {TABS.map((tab) => (
           <NativeTabs.Trigger key={tab.name} name={tab.name}>
             <NativeTabs.Trigger.Icon sf={tab.sf} md={tab.md} />
-            <NativeTabs.Trigger.Label>{tab.title}</NativeTabs.Trigger.Label>
-            <NativeTabs.Trigger.Badge hidden={!badges?.[tab.name]}>{badges?.[tab.name]}</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Label>{labels?.[tab.name] ?? tab.title}</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Badge hidden={!badges?.[tab.name]}>
+              {badges?.[tab.name]}
+            </NativeTabs.Trigger.Badge>
           </NativeTabs.Trigger>
         ))}
         <NativeTabs.Trigger name="notifications" hidden />
         <NativeTabs.Trigger name="settings" hidden />
+        {status ? (
+          <NativeTabs.BottomAccessory>
+            <SyncBottomAccessory status={status} />
+          </NativeTabs.BottomAccessory>
+        ) : null}
       </NativeTabs>
     </View>
   );

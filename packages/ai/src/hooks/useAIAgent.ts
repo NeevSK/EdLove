@@ -469,6 +469,7 @@ export function useAIAgent() {
     error,
   } = useChat({
     connection,
+    threadId,
   });
 
   const [input, setInput] = useState('');

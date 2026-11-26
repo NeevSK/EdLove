@@ -1,3 +1,5 @@
+import { FILE_POLICY } from '@repo/core/logic/files/filePolicy';
+
 export interface PreFlightOptions {
   /** Maximum pixel dimension (width/height). Defaults to 1600px */
   maxDimension?: number;
@@ -25,7 +27,9 @@ export async function preFlightImage(
     throw new Error('ImagePreFlight: Invalid or missing imageUri');
   }
 
-  const { maxDimension = 1600, compressQuality = 0.82 } = options;
+  const scan = FILE_POLICY.scan.image;
+  const { maxDimension = scan?.maxWidth ?? 1600, compressQuality = scan?.quality ?? 0.82 } =
+    options;
 
   try {
     // Dynamically load expo-image-manipulator to support environments with or without native modules

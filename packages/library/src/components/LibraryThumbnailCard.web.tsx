@@ -20,7 +20,7 @@ import {
 } from '@repo/ui/icons';
 import type React from 'react';
 import { useState } from 'react';
-import type { LibraryResource } from '../types';
+import type { LibraryResource } from '@repo/core/types/Library';
 
 interface LibraryThumbnailCardWebProps {
   resource?: LibraryResource;

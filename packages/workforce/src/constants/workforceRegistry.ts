@@ -1,4 +1,4 @@
-import { defineFeatureLifecycle } from '@repo/core/logic/registry/domainEntry';
+import { defineFeatureLifecycle } from '@repo/core/types/domainEntry';
 import type { DomainFeature } from '@repo/core/types';
 
 const WORKFORCE_BETA_LIFECYCLE = defineFeatureLifecycle({

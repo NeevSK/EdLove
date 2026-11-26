@@ -1,7 +1,7 @@
 import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
 import { cedarPolicies } from '@repo/core/adapters/powersync/schema';
 import { evaluateShape1, evaluateShape2 } from '@repo/core/logic/permissions/cedarClientEvaluator';
-import { getLocalResourceAttributes } from '@repo/core/logic/permissions/localEvaluator';
+import { getLocalResourceAttributes } from '@repo/core/logic/permissions/localEvaluator.adapter';
 import type {
   AuthorizationDecision,
   AuthorizationRequest,

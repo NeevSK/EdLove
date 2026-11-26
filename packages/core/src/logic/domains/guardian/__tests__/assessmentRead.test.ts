@@ -1,8 +1,6 @@
-﻿import { describe, expect, it, vi } from 'vitest';
-import {
-  createGuardianAssessmentReadService,
-  type GuardianAssessmentReadAuditEvent,
-} from '../assessmentRead';
+import { describe, expect, it, vi } from 'vitest';
+import type { GuardianAssessmentReadAuditEvent } from '@repo/core/logic/schemas/guardian-assessment.schema';
+import { createGuardianAssessmentReadService } from '../assessmentRead';
 
 const NOW = '2026-08-13T10:00:00.000Z';
 
@@ -144,8 +142,7 @@ describe('guardian assessment read contract', { tags: ['guardian', 'security', '
     expect(result[0]).not.toHaveProperty('classroom_id');
     expect(auditEvents).toEqual([
       {
-        event: 'guardian_assessment_read',
-        actor_id: 'guardian-1',
+        guardian_id: 'guardian-1',
         student_id: 'student-1',
         outcome: 'allowed',
         reason: 'allowed',

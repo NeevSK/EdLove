@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState, useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { MoreHorizontal, Check, ArrowUpDown, Image, PanelsTopLeft, SlidersHorizontal } from 'lucide-react';
 import styles from './floor-reception.module.css';

@@ -1,15 +1,10 @@
+import type {
+  TemporalPhase,
+  TemporalReadPolicy,
+  TemporalScale,
+  TemporalViewMode,
+} from '@repo/core/types/Temporal';
 import { create } from 'zustand';
-
-export type TemporalPhase = 'past' | 'present' | 'future';
-export type TemporalScale = 'day' | 'week' | 'month' | 'year' | 'custom';
-export type TemporalViewMode = 'spotlight' | 'timeline';
-export type TemporalReadPolicy = 'live' | 'cached-only';
-export type TemporalCapability =
-  | 'snapshot'
-  | 'event_stream'
-  | 'business_fact'
-  | 'effective_dated'
-  | 'audit_history';
 
 export interface TemporalState {
   viewDate: string;

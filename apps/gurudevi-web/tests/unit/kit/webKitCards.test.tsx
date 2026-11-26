@@ -73,6 +73,13 @@ describe('web kit: Card', () => {
     expect(gone?.hasAttribute('href')).toBe(false);
     expect(gone?.getAttribute('aria-disabled')).toBe('true');
   });
+
+  it('renders an emoji glyph when emoji is provided', () => {
+    render(<Card title="Reading" emoji="📖" />);
+    const emojiEl = screen.getByText('📖');
+    expect(emojiEl).toBeTruthy();
+    expect(emojiEl.classList.contains('gd-card-emoji')).toBe(true);
+  });
 });
 
 describe('web kit: Rail and Carousel', () => {

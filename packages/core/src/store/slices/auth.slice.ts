@@ -1,4 +1,4 @@
-import { leaveBreadcrumb } from '@repo/core/monitoring';
+import { breadcrumb as leaveBreadcrumb } from '@repo/core/effect/bindings';
 import type { User } from '@repo/core/types';
 import type { StateCreator } from 'zustand';
 

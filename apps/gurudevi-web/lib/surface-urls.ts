@@ -17,10 +17,8 @@ import {
   PUBLIC_GURUDEVI_HOST,
   SANCTUARY_GURUDEVI_HOST,
 } from './host-routing';
+import { EDLOVE_URL } from '@repo/core/site';
 
-export const EDLOVE_URL = 'https://edlove.org';
-export const INTUITUI_URL = 'https://intuituilabs.studio';
-export const FOUNDER_URL = 'https://neevsk.intuituilabs.studio';
 
 /**
  * Standard security attributes for external hyperlinks to prevent

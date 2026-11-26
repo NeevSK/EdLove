@@ -1,0 +1,102 @@
+---
+import { DEFAULT_WORLD, WORLD_IDS } from '@repo/ui/theme';
+import { PHASE_START_HOUR } from '@repo/ui/theme/scene';
+import { LivingGround } from '@repo/ui/components/web';
+import { sharedTokenCss } from '@repo/ui/theme/web';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import {
+  generateOrganizationJsonLd,
+  generateWebSiteJsonLd,
+  sanitizeJsonLd,
+} from '../lib/schema-org';
+import { localePath, type SupportedLocale } from '../site';
+import '../styles/site.css';
+
+interface Props {
+  locale: SupportedLocale;
+  title: string;
+  description: string;
+  path: string;
+  /** The languages this page exists in; English-only pages list just `en`. */
+  locales?: readonly SupportedLocale[];
+  ogType?: 'website' | 'article';
+}
+const {
+  locale,
+  title,
+  description,
+  path,
+  locales = ['en', 'si', 'ta'],
+  ogType = 'website',
+} = Astro.props;
+const site = 'https://gurudevi.app';
+const canonical = new URL(localePath(locale, path), site).toString();
+
+const PHASE_STARTS_DESC = JSON.stringify(
+  Object.entries(PHASE_START_HOUR).sort(([, a], [, b]) => b - a),
+);
+---
+<!doctype html>
+<html
+  lang={locale}
+  data-locale={locale}
+  data-world={DEFAULT_WORLD}
+  data-mode="light"
+  data-phase="morning"
+  data-default-world={DEFAULT_WORLD}
+  data-world-ids={JSON.stringify(WORLD_IDS)}
+  data-phase-starts={PHASE_STARTS_DESC}
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {locales.length > 1 &&
+      locales.map((alt) => (
+        <link rel="alternate" hreflang={alt} href={new URL(localePath(alt, path), site).toString()} />
+      ))}
+    {locales.length > 1 && <link rel="alternate" hreflang="x-default" href={new URL(path, site).toString()} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content={`${locale}_LK`} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <style set:html={`:root{${sharedTokenCss}}`}></style>
+    <script type="application/ld+json" set:html={sanitizeJsonLd(generateOrganizationJsonLd())} />
+    <script type="application/ld+json" set:html={sanitizeJsonLd(generateWebSiteJsonLd())} />
+    <slot name="head" />
+    <script is:inline>
+      (function () {
+        try {
+          var root = document.documentElement;
+          var ids = JSON.parse(root.dataset.worldIds || '[]');
+          var w = localStorage.getItem('gurudevi_world');
+          if (w && ids.includes(w)) root.setAttribute('data-world', w);
+          var mode = localStorage.getItem('gurudevi_mode') || 'system';
+          var dark = mode === 'dark' || (mode === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+          root.setAttribute('data-mode', dark ? 'dark' : 'light');
+          var starts = JSON.parse(root.dataset.phaseStarts || '[]');
+          var h = new Date().getHours();
+          var phase = 'night';
+          for (var i = 0; i < starts.length; i++) if (h >= starts[i][1]) { phase = starts[i][0]; break; }
+          root.setAttribute('data-phase', phase);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body class="font-serif text-ink antialiased">
+    <!-- Every world's rules as one cached file, not inlined into every page. Linked after the
+         bundled stylesheet so world rules win ties. -->
+    <link rel="stylesheet" href="/worlds.css" />
+    <LivingGround atmosphere="canopy" dither className="landing-shell">
+      <SiteHeader locale={locale} path={path} />
+      <slot />
+      <SiteFooter locale={locale} path={path} />
+    </LivingGround>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { usePerspectiveStore, DEFAULT_PERSONAL_PERSPECTIVE } from '../usePerspectiveStore';
 import { useCedarDecisionStore } from '../useCedarDecisionStore';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import type { SanctuaryPerspective } from '@repo/core/types/Perspective';
 
 describe('usePerspectiveStore', () => {
@@ -52,10 +52,9 @@ describe('usePerspectiveStore', () => {
       schoolId: 'school-456',
     };
 
-    usePerspectiveStore.getState().setAvailablePerspectives([
-      DEFAULT_PERSONAL_PERSPECTIVE,
-      schoolPerspective,
-    ]);
+    usePerspectiveStore
+      .getState()
+      .setAvailablePerspectives([DEFAULT_PERSONAL_PERSPECTIVE, schoolPerspective]);
 
     await usePerspectiveStore.getState().switchPerspective('school-456');
 

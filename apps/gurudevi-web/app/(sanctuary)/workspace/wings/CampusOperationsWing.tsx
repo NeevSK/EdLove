@@ -1,5 +1,3 @@
-'use client';
-
 import type { OperationalDuty } from '@/lib/domain/multiSphereDomain';
 import { AlertCircle, CheckCircle, Clock, MapPin } from 'lucide-react';
 import React from 'react';

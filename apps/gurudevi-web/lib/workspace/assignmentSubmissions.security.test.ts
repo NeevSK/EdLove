@@ -9,7 +9,7 @@ const { getSession, addToQueue, getQueueForUser } = vi.hoisted(() => ({
 vi.mock('../supabase/browser', () => ({
   createBrowserSupabaseClient: () => ({ auth: { getSession } }),
 }));
-vi.mock('@repo/core/lib/sync/useMutationQueue', () => ({
+vi.mock('@repo/core/lib/sync/mutationQueue.store', () => ({
   useMutationQueue: { getState: () => ({ addToQueue, getQueueForUser }) },
 }));
 

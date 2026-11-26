@@ -5,7 +5,7 @@ import {
   LEGACY_DEFERRED_DEEP_LINK_KEY,
   pendingIntentStore,
   usePendingIntentStore,
-} from '../pendingIntentStore';
+} from '../pendingIntent.store';
 
 describe('pendingIntentStore (G0 Sovereign Intent Store Tests)', () => {
   beforeEach(() => {

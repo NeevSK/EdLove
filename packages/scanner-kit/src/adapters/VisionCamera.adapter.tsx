@@ -22,26 +22,29 @@ try {
  * Provides high-speed 60-120fps direct C++ / Nitro frame processing,
  * continuous real-time bounding box tracking, and AR overlays.
  */
-const VisionCameraDriverComponent: FC<CameraDriverProps> = ({
-  facing = 'back',
-  isActive = true,
-  torch = false,
-  onBarcodeScanned,
-  onFrame,
-  children,
-  style,
-}) => {
+const VisionCameraDriverComponent: FC<CameraDriverProps> = (props) => {
+  // Availability is fixed at module load, but the hook call lives in a child
+  // component so it is unconditional (Rules of Hooks).
   if (!VisionCameraModule || !useCameraDeviceHook) {
     return (
-      <View style={[styles.fallbackContainer, style as any]}>
+      <View style={[styles.fallbackContainer, props.style as any]}>
         <Text style={styles.fallbackText}>
           VisionCamera (Nitro) is not linked in this build. Please fall back to the Expo Camera adapter.
         </Text>
-        {children}
+        {props.children}
       </View>
     );
   }
+  return <LinkedVisionCamera {...props} />;
+};
 
+const LinkedVisionCamera: FC<CameraDriverProps> = ({
+  facing = 'back',
+  isActive = true,
+  torch = false,
+  children,
+  style,
+}) => {
   const device = useCameraDeviceHook(facing);
 
   if (!device) {

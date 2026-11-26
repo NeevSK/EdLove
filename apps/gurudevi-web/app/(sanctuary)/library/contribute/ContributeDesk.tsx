@@ -1,8 +1,12 @@
-'use client';
-
-import Link from 'next/link';
-import React, { useState } from 'react';
+import { useAssetOutbox } from '@/lib/media/useAssetOutbox';
+import { useDocumentOcr } from '@/lib/media/useDocumentOcr';
+import { saveLocalLibraryItem } from '@/lib/library/localLibraryStore';
 import { orpcClient } from '@repo/core/api/orpcClient';
+import { importDocxToMarkdown, importPptxToSlidesMarkdown } from '@repo/library/content/import';
+import { openH5PArchive } from '@repo/library/h5p';
+import { Markdown, RichTextEditor } from '@repo/ui/components/web';
+import { Link } from '@tanstack/react-router';
+import React, { useState } from 'react';
 import styles from './contribute.module.css';
 
 export interface ContributeDeskProps {
@@ -21,9 +25,99 @@ export function ContributeDesk({ displayName, capacity }: Readonly<ContributeDes
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
   const [isMinistryAligned, setIsMinistryAligned] = useState(false);
+  const [bodyMarkdown, setBodyMarkdown] = useState('');
+  const [importSummary, setImportSummary] = useState<string | null>(null);
+  const [lastAssetMeta, setLastAssetMeta] = useState<{
+    assetId: string;
+    sha256: string;
+    mime: string;
+    fileName: string;
+    storageLane: 'images' | 'media' | 'documents';
+  } | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
   const [errorNotice, setErrorNotice] = useState<string | null>(null);
+  const { enqueueAsset, pendingAssetCount } = useAssetOutbox();
+  const { runOcr, running: ocrRunning, progress: ocrProgress } = useDocumentOcr();
+  const [ocrText, setOcrText] = useState<string | undefined>(undefined);
+
+  const handleFileImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setErrorNotice(null);
+    setImportSummary(null);
+    const lower = file.name.toLowerCase();
+    if (!title.trim()) {
+      setTitle(file.name.replace(/\.[^.]+$/, ''));
+    }
+
+    try {
+      const queued = await enqueueAsset(file, {
+        purpose: lower.endsWith('.h5p') ? 'h5p_package' : 'library_resource',
+        visibility: 'public',
+        targetKind: 'library_work',
+        title: title || file.name,
+      });
+      if (!queued.ok) {
+        setErrorNotice(queued.reason);
+        return;
+      }
+
+      const buffer = await file.arrayBuffer();
+      if (lower.endsWith('.docx')) {
+        const res = await importDocxToMarkdown(buffer, { title: title || file.name });
+        setBodyMarkdown(res.markdown);
+        setFormat('markdown');
+        setUrl(queued.localUri);
+        setImportSummary(`Imported Word document & queued upload (${queued.sha256.slice(0, 8)}…).`);
+      } else if (lower.endsWith('.pptx')) {
+        const res = importPptxToSlidesMarkdown(buffer, { title: title || file.name });
+        setBodyMarkdown(res.markdown);
+        setFormat('slides');
+        setUrl(queued.localUri);
+        setImportSummary(`Imported ${res.slideCount} slides & queued upload (${queued.sha256.slice(0, 8)}…).`);
+      } else if (lower.endsWith('.md') || lower.endsWith('.markdown')) {
+        const text = await file.text();
+        setBodyMarkdown(text);
+        setFormat('markdown');
+        setUrl(queued.localUri);
+        setImportSummary(`Loaded Markdown & queued upload (${queued.sha256.slice(0, 8)}…).`);
+      } else if (lower.endsWith('.h5p')) {
+        const inspected = openH5PArchive(new Uint8Array(buffer));
+        if (!inspected.ok) {
+          setErrorNotice(`Invalid H5P package: ${inspected.problems[0]?.code ?? 'invalid_archive'}`);
+          return;
+        }
+        setFormat('h5p');
+        setUrl(queued.localUri);
+        setImportSummary(
+          `Verified H5P "${inspected.opened.index.manifest.title}" & queued upload (${queued.sha256.slice(0, 8)}…).`,
+        );
+      } else if (lower.endsWith('.pdf')) {
+        setFormat('document');
+        setUrl(queued.localUri);
+        setImportSummary(`PDF (${file.name}) stored locally & queued in outbox (${queued.sha256.slice(0, 8)}…).`);
+      } else {
+        setFormat(file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : file.type.startsWith('audio/') ? 'audio' : 'document');
+        setUrl(queued.localUri);
+        setImportSummary(`Media (${file.name}) stored locally & queued in outbox (${queued.sha256.slice(0, 8)}…).`);
+      }
+      setLastAssetMeta({
+        assetId: queued.assetId,
+        sha256: queued.sha256,
+        mime: file.type || 'application/octet-stream',
+        fileName: file.name,
+        storageLane: file.type.startsWith('image/')
+          ? 'images'
+          : file.type.startsWith('video/') || file.type.startsWith('audio/')
+            ? 'media'
+            : 'documents',
+      });
+    } catch (err) {
+      setErrorNotice(err instanceof Error ? err.message : 'Failed to read selected file.');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +133,27 @@ export function ContributeDesk({ displayName, capacity }: Readonly<ContributeDes
       .split(',')
       .map((t) => t.trim())
       .filter(Boolean);
+
+    const localId = `res-${Date.now()}`;
+    saveLocalLibraryItem({
+      id: localId,
+      title: title.trim(),
+      description: description.trim() || null,
+      type,
+      format: url.trim() && !lastAssetMeta && !bodyMarkdown.trim() ? 'link' : format,
+      url: url.trim() || null,
+      subjects: [subject, ...tagList],
+      verified: false,
+      assetId: lastAssetMeta?.assetId,
+      sha256: lastAssetMeta?.sha256,
+      mime: lastAssetMeta?.mime,
+      fileName: lastAssetMeta?.fileName,
+      body_markdown: bodyMarkdown.trim() || undefined,
+      ocrText,
+      storageLane: lastAssetMeta?.storageLane ?? (url.trim() ? 'link_only' : 'documents'),
+      syncStatus: lastAssetMeta ? 'queued' : 'link_saved',
+      createdAt: Date.now(),
+    });
 
     try {
       const client = orpcClient.library as any;
@@ -77,7 +192,7 @@ export function ContributeDesk({ displayName, capacity }: Readonly<ContributeDes
     <div className={styles.container}>
       <header className={styles.headerBar}>
         <div className={styles.titleArea}>
-          <Link href="/library" className={styles.backLink}>
+          <Link to="/library" className={styles.backLink}>
             ← Back to Sanctuary Library
           </Link>
           <h1>Contribute Curricular Material</h1>
@@ -158,6 +273,9 @@ export function ContributeDesk({ displayName, capacity }: Readonly<ContributeDes
               onChange={(e) => setFormat(e.target.value)}
             >
               <option value="document">PDF / Printed Document</option>
+              <option value="markdown">Gurudevi Markdown Lesson</option>
+              <option value="slides">Slide Deck (Marp / PPTX)</option>
+              <option value="h5p">Interactive H5P Package</option>
               <option value="video">Streaming Video / Lecture</option>
               <option value="audio">Audio Narrative / Podcast</option>
               <option value="interactive">Interactive Dataset / Tool</option>
@@ -205,6 +323,74 @@ export function ContributeDesk({ displayName, capacity }: Readonly<ContributeDes
             onChange={(e) => setTags(e.target.value)}
           />
           <p className={styles.hint}>Separate keywords with commas</p>
+        </div>
+
+        <div className={styles.formGroup}>
+          <label className={styles.label} htmlFor="res-file-import">
+            Import Local File (.pdf, .docx, .pptx, .md, .h5p, images, audio, video)
+          </label>
+          <input
+            id="res-file-import"
+            type="file"
+            accept=".pdf,.docx,.pptx,.md,.markdown,.h5p,image/*,audio/*,video/*"
+            className={styles.input}
+            onChange={handleFileImport}
+          />
+          {importSummary && <p className={styles.hint}>{importSummary}</p>}
+          {lastAssetMeta && (lastAssetMeta.storageLane === 'images' || lastAssetMeta.mime === 'application/pdf') && url && (
+            <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <button
+                type="button"
+                className={styles.backLink}
+                disabled={ocrRunning}
+                onClick={async () => {
+                  const res = await runOcr({
+                    uri: url,
+                    name: lastAssetMeta.fileName,
+                    mime: lastAssetMeta.mime,
+                    sha256: lastAssetMeta.sha256,
+                  });
+                  if (res?.text) {
+                    setOcrText(res.text);
+                    if (!bodyMarkdown.trim()) setBodyMarkdown(res.text);
+                    setImportSummary(`OCR extracted ${res.text.length} chars (${res.method}).`);
+                  }
+                }}
+              >
+                {ocrRunning ? `Running OCR (${ocrProgress}%)…` : 'Extract Text (OCR)'}
+              </button>
+            </div>
+          )}
+          {pendingAssetCount > 0 && (
+            <p className={styles.hint}>Outbox queue: {pendingAssetCount} asset(s) waiting to sync</p>
+          )}
+        </div>
+
+        <div className={styles.formGroup}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+            <span className={styles.label} style={{ margin: 0 }}>
+              Lesson Body / Slides (Gurudevi Markdown)
+            </span>
+            <button
+              type="button"
+              className={styles.backLink}
+              onClick={() => setShowPreview((p) => !p)}
+            >
+              {showPreview ? 'Edit' : 'Preview Rendered'}
+            </button>
+          </div>
+          {showPreview ? (
+            <div style={{ padding: '1rem', borderRadius: '0.5rem', border: '1px solid rgba(104,94,85,0.2)' }}>
+              <Markdown source={bodyMarkdown || '_Nothing drafted yet._'} />
+            </div>
+          ) : (
+            <RichTextEditor
+              label="Lesson Content"
+              value={bodyMarkdown}
+              onChange={setBodyMarkdown}
+              placeholder="Write or import from .docx / .pptx…"
+            />
+          )}
         </div>
 
         <label className={styles.checkboxRow}>

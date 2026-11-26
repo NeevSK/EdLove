@@ -10,7 +10,7 @@ import type {
   PulseMetrics,
   UserRewardsSnapshot,
   WhisperedMomentSnapshot,
-} from '@repo/core/logic/domains/profile/ports';
+} from '@repo/core/logic/ports/profile.port';
 import { UserProfilePatchSchema } from '@repo/core/logic/schemas/profileUpdate.schema';
 import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
 import { APIError, type SocialLink, type User } from '@repo/core/types';

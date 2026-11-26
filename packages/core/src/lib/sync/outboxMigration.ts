@@ -1,4 +1,4 @@
-import type { QueuedMutation } from '@repo/core/lib/sync/types';
+import type { QueuedMutation } from '@repo/core/types/mutationQueue';
 
 export const CURRENT_OUTBOX_SCHEMA_VERSION = 2;
 

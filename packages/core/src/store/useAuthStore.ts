@@ -1,4 +1,4 @@
-import { authProfileStorage, restoreIdentityProfile } from '@repo/core/lib/authProfileStorage';
+import { authProfile } from '@repo/core/effect/bindings';
 import { type AuthSlice, createAuthSlice } from '@repo/core/store/slices/auth.slice';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -12,10 +12,10 @@ export const useAuthStore = create<AuthSlice>()(
     {
       name: 'gurudevi-auth-storage',
       version: 2,
-      storage: createJSONStorage(() => authProfileStorage),
+      storage: createJSONStorage(() => authProfile.storage),
       partialize: (state) => ({ user: state.user }),
-      migrate: (value) => restoreIdentityProfile(value),
-      merge: (value, current) => ({ ...current, ...restoreIdentityProfile(value) }),
+      migrate: (value) => authProfile.restore(value),
+      merge: (value, current) => ({ ...current, ...authProfile.restore(value) }),
       onRehydrateStorage: () => (_state, error) => {
         if (error) {
           console.error('[AuthStore] Rehydration failed:', error);

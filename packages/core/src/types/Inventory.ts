@@ -11,8 +11,6 @@ export interface ClassroomResourceItem {
   last_checked: string;
   notes?: string;
 }
-
-export type InventoryCategory = ClassroomResourceCategory;
 export type InventoryCondition = ClassroomResourceCondition;
 export type InventoryItem = ClassroomResourceItem;
 

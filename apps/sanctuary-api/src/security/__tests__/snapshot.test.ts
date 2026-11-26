@@ -1,5 +1,5 @@
 import { generateKeyPairSync } from 'node:crypto';
-import { verifySnapshotSignature } from '@repo/core/logic/permissions/signature';
+import { verifySnapshotSignature } from '@repo/core/logic/permissions/signature.adapter';
 import { cedarPolicyVersion } from '@repo/policies';
 import { exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { Pool, type PoolClient } from 'pg';

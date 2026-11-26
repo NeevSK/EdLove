@@ -1,5 +1,4 @@
-'use client';
-
+import { classifyGurudeviHost } from '../../../../lib/host-routing';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type {
   MockKnowledgeTopology as TopologyData,
@@ -22,7 +21,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import styles from './map.module.css';
 
@@ -49,6 +48,12 @@ export function LibraryAtlasDesk({ displayName, capacity }: Readonly<LibraryAtla
   useEffect(() => {
     let active = true;
     (async () => {
+      // In guest Explore mode or when API origin is absent, retain offline sandbox topology without network fetch
+      const onGuestExplore =
+        typeof window !== 'undefined' && classifyGurudeviHost(window.location.host) === 'explore';
+      const apiUrl = process.env.VITE_API_URL || process.env.NEXT_PUBLIC_API_URL;
+      if (onGuestExplore || !apiUrl) return;
+
       try {
         const res = await (orpcClient.library as any).getMapTopology({ query: {} });
         if (!active || !res) return;
@@ -97,7 +102,7 @@ export function LibraryAtlasDesk({ displayName, capacity }: Readonly<LibraryAtla
         <div className={styles.titleArea}>
           <div style={{ marginBottom: '0.25rem' }}>
             <Link
-              href="/library"
+              to="/library"
               style={{
                 fontSize: '0.75rem',
                 fontWeight: 650,
@@ -123,8 +128,8 @@ export function LibraryAtlasDesk({ displayName, capacity }: Readonly<LibraryAtla
             value={viewMode}
             onChange={setViewMode}
             options={[
-              { value: 'physical', label: 'Learning Centers' },
-              { value: 'cosmos', label: 'Knowledge Cosmos' },
+              { value: 'physical', label: '🏛️ Learning Centers' },
+              { value: 'cosmos', label: '🌌 Knowledge Cosmos' },
             ]}
           />
 
@@ -168,7 +173,7 @@ export function LibraryAtlasDesk({ displayName, capacity }: Readonly<LibraryAtla
                       c.digitalHub ? 'Digital Hub' : 'Print Archive'
                     }`}
                     shape="tile"
-                    icon={MapPin}
+                    emoji="🏛️"
                   />
                 </div>
               ))}
@@ -307,7 +312,7 @@ export function LibraryAtlasDesk({ displayName, capacity }: Readonly<LibraryAtla
                 {selectedNode.type === 'resource' && (
                   <div style={{ marginTop: '0.5rem' }}>
                     <Link
-                      href={`/library/reader/${selectedNode.id}`}
+                      to="/library/reader/$bookId" params={{ bookId: selectedNode.id }}
                       style={{
                         display: 'block',
                         textAlign: 'center',

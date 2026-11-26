@@ -1,6 +1,6 @@
-import type { QueuedMutation } from '@repo/core/lib/sync/types';
+import type { QueuedMutation } from '@repo/core/types/mutationQueue';
 import crypto from 'isomorphic-webcrypto';
-import type { MeshPacket, MeshStateDigest } from '../types';
+import type { MeshPacket, MeshStateDigest } from '../../../types/mesh';
 
 export interface EncryptedPayloadEnvelope {
   ivHex: string;

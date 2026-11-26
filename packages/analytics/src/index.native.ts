@@ -2,9 +2,6 @@ export * from '@repo/analytics/engine/GPACalculator';
 export * from '@repo/analytics/engine/PerformanceAnalyzer';
 export * from '@repo/analytics/engine/PostHogAnalytics'; // Correctly picks up .native.ts if in Metro, or I should name it explicitly
 
-// Re-export shared types
-export * from '@repo/analytics/types/AnalyticsTypes';
-export * from '@repo/analytics/types/GradingTypes';
 
 import { posthogAnalytics } from '@repo/analytics/engine/PostHogAnalytics';
 

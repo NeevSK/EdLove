@@ -1,7 +1,9 @@
 import { GPACalculator } from '@repo/core/logic/grading/GPACalculator';
-import { buildPartitionedKey, type PartitionKeyOptions } from '@repo/core/lib/storage';
-import { storage } from '@repo/core/lib/storage';
-import { Cause, Effect, Exit } from 'effect';
+import { buildPartitionedKey, type PartitionKeyOptions } from '@repo/core/lib/storage.adapter';
+import { storage } from '@repo/core/lib/storage.adapter';
+import * as Cause from 'effect/Cause';
+import * as Effect from 'effect/Effect';
+import * as Exit from 'effect/Exit';
 import { createActor, createMachine, types } from 'xstate';
 import { z } from 'zod';
 

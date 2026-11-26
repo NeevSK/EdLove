@@ -1,0 +1,98 @@
+---
+import { getCollection, render } from 'astro:content';
+import { absoluteUrl } from '../../../lib/site';
+import Layout from '../../../layouts/Layout.astro';
+import CosmicParticles from '../../../components/CosmicParticles.astro';
+
+export async function getStaticPaths() {
+  const cosmosEntries = await getCollection('cosmos');
+  return cosmosEntries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const articleSlug = entry.id.replace(/\.(md|mdx)$/i, '');
+const articleUrl = absoluteUrl(`/research/cosmos/${articleSlug}`);
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: entry.data.title,
+  description: entry.data.subtitle,
+  url: articleUrl,
+  datePublished: entry.data.publishDate?.toISOString?.() ?? undefined,
+  author: {
+    '@type': 'Organization',
+    name: 'EdLove',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'EdLove',
+    url: absoluteUrl('/'),
+  },
+  articleSection: 'Cosmos',
+  keywords: [entry.data.origin, entry.data.coreLogic].filter(Boolean),
+};
+---
+
+<Layout
+  title={`${entry.data.title} | EdResearch Cosmos`}
+  description={entry.data.subtitle}
+  structuredData={structuredData}
+  theme="cosmic"
+  canonicalUrl={articleUrl}
+>
+  <CosmicParticles />
+
+  <article class="relative z-10 max-w-4xl mx-auto px-6 py-24 text-white space-y-12 animate-fade-in-up">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[var(--color-gold)] opacity-70">
+      <a href="/research" class="hover:underline">EdResearch</a>
+      <span>/</span>
+      <a href="/research/cosmos" class="hover:underline">Cosmos</a>
+      <span>/</span>
+      <span class="text-white">{entry.data.title}</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="space-y-4 border-b border-white/10 pb-8">
+      <div class="flex items-center gap-3">
+        <span class="text-4xl">{entry.data.icon || '🌌'}</span>
+        <div>
+          <span class="text-xs font-mono uppercase tracking-wider text-[var(--color-gold)]">
+            Origin: {entry.data.origin || 'Ancient Tradition'}
+          </span>
+          <h1 class="text-4xl sm:text-6xl font-heading font-bold tracking-tight">
+            {entry.data.title}
+          </h1>
+        </div>
+      </div>
+      <p class="font-serif italic text-xl text-white/70 max-w-2xl leading-relaxed">
+        {entry.data.subtitle}
+      </p>
+    </header>
+
+    <!-- Content -->
+    <div class="prose prose-invert prose-lg max-w-none font-serif leading-relaxed space-y-6">
+      <Content />
+    </div>
+
+    <!-- Back to Cosmos -->
+    <footer class="pt-12 border-t border-white/10 flex items-center justify-between">
+      <a
+        href="/research/cosmos"
+        class="inline-flex items-center gap-2 text-sm font-heading font-bold text-[var(--color-gold)] hover:underline"
+      >
+        <span>&larr; Return to Paradigm Cosmos</span>
+      </a>
+      <a
+        href="/research"
+        class="inline-flex items-center gap-2 text-sm font-heading font-bold text-white/70 hover:text-white"
+      >
+        <span>Explore All EdResearch &rarr;</span>
+      </a>
+    </footer>
+  </article>
+</Layout>

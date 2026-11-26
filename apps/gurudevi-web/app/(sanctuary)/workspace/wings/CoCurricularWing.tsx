@@ -1,8 +1,6 @@
-'use client';
-
 import type { CoCurricularActivity } from '@/lib/domain/multiSphereDomain';
 import { Calendar, Users } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React from 'react';
 import styles from './cocurricular-wing.module.css';
 
@@ -51,7 +49,7 @@ export function CoCurricularWing({ activities }: CoCurricularWingProps): React.R
             </div>
 
             <div className={styles.actions}>
-              <Link href={`/workspace/events?scope=${act.id}`} className={styles.btnAction}>
+              <Link to="/workspace/events" className={styles.btnAction}>
                 Open Activity Hub ➔
               </Link>
             </div>

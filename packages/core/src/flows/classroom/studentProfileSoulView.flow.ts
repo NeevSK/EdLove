@@ -1,4 +1,4 @@
-import type { FeatureJTBDGraph } from '@repo/core/types/FlowDAG';
+import type { FeatureJTBDGraph } from '@repo/core/types/domainEntry';
 
 export const studentProfileSoulViewFlow: FeatureJTBDGraph = {
   featureId: 'classroom.student_profile_soul_view',

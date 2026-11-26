@@ -2,16 +2,10 @@ import { createORPCClient } from '@orpc/client';
 import { RPCLink } from '@orpc/client/fetch';
 import { SOVEREIGN_API_PUBLIC_URL, SOVEREIGN_ORPC_URL } from '@repo/core/api/base';
 import { assertSecureApiUrl } from '@repo/core/api/transportSecurity';
-import {
-  COMMUNITY_POSTS_PAGE_SIZE,
-  type CommunityPost,
-  type CommunityPostsQuery,
-  type CommunityPostsResult,
-  getExploreSamplePosts,
-  parseCommunityPosts,
-} from './posts-contract';
+import { getExploreSamplePosts, parseCommunityPosts } from './posts-contract';
+import { COMMUNITY_POSTS_PAGE_SIZE, type CommunityPostView, type CommunityPostsQuery, type CommunityPostsResult } from '@repo/core/types/communityView';
 
-export type { CommunityPost, CommunityPostsResult } from './posts-contract';
+export type { CommunityPostView, CommunityPostsResult } from '@repo/core/types/communityView';
 
 type CommunityPostsClient = {
   community: {
@@ -100,9 +94,9 @@ export async function createCommunityPost(
     postType?: string;
     authorTier?: string;
   },
-): Promise<CommunityPost | null> {
+): Promise<CommunityPostView | null> {
   if (accessToken === 'guest' || !accessToken) {
-    const mockPost: CommunityPost = {
+    const mockPost: CommunityPostView = {
       id: `local-${Date.now()}`,
       groupId: input.groupId,
       authorId: 'guest-explorer',

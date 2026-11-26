@@ -10,6 +10,13 @@ export default [
       'vitest.config.ts',
       'scratch/**',
       'dist/**',
+      // Retired pre-v1 API files, excluded from tsconfig.json, so typed lint can't parse them.
+      // Leaves with the rest of the retired API in Gate 1 (docs/architecture/road-to-v1.md).
+      'src/api/*.ts',
+      '!src/api/planBridge.orpc.contract.ts',
+      'src/api/orchestration/**',
+      'src/api/runtimes/**',
+      'src/api/hooks/**',
     ],
   },
   ...config,

@@ -1,5 +1,3 @@
-'use client';
-
 import {
   ArrowLeft,
   BookOpen,
@@ -14,12 +12,16 @@ import {
   Sparkles,
   Users,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useEffect, useState } from 'react';
 import styles from './classroom-detail.module.css';
 
 import { useClassroomDomain } from '@/lib/domain/classroomDomain';
+import { useAssetOutbox } from '@/lib/media/useAssetOutbox';
 import { useTranslation } from '@/lib/i18n';
+import { importDocxToMarkdown, importPptxToSlidesMarkdown } from '@repo/library/content/import';
+import type { H5PEvent } from '@repo/library/h5p';
+import { DocumentView, H5pView, Markdown, RichTextEditor } from '@repo/ui/components/web';
 
 export function ClassroomDetailFloor({
   classroomId,
@@ -32,6 +34,17 @@ export function ClassroomDetailFloor({
 }>): React.ReactElement {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'students' | 'lessons' | 'assignments' | 'notes'>('students');
+  const [openLessonId, setOpenLessonId] = useState<string | null>(null);
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [draftTitle, setDraftTitle] = useState('');
+  const [draftMarkdown, setDraftMarkdown] = useState('');
+  const [localLessons, setLocalLessons] = useState<
+    Array<{ id: string; title: string; date: string; status: string; summary: string; markdown?: string; fileUri?: string; fileMime?: string; h5pUrl?: string }>
+  >([]);
+  const [xapiLog, setXapiLog] = useState<H5PEvent[]>([]);
+  const { enqueueAsset, pendingAssetCount } = useAssetOutbox();
+  const [draftFileUri, setDraftFileUri] = useState<string | undefined>(undefined);
+  const [draftFileMime, setDraftFileMime] = useState<string | undefined>(undefined);
 
   const {
     classroomName,
@@ -46,7 +59,7 @@ export function ClassroomDetailFloor({
   return (
     <div className={styles.container}>
       <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
-        <Link href="/workspace" className={styles.breadcrumbLink}>
+        <Link to="/workspace" className={styles.breadcrumbLink}>
           {t('classroom.workspaceBreadcrumb') || 'Workspace'}
         </Link>
         <span>/</span>
@@ -63,10 +76,10 @@ export function ClassroomDetailFloor({
         </div>
 
         <div className={styles.headerActions}>
-          <Link href="/workspace" className={styles.btnSecondary}>
+          <Link to="/workspace" className={styles.btnSecondary}>
             <ArrowLeft size={16} /> {t('classroom.returnRollCall')}
           </Link>
-          <Link href={`/workspace/gradebook?classroom=${classroomId}`} className={styles.btnPrimary}>
+          <Link to="/workspace/gradebook" className={styles.btnPrimary}>
             <GraduationCap size={16} /> {t('classroom.openGradebook')}
           </Link>
         </div>
@@ -139,7 +152,7 @@ export function ClassroomDetailFloor({
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Learner Cohort & Presence Stability</h2>
-            <Link href="/workspace" className={styles.btnSecondary}>
+            <Link to="/workspace" className={styles.btnSecondary}>
               <CheckCircle size={16} /> Mark Today's Roll
             </Link>
           </div>
@@ -166,34 +179,163 @@ export function ClassroomDetailFloor({
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Curriculum Timeline & Pedagogical Journey</h2>
+            <button
+              type="button"
+              className={styles.btnSecondary}
+              onClick={() => setComposerOpen((v) => !v)}
+            >
+              <Plus size={16} /> {composerOpen ? 'Close Composer' : 'New / Import Lesson'}
+            </button>
           </div>
 
-          <div className={styles.lessonList}>
-            {lessons.map((lesson) => (
-              <article key={lesson.id} className={styles.lessonCard}>
-                <div className={styles.lessonHeader}>
-                  <div>
-                    <h3 className={styles.lessonTitle}>{lesson.title}</h3>
-                    <span className={styles.lessonDate}>Delivered on {lesson.date}</span>
-                  </div>
-                  <span
-                    style={{
-                      padding: '0.25rem 0.65rem',
-                      borderRadius: '9999px',
-                      fontSize: '0.78rem',
-                      fontWeight: 700,
-                      textTransform: 'uppercase',
-                      background: lesson.status === 'completed' ? '#dcfce7' : '#fef3c7',
-                      color: lesson.status === 'completed' ? '#15803d' : '#b45309',
+          {composerOpen && (
+            <div className={styles.lessonCard} style={{ marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <input
+                  type="text"
+                  placeholder="Lesson title…"
+                  value={draftTitle}
+                  onChange={(e) => setDraftTitle(e.target.value)}
+                  style={{ padding: '0.5rem 0.75rem', borderRadius: '0.4rem', border: '1px solid rgba(104,94,85,0.25)' }}
+                />
+                <input
+                  type="file"
+                  accept=".docx,.pptx,.md,.pdf,.h5p"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    if (!draftTitle.trim()) setDraftTitle(file.name.replace(/\.[^.]+$/, ''));
+                    const lower = file.name.toLowerCase();
+                    const queued = await enqueueAsset(file, {
+                      purpose: lower.endsWith('.h5p') ? 'h5p_package' : 'library_resource',
+                      visibility: 'institution',
+                      targetKind: 'classroom_material',
+                      targetId: classroomId,
+                      title: draftTitle || file.name,
+                    });
+                    if (queued.ok) {
+                      setDraftFileUri(queued.localUri);
+                      setDraftFileMime(file.type || undefined);
+                    }
+                    if (lower.endsWith('.docx')) {
+                      const res = await importDocxToMarkdown(await file.arrayBuffer(), { title: file.name });
+                      setDraftMarkdown(res.markdown);
+                    } else if (lower.endsWith('.pptx')) {
+                      const res = importPptxToSlidesMarkdown(await file.arrayBuffer(), { title: file.name });
+                      setDraftMarkdown(res.markdown);
+                    } else if (lower.endsWith('.md')) {
+                      setDraftMarkdown(await file.text());
+                    }
+                  }}
+                />
+                {pendingAssetCount > 0 && (
+                  <span style={{ fontSize: '0.8rem', opacity: 0.75 }}>
+                    Outbox: {pendingAssetCount} file(s) queued for upload
+                  </span>
+                )}
+                <RichTextEditor
+                  label="Lesson Body (Gurudevi Markdown)"
+                  value={draftMarkdown}
+                  onChange={setDraftMarkdown}
+                  placeholder="Write lesson content or import .docx / .pptx…"
+                />
+                <div>
+                  <button
+                    type="button"
+                    className={styles.btnPrimary}
+                    onClick={() => {
+                      if (!draftTitle.trim()) return;
+                      const created = {
+                        id: `local-${Date.now()}`,
+                        title: draftTitle.trim(),
+                        date: new Date().toISOString().slice(0, 10),
+                        status: 'in_progress',
+                        summary: draftMarkdown.slice(0, 140) || 'Imported lesson material',
+                        markdown: draftMarkdown || undefined,
+                        fileUri: draftFileUri,
+                        fileMime: draftFileMime,
+                      };
+                      setLocalLessons((prev) => [created, ...prev]);
+                      setOpenLessonId(created.id);
+                      setDraftTitle('');
+                      setDraftMarkdown('');
+                      setDraftFileUri(undefined);
+                      setDraftFileMime(undefined);
+                      setComposerOpen(false);
                     }}
                   >
-                    {lesson.status.replace('_', ' ')}
-                  </span>
+                    Save Lesson to Classroom
+                  </button>
                 </div>
-                <p className={styles.lessonBody}>{lesson.summary}</p>
-              </article>
-            ))}
+              </div>
+            </div>
+          )}
+
+          <div className={styles.lessonList}>
+            {[...localLessons, ...lessons].map((lesson) => {
+              const isOpen = openLessonId === lesson.id;
+              const extra = lesson as { markdown?: string; fileUri?: string; fileMime?: string; h5pUrl?: string };
+              return (
+                <article key={lesson.id} className={styles.lessonCard}>
+                  <div className={styles.lessonHeader}>
+                    <div>
+                      <h3 className={styles.lessonTitle}>{lesson.title}</h3>
+                      <span className={styles.lessonDate}>Delivered on {lesson.date}</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <button
+                        type="button"
+                        className={styles.btnSecondary}
+                        onClick={() => setOpenLessonId(isOpen ? null : lesson.id)}
+                      >
+                        <BookOpen size={14} /> {isOpen ? 'Hide' : 'Open'}
+                      </button>
+                      <span
+                        style={{
+                          padding: '0.25rem 0.65rem',
+                          borderRadius: '9999px',
+                          fontSize: '0.78rem',
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          background: lesson.status === 'completed' ? '#dcfce7' : '#fef3c7',
+                          color: lesson.status === 'completed' ? '#15803d' : '#b45309',
+                        }}
+                      >
+                        {lesson.status.replace('_', ' ')}
+                      </span>
+                    </div>
+                  </div>
+                  <p className={styles.lessonBody}>{lesson.summary}</p>
+                  {isOpen && (
+                    <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(104,94,85,0.15)' }}>
+                      {extra.markdown ? (
+                        <Markdown source={extra.markdown} />
+                      ) : extra.h5pUrl ? (
+                        <H5pView
+                          packageUrl={extra.h5pUrl}
+                          title={lesson.title}
+                          onXapi={(ev) => {
+                            if (ev && typeof ev === 'object' && 'verb' in ev) {
+                              setXapiLog((prev) => [ev as H5PEvent, ...prev]);
+                            }
+                          }}
+                        />
+                      ) : extra.fileUri ? (
+                        <DocumentView file={{ name: lesson.title, uri: extra.fileUri, mime: extra.fileMime }} />
+                      ) : (
+                        <Markdown source={`# ${lesson.title}\n\n${lesson.summary}`} />
+                      )}
+                    </div>
+                  )}
+                </article>
+              );
+            })}
           </div>
+          {xapiLog.length > 0 && (
+            <div style={{ marginTop: '1rem', fontSize: '0.82rem', opacity: 0.8 }}>
+              Recent H5P xAPI activity: {xapiLog[0]?.verb} ({xapiLog[0]?.activityId})
+            </div>
+          )}
         </section>
       )}
 

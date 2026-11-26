@@ -39,3 +39,28 @@ export const ThuthimalGiftSchema = makeModelSchema('ThuthimalGift');
  * Derived from ZenStack WhisperedMoment model.
  */
 export const WhisperedMomentSchema = makeModelSchema('WhisperedMoment');
+
+/**
+ * What the growth screens read: the counters and the stage of each path. The database leaves an
+ * unopened path's stage null; the UI must not invent one.
+ */
+export const GrowthViewSchema = z.object({
+  user_id: z.uuid(),
+  banyan_stage: z
+    .enum(['sapling', 'roots_spreading', 'canopy', 'shade_giver', 'forest_maker'])
+    .nullable(),
+  peer_mentored_count: z.number().int().nonnegative(),
+  circles_facilitated_count: z.number().int().nonnegative(),
+  river_stage: z.enum(['trickle', 'stream', 'river', 'delta']).nullable(),
+  crystal_tier: z.enum(['spark', 'cluster', 'cave', 'fractal']).nullable(),
+  crystals_found_count: z.number().int().nonnegative(),
+  fractal_moments_count: z.number().int().nonnegative(),
+});
+export type GrowthView = z.infer<typeof GrowthViewSchema>;
+
+/** The growth view kept on the device for offline reading. */
+export const SavedGrowthSchema = z.object({
+  savedAt: z.number().nonnegative(),
+  data: GrowthViewSchema.nullable(),
+});
+export type SavedGrowth = z.infer<typeof SavedGrowthSchema>;

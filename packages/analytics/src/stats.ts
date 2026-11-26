@@ -12,7 +12,6 @@ export const createPredictor = (db: DatabaseClient) => new ML_Predictor(db);
 export type { ClassroomGradingSettings, StudentGrade } from '@repo/core/types';
 export * from './ml/InsightGenerator';
 export * from './ml/Predictor';
-export * from './types';
 export * from './utils/analyticsHelpers';
 export * from './utils/benchmarking';
 

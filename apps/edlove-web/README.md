@@ -5,7 +5,7 @@ created: 2026-02-02
 updated: 2026-10-15
 author: "Naveen"
 scribe: "Antigravity"
-tags: [apps, edlove-web, nextjs16, ssg, education-commons]
+tags: [apps, edlove-web, astro, ssg, education-commons]
 ---
 
 # EDLOVE.ORG
@@ -43,12 +43,12 @@ Authoritative ecosystem documentation lives in the monorepo's `docs/` directory:
 
 ## 🛠️ Architecture & Tech Stack
 
-Per ADR [`2026-10-14-web-platform-standardization-nextjs-16-over-tanstack-start.md`](../../docs/decisions/2026-10-14-web-platform-standardization-nextjs-16-over-tanstack-start.md), the public web properties are standardized on **Next.js 16.4** with Turbopack, Tailwind CSS v4, and React 19:
+Per ADR [`2026-11-12-web-stack-astro-vite.md`](../../docs/decisions/2026-11-12-web-stack-astro-vite.md), the public web properties are built with **Astro 7.4** with Svelte, Tailwind CSS v4, and TypeScript 7.1 content mappers:
 
-- **SSG Static Generation**: 223 pre-rendered static routes (200 Educational Innovations, 6 Cosmos Paradigms, Pedagogy Canon, Ceylon Research Atlas).
+- **SSG Static Generation**: Pre-rendered static routes (Educational Innovations, Cosmos Paradigms, Pedagogy Canon, Ceylon Research Atlas).
 - **Search Engine & AI Discovery**:
-  - Dynamic XML Sitemap: `app/sitemap.ts` (`https://edlove.org/sitemap.xml`)
-  - Dynamic Robots Configuration: `app/robots.ts` indexing for Googlebot, Bingbot, Applebot, DuckDuckBot, ClaudeBot, GPTBot, and PerplexityBot.
+  - Dynamic XML Sitemap (`https://edlove.org/sitemap-index.xml`) via `@astrojs/sitemap`
+  - Dynamic Robots Configuration (`/robots.txt`) indexing for Googlebot, Bingbot, Applebot, DuckDuckBot, ClaudeBot, GPTBot, and PerplexityBot.
 - **Universal Accessibility**: Strict APCA/WCAG contrast compliance via `@repo/editorial` and `@intuitui-labs/a11y-gate`.
 
 ---
@@ -57,17 +57,14 @@ Per ADR [`2026-10-14-web-platform-standardization-nextjs-16-over-tanstack-start.
 
 ```text
 apps/edlove-web/
-├── app/                  # Next.js 16 App Router (223 static pages & API)
-│   ├── atlas/            # Ceylon Research Atlas & School Census
-│   ├── cosmos/           # 6 Educational Cosmos Paradigms
-│   ├── innovations/      # 200 Educational Innovations Archive
-│   ├── pedagogy/         # Pedagogy Canon
-│   ├── robots.ts         # Dynamic robots.txt
-│   └── sitemap.ts        # Dynamic sitemap.xml
-├── content/              # Markdown archives and collections
-├── lib/                  # Content readers, a11y, and editorial utilities
+├── src/
+│   ├── components/       # Astro and Svelte interactive components
+│   ├── content/          # Typed content collections (cosmos, library, journal)
+│   ├── layouts/          # Astro page layouts
+│   ├── pages/            # Astro static route pages
+│   └── styles/           # Tailwind v4 theme styling
 ├── public/               # Static assets & icons
-└── tests/                # G1 unit and integration test suites
+└── tests/                # Unit and integration test suites
 ```
 
 ---

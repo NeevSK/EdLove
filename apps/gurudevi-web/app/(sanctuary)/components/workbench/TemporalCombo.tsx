@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState, useEffect } from 'react';
 import { TemporalHorizonRefined, type TemporalHorizonRefinedProps } from './TemporalHorizonRefined';
 import { CircadianClockDial } from './CircadianClockDial';

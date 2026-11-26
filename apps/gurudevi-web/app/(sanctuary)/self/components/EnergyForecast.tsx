@@ -1,5 +1,3 @@
-'use client';
-
 import { Battery, Check } from 'lucide-react';
 import { useState } from 'react';
 import {

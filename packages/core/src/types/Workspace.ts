@@ -1,3 +1,5 @@
+import type { Place } from '@repo/core/types/Place';
+
 export type WorkspaceZoneId = 'today' | 'work' | 'institution' | 'outlook' | 'private';
 
 export type WorkspaceAppearancePreset = 'default' | 'dawn' | 'garden' | 'night' | 'none';
@@ -46,15 +48,15 @@ export type WorkspaceSwitcherTargetId =
   | 'personal'
   | 'commercial';
 
-export type WorkspaceSwitcherDestination =
-  | {
-      kind: 'route';
-      name: string;
-    }
-  | {
-      kind: 'tab';
-      name: string;
-    };
+/**
+ * Where a switcher target takes the person: always a place, never a screen name. Switching a
+ * perspective chooses which floor Workspace shows (one floor per capacity,
+ * `logic/places/workspaceCatalog`); `PLACE_ROUTES` says where the place is on each platform.
+ */
+export type WorkspaceSwitcherDestination = {
+  readonly kind: 'place';
+  readonly place: Place;
+};
 
 export interface WorkspaceSwitcherTarget {
   id: WorkspaceSwitcherTargetId;
@@ -126,52 +128,11 @@ export interface WorkspaceRendererConfig {
   maxColumns?: number;
 }
 
-import type { DomainEntry } from '@repo/core/logic/registry/domainEntry';
+import type { DomainEntry } from '@repo/core/types/domainEntry';
 
 export interface DomainFeature extends DomainEntry {
   icon?: string;
   defaultZone?: string;
-}
-
-export type WorkspaceRolePersona =
-  | 'founder'
-  | 'principal'
-  | 'assistantPrincipal'
-  | 'sectionHead'
-  | 'gradeHead'
-  | 'teacher'
-  | 'student'
-  | 'guardian'
-  | 'parent'
-  | 'developer';
-
-export type FeatureLifecycleStage = 'day_0_onboarding' | 'daily_circadian' | 'mastery_governance';
-
-export interface ScreenSequenceStep {
-  step: number;
-  screenId: string;
-  route: string;
-  title: string;
-  purpose: 'on_ramp' | 'primary_action' | 'sub_detail' | 'feedback_completion';
-  fallbackRoute?: string;
-}
-
-export interface SensoryFeedbackProfile {
-  tutiiMode: 'guiding' | 'celebrating' | 'resting' | 'somatic_calm' | 'alert';
-  tutiiRole?: 'guide' | 'companion' | 'sentinel';
-  haptic: 'light' | 'medium' | 'success' | 'warning' | 'selection';
-  soundChime?: 'arrival' | 'celebration' | 'pulse' | 'subtle_tap';
-  scaffoldDismissalKey?: string;
-  scaffoldThreshold?: number;
-}
-
-export interface FeatureJourneySpec {
-  featureId: string;
-  targetPersonas: WorkspaceRolePersona[];
-  stage: FeatureLifecycleStage;
-  entryRoute: string;
-  sequence: ScreenSequenceStep[];
-  feedback: SensoryFeedbackProfile;
 }
 
 export interface ResolvedWorkspaceSurface<

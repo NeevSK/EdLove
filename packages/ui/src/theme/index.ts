@@ -42,7 +42,41 @@ export {
   type PerchInk,
   type PerchShape,
 } from './perches';
-export { phaseTokens, resolveWorld, STANDARD_ACCESS } from './resolve';
+export {
+  COMFORT_SCALE,
+  phaseTokens,
+  resolveWorld,
+  STANDARD_ACCESS,
+  scaleRecipes,
+} from './resolve';
 export { SIGN_CYCLE_MS, SIGN_REST, SIGNS, type SignKind } from './signs';
 export type * from './types';
 export { DEFAULT_WORLD, isWorldId, WORLD_IDS, WORLDS, worldName } from './worlds';
+export {
+  type AspectClass,
+  aspectClassOf,
+  HUD_MAX_HEIGHT,
+  type Posture,
+  type ShellLayout,
+  type SizeClass,
+  type Stance,
+  shellLayoutOf,
+  sizeClassOf,
+} from './size';
+export { fitRadius, type RoomMark, roomMarkOf } from './shellMarks';
+export {
+  type CelebrationLevel,
+  type MomentShape,
+  momentOf,
+  momentPieces,
+  type WorldMomentStyle,
+} from './moments';
+export {
+  atLeast,
+  type Stage,
+  type StageTier,
+  STAGE_TIERS,
+  stageNamed,
+  stageOf,
+  stageTierOf,
+} from './stage';

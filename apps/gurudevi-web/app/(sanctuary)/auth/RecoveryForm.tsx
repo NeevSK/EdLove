@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { browserAuthRuntime, safeReturnPath } from './browserAuth';
@@ -93,7 +91,7 @@ export function RecoveryForm({ returnTo }: Readonly<{ returnTo: string }>) {
       </button>
       <Link
         className="block text-center font-sans text-sm font-semibold underline underline-offset-4 focus:outline-3 focus:outline-offset-2 focus:outline-water"
-        href={`/sign-in?returnTo=${encodeURIComponent(safeReturnPath(returnTo))}`}
+        to="/sign-in" search={{ returnTo: safeReturnPath(returnTo) }}
       >
         {t('auth.allSignInOptions') || 'Back to sign in'}
       </Link>
@@ -101,7 +99,7 @@ export function RecoveryForm({ returnTo }: Readonly<{ returnTo: string }>) {
         Need an account?{' '}
         <Link
           className="font-semibold underline underline-offset-4 focus:outline-3 focus:outline-offset-2 focus:outline-water"
-          href={`/sign-in?intent=signup&returnTo=${encodeURIComponent(safeReturnPath(returnTo))}`}
+          to="/sign-in" search={{ intent: 'signup', returnTo: safeReturnPath(returnTo) }}
         >
           Sign up
         </Link>

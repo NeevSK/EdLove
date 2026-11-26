@@ -1,5 +1,6 @@
+import { useDraft } from '@repo/ui/context/Drafts';
 import type { useChatOutbox } from '@repo/community/hooks/useChatOutbox';
-import type { ChatMessage } from '@repo/community/types';
+import type { ChatMessage } from '@repo/core/types/Community';
 import { WaitingSign } from '@repo/ui/components/native';
 import { ChatComposer } from '@repo/ui/components/ChatComposer';
 import { ErrorState } from '@repo/ui/components/native';
@@ -220,14 +221,17 @@ export function ChatInput({
   access,
   onTyping,
   typingUsers,
+  draftKey = null,
 }: {
   outbox: Pick<Outbox, 'submit' | 'admission'>;
   access: ChatComposerAccess;
   onTyping: (text: string) => void;
   typingUsers: string[];
+  /** Keeps an unsent message through a call or the app closing ("chat:class:7b"). */
+  draftKey?: string | null;
 }) {
   const { t } = useTranslation();
-  const [draft, setDraft] = useState('');
+  const { value: draft, setValue: setDraft } = useDraft(draftKey);
   const [failedMessage, setFailedMessage] = useState<string | null>(null);
   const send = async () => {
     const content = draft.trim();

@@ -95,6 +95,7 @@ export async function evaluateShape1(policyString: string, req: Shape1Request): 
     entities: [
       {
         uid: { type: 'User', id: req.user.id },
+        // contract-check: shapes typed request attributes into Cedar entity attributes
         attrs: entityAttributes.parse({ ...req.user.attrs, id: req.user.id }),
         parents: [],
       },
@@ -113,7 +114,9 @@ export async function evaluateShape1(policyString: string, req: Shape1Request): 
  */
 export async function evaluateShape2(policyString: string, req: Shape2Request): Promise<boolean> {
   const evaluate = await getWasmEvaluator();
+  // contract-check: shapes typed request attributes into Cedar entity attributes
   const principalAttrs = entityAttributes.parse({ ...req.user.attrs, id: req.user.id });
+  // contract-check: shapes typed request attributes into Cedar entity attributes
   const resourceAttrs = entityAttributes.parse({ ...req.resourceAttrs, id: req.resourceId });
   const sameEntity = req.resourceType === 'User' && req.resourceId === req.user.id;
   const decision = evaluate({

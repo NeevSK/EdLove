@@ -1,0 +1,365 @@
+{
+  "timestamp": "2026-11-17T07:01:09.065Z",
+  "exploreWelcomeFlow": {
+    "ok": true,
+    "welcomeTitle": "Welcome | Gurudevi Sanctuary",
+    "step1": true,
+    "step2": true,
+    "enterBtn": true,
+    "landedUrl": "http://explore.localhost:3000/self?intro=complete",
+    "errors": []
+  },
+  "exploreRoutes": [
+    {
+      "route": "/welcome",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/welcome",
+      "title": "Welcome | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/self",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/self",
+      "title": "Self | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace",
+      "title": "Workspace | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/atlas",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/atlas",
+      "title": "Functional Screen Atlas | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/attendance",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace?task=attendance",
+      "title": "Workspace | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/badges",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace",
+      "title": "Workspace | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/claim",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace",
+      "title": "Workspace | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/climate",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace/climate",
+      "title": "Climate Pulse | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/editorial",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace/editorial",
+      "title": "Editorial Commons | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/events",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace/events",
+      "title": "Programs & Events ERP | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/gradebook",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace/gradebook",
+      "title": "Gradebook | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/guardian",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace",
+      "title": "Workspace | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/kiosk",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace",
+      "title": "Workspace | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/notices",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace/notices",
+      "title": "School Notices & Circulars | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/plan",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace/plan",
+      "title": "Plan & Calm Notices | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/school",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace",
+      "title": "Workspace | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/submissions",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace/submissions",
+      "title": "Submissions | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/timetable",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace/timetable",
+      "title": "Timetable | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/tuition",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace",
+      "title": "Workspace | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace/workforce",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/workspace/workforce",
+      "title": "Workforce & Leave Management | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/community",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/community",
+      "title": "Community | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/community/announcements",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/community/announcements",
+      "title": "Broadcaster Updates | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/community/forest",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/community/forest",
+      "title": "School Forest | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/library",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/library",
+      "title": "Library | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/library/contribute",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/library/contribute",
+      "title": "Contribute Material | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/library/curator",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/library/curator",
+      "title": "Curator Studio | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/library/map",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/library/map",
+      "title": "Library Map | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/library/review",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/library/curator",
+      "title": "Curator Studio | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/library/tools",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/library/tools",
+      "title": "Knowledge Tools | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/notifications",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/notifications",
+      "title": "Notifications | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/profile",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/profile",
+      "title": "Profile | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/profile/security",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/profile/security",
+      "title": "Device Security | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/settings",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/settings",
+      "title": "Settings | Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/support",
+      "status": 200,
+      "currentUrl": "http://explore.localhost:3000/support",
+      "title": "Support, Guides & Contribution · Gurudevi Sanctuary",
+      "appMounted": true,
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "sanctuaryRedirects": [
+    {
+      "route": "/self",
+      "finalUrl": "http://sanctuary.localhost:3000/self",
+      "title": "Self | Gurudevi Sanctuary",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/workspace",
+      "finalUrl": "http://sanctuary.localhost:3000/workspace",
+      "title": "Workspace | Gurudevi Sanctuary",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/profile",
+      "finalUrl": "http://sanctuary.localhost:3000/profile",
+      "title": "Gurudevi",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "route": "/settings",
+      "finalUrl": "http://sanctuary.localhost:3000/settings",
+      "title": "Settings | Gurudevi Sanctuary",
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "sanctuaryDevPreview": [
+    {
+      "role": "teacher",
+      "title": "Workspace | Gurudevi Sanctuary",
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "summary": {
+    "totalAudited": 34,
+    "passed": 34,
+    "failed": 0,
+    "consoleErrors": 0,
+    "welcomeFlowOk": true
+  }
+}

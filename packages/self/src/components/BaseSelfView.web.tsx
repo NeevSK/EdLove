@@ -42,7 +42,9 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
   } as const;
   const gridColumns = breakpoint === 'desktop' ? 3 : breakpoint === 'tablet' ? 2 : 1;
 
-  const { viewMode, setViewMode, viewScale } = useTemporalStore();
+  const viewMode = useTemporalStore((s) => s.viewMode);
+  const setViewMode = useTemporalStore((s) => s.setViewMode);
+  const viewScale = useTemporalStore((s) => s.viewScale);
   const isHistoryMode = viewMode === 'timeline';
 
   const allFeatures = useMemo(

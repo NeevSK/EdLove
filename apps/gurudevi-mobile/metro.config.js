@@ -180,10 +180,6 @@ const SINGLETON_OVERRIDES = {
   effect: path.resolve(projectRoot, 'node_modules/effect'),
   '@effect/platform': path.resolve(projectRoot, 'node_modules/@effect/platform'),
   styleq: resolvePnpmPackageRoot('styleq'),
-  '@react-native-community/slider': path.resolve(
-    projectRoot,
-    'node_modules/@react-native-community/slider',
-  ),
   'react-native-webview': path.resolve(projectRoot, 'node_modules/react-native-webview'),
   'react-native-maps': path.resolve(projectRoot, 'node_modules/react-native-maps'),
   'react-native-linear-gradient': path.resolve(
@@ -282,7 +278,6 @@ config.resolver.extraNodeModules = {
 
 // 6. Platform Firewall & Deterministic Resolver
 const WEB_SHIMS = {
-  '@stripe/stripe-react-native': path.resolve(projectRoot, 'src/shims/stripe-web.js'),
   '@sentry/react-native': path.resolve(projectRoot, 'src/shims/sentry-web.js'),
   'posthog-react-native': path.resolve(projectRoot, 'src/shims/posthog-web.js'),
   'react-native-get-random-values': path.resolve(projectRoot, 'src/shims/get-random-values-web.js'),
@@ -360,9 +355,9 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   // Workspace packages are mapped to their source roots below. That mapping
   // intentionally bypasses package `exports`, so resolve conditional native
   // adapters explicitly before delegating to Metro.
-  if (moduleName === '@repo/core/native/localGuestActivation') {
+  if (moduleName === '@repo/core/accounts/localGuestActivation.coordinator') {
     return {
-      filePath: path.resolve(workspaceRoot, 'packages/core/src/native/localGuestActivation.ts'),
+      filePath: path.resolve(workspaceRoot, 'packages/core/src/accounts/localGuestActivation.coordinator.ts'),
       type: 'sourceFile',
     };
   }

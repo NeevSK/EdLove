@@ -9,6 +9,5 @@ export type SanctuarySessionKind = 'explore' | 'guest-cloud' | 'account';
 export interface SanctuaryExperience {
   readonly displayName: string;
   readonly kind: SanctuarySessionKind;
-  readonly navigationPrefix: string;
   readonly selfReflection: ExploreSelfReflectionAdapter;
 }

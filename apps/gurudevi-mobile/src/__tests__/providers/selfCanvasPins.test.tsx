@@ -42,7 +42,10 @@ vi.mock('@repo/core/store/useAuthStore', () => ({
   useAuthStore: (select: (state: { user: null }) => unknown) => select({ user: null }),
 }));
 vi.mock('@repo/ui', () => ({ useResponsiveGrid: () => ({ columns: 2, gutter: 16 }) }));
-vi.mock('expo-router', () => ({ router: { push: vi.fn() } }));
+vi.mock('expo-router', () => {
+  const router = { push: vi.fn() };
+  return { router, useRouter: () => router };
+});
 vi.mock('react-native', () => ({ useWindowDimensions: () => ({ width: 390, height: 844 }) }));
 vi.mock('@/navigation/registries/selfRegistry', () => ({
   getSelfRegistry: () => ({

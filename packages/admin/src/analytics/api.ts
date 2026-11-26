@@ -1,20 +1,5 @@
 import { multiTenantAnalyticsEngine } from '@repo/admin/analytics/engine';
-import type {
-  Anomaly,
-  BenchmarkInsights,
-  BenchmarkReport,
-  CustomReportConfig,
-  DateRange,
-  EducationSector,
-  Insight,
-  LiveMetrics,
-  MetricDefinition,
-  Prediction,
-  ReportResult,
-  TenantComparison,
-  TenantMetrics,
-  Trend,
-} from '@repo/admin/analytics/types';
+import type { Anomaly, BenchmarkInsights, BenchmarkReport, CustomReportConfig, DateRange, EducationSector, Insight, LiveMetrics, MetricDefinition, Prediction, ReportResult, TenantComparison, TenantMetrics, Trend } from '@repo/core/types/Analytics';
 
 export interface MultiTenantAnalyticsAPI {
   // Data aggregation

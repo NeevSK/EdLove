@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { defineConfig } from 'vitest/config';
+import { defineConfig, configDefaults } from 'vitest/config';
 
 export default defineConfig({
   resolve: {
@@ -29,6 +29,8 @@ export default defineConfig({
       { name: 'network', description: 'Network, synchronization, and external adapter calls' },
     ],
     include: ['src/**/*.{test,spec}.ts', 'packages/core/src/**/*.{test,spec}.ts'],
+    // Tests of reference-only *.web files (tooling/reference-only.mjs) don't run.
+    exclude: [...configDefaults.exclude, '**/*.web.test.ts', '**/*.web.test.tsx'],
     includeSource: ['src/logic/**/*.ts'],
     passWithNoTests: true,
     coverage: {

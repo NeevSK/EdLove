@@ -14,6 +14,20 @@ export default defineConfig({
 
   integrations: [svelte(), sitemap()],
 
+  redirects: {
+    '/cosmos': '/research/cosmos',
+    '/cosmos/[slug]': '/research/cosmos/[slug]',
+    '/library': '/research/library',
+    '/library/[...slug]': '/research/library/[...slug]',
+    '/sri-lanka': '/research/sri-lanka',
+    '/innovations': '/tech/innovations',
+    '/innovations/[...slug]': '/tech/innovations/[...slug]',
+    '/care/innovations': '/tech/innovations',
+    '/care/innovations/[...slug]': '/tech/innovations/[...slug]',
+    '/community': '/care/sangha',
+    '/gurudevi': '/tech/gurudevi',
+  },
+
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'si', 'ta'],

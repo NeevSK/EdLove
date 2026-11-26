@@ -28,7 +28,9 @@ export interface JourneyEvent {
  * Student, Teacher, Principal, or Founder.
  */
 export const useJourneyData = () => {
-  const { viewDate, viewMode, timelineFocus } = useTemporalStore();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const viewMode = useTemporalStore((s) => s.viewMode);
+  const timelineFocus = useTemporalStore((s) => s.timelineFocus);
   const { can, context } = usePermissions();
   const { userId } = context;
 

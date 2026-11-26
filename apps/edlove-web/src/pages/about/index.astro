@@ -1,0 +1,172 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CinematicBackground from '../../components/CinematicBackground.astro';
+import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
+import { absoluteUrl, ORGANIZATION } from '../../lib/site';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'About EdLove Foundation',
+  description: 'EdLove is a not-for-profit educational foundation dedicated to remembering that education is a form of love.',
+  url: absoluteUrl('/about'),
+  publisher: {
+    '@type': 'Organization',
+    name: 'EdLove Foundation',
+    url: absoluteUrl('/'),
+  },
+};
+---
+
+<Layout
+  title="About Us — EdLove Foundation"
+  description="Education is a form of love: giving love to the next generation so that they may flourish in their environment and develop themselves."
+  structuredData={structuredData}
+>
+  <div class="relative min-h-screen text-[var(--color-primaryInk)] pt-32 pb-32 overflow-hidden">
+    <CinematicBackground />
+
+    <article class="sanctuary-container relative z-10 max-w-4xl mx-auto px-6 sm:px-8 space-y-24">
+      
+      <!-- Minimalist Header in Pure Typographic Presence -->
+      <header class="pt-8 sm:pt-14 space-y-6 text-center animate-fade-in-up">
+        <h1 class="text-4xl sm:text-6xl md:text-7xl font-serif font-light text-[var(--color-primaryInk)] tracking-tight leading-[1.08]">
+          About the Foundation.
+        </h1>
+
+        <p class="font-serif italic text-xl sm:text-2xl text-[var(--color-mutedInk)] leading-relaxed max-w-2xl mx-auto">
+          &ldquo;Contributing to education in an honest, truthful manner: remembering education as a form of love.&rdquo;
+        </p>
+      </header>
+
+      <!-- The Core Genesis & Mission -->
+      <section class="border-y border-[var(--color-primaryInk)]/12 py-16 space-y-8 animate-fade-in-up delay-100">
+        <div class="prose-drop-cap font-serif text-xl sm:text-2xl text-[var(--color-primaryInk)] leading-[1.75] space-y-6">
+          <p>
+            EdLove exists to challenge the prevailing industrial paradigm that treats education as an extraction market, children as standardized throughput, and educators as bureaucratic data-entry clerks.
+          </p>
+          <p class="text-lg sm:text-xl text-[var(--color-secondaryInk)] leading-relaxed">
+            At our core is a simple, non-negotiable truth: <strong>Education is a form of love</strong>—giving love to the next generation so that they may flourish in their environment and develop themselves into whole, sovereign human beings.
+          </p>
+        </div>
+
+        <blockquote class="my-10 p-8 sm:p-10 border-l-4 border-[var(--color-gold)] bg-white/40 space-y-3">
+          <p class="text-2xl sm:text-3xl font-serif font-light italic text-[var(--color-primaryInk)] leading-snug">
+            &ldquo;When education is executed with excellence and quiet devotion, it is not an industrial transaction. It is an act of pure, transformative love.&rdquo;
+          </p>
+          <cite class="block text-sm font-heading font-bold text-[var(--color-secondaryInk)] not-italic uppercase tracking-wider">
+            &mdash; EdLove Foundation Charter
+          </cite>
+        </blockquote>
+      </section>
+
+      <!-- Governance, Independence & Structure -->
+      <section class="space-y-10">
+        <div class="space-y-2">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">Civic Architecture</span>
+          <h2 class="text-3xl sm:text-4xl font-heading font-bold text-[var(--color-primaryInk)]">
+            Independence &amp; Operational Governance
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+          <div class="bg-[#FCFBF9] border border-[var(--color-primaryInk)]/12 p-8 rounded-2xl shadow-xs space-y-4">
+            <span class="text-xs font-mono font-bold text-[var(--color-gold)] uppercase tracking-wider block">01 &middot; Independence</span>
+            <h3 class="text-2xl font-heading font-bold text-[var(--color-primaryInk)]">Non-Governmental &amp; Unaligned</h3>
+            <p class="font-serif text-base sm:text-lg text-[var(--color-secondaryInk)] leading-relaxed">
+              We accept no partisan, state-coercive, or speculative venture capital funding that would compromise our empirical honesty or distort our educational mission. Our field diagnostics are published with full intellectual sovereignty.
+            </p>
+          </div>
+
+          <div class="bg-[#FCFBF9] border border-[var(--color-primaryInk)]/12 p-8 rounded-2xl shadow-xs space-y-4">
+            <span class="text-xs font-mono font-bold text-[var(--color-gold)] uppercase tracking-wider block">02 &middot; Open Solidarity</span>
+            <h3 class="text-2xl font-heading font-bold text-[var(--color-primaryInk)]">100% Transparent Flow</h3>
+            <p class="font-serif text-base sm:text-lg text-[var(--color-secondaryInk)] leading-relaxed">
+              Through EdCare, our material solidarity (EdKind) and developmental accompaniment (EdLife) flow directly to vulnerable classrooms, teachers, and estate schools with open bookkeeping and zero administrative bloat.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- The Tripartite Constellation -->
+      <section class="border-y border-[var(--color-primaryInk)]/12 py-16 space-y-8">
+        <div class="space-y-3">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">The Ecosystem</span>
+          <h2 class="text-3xl sm:text-4xl font-heading font-bold text-[var(--color-primaryInk)]">
+            The Three Arms &amp; Technical Custodians
+          </h2>
+          <p class="font-serif italic text-lg sm:text-xl text-[var(--color-mutedInk)] leading-relaxed max-w-2xl">
+            EdLove unites three distinct yet harmonized bodies under one shared philosophical horizon:
+          </p>
+        </div>
+
+        <div class="space-y-6 pt-4">
+          <div class="p-6 sm:p-7 bg-white/80 border border-[var(--color-primaryInk)]/10 rounded-2xl shadow-2xs space-y-4">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-sm font-heading font-bold text-[var(--color-gold)]">
+                <span>Arm I &middot; Epistemic Core</span>
+                <a href="/research" class="hover:underline inline-flex items-center gap-1 min-h-[36px]">Explore EdResearch &rarr;</a>
+              </div>
+              <h4 class="text-xl sm:text-2xl font-heading font-bold text-[var(--color-primaryInk)] leading-snug">EdResearch</h4>
+            </div>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+              Rigorous empirical research operating at two orders: first-order research into the relational flow of teaching and learning (Teaning), and second-order meta-research exposing the structural realities of schooling and shadow tutoring economies.
+            </p>
+          </div>
+
+          <div class="p-6 sm:p-7 bg-white/80 border border-[var(--color-primaryInk)]/10 rounded-2xl shadow-2xs space-y-4">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-sm font-heading font-bold text-[var(--color-gold)]">
+                <span>Arm II &middot; Outward Giving</span>
+                <a href="/care" class="hover:underline inline-flex items-center gap-1 min-h-[36px]">Explore EdCare &rarr;</a>
+              </div>
+              <h4 class="text-xl sm:text-2xl font-heading font-bold text-[var(--color-primaryInk)] leading-snug">EdCare</h4>
+            </div>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+              Pure stewardship divided by one canonical rule: <strong>EdKind</strong> shifts what one <em>has</em> through material solidarity; <strong>EdLife</strong> cultivates what one <em>can do</em> through teacher training, mentoring, and community circles (The Sangha).
+            </p>
+          </div>
+
+          <div class="p-6 sm:p-7 bg-white/80 border border-[var(--color-primaryInk)]/10 rounded-2xl shadow-2xs space-y-4">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-sm font-heading font-bold text-[var(--color-gold)]">
+                <span>Arm III &middot; Convivial Artifact</span>
+                <a href="/tech" class="hover:underline inline-flex items-center gap-1 min-h-[36px]">Explore EdTech &rarr;</a>
+              </div>
+              <h4 class="text-xl sm:text-2xl font-heading font-bold text-[var(--color-primaryInk)] leading-snug">EdTech</h4>
+            </div>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+              Non-extractive, calm, offline-first digital instruments designed for human stillness and teacher autonomy—anchored by the flagship sanctuary <strong>Gurudevi</strong>, built in partnership with <strong>Intuitui Labs</strong>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Action / Connect -->
+      <section class="text-center pt-8 space-y-6">
+        <h3 class="text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+          Meet the People &amp; Get in Touch
+        </h3>
+        <p class="font-serif text-lg text-[var(--color-secondaryInk)] max-w-xl mx-auto leading-relaxed">
+          Discover the researchers, builders, and educators holding the sanctuary, or reach out to explore fellowship and collaboration.
+        </p>
+        <div class="flex flex-wrap justify-center gap-4 pt-2">
+          <a href="/team" class="px-8 py-3.5 rounded-full bg-[var(--color-primaryInk)] text-white font-heading font-semibold text-sm hover:bg-[var(--color-secondaryInk)] transition-all shadow-xs">
+            Meet Our Team &rarr;
+          </a>
+          <a href="/contact" class="px-8 py-3.5 rounded-full bg-white border border-[var(--color-primaryInk)]/20 font-heading font-semibold text-sm text-[var(--color-primaryInk)] hover:bg-black/5 transition-all">
+            Contact the Foundation &rarr;
+          </a>
+        </div>
+      </section>
+
+      <!-- Provenance Colophon -->
+      <ProvenanceColophon 
+        version="Foundation About v1.0"
+        canonicalUrl="https://edlove.org/about"
+        readingTime={3}
+        customNote="Official organizational statement of EdLove Foundation."
+      />
+    </article>
+  </div>
+</Layout>

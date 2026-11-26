@@ -19,12 +19,7 @@ import {
 
 import type React from 'react';
 import { useMemo } from 'react';
-import type {
-  GuardianDashboardData,
-  GuardianNotification,
-  SchoolEvent,
-  StudentOverview,
-} from '@repo/admin/guardian/types';
+import type { GuardianDashboard, GuardianNotification, GuardianSchoolEvent, GuardianStudentOverview } from '@repo/core/logic/schemas/guardian.schema';
 import { type GuardianCapabilityId, getGuardianCapabilityMeta } from '@repo/admin/guardian/workspace';
 
 export type GuardianWorkspaceSurfaceId =
@@ -53,12 +48,12 @@ export type GuardianWorkspaceSurface = WorkspaceSurfaceDefinition<
 
 type GuardianWorkspaceCanvasArgs = {
   schoolName?: string | null;
-  dashboard: GuardianDashboardData;
+  dashboard: GuardianDashboard;
   workspaceTargets?: WorkspaceSwitcherTarget[];
   onSelectWorkspaceTarget?: (target: WorkspaceSwitcherTarget) => void;
-  onOpenStudent: (student: StudentOverview) => void;
+  onOpenStudent: (student: GuardianStudentOverview) => void;
   onOpenNotification: (notification: GuardianNotification) => void;
-  onOpenEvent: (event: SchoolEvent) => void;
+  onOpenEvent: (event: GuardianSchoolEvent) => void;
   onOpenCommunity: () => void;
   onOpenLibrary: () => void;
 };
@@ -180,8 +175,8 @@ function StudentTile({
   student,
   onOpenStudent,
 }: {
-  student: StudentOverview;
-  onOpenStudent: (student: StudentOverview) => void;
+  student: GuardianStudentOverview;
+  onOpenStudent: (student: GuardianStudentOverview) => void;
 }) {
   const nextAssignment = student.upcomingAssignments[0];
 
@@ -260,8 +255,8 @@ function EventTile({
   event,
   onOpenEvent,
 }: {
-  event: SchoolEvent;
-  onOpenEvent: (event: SchoolEvent) => void;
+  event: GuardianSchoolEvent;
+  onOpenEvent: (event: GuardianSchoolEvent) => void;
 }) {
   return (
     <Pressable

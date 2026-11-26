@@ -19,6 +19,7 @@ export const InvoiceSchema = makeModelSchema('Invoice');
  */
 export const ReceiptSchema = makeModelSchema('Receipt');
 
-export type PaymentIntent = z.infer<typeof PaymentIntentSchema>;
-export type Invoice = z.infer<typeof InvoiceSchema>;
-export type Receipt = z.infer<typeof ReceiptSchema>;
+/** Database rows (ZenStack models). The domain shapes live in types/Payments.ts. */
+export type PaymentIntentRow = z.infer<typeof PaymentIntentSchema>;
+export type InvoiceRow = z.infer<typeof InvoiceSchema>;
+export type ReceiptRow = z.infer<typeof ReceiptSchema>;

@@ -1,5 +1,4 @@
-'use client';
-
+import { classifyGurudeviHost } from '../../../../lib/host-routing';
 import { planBridgeAPI } from '@repo/core/api/planBridge';
 import {
   type CalendarEventType,
@@ -18,6 +17,11 @@ import {
 } from '@repo/core/logic/modes';
 import { DEFAULT_SCHOOL_TIMEZONE } from '@repo/core/logic/modes/schedule';
 import React, { useCallback, useEffect, useState } from 'react';
+import {
+  SAMPLE_EVENTS,
+  SAMPLE_GRADE_CLASSES,
+  SAMPLE_SETTINGS,
+} from './planFloorFixtures';
 import styles from './plan.module.css';
 
 interface PlanFloorProps {
@@ -28,12 +32,23 @@ interface PlanFloorProps {
 const EVENT_TYPES: CalendarEventType[] = ['event', 'exam', 'sports', 'meeting', 'holiday'];
 
 export function PlanFloor({ initialCapacity, displayName }: Readonly<PlanFloorProps>) {
-  const [gradeClasses, setGradeClasses] = useState<PlanGradeClass[]>([]);
-  const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
-  const [settings, setSettings] = useState<PlanSettings | null>(null);
-  const [events, setEvents] = useState<PlanEvent[]>([]);
+  const isExplore =
+    typeof window !== 'undefined' && classifyGurudeviHost(window.location.host) === 'explore';
+
+  const [gradeClasses, setGradeClasses] = useState<PlanGradeClass[]>(() =>
+    isExplore ? SAMPLE_GRADE_CLASSES : [],
+  );
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(() =>
+    isExplore ? SAMPLE_GRADE_CLASSES[0]?.id ?? null : null,
+  );
+  const [settings, setSettings] = useState<PlanSettings | null>(() =>
+    isExplore ? SAMPLE_SETTINGS : null,
+  );
+  const [events, setEvents] = useState<PlanEvent[]>(() =>
+    isExplore ? SAMPLE_EVENTS : [],
+  );
   const [notices, setNotices] = useState<PlanNotice[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => !isExplore);
   const [error, setError] = useState<string | null>(null);
 
   // Notice Composer State
@@ -75,6 +90,10 @@ export function PlanFloor({ initialCapacity, displayName }: Readonly<PlanFloorPr
 
   // Load Grade Classes & School Calm Settings
   useEffect(() => {
+    const onGuestExplore =
+      typeof window !== 'undefined' && classifyGurudeviHost(window.location.host) === 'explore';
+    if (onGuestExplore) return;
+
     let active = true;
     async function load() {
       try {
@@ -92,7 +111,12 @@ export function PlanFloor({ initialCapacity, displayName }: Readonly<PlanFloorPr
         }
       } catch (err: any) {
         if (!active) return;
-        setError(err?.message || 'Could not load plan workspace.');
+        // Fallback to sample data if offline
+        setGradeClasses(SAMPLE_GRADE_CLASSES);
+        setSettings(SAMPLE_SETTINGS);
+        if (!selectedClassId) {
+          setSelectedClassId(SAMPLE_GRADE_CLASSES[0]?.id ?? null);
+        }
       } finally {
         if (active) setIsLoading(false);
       }
@@ -105,6 +129,10 @@ export function PlanFloor({ initialCapacity, displayName }: Readonly<PlanFloorPr
 
   // Load Events & Notices for Selected Grade Class
   useEffect(() => {
+    const onGuestExplore =
+      typeof window !== 'undefined' && classifyGurudeviHost(window.location.host) === 'explore';
+    if (onGuestExplore) return;
+
     const classId = selectedClass?.id;
     if (!classId) return;
     let active = true;
@@ -130,6 +158,10 @@ export function PlanFloor({ initialCapacity, displayName }: Readonly<PlanFloorPr
   // Preview Notice Schedule
   useEffect(() => {
     if (!selectedClass?.id) return;
+    const onGuestExplore =
+      typeof window !== 'undefined' && classifyGurudeviHost(window.location.host) === 'explore';
+    if (onGuestExplore) return;
+
     const tz = settings?.timezone ?? DEFAULT_SCHOOL_TIMEZONE;
     const isoSendAt = sendDate && sendTime ? schoolLocalToIso(sendDate, sendTime, tz) : null;
 

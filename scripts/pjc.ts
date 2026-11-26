@@ -3,7 +3,7 @@ import path from 'node:path';
 import {
   findUnregisteredFeatureModules,
   loadCatalogFile,
-} from '../packages/core/src/flows/pjc/catalogLoader';
+} from '../packages/core/src/flows/pjc/catalogLoader.adapter';
 import { type PjcHierarchy, validateHierarchy } from '../packages/core/src/flows/pjc/hierarchy';
 import { inspectHierarchyJourney } from '../packages/core/src/flows/pjc/hierarchyQuery';
 
@@ -607,7 +607,7 @@ try {
             ...view.sharedBindings.map((item) => item.id),
           ]);
           const globalGaps = new Set(
-            unregistered.map((name) => `${name}: feature module not registered in manifest`),
+            unregistered.map((name: string) => `${name}: feature module not registered in manifest`),
           );
           output = {
             ...full,

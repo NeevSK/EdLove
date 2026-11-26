@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 
 export const GUEST_LEASE_DAYS = 15;
 export const GUEST_LEASE_REMINDER_DAYS = [1, 3, 6, 10, 15] as const;

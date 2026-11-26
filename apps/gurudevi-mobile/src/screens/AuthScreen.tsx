@@ -2,7 +2,6 @@ import { useState, useCallback, useMemo } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   View,
@@ -17,7 +16,7 @@ import { handleAPIError } from '@repo/core';
 import { validators } from '@repo/core/utils';
 import { useDeviceAccounts } from '@repo/core/hooks';
 import { accountPin, getSessionIdentityMode } from '@repo/core/logic';
-import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
+import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink.adapter';
 import {
   authorizeExistingAccountTransfer,
   beginGuestConversion,
@@ -26,21 +25,25 @@ import {
   clearExistingAccountTransferAuthorization,
 } from '@repo/core/native/guestConversionLedger';
 import { restoreLocalGuestSession } from '@repo/core/native/localGuestSession';
-import { showToast } from '@repo/core/lib/feedback';
+import { showToast } from '@repo/core/lib/feedback.adapter';
 import {
+  Avatar,
   Button,
+  Group,
   IconButton,
-  SceneBackdrop,
+  Link,
+  Row,
   Surface,
   Text,
   TextField,
-  useScene,
+  useFloorPresence,
 } from '@repo/ui/components/native';
+import { useWorld, WorldEnter } from '@repo/ui/theme/native';
 import { ArrowLeft } from '@repo/ui/icons/native';
-import { useWorld } from '@repo/ui/theme/native';
 import { EXTERNAL_URLS } from '@repo/ui/utils';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import AccountPinModal, { type AccountPinModalSubmit } from '@repo/ui/components/AccountPinModal';
+import type { AccountPinModalSubmit } from '@repo/ui/components/AccountPinModal';
+import { AccountPinDialog } from '@/components/pin/AccountPinDialog';
 import { signInWithGoogleNative } from '@/lib/googleSignIn';
 
 // Android requirement for deep-link completion in standalone browser
@@ -78,15 +81,11 @@ function GoogleGlyph({ size = 18 }: { size?: number }) {
   );
 }
 
-export default function AuthScreen({
-  onSuccess,
-  onBack,
-  onNavigateRecovery,
-}: AuthScreenProps) {
+export default function AuthScreen({ onSuccess, onBack, onNavigateRecovery }: AuthScreenProps) {
   const { t } = useTranslation();
   const world = useWorld();
   const wt = world.tokens;
-  const scene = useScene({ presence: 'full' });
+  useFloorPresence('full');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -153,45 +152,58 @@ export default function AuthScreen({
       const isAnon = getSessionIdentityMode(session) === 'anonymous';
       guestSourceId = await prepareGuestConversion(session);
 
-      if (Platform.OS !== 'web') {
-        const { idToken, accessToken } = await signInWithGoogleNative();
-        let nativeResult;
+      let signedIn = false;
 
-        if (isAnon && session?.user) {
-          try {
-            nativeResult = await authAPI.linkGoogleIdentity(idToken, accessToken);
-          } catch (linkError: any) {
-            const msg = `${linkError?.message ?? ''} ${linkError?.code ?? ''}`.toLowerCase();
-            const alreadyLinked =
-              msg.includes('already') ||
-              linkError?.code === 'link_identity_failed' ||
-              linkError?.code === 'same_identity';
-            if (!alreadyLinked) throw linkError;
-            await authorizeExistingAccountTransfer(session.user.id);
+      if (Platform.OS !== 'web') {
+        try {
+          const { idToken, accessToken } = await signInWithGoogleNative();
+          let nativeResult;
+
+          if (isAnon && session?.user) {
+            try {
+              nativeResult = await authAPI.linkGoogleIdentity(idToken, accessToken);
+            } catch (linkError: any) {
+              const msg = `${linkError?.message ?? ''} ${linkError?.code ?? ''}`.toLowerCase();
+              const alreadyLinked =
+                msg.includes('already') ||
+                linkError?.code === 'link_identity_failed' ||
+                linkError?.code === 'same_identity';
+              if (!alreadyLinked) throw linkError;
+              await authorizeExistingAccountTransfer(session.user.id);
+              nativeResult = await authAPI.signInWithGoogleIdToken(idToken, accessToken);
+            }
+          } else {
+            if (guestSourceId) {
+              await authorizeExistingAccountTransfer(guestSourceId);
+            }
             nativeResult = await authAPI.signInWithGoogleIdToken(idToken, accessToken);
           }
-        } else {
-          if (guestSourceId) {
-            await authorizeExistingAccountTransfer(guestSourceId);
+
+          if (!nativeResult?.session || !nativeResult?.user) {
+            throw new Error('Native Google sign-in returned no active session.');
           }
-          nativeResult = await authAPI.signInWithGoogleIdToken(idToken, accessToken);
-        }
 
-        if (!nativeResult?.session || !nativeResult?.user) {
-          throw new Error('Native Google sign-in returned no active session.');
+          hapticSuccess();
+          await finishSignIn({ guestSourceId });
+          signedIn = true;
+        } catch (nativeError: any) {
+          console.warn(
+            '[GoogleAuth] Native One-Tap unavailable or failed; attempting browser OAuth fallback:',
+            nativeError,
+          );
         }
+      }
 
-        hapticSuccess();
-        await finishSignIn({ guestSourceId });
-      } else {
-        // Fallback for Web OAuth
+      if (!signedIn) {
+        // Fallback for Web OAuth or when native One-Tap is unavailable
         const redirectUrl = getRedirectUrl();
-        const oauthOptions = isAnon && session?.user
-          ? await authAPI.linkOAuthIdentity('google', redirectUrl, true)
-          : await (async () => {
-              if (guestSourceId) await authorizeExistingAccountTransfer(guestSourceId);
-              return authAPI.signInWithOAuth('google', redirectUrl, true);
-            })();
+        const oauthOptions =
+          isAnon && session?.user
+            ? await authAPI.linkOAuthIdentity('google', redirectUrl, true)
+            : await (async () => {
+                if (guestSourceId) await authorizeExistingAccountTransfer(guestSourceId);
+                return authAPI.signInWithOAuth('google', redirectUrl, true);
+              })();
 
         const oauthUrl = (oauthOptions as { url?: string })?.url;
         if (!oauthUrl) throw new Error('Could not establish Google OAuth URL.');
@@ -249,10 +261,7 @@ export default function AuthScreen({
       }
 
       hapticSuccess();
-      showToast(
-        'Check your email! A secure login link is on its way.',
-        'success',
-      );
+      showToast('Check your email! A secure login link is on its way.', 'success');
     } catch (error: any) {
       if (guestSourceId) {
         await clearExistingAccountTransferAuthorization(guestSourceId);
@@ -360,11 +369,7 @@ export default function AuthScreen({
   );
 
   return (
-    <View style={[styles.root, { backgroundColor: wt.ground }]}>
-      <SceneBackdrop
-        scene={scene}
-        wash={{ colour: wt.ground, edge: 0.12, text: 1.0, textFrom: 0.35 }}
-      />
+    <View style={styles.root}>
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -380,17 +385,14 @@ export default function AuthScreen({
                 size="md"
                 onPress={onBack}
               />
-            ) : <View style={{ width: 44, height: 44 }} />}
+            ) : (
+              <View style={{ width: 44, height: 44 }} />
+            )}
 
-            <View
-              style={[
-                styles.brandBadge,
-                { backgroundColor: wt.raised, borderColor: wt.line },
-              ]}
-            >
+            <View style={[styles.brandBadge, { backgroundColor: wt.raised, borderColor: wt.line }]}>
               <View style={[styles.brandDot, { backgroundColor: wt.lamp }]} />
               <Text kind="caption" tone="soft" style={styles.brandBadgeText}>
-                SANCTUARY AUTH
+                Gurudevi
               </Text>
             </View>
 
@@ -414,140 +416,126 @@ export default function AuthScreen({
 
             {/* Remembered Device Accounts */}
             {!accountsLoading && accounts.length > 0 ? (
-              <Surface tone="raised" style={styles.accountsCard}>
-                <Text kind="label" tone="soft">
-                  CONTINUE AS
-                </Text>
-                <View style={styles.accountsList}>
-                  {accounts.map((account) => (
-                    <Pressable
-                      key={account.accountId}
-                      onPress={() => handleRememberedAccountPress(account.accountId)}
-                      disabled={Boolean(busyAccountId)}
-                      style={[
-                        styles.accountRow,
-                        { borderColor: wt.line, backgroundColor: wt.ground },
-                      ]}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Continue as ${account.displayName || account.email}`}
-                    >
-                      <View style={{ flex: 1 }}>
-                        <Text kind="body" tone="ink" style={{ fontWeight: '600' }}>
-                          {account.displayName || account.email || 'Saved account'}
-                        </Text>
-                        {account.email ? (
-                          <Text kind="caption" tone="soft">
-                            {account.email}
-                          </Text>
-                        ) : null}
-                      </View>
-                    </Pressable>
-                  ))}
-                </View>
-              </Surface>
+              <WorldEnter index={0}>
+                <Group label="Continue as">
+                  {accounts.map((account) => {
+                    const name = account.displayName || account.email || 'Saved account';
+                    return (
+                      <Row
+                        key={account.accountId}
+                        label={name}
+                        detail={account.displayName ? (account.email ?? undefined) : undefined}
+                        accessory={<Avatar name={name} size="sm" />}
+                        chevron
+                        onPress={
+                          busyAccountId
+                            ? undefined
+                            : () => handleRememberedAccountPress(account.accountId)
+                        }
+                      />
+                    );
+                  })}
+                </Group>
+              </WorldEnter>
             ) : null}
 
             {/* Primary Sign-In Card */}
-            <Surface tone="raised" style={styles.authCard}>
-              {/* Google Native Action */}
-              <Button
-                label="Continue with Google"
-                icon={GoogleGlyph}
-                variant="secondary"
-                size="lg"
-                fullWidth
-                loading={loadingProvider === 'google'}
-                onPress={handleGoogleSignIn}
-              />
-
-              {/* Or Divider */}
-              <View style={styles.dividerRow}>
-                <View style={[styles.dividerLine, { backgroundColor: wt.line }]} />
-                <Text kind="caption" tone="faint" style={styles.dividerText}>
-                  or with email
-                </Text>
-                <View style={[styles.dividerLine, { backgroundColor: wt.line }]} />
-              </View>
-
-              {/* Email & Password Form */}
-              <View style={styles.formFields}>
-                <TextField
-                  label="Email address"
-                  value={email}
-                  onChangeText={(val) => {
-                    setEmail(val);
-                    if (errorField === 'email') setErrorField(null);
-                  }}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  error={errorField === 'email' ? (errorMessage ?? undefined) : undefined}
-                  placeholder="you@school.lk or personal"
-                />
-
-                {usePassword ? (
-                  <View style={{ gap: 8 }}>
-                    <TextField
-                      label="Password"
-                      value={password}
-                      onChangeText={(val) => {
-                        setPassword(val);
-                        if (errorField === 'password') setErrorField(null);
-                      }}
-                      secureTextEntry
-                      autoComplete="current-password"
-                      error={errorField === 'password' ? (errorMessage ?? undefined) : undefined}
-                      placeholder="Enter your password"
-                    />
-
-                    {onNavigateRecovery ? (
-                      <Pressable
-                        onPress={onNavigateRecovery}
-                        hitSlop={8}
-                        style={{ alignSelf: 'flex-end', paddingTop: 2 }}
-                      >
-                        <Text kind="caption" tone="lamp" style={styles.underlined}>
-                          Forgot password?
-                        </Text>
-                      </Pressable>
-                    ) : null}
-                  </View>
-                ) : null}
-
-                {errorField === 'form' && errorMessage ? (
-                  <Text kind="caption" tone="danger" align="center">
-                    {errorMessage}
-                  </Text>
-                ) : null}
-
-                {/* Primary Submit */}
+            <WorldEnter index={1}>
+              <Surface tone="raised" style={styles.authCard}>
+                {/* Google Native Action */}
                 <Button
-                  label={usePassword ? 'Sign In with Password' : 'Send Magic Link'}
-                  variant="primary"
+                  label="Continue with Google"
+                  icon={GoogleGlyph}
+                  variant="secondary"
                   size="lg"
                   fullWidth
-                  loading={loadingProvider === 'email'}
-                  onPress={usePassword ? handlePasswordSignIn : handleMagicLink}
+                  loading={loadingProvider === 'google'}
+                  onPress={handleGoogleSignIn}
                 />
 
-                {/* Password / Magic Link Mode Toggle */}
-                <Button
-                  label={
-                    usePassword
-                      ? 'Email me a magic link instead'
-                      : 'Sign in with password instead'
-                  }
-                  variant="quiet"
-                  size="sm"
-                  fullWidth
-                  onPress={() => {
-                    setUsePassword(!usePassword);
-                    setErrorField(null);
-                    setErrorMessage(null);
-                  }}
-                />
-              </View>
-            </Surface>
+                {/* Or Divider */}
+                <View style={styles.dividerRow}>
+                  <View style={[styles.dividerLine, { backgroundColor: wt.line }]} />
+                  <Text kind="caption" tone="faint" style={styles.dividerText}>
+                    or with email
+                  </Text>
+                  <View style={[styles.dividerLine, { backgroundColor: wt.line }]} />
+                </View>
+
+                {/* Email & Password Form */}
+                <View style={styles.formFields}>
+                  <TextField
+                    label="Email address"
+                    value={email}
+                    onChangeText={(val) => {
+                      setEmail(val);
+                      if (errorField === 'email') setErrorField(null);
+                    }}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    error={errorField === 'email' ? (errorMessage ?? undefined) : undefined}
+                    placeholder="you@school.lk or personal"
+                  />
+
+                  {usePassword ? (
+                    <View style={{ gap: 8 }}>
+                      <TextField
+                        label="Password"
+                        value={password}
+                        onChangeText={(val) => {
+                          setPassword(val);
+                          if (errorField === 'password') setErrorField(null);
+                        }}
+                        secureTextEntry
+                        autoComplete="current-password"
+                        error={errorField === 'password' ? (errorMessage ?? undefined) : undefined}
+                        placeholder="Enter your password"
+                      />
+
+                      {onNavigateRecovery ? (
+                        <View style={{ alignSelf: 'flex-end', paddingTop: 2 }}>
+                          <Link label="Forgot password?" onPress={onNavigateRecovery} />
+                        </View>
+                      ) : null}
+                    </View>
+                  ) : null}
+
+                  {errorField === 'form' && errorMessage ? (
+                    <Text kind="caption" tone="danger" align="center">
+                      {errorMessage}
+                    </Text>
+                  ) : null}
+
+                  {/* Primary Submit */}
+                  <Button
+                    label={usePassword ? 'Sign In with Password' : 'Send Magic Link'}
+                    variant="primary"
+                    size="lg"
+                    fullWidth
+                    loading={loadingProvider === 'email'}
+                    onPress={usePassword ? handlePasswordSignIn : handleMagicLink}
+                  />
+
+                  {/* Password / Magic Link Mode Toggle */}
+                  <Button
+                    label={
+                      usePassword
+                        ? 'Email me a magic link instead'
+                        : 'Sign in with password instead'
+                    }
+                    variant="quiet"
+                    size="sm"
+                    fullWidth
+                    onPress={() => {
+                      setUsePassword(!usePassword);
+                      setErrorField(null);
+                      setErrorMessage(null);
+                    }}
+                  />
+                </View>
+              </Surface>
+            </WorldEnter>
 
             {/* Privacy & Terms Footnote */}
             <View style={styles.footer}>
@@ -560,7 +548,7 @@ export default function AuthScreen({
       </SafeAreaView>
 
       {/* Account PIN verification modal */}
-      <AccountPinModal
+      <AccountPinDialog
         isOpen={Boolean(pendingPinAccountId)}
         mode="verify"
         accountLabel={

@@ -1,17 +1,10 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { render } from '@/tests/support/render';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TutiiSidePanel } from '../../../app/(sanctuary)/components/TutiiSidePanel';
-
-const mockPush = vi.fn();
-
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
-}));
 
 beforeAll(() => {
   if (typeof window !== 'undefined' && window.HTMLElement) {
@@ -110,20 +103,15 @@ describe('TutiiSidePanel (Notion-style Side Panel)', () => {
 
   it('pops out to full screen when pop out button is pressed', async () => {
     const onClose = vi.fn();
-    renderWithClient(
-      <TutiiSidePanel
-        isOpen={true}
-        onClose={onClose}
-        pathname="/community"
-        displayName="Teacher Nimal"
-        navigationPrefix="/s"
-      />,
+    const { router } = renderWithClient(
+      <TutiiSidePanel isOpen={true} onClose={onClose} pathname="/community" displayName="Teacher Nimal" />,
     );
 
     const popOutBtn = screen.getByRole('button', { name: 'Open full screen in Community DM' });
     await userEvent.click(popOutBtn);
 
     expect(onClose).toHaveBeenCalled();
-    expect(mockPush).toHaveBeenCalledWith('/s/community?pillar=messages&dm=tutii');
+    expect(router.history.location.pathname).toBe('/community');
+    expect(router.history.location.search).toBe('?pillar=messages&dm=tutii');
   });
 });

@@ -1,6 +1,6 @@
 import { getAuthRouteTarget } from '@repo/core/logic/auth/bootstrapRoutes';
 import { DeepLinkStateGuard } from '@repo/core/logic/auth/deepLinkStateGuard';
-import { DeepLinkType, handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
+import { DeepLinkType, handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink.adapter';
 import { describe, expect, it, vi } from 'vitest';
 import { dispatchDeepLink } from '@/lib/deepLinks/dispatchDeepLink';
 import {

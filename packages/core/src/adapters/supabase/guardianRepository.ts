@@ -1,4 +1,4 @@
-import type { GuardianRepository } from '@repo/core/logic/domains/guardian/ports';
+import type { GuardianRepository } from '@repo/core/logic/ports/guardian.port';
 import {
   type GuardianIdentity,
   GuardianIdentitySchema,

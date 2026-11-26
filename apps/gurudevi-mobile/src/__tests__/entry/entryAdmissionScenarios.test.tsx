@@ -29,7 +29,7 @@ vi.mock('@repo/ui/primitives', () => ({
   Text: 'Text',
 }));
 
-import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntentStore';
+import { pendingIntentStore } from '@repo/core/logic/deeplink/pendingIntent.store';
 import { SessionRouteGate } from '@/entry/SessionRouteGate';
 
 import { redirectSystemPath } from '../../../app/+native-intent';

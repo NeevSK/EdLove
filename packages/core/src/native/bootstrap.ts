@@ -1,21 +1,18 @@
 import { startNetworkBusAdapter } from '@repo/core/adapters/NetworkBusAdapter';
-// Adapters
+// Native adapters (web adapters are dynamically imported only when Platform.OS === 'web')
 import { NativeCryptoAdapter } from '@repo/core/adapters/native/NativeCryptoAdapter';
 import { NativeNetworkAdapter } from '@repo/core/adapters/native/NativeNetworkAdapter';
 import { SentryTelemetryAdapter } from '@repo/core/adapters/native/SentryTelemetryAdapter';
 import { SimulatorDeviceIdentityAdapter } from '@repo/core/adapters/native/SimulatorDeviceIdentityAdapter';
-import { WebCryptoAdapter } from '@repo/core/adapters/WebCryptoAdapter';
-import { WebNetworkAdapter } from '@repo/core/adapters/WebNetworkAdapter';
-import { BrowserStorageAdapter } from '@repo/core/adapters/web/BrowserStorageAdapter';
 import { cryptoVault } from '@repo/core/platform/drivers/cryptoVault';
 import { deviceIdentityDriver } from '@repo/core/platform/drivers/deviceIdentityDriver';
 import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 // Managers
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { telemetrySink } from '@repo/core/platform/drivers/telemetrySink';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { Runtime } from '@repo/core/native/runtime';
-import { nativeRuntimeEnvironment, webRuntimeEnvironment } from '@repo/core/native/runtimeAdapter';
+import { nativeRuntimeEnvironment } from '@repo/core/native/runtimeAdapter';
 import { selectNativeStorageAdapter } from '@repo/core/native/storageBackendSelection';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
@@ -43,8 +40,13 @@ async function initializePlatform(): Promise<void> {
     networkMonitor.registerAdapter(new NativeNetworkAdapter());
     deviceIdentityDriver.registerAdapter(new SimulatorDeviceIdentityAdapter());
   } else {
+    const [{ WebCryptoAdapter }, { BrowserSentryTelemetryAdapter }, { WebNetworkAdapter }] =
+      await Promise.all([
+        import('@repo/core/adapters/WebCryptoAdapter'),
+        import('@repo/core/native/webSentryAdapter'),
+        import('@repo/core/adapters/WebNetworkAdapter'),
+      ]);
     cryptoVault.registerAdapter(new WebCryptoAdapter());
-    const { BrowserSentryTelemetryAdapter } = await import('@repo/core/native/webSentryAdapter');
     telemetrySink.registerAdapter(new BrowserSentryTelemetryAdapter());
     networkMonitor.registerAdapter(new WebNetworkAdapter());
   }
@@ -54,6 +56,7 @@ async function initializePlatform(): Promise<void> {
 
   // 2. Initialize Storage
   if (isWeb) {
+    const { BrowserStorageAdapter } = await import('@repo/core/adapters/web/BrowserStorageAdapter');
     storage.registerAdapter(new BrowserStorageAdapter());
   } else {
     const adapter = await selectNativeStorageAdapter({
@@ -65,7 +68,12 @@ async function initializePlatform(): Promise<void> {
 
   // 3. Register Core Runtime with all providers (asset, haptics, linking, etc.)
   //     This must happen after adapter initialization but before app mount
-  coreRuntime.register(isWeb ? webRuntimeEnvironment : nativeRuntimeEnvironment);
+  if (isWeb) {
+    const { webRuntimeEnvironment } = await import('@repo/core/native/runtimeAdapter');
+    coreRuntime.register(webRuntimeEnvironment);
+  } else {
+    coreRuntime.register(nativeRuntimeEnvironment);
+  }
 }
 
 /**

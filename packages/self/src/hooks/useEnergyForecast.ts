@@ -6,7 +6,7 @@ import {
   fetchEnergyForecastsForView,
   saveEnergyForecastForDate,
 } from '@repo/self/data/selfInsights.data';
-import type { EnergyForecast } from '@repo/self/types';
+import type { EnergyForecast } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const ENERGY_CACHE_KEY = 'gurudevi-energy-cache';

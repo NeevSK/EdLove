@@ -1,5 +1,3 @@
-'use client';
-
 import {
   GURUDEVI_WEB_HOST,
   type LabResult,

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getActiveAccountId, scopeStorageKey } from '@repo/core/lib/accountScope';
+import { getActiveAccountId, scopeStorageKey } from '@repo/core/lib/accountScope.adapter';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 

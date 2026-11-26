@@ -7,7 +7,7 @@ import type {
   IAuthorizationPort,
   IEntitlementPort,
 } from '../../index';
-import { satisfiesEntitlementRequirement } from '../entitlement.port';
+import { satisfiesEntitlementRequirement } from '../../permissions/entitlement';
 
 describe('Hexagonal Ports Interfaces Compilation & Contract Verification', () => {
   it('evaluates subscription tiers and add-on modules independently', () => {

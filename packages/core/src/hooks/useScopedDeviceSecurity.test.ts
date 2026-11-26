@@ -39,8 +39,12 @@ describe('scoped device-security query admission', () => {
 
     await invalidateDeviceSecuritySummary(client, accountA);
 
-    expect(client.getQueryState(deviceSecurityQueryKeys.summary(accountA))?.isInvalidated).toBe(true);
-    expect(client.getQueryState(deviceSecurityQueryKeys.summary(accountB))?.isInvalidated).toBe(false);
+    expect(client.getQueryState(deviceSecurityQueryKeys.summary(accountA))?.isInvalidated).toBe(
+      true,
+    );
+    expect(client.getQueryState(deviceSecurityQueryKeys.summary(accountB))?.isInvalidated).toBe(
+      false,
+    );
   });
 
   it('disposes only the outgoing principal summary and preserves durable mutations', async () => {
@@ -57,7 +61,9 @@ describe('scoped device-security query admission', () => {
     await disposeAccountBoundaryQueries(client, 'account-a');
 
     expect(client.getQueryData(deviceSecurityQueryKeys.summary(accountA))).toBeUndefined();
-    expect(client.getQueryData(deviceSecurityQueryKeys.summary(accountB))).toEqual({ devices: ['b'] });
+    expect(client.getQueryData(deviceSecurityQueryKeys.summary(accountB))).toEqual({
+      devices: ['b'],
+    });
     expect(client.getMutationCache().find({ mutationId: mutation.mutationId })).toBe(mutation);
   });
 });
@@ -76,10 +82,16 @@ describe('device-security command confirmation', () => {
   it('refreshes only after a confirmed command and preserves rejected outcomes', async () => {
     const refresh = vi.fn(async () => undefined);
 
-    await completeDeviceSecurityCommand(async () => ({ queued: false, data: 'confirmed' }), refresh);
+    await completeDeviceSecurityCommand(
+      async () => ({ queued: false, data: 'confirmed' }),
+      refresh,
+    );
     expect(refresh).toHaveBeenCalledOnce();
     await expect(
-      completeDeviceSecurityCommand(async () => Promise.reject(new Error('server denied')), refresh),
+      completeDeviceSecurityCommand(
+        async () => Promise.reject(new Error('server denied')),
+        refresh,
+      ),
     ).rejects.toThrow('server denied');
     expect(refresh).toHaveBeenCalledOnce();
   });

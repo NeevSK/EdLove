@@ -1,0 +1,215 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import CinematicBackground from '../../../components/CinematicBackground.astro';
+
+const allInnovations = await getCollection('innovations', ({ data }) => !data.draft);
+allInnovations.sort((a, b) => a.id.localeCompare(b.id));
+
+// Extract all unique tags
+const allTags = Array.from(
+  new Set(allInnovations.flatMap((entry) => entry.data.tags || []))
+).sort();
+---
+
+<Layout
+  title="Global EdTech Atlas | Map of Educational Technologies · EdLove"
+  description="A comprehensive global map and living catalog of available educational technologies, open learning platforms, local-first software, and pedagogical innovations worldwide."
+  canonicalUrl="https://edlove.org/tech/innovations"
+>
+  <CinematicBackground />
+
+  <main class="relative z-10 pb-24 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
+    <!-- Breadcrumb -->
+    <nav class="max-w-4xl mx-auto mb-6 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[var(--color-gold)]">
+      <a href="/tech" class="hover:underline">EdTech</a>
+      <span>/</span>
+      <span class="text-[var(--color-primaryInk)]">Global EdTech Atlas</span>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="py-8 sm:py-14 text-center max-w-4xl mx-auto space-y-4">
+      <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--color-gold)] block">
+        Planetary Educational Technology Directory
+      </span>
+      <h1 class="font-heading text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--color-primaryInk)] tracking-tight">
+        Global EdTech Atlas
+      </h1>
+      <p class="font-serif text-lg sm:text-xl text-[var(--color-secondaryInk)] leading-relaxed max-w-2xl mx-auto italic">
+        A curated global map and empirical catalog of available educational technologies, open-source learning management systems, local-first software, and digital pedagogical tools.
+      </p>
+
+      <!-- Instant Live Filter Search Input -->
+      <div class="pt-6 max-w-xl mx-auto">
+        <div class="relative">
+          <input
+            type="search"
+            id="innovation-search"
+            placeholder="Search the Atlas (e.g. Kolibri, Kiwix, Moodle, Scratch, Local-First, LMS)..."
+            class="w-full rounded-2xl border border-[var(--color-primaryInk)]/20 bg-white/80 px-5 py-3.5 pl-12 text-sm text-[var(--color-primaryInk)] backdrop-blur-md shadow-xs focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20 transition-all font-sans"
+          />
+          <svg class="absolute left-4 top-4 h-4 w-4 text-[var(--color-mutedInk)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </div>
+      </div>
+    </header>
+
+    <!-- Filter Tag Cloud -->
+    <div class="mb-10 flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto">
+      <button
+        type="button"
+        class="tag-filter-btn active-tag rounded-xl bg-[var(--color-primaryInk)] px-3 py-1.5 text-xs font-medium text-white transition-all cursor-pointer"
+        data-tag="all"
+      >
+        All Technologies ({allInnovations.length})
+      </button>
+      {allTags.slice(0, 14).map((tag) => (
+        <button
+          type="button"
+          class="tag-filter-btn rounded-xl bg-black/5 px-3 py-1.5 text-xs font-medium text-[var(--color-primaryInk)] hover:bg-[var(--color-gold)]/20 transition-all cursor-pointer"
+          data-tag={tag}
+        >
+          #{tag}
+        </button>
+      ))}
+    </div>
+
+    <!-- Innovations Grid -->
+    <div id="innovations-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {allInnovations.map((entry) => (
+        <a
+          href={`/tech/innovations/${entry.id}`}
+          class="innovation-card group relative flex flex-col justify-between rounded-3xl border border-[var(--color-primaryInk)]/10 bg-white/60 p-6 backdrop-blur-md transition-all duration-300 hover:border-[var(--color-secondaryInk)] hover:shadow-lg hover:-translate-y-1 overflow-hidden"
+          data-title={entry.data.title.toLowerCase()}
+          data-tags={(entry.data.tags || []).join(',').toLowerCase()}
+          data-id={entry.id}
+        >
+          <div class="space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-mono text-xs font-bold text-[var(--color-gold)] tracking-wider">
+                #{entry.id.split('-')[0]}
+              </span>
+              <span class="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-500/20">
+                Cataloged
+              </span>
+            </div>
+
+            <h2 class="font-heading text-xl font-bold text-[var(--color-primaryInk)] leading-snug group-hover:text-[var(--color-secondaryInk)] transition-colors">
+              {entry.data.title.replace(/^Innovation Dossier:\s*/, '')}
+            </h2>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-[var(--color-primaryInk)]/10 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="flex flex-wrap gap-1.5">
+              {(entry.data.tags || []).slice(0, 2).map((tag) => (
+                <span class="rounded-md bg-black/5 px-2 py-0.5 text-[10px] font-mono text-[var(--color-mutedInk)]">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+            <span class="font-heading font-semibold text-[var(--color-primaryInk)] group-hover:translate-x-0.5 transition-transform">
+              View Profile &rarr;
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden py-16 text-center text-[var(--color-mutedInk)]">
+      <p class="font-serif text-lg">No technologies match your search query.</p>
+      <button id="reset-filter" class="mt-4 text-xs font-heading font-bold text-[var(--color-gold)] uppercase tracking-wider hover:underline">
+        Reset All Filters
+      </button>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  function setupFilter() {
+    const searchInput = document.getElementById('innovation-search') as HTMLInputElement | null;
+    const tagButtons = document.querySelectorAll('.tag-filter-btn');
+    const cards = document.querySelectorAll('.innovation-card') as NodeListOf<HTMLElement>;
+    const emptyState = document.getElementById('empty-state');
+    const resetButton = document.getElementById('reset-filter');
+
+    let currentTag = 'all';
+    let searchQuery = '';
+
+    function applyFilter() {
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const title = card.getAttribute('data-title') || '';
+        const tags = card.getAttribute('data-tags') || '';
+        const id = card.getAttribute('data-id') || '';
+
+        const matchesTag = currentTag === 'all' || tags.includes(currentTag);
+        const matchesQuery =
+          searchQuery === '' ||
+          title.includes(searchQuery) ||
+          tags.includes(searchQuery) ||
+          id.includes(searchQuery);
+
+        if (matchesTag && matchesQuery) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      if (emptyState) {
+        emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = (e.target as HTMLInputElement).value.toLowerCase().trim();
+        applyFilter();
+      });
+    }
+
+    tagButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        tagButtons.forEach((b) => {
+          b.classList.remove('active-tag', 'bg-[var(--color-primaryInk)]', 'text-white');
+          b.classList.add('bg-black/5', 'text-[var(--color-primaryInk)]');
+        });
+
+        btn.classList.add('active-tag', 'bg-[var(--color-primaryInk)]', 'text-white');
+        btn.classList.remove('bg-black/5', 'text-[var(--color-primaryInk)]');
+
+        currentTag = btn.getAttribute('data-tag') || 'all';
+        applyFilter();
+      });
+    });
+
+    if (resetButton && searchInput) {
+      resetButton.addEventListener('click', () => {
+        searchInput.value = '';
+        searchQuery = '';
+        currentTag = 'all';
+
+        tagButtons.forEach((b) => {
+          b.classList.remove('active-tag', 'bg-[var(--color-primaryInk)]', 'text-white');
+          b.classList.add('bg-black/5', 'text-[var(--color-primaryInk)]');
+        });
+
+        const allBtn = document.querySelector('[data-tag="all"]');
+        if (allBtn) {
+          allBtn.classList.add('active-tag', 'bg-[var(--color-primaryInk)]', 'text-white');
+          allBtn.classList.remove('bg-black/5', 'text-[var(--color-primaryInk)]');
+        }
+
+        applyFilter();
+      });
+    }
+  }
+
+  setupFilter();
+  document.addEventListener('astro:after-swap', setupFilter);
+</script>

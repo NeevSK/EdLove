@@ -14,14 +14,21 @@ import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
  */
 const loadDateTimePicker = () => {
   try {
-    return require('@react-native-community/datetimepicker').default;
+    return require('@expo/ui/community/datetime-picker').default;
   } catch {
-    return null;
+    try {
+      return require('@react-native-community/datetimepicker').default;
+    } catch {
+      return null;
+    }
   }
 };
 
 export const TemporalNavigator = () => {
-  const { viewDate, setViewDate, resetToToday, phase } = useTemporalStore();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const setViewDate = useTemporalStore((s) => s.setViewDate);
+  const resetToToday = useTemporalStore((s) => s.resetToToday);
+  const phase = useTemporalStore((s) => s.phase);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [manualDateInput, setManualDateInput] = useState('');
 
@@ -228,7 +235,8 @@ export const TemporalNavigator = () => {
 
               {/* Manual Date Input */}
               <Text className="text-white/60 text-xs mb-1">Date (YYYY-MM-DD):</Text>
-              <TextInput testID="direct-date-input"
+              <TextInput
+                testID="direct-date-input"
                 accessibilityLabel="Direct date input"
                 value={manualDateInput}
                 onChangeText={setManualDateInput}

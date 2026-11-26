@@ -1,4 +1,4 @@
-import type { MutationReceipt } from '@repo/core/lib/sync/types';
+import type { MutationReceipt } from '@repo/core/types/mutationQueue';
 
 /** The current server response; intentionally narrower than the future receipt contract. */
 export type MutationReceiptResponse = Readonly<{

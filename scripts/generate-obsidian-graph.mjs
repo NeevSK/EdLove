@@ -3,6 +3,11 @@ import path from 'node:path';
 
 const ROOT_DIR = process.cwd();
 const graphData = JSON.parse(fs.readFileSync('reports/permission-ecosystem-graph.json', 'utf8'));
+// Embed d3 so the page works offline and in sandboxed previews, where a CDN script is blocked
+// ("d3 is not defined"). d3 is a dependency of @repo/library.
+const d3Source = fs
+  .readFileSync(path.resolve('packages/library/node_modules/d3/dist/d3.min.js'), 'utf8')
+  .replace(/<\/script/gi, '<\\/script');
 
 // Categorize nodes
 const formattedNodes = graphData.nodes.map((node) => {
@@ -52,7 +57,7 @@ const html = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <title>Sanctuary Permission & Identity Ecosystem Graph (Obsidian-Style)</title>
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>${d3Source}</script>
   <style>
     body {
       margin: 0;

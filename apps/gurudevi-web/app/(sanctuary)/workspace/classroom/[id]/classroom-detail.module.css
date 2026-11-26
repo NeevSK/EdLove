@@ -41,7 +41,7 @@
 }
 
 .eyebrow {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -94,7 +94,7 @@
 }
 
 .statLabel {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-ink-soft, #74675d);
   text-transform: uppercase;
@@ -109,7 +109,7 @@
 }
 
 .statHint {
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   color: var(--color-ink-muted, #8b7d72);
 }
 
@@ -201,11 +201,11 @@
 }
 
 .studentRoll {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 700;
   color: var(--color-gold-deep, #9a5b2d);
   background: #fdf5ec;
-  padding: 0.2rem 0.5rem;
+  padding: 0.25rem 0.55rem;
   border-radius: 0.4rem;
 }
 
@@ -318,9 +318,9 @@
 
 .noteBadge {
   align-self: flex-start;
-  padding: 0.2rem 0.55rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 9999px;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -345,12 +345,14 @@
   color: #fff;
   border: none;
   border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
+  min-height: 48px;
+  padding: 0.6rem 1.15rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4rem;
   transition: opacity 0.15s ease;
 }
@@ -364,12 +366,14 @@
   border: 1px solid var(--color-border, #e8ddd3);
   color: var(--color-ink, #1f1915);
   border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
+  min-height: 48px;
+  padding: 0.6rem 1.15rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4rem;
   transition: all 0.15s ease;
 }

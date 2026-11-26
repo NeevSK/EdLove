@@ -1,3 +1,5 @@
+import { linkOptions } from '@tanstack/react-router';
+
 export type SanctuaryNavId =
   | 'self'
   | 'workspace'
@@ -7,83 +9,58 @@ export type SanctuaryNavId =
   | 'notifications'
   | 'settings';
 
-export type SanctuaryNavItem = Readonly<{
-  id: SanctuaryNavId;
-  href: string;
-  label: string;
-  symbol: string;
-}>;
-
-function matchesPath(href: string) {
-  return (pathname: string) => pathname === href || pathname.startsWith(`${href}/`);
-}
-
 export const primaryNavigation = [
-  { id: 'self', href: '/self', label: 'Self', symbol: '💗' },
-  { id: 'workspace', href: '/workspace', label: 'Workspace', symbol: '🏫' },
-  { id: 'community', href: '/community', label: 'Community', symbol: '🤝' },
-  { id: 'library', href: '/library', label: 'Library', symbol: '📚' },
-] as const satisfies readonly SanctuaryNavItem[];
+  { id: 'self', to: '/self', label: 'Self', symbol: '💗' },
+  { id: 'workspace', to: '/workspace', label: 'Workspace', symbol: '🏫' },
+  { id: 'community', to: '/community', label: 'Community', symbol: '🤝' },
+  { id: 'library', to: '/library', label: 'Library', symbol: '📚' },
+] as const satisfies readonly NavigationEntry[];
 
 export const accountNavigation = [
-  { id: 'profile', href: '/profile', label: 'Profile', symbol: '◉' },
-  { id: 'notifications', href: '/notifications', label: 'Notifications', symbol: '♢' },
-  { id: 'settings', href: '/settings', label: 'Settings', symbol: '⚙' },
-] as const satisfies readonly SanctuaryNavItem[];
+  { id: 'profile', to: '/profile', label: 'Profile', symbol: '◉' },
+  { id: 'notifications', to: '/notifications', label: 'Notifications', symbol: '♢' },
+  { id: 'settings', to: '/settings', label: 'Settings', symbol: '⚙' },
+] as const satisfies readonly NavigationEntry[];
 
-export const workspaceNavigation = [
-  { id: 'attendance', href: '/workspace', label: 'Attendance', symbol: '◷' },
-  { id: 'submissions', href: '/workspace/submissions', label: 'Submissions', symbol: '📥' },
-  { id: 'climate', href: '/workspace/climate', label: 'Climate Sensing', symbol: '⛅' },
-  { id: 'tuition', href: '/workspace/tuition', label: 'Tuition & Fees', symbol: '💳' },
-  { id: 'kiosk', href: '/workspace/kiosk', label: 'Doorway Kiosk', symbol: '⛶' },
-  { id: 'badges', href: '/workspace/badges', label: 'ID Badges', symbol: '📇' },
-  { id: 'claim', href: '/workspace/claim', label: 'Claim Spot', symbol: '🎓' },
-  { id: 'school', href: '/workspace/school', label: 'School Profile', symbol: '🏛' },
-  { id: 'editorial', href: '/workspace/editorial', label: 'Editorial Commons', symbol: '✒' },
-  { id: 'plan', href: '/workspace/plan', label: 'Plan & Notices', symbol: '✉' },
-  { id: 'notices', href: '/workspace/notices', label: 'Circulars', symbol: '📢' },
-  { id: 'events', href: '/workspace/events', label: 'Events ERP', symbol: '◈' },
-  { id: 'timetable', href: '/workspace/timetable', label: 'Timetable', symbol: '▦' },
-  { id: 'gradebook', href: '/workspace/gradebook', label: 'Gradebook', symbol: '▥' },
-] as const;
+type NavigationEntry = Readonly<{ id: SanctuaryNavId; to: string; label: string; symbol: string }>;
+export type SanctuaryNavItem = (typeof primaryNavigation)[number] | (typeof accountNavigation)[number];
 
 export const advancedTools = ['Agent Lab', 'Editorial', 'UI Showcase', 'Icon Lab'] as const;
 
+/** Shortcuts a person can pin. `link` is checked against the routes; `explore` says whether Explore offers it. */
 export const quickAccessDestinations = [
-  { id: 'tutii-dm', href: '/community?pillar=messages&dm=tutii', label: 'Tutii Companion', symbol: '✦', explore: true },
-  { id: 'ai-workspace', href: '/community?pillar=messages', label: 'AI Workspace', symbol: '⚡', explore: true },
-  { id: 'my-attendance', href: '/self/attendance', label: 'My attendance', symbol: '🗓️', explore: true },
-  { id: 'qr-scanner', href: '/qr', label: 'QR Scanner', symbol: '📷', explore: true },
-  { id: 'breathing', href: '/self?practice=breath', label: 'Mindful breathing', symbol: '🌬️', explore: true },
-  { id: 'fire-journal', href: '/self?practice=journal', label: 'Fire Journal', symbol: '🔥', explore: true },
-  { id: 'submissions', href: '/workspace/submissions', label: 'Submissions', symbol: '📥', explore: false },
-  { id: 'timetable', href: '/workspace/timetable', label: 'Timetable', symbol: '🕒', explore: false },
-  { id: 'gradebook', href: '/workspace/gradebook', label: 'Gradebook', symbol: '📊', explore: false },
-  { id: 'community-forest', href: '/community/forest', label: 'Community circles', symbol: '🌿', explore: false },
-  { id: 'library-map', href: '/library/map', label: 'Library map', symbol: '🗺️', explore: false },
+  { id: 'tutii-dm', link: linkOptions({ to: '/community', search: { pillar: 'messages', dm: 'tutii' } }), label: 'Tutii Companion', symbol: '✦', explore: true },
+  { id: 'ai-workspace', link: linkOptions({ to: '/community', search: { pillar: 'messages' } }), label: 'AI Workspace', symbol: '⚡', explore: true },
+  { id: 'my-attendance', link: linkOptions({ to: '/workspace/attendance' }), label: 'My attendance', symbol: '🗓️', explore: true },
+  { id: 'breathing', link: linkOptions({ to: '/self', search: { practice: 'breath' } }), label: 'Mindful breathing', symbol: '🌬️', explore: true },
+  { id: 'fire-journal', link: linkOptions({ to: '/self', search: { practice: 'journal' } }), label: 'Fire Journal', symbol: '🔥', explore: true },
+  { id: 'submissions', link: linkOptions({ to: '/workspace/submissions' }), label: 'Submissions', symbol: '📥', explore: true },
+  { id: 'timetable', link: linkOptions({ to: '/workspace/timetable' }), label: 'Timetable', symbol: '🕒', explore: true },
+  { id: 'gradebook', link: linkOptions({ to: '/workspace/gradebook' }), label: 'Gradebook', symbol: '📊', explore: true },
+  { id: 'community-forest', link: linkOptions({ to: '/community/forest' }), label: 'Community circles', symbol: '🌿', explore: true },
+  { id: 'library-map', link: linkOptions({ to: '/library/map' }), label: 'Library map', symbol: '🗺️', explore: true },
+  { id: 'library-tools', link: linkOptions({ to: '/library/tools' }), label: 'Knowledge tools', symbol: '📐', explore: true },
+  { id: 'library-curator', link: linkOptions({ to: '/library/curator' }), label: 'Curator studio', symbol: '✨', explore: true },
+  { id: 'curriculum-plan', link: linkOptions({ to: '/workspace/plan' }), label: 'Curriculum plan', symbol: '📝', explore: true },
+  { id: 'school-events', link: linkOptions({ to: '/workspace/events' }), label: 'School events', symbol: '🎪', explore: true },
+  { id: 'class-climate', link: linkOptions({ to: '/workspace/climate' }), label: 'Class climate', symbol: '🌱', explore: true },
+  { id: 'mood-lotus', link: linkOptions({ to: '/self', search: { practice: 'mood' } }), label: 'Mood Lotus', symbol: '🪷', explore: true },
+  { id: 'daily-pulse', link: linkOptions({ to: '/self', search: { practice: 'pulse' } }), label: 'Daily Pulse', symbol: '⚡', explore: true },
+  { id: 'sleep-tracker', link: linkOptions({ to: '/self', search: { practice: 'sleep' } }), label: 'Sleep Tracker', symbol: '🌙', explore: true },
+  { id: 'principal-center', link: linkOptions({ to: '/admin/principal' }), label: 'Principal center', symbol: '🏛️', explore: true },
+  { id: 'guardian-portal', link: linkOptions({ to: '/workspace/guardian' }), label: 'Guardian portal', symbol: '👨‍👩‍👧', explore: true },
+  { id: 'screen-atlas', link: linkOptions({ to: '/atlas' }), label: 'Screen Atlas', symbol: '🧭', explore: true },
 ] as const;
 
-export type QuickAccessId = (typeof quickAccessDestinations)[number]['id'];
+export type QuickAccessDestination = (typeof quickAccessDestinations)[number];
+export type QuickAccessId = QuickAccessDestination['id'];
 
-export function withSanctuaryRoutePrefix(
-  items: readonly SanctuaryNavItem[],
-  routePrefix: string,
-): SanctuaryNavItem[] {
-  const normalizedPrefix = routePrefix.replace(/\/+$/, '');
-  if (!normalizedPrefix) return [...items];
-  if (!normalizedPrefix.startsWith('/')) {
-    throw new Error('Sanctuary navigation routes must use an absolute prefix.');
-  }
-  return items.map((item) => ({ ...item, href: `${normalizedPrefix}${item.href}` }));
-}
-
-export function isSanctuaryNavActive(pathname: string, href: string) {
-  return matchesPath(href)(pathname);
+export function isSanctuaryNavActive(pathname: string, to: string) {
+  return pathname === to || pathname.startsWith(`${to}/`);
 }
 
 export function getSanctuaryPageTitle(pathname: string) {
   return [...primaryNavigation, ...accountNavigation].find((item) =>
-    isSanctuaryNavActive(pathname, item.href),
+    isSanctuaryNavActive(pathname, item.to),
   )?.label;
 }

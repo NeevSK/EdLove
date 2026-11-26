@@ -5,7 +5,7 @@ import {
   loadPrincipalSetupSnapshot,
   principalSetupMachine,
 } from '@repo/admin/machines/principalSetupMachine';
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createActor } from 'xstate';
 

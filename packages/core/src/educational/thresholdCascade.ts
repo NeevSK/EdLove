@@ -2,7 +2,7 @@
 // Instantiation of the Universal Layer 0 Threshold Engine for Sri Lankan Educational Realities
 // Reference: docs/architecture/2026-10-11-the-upstream-epistemic-and-systemic-invariants.md
 
-import type { ThresholdCascade, ThresholdDefinition } from '../thresholds/types';
+import type { ThresholdCascade, ThresholdDefinition } from '../types/thresholds';
 
 /**
  * T0: The Biological / Caloric Nutritional Floor (Ages 0–3)

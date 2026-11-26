@@ -1,263 +1,279 @@
 {
-  "version": 1,
+  "version": 2,
   "skills": {
+    "agent-browser": {
+      "source": "vercel-labs/agent-browser",
+      "commit": "b06e2533ba9b3823b8a96c859d455cb55f4d7893",
+      "sourceType": "github",
+      "skillPath": "skills/agent-browser/SKILL.md",
+      "computedHash": "a0dfac7503f69bcf529b2660fc79964064c4f179eb65695904ddc45fc0d99d20",
+      "installMode": "copy"
+    },
+    "agent-device": {
+      "source": "callstack/agent-device",
+      "commit": "e0ab0c255c3d48855800fd9c29c20e7e46c6f12d",
+      "sourceType": "github",
+      "skillPath": "skills/agent-device/SKILL.md",
+      "computedHash": "c418978f7496300805410827d952af1da8ce0cc57a8c50571e995701d97ad7c9",
+      "installMode": "copy"
+    },
     "algorithmic-art": {
       "source": "anthropics/skills",
       "sourceType": "github",
       "skillPath": "skills/algorithmic-art/SKILL.md",
-      "computedHash": "987b24aa98171a0d3690420173b2cdb6eaafd57981ed716b5d50371affa82ea3"
+      "computedHash": "4a85abfeaa09f2dd2c4b76c85d57b65f61dc10d55c3cca245989cee8897c2be5"
     },
     "analytics-explore": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/analytics-explore/SKILL.md",
-      "computedHash": "7b73264b64b7fa1cbc687ec7d465d0488fb2f78a9313cbe4c2ed4fefbc06f820"
+      "computedHash": ""
     },
     "canvas-design": {
       "source": "anthropics/skills",
       "sourceType": "github",
       "skillPath": "skills/canvas-design/SKILL.md",
-      "computedHash": "4e8bbc31d3b159efdd32d31a63ba8cd5a44d84911e924c1f2c709c50cbcdd0ec"
+      "computedHash": "1866477474e694f562261008bb6a817e53f027b6347b062fbd1e2ee2eb83f20d"
     },
     "caveman": {
       "source": "JuliusBrussee/caveman",
       "sourceType": "github",
       "skillPath": ".claude/skills/caveman",
-      "computedHash": "pending"
+      "computedHash": ""
     },
     "experiment-analyze": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/experiment-analyze/SKILL.md",
-      "computedHash": "918847f3008a284a60f625f2364ebf027c689b98b1d1ed30530ae74009fd1249"
+      "computedHash": ""
     },
     "experiment-brainstorm": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/experiment-brainstorm/SKILL.md",
-      "computedHash": "a9304cf27ace1ea48e8153d63c11df49a6f7ef04b1490f3c5f5fcb40866d2456"
+      "computedHash": ""
     },
     "experiment-design": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/experiment-design/SKILL.md",
-      "computedHash": "da33939b28d3d74b3a865f7279f0e3006a70699892996f1cc26c618638ea6336"
+      "computedHash": ""
     },
     "experiment-launch": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/experiment-launch/SKILL.md",
-      "computedHash": "7e23e98c742e9582f153a1e56b60fc4de7d6337c29dab59db731a491078081ec"
+      "computedHash": ""
     },
     "experiment-stop": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/experiment-stop/SKILL.md",
-      "computedHash": "9b1ce30ce2cd1a15a4d8623ecd81c7fbebb1665ba479760275731391d1155950"
+      "computedHash": ""
     },
     "flag-cleanup": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-cleanup/SKILL.md",
-      "computedHash": "bf3d3e0709d29084d4d65add0300282b893431fcaf3a3e52e6c51e9255ed4c93"
+      "computedHash": ""
     },
     "flag-create": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-create/SKILL.md",
-      "computedHash": "c47e2a301ee723328a97f9b2043eeb6460ea98e28780a054f12ef5ec4fc3be5c"
+      "computedHash": ""
     },
     "flag-default-value": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-default-value/SKILL.md",
-      "computedHash": "aac947a0ed0682a772110d8768efae4c68ee22473bbfec2bd50e22b798f4864b"
+      "computedHash": ""
     },
     "flag-experiment": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-experiment/SKILL.md",
-      "computedHash": "5993953a7a2e9aba0e1110cd532aa6d56fda202c88e934ab51492184532f60f2"
+      "computedHash": ""
     },
     "flag-graph": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-graph/SKILL.md",
-      "computedHash": "874b155aed7f4a9fc85c0b38a3f5c6e166da74e6ecbd088377db3d496a24bd08"
+      "computedHash": ""
     },
     "flag-metadata": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-metadata/SKILL.md",
-      "computedHash": "79c560fe1d96a26b2f0a1e821f67fda3cbffe228c99f7c2afe412b07217a8bd9"
+      "computedHash": ""
     },
     "flag-monitoring": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-monitoring/SKILL.md",
-      "computedHash": "77b6f9c0f8ac8a990e4adf24ce8cd1ff85437afbabf77ec4c4c5634ec3a94de4"
+      "computedHash": ""
     },
     "flag-prerequisites": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-prerequisites/SKILL.md",
-      "computedHash": "aed1e58cb5cb5243825f4cdcdea06e70c951d5dd043e67bd0438132c2a33e56e"
+      "computedHash": ""
     },
     "flag-publish": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-publish/SKILL.md",
-      "computedHash": "e967e1d73067ba40ca7f345f1bdaeb9d2eb047084a86bec2fb14ee85669722df"
+      "computedHash": ""
     },
     "flag-ramp": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-ramp/SKILL.md",
-      "computedHash": "29b6faf97a4c562ca9aef496ec07571a95546467bfb26989c8fc2f024cb84ef2"
+      "computedHash": ""
     },
     "flag-review": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-review/SKILL.md",
-      "computedHash": "1d174e7920b09970c63ff72e149500332dc5313a65861e3e1b13c8728e0e8df7"
+      "computedHash": ""
     },
     "flag-revisions": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-revisions/SKILL.md",
-      "computedHash": "5389308e6ab136c5d5134085643a08ccfde219281b7b60c165770ea568949b45"
+      "computedHash": ""
     },
     "flag-rules": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-rules/SKILL.md",
-      "computedHash": "4628f473a4e98b88c943d4764cca4ec611aa1032b8ffbf6ccd794e94de318a5d"
+      "computedHash": ""
     },
     "flag-schedule": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-schedule/SKILL.md",
-      "computedHash": "ddda535f6f2c0dd7bd0e5704234b811d5e09324294368e1330b17118bfc11dc3"
+      "computedHash": ""
     },
     "flag-search": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-search/SKILL.md",
-      "computedHash": "a62539e73ed5e9a827140718f2183cf2e1c13ca4afaf91affd4330759941f61a"
+      "computedHash": ""
     },
     "flag-targeting": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-targeting/SKILL.md",
-      "computedHash": "9c41eeadbcaaca6381416bf4b2bebb4627416472f89758257981e1124df030c8"
+      "computedHash": ""
     },
     "flag-toggle": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/flag-toggle/SKILL.md",
-      "computedHash": "e6234341de5260e2226ff4ba2f16a7d51b197ea4f97662a59e442b50907e2466"
+      "computedHash": ""
     },
     "frontend-design": {
       "source": "anthropics/skills",
       "sourceType": "github",
       "skillPath": "skills/frontend-design/SKILL.md",
-      "computedHash": "106acf230014cbb43ca34e6410371321b56ca742f9ee0442e8ec05bf02eb0384"
+      "computedHash": "83485963700bcf11d5bf78118facb301676b69d918fee2e45a95e7f1a2840f6c"
     },
     "gb-setup": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/gb-setup/SKILL.md",
-      "computedHash": "0819a923103b5c68269daae3d61adc37caa8a89d1481612484b878210ad55fdb"
+      "computedHash": ""
     },
     "grill-me": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": ".claude/skills/grill-me",
-      "computedHash": "pending"
+      "computedHash": ""
     },
     "metric-search": {
       "source": "growthbook/skills",
       "sourceType": "github",
       "skillPath": "skills/metric-search/SKILL.md",
-      "computedHash": "a9dbe1d237ab2456d4075cef20c732d3dd57c841f10b68acf86da48710c131ed"
+      "computedHash": ""
     },
     "ponytail": {
       "source": "DietrichGebert/ponytail",
       "sourceType": "github",
       "skillPath": ".claude/skills/ponytail",
-      "computedHash": "pending"
+      "computedHash": ""
     },
     "powersync": {
       "source": "powersync-ja/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/powersync/SKILL.md",
-      "computedHash": "5f9cacdb73907af3a764559b92b6ba4fd62d3211033b593c5c2b010e65e787c1"
+      "computedHash": ""
     },
     "superpowers": {
       "source": "obra/superpowers",
       "sourceType": "github",
       "skillPath": ".claude/skills/superpowers",
-      "computedHash": "pending"
+      "computedHash": ""
     },
     "thermo-nuclear-code-review": {
       "source": "cursor/plugins",
       "sourceType": "github",
       "skillPath": ".claude/skills/cursor-plugins/cursor-team-kit/skills/thermo-nuclear-code-quality-review",
-      "computedHash": "pending"
+      "computedHash": ""
     },
     "zenstack-access-control": {
       "source": "zenstackhq/skills",
       "sourceType": "github",
       "skillPath": "skills/zenstack-access-control/SKILL.md",
-      "computedHash": "f2a9ed7cd1d476257b2cd8d045120cc768b83fbc57d5ce0f2e3742bfa381b8c4"
+      "computedHash": ""
     },
     "zenstack-crud-server": {
       "source": "zenstackhq/skills",
       "sourceType": "github",
       "skillPath": "skills/zenstack-crud-server/SKILL.md",
-      "computedHash": "d0e6ef153a134c7725d988bbc621295e49a917fb7d81beea391604493429a963"
+      "computedHash": ""
     },
     "zenstack-db-migration": {
       "source": "zenstackhq/skills",
       "sourceType": "github",
       "skillPath": "skills/zenstack-db-migration/SKILL.md",
-      "computedHash": "a766cfd9377509d97fbb21ba339d8cca85a4823f0a2896a040c60efb89be5599"
+      "computedHash": ""
     },
     "zenstack-migrate-from-prisma": {
       "source": "zenstackhq/skills",
       "sourceType": "github",
       "skillPath": "skills/zenstack-migrate-from-prisma/SKILL.md",
-      "computedHash": "3bb86f8c61d4cbe4a2ba6b7c76e13174bebda41691412f12c5ca7aba6f77b5e4"
+      "computedHash": ""
     },
     "zenstack-migrate-from-v2": {
       "source": "zenstackhq/skills",
       "sourceType": "github",
       "skillPath": "skills/zenstack-migrate-from-v2/SKILL.md",
-      "computedHash": "96bacfe93789d91a18369f4ef1e912cc58b893c008e9c9d4b520ee8712fe7659"
+      "computedHash": ""
     },
     "zenstack-plugin-dev": {
       "source": "zenstackhq/skills",
       "sourceType": "github",
       "skillPath": "skills/zenstack-plugin-dev/SKILL.md",
-      "computedHash": "dcee37d5634a914a39d33ec3fea235a54d6004339d6e6dba795be4ba56ba59bc"
+      "computedHash": ""
     },
     "zenstack-project-setup": {
       "source": "zenstackhq/skills",
       "sourceType": "github",
       "skillPath": "skills/zenstack-project-setup/SKILL.md",
-      "computedHash": "eaafacc114e3a625deac5f4d9b7e95aa573366a6168a26f86547d5aaa84649a6"
+      "computedHash": ""
     },
     "zenstack-querying": {
       "source": "zenstackhq/skills",
       "sourceType": "github",
       "skillPath": "skills/zenstack-querying/SKILL.md",
-      "computedHash": "f47d167aedaf9639b0859ce025ff4b4f75971751cb581313a0d2ff22db9aa41a"
+      "computedHash": ""
     },
     "zenstack-schema-modeling": {
       "source": "zenstackhq/skills",
       "sourceType": "github",
       "skillPath": "skills/zenstack-schema-modeling/SKILL.md",
-      "computedHash": "c53846f82dc5545d1f78838cd3b02c8c92917651ff9825f8c4e330b8923eca6b"
+      "computedHash": ""
     }
   }
 }

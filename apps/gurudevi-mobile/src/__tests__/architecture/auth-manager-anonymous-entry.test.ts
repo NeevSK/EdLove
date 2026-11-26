@@ -1,4 +1,4 @@
-import { AuthClient } from '@repo/core/logic/auth/AuthClient';
+import { AuthClient } from '@repo/core/logic/auth/AuthClient.adapter';
 import { describe, expect, it, vi } from 'vitest';
 
 const mockAudit = vi.fn();

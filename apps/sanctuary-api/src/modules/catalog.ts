@@ -42,7 +42,15 @@ const base = [
 
 const domains = {
   wellbeing: ['mood', 'journal', 'reflection', 'practice'],
-  learning: ['classrooms', 'lessons', 'assignments', 'assessments', 'grading', 'notes'],
+  learning: [
+    'classrooms',
+    'relations',
+    'lessons',
+    'assignments',
+    'assessments',
+    'grading',
+    'notes',
+  ],
   ops: [
     'institutions',
     'enrolment',
@@ -86,9 +94,20 @@ export const domainModules: readonly DomainManifest[] = (
   subdomains.map((subdomain) => ({
     name: `${domain}.${subdomain}` as DomainModule,
     domain,
-    status: 'skeleton' as const,
+    status:
+      domain === 'ops' && subdomain === 'institutions'
+        ? ('admitted' as const)
+        : ('skeleton' as const),
     needs: base,
-    publishes: [],
+    publishes:
+      domain === 'ops' && subdomain === 'institutions'
+        ? [
+            'ops.institution.provisioned',
+            'ops.institution.updated',
+            'ops.institution.inviteCodeCreated',
+            'ops.institution.inviteCodeRevoked',
+          ]
+        : [],
     reads: [],
   })),
 );
@@ -162,7 +181,7 @@ export const capabilities: readonly CapabilityManifest[] = [
   },
   {
     // Signs a grant and stores nothing, so a query.
-    name: 'identity.syncCredentials',
+    name: 'identity.syncGrant',
     module: 'identity',
     kind: 'query',
     channels: ['app'],
@@ -171,8 +190,89 @@ export const capabilities: readonly CapabilityManifest[] = [
     requiredEvidence: 'G2',
   },
   {
+    name: 'identity.deletion.status',
+    module: 'identity',
+    kind: 'query',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
+    name: 'identity.deletion.request',
+    module: 'identity',
+    kind: 'command',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
+    name: 'identity.deletion.cancel',
+    module: 'identity',
+    kind: 'command',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
     name: 'authority.refreshSnapshot',
     module: 'authority',
+    kind: 'command',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
+    name: 'ops.institutions.handleAvailable',
+    module: 'ops.institutions',
+    kind: 'query',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
+    name: 'ops.institutions.provision',
+    module: 'ops.institutions',
+    kind: 'command',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
+    name: 'ops.institutions.update',
+    module: 'ops.institutions',
+    kind: 'command',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
+    name: 'ops.institutions.createInviteCode',
+    module: 'ops.institutions',
+    kind: 'command',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
+    name: 'ops.institutions.listInviteCodes',
+    module: 'ops.institutions',
+    kind: 'query',
+    channels: ['app'],
+    assurance: 'session',
+    status: 'admitted',
+    requiredEvidence: 'G2',
+  },
+  {
+    name: 'ops.institutions.revokeInviteCode',
+    module: 'ops.institutions',
     kind: 'command',
     channels: ['app'],
     assurance: 'session',

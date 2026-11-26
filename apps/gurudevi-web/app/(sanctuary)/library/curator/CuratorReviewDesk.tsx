@@ -1,11 +1,9 @@
-'use client';
-
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type {
   MockCuratorBrokenItem as BrokenItem,
   MockCuratorStagedItem as StagedItem,
 } from '@repo/core/api/library';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useState } from 'react';
 import styles from './curator.module.css';
 
@@ -77,7 +75,7 @@ export function CuratorReviewDesk({ displayName, capacity }: Readonly<CuratorRev
   return (
     <main className={styles.container}>
       <div className={styles.topBar}>
-        <Link href="/library" className={styles.backButton}>
+        <Link to="/library" className={styles.backButton}>
           ← Back to Library Floor
         </Link>
         <span className={styles.roleBadge}>
@@ -116,14 +114,14 @@ export function CuratorReviewDesk({ displayName, capacity }: Readonly<CuratorRev
           onClick={() => setActiveTab('staging')}
           type="button"
         >
-          Community Submissions ({stagedItems.length})
+          📥 Community Submissions ({stagedItems.length})
         </button>
         <button
           className={`${styles.tabButton} ${activeTab === 'broken' ? styles.tabButtonActive : ''}`}
           onClick={() => setActiveTab('broken')}
           type="button"
         >
-          Broken Links Queue ({brokenItems.length})
+          ⚠️ Broken Links Queue ({brokenItems.length})
         </button>
       </div>
 

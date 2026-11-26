@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { type FormEvent, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { resolveCanonicalDeviceAccount } from '@/lib/sanctuary/canonicalDeviceAccount';
@@ -102,7 +100,7 @@ export function SignInForm({
           </label>
           <Link
             style={{ fontSize: '12px', color: '#7a6e5f', textDecoration: 'underline' }}
-            href={`/recovery?returnTo=${encodeURIComponent(safeReturnPath(returnTo))}`}
+            to="/recovery" search={{ returnTo: safeReturnPath(returnTo) }}
           >
             {t('auth.forgotPassword')}
           </Link>

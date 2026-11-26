@@ -4,7 +4,7 @@ import {
   findTrapById,
   resolveTraps as resolveTrapsFrom,
 } from '@repo/core/logic/reflection';
-import type { ThinkingTrap, TrapSlope } from '@repo/self/types';
+import type { ThinkingTrap, TrapSlope } from '@repo/core/types/reflection';
 
 /**
  * Thinking-trap catalog for the Reframe feature.

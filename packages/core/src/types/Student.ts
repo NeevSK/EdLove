@@ -1,11 +1,4 @@
-import type { StudentSchema } from '@repo/core/logic/schemas/student.schema';
 import { z } from 'zod';
-
-/**
- * Student - Authoritative domain type.
- * Derived from StudentSchema in logic/schemas.
- */
-export type Student = z.infer<typeof StudentSchema>;
 
 // Keep the bulk interface for now if not yet schema-tized, or derive it.
 export const BulkStudentSchema = z.object({

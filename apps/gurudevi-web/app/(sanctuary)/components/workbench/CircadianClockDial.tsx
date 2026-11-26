@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useId, useMemo } from 'react';
 import { phaseOfMinute } from '@repo/ui/theme/scene';
 import type { Phase } from '@repo/ui/theme';

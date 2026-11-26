@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { render } from '@/tests/support/render';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { SignInForm } from '@/app/(sanctuary)/auth/SignInForm';
 import { getDeviceAccounts } from '@/lib/sanctuary/deviceAccountRegistry';

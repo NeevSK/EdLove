@@ -15,7 +15,7 @@ import type {
   ProductAnalyticsContext,
   ProductAnalyticsEventName,
   ProductAnalyticsEventProperties,
-} from '@repo/core/logic/ports/productAnalytics.port';
+} from '@repo/core/types/productAnalytics';
 import { sanitizeTelemetryData } from './safeData';
 
 export type IPostHog = IAnalyticsPort;

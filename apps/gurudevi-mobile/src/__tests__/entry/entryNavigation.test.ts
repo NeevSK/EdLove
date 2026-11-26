@@ -1,5 +1,5 @@
 import { getAuthRouteTarget } from '@repo/core/logic/auth/bootstrapRoutes';
-import type { PendingDeepLinkIntent } from '@repo/core/logic/deeplink/pendingIntentStore';
+import type { PendingDeepLinkIntent } from '@repo/core/logic/deeplink/pendingIntent.store';
 import { describe, expect, it } from 'vitest';
 
 import { getEntryNavigationAction } from '@/entry/entryNavigation';

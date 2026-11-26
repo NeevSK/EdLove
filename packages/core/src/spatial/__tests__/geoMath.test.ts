@@ -9,7 +9,7 @@ import {
   haversineDistanceMeters,
   isPointInBounds,
 } from '../geoMath';
-import type { SchoolMapPoint } from '../types';
+import type { SchoolMapPoint } from '../../types/spatial';
 
 describe('Spatial GeoMath Engine', () => {
   it('accurately computes Haversine distances for Sri Lankan benchmarks', () => {

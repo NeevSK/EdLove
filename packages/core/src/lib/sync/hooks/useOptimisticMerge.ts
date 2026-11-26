@@ -26,7 +26,7 @@
  *   });
  */
 
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useMemo } from 'react';
 
 interface UseOptimisticMergeOptions<T> {

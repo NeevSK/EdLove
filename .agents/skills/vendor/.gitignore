@@ -1,1 +1,4 @@
-pnpm-*
+# pnpm
+/ai-core
+/react-native-nitro-google-signin
+# pnpm end

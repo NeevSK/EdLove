@@ -10,7 +10,7 @@ vi.mock('@repo/core/native/deviceTrust', () => ({
 
 import type { IAuthPort } from '../../ports/auth.port';
 import type { IIdentityPort } from '../../ports/identity.port';
-import { AuthClient } from '../AuthClient';
+import { AuthClient } from '../AuthClient.adapter';
 
 describe('AuthClient', { tags: ['security', 'fast'] }, () => {
   const canonicalAccount = '123e4567-e89b-8101-8100-426614174000';

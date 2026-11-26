@@ -1,4 +1,0 @@
-{
-  "buildCommand": "pnpm --filter gurudevi-web build",
-  "installCommand": "pnpm install --frozen-lockfile --filter gurudevi-web..."
-}

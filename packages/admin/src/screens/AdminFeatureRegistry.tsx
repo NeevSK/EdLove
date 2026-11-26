@@ -1,7 +1,7 @@
 import { View, Text, Pressable } from 'react-native';
 import { getAllDomains } from '@repo/core/logic/registry/appCatalog';
 import { useFeatureStore } from '@repo/core/store';
-import { safeBack } from '@repo/ui/utils/navigation';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 import { useMemo, useState } from 'react';
 import {
@@ -12,6 +12,7 @@ import {
 import { AdminRoomPanel, AdminRoomShell } from '@repo/admin/screens/AdminRoomShell';
 
 export default function AdminFeatureRegistry() {
+  const router = useNavigator();
   const catalog = useMemo(() => getAllDomains(), []);
   const flags = useFeatureStore((state) => state.flags);
   const rolloutSnapshot = useFeatureStore((state) => state.snapshot);
@@ -32,7 +33,7 @@ export default function AdminFeatureRegistry() {
       title="Admin feature registry"
       description="Inspect the admin control surface, the current feature gate posture, and the live maintenance state before staging changes."
       caution="This screen only stages global feature changes and guarded repairs. Commit only after reviewing the preview."
-      onBack={() => safeBack('/workspace')}
+      onBack={() => router.back('/workspace')}
       stats={[
         {
           label: 'Enabled flags',

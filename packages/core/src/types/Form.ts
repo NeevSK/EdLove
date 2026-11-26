@@ -1,4 +1,7 @@
-import type { ValidationResult } from '@repo/core/logic/utils/validators';
+export interface ValidationResult {
+  isValid: boolean;
+  error?: string;
+}
 
 export type FieldType =
   | 'text'

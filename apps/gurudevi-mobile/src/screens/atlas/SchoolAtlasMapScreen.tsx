@@ -4,17 +4,11 @@
 // Fully database-backed via Supabase PostGIS spatial engine — NO HARDCODED SCHOOL DATA.
 
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import {
-  type DistrictSpatialSummary,
-  fetchSpatialSchoolsFromSupabase,
-  findNearestSchools,
-  GLOBAL_COMPARATIVE_COUNTRIES,
-  type GlobalCountrySpatialSummary,
-  haversineDistanceKm,
-  recordSchoolGatePingInSupabase,
-  type SchoolMapPoint,
-  SRI_LANKA_DISTRICTS,
-} from '@repo/core/spatial';
+import { type DistrictSpatialSummary, type GlobalCountrySpatialSummary, type SchoolMapPoint } from '@repo/core/types/spatial';
+import { fetchSpatialSchoolsFromSupabase, recordSchoolGatePingInSupabase } from '@repo/core/spatial/spatial.adapter';
+import { findNearestSchools, haversineDistanceKm } from '@repo/core/spatial/geoMath';
+import { GLOBAL_COMPARATIVE_COUNTRIES } from '@repo/core/spatial/globalComparative';
+import { SRI_LANKA_DISTRICTS } from '@repo/core/spatial/districtCentroids';
 import { UnifiedMapView, type UnifiedMapViewRef } from '@repo/ui/components/maps/UnifiedMapView';
 import { UnifiedMarker } from '@repo/ui/components/maps/UnifiedMarker';
 import {
@@ -44,6 +38,7 @@ import {
 import { tokens } from '@repo/ui/tokens';
 import { hapticImpact, hapticSelection, hapticSuccess } from '@repo/ui/utils/haptics';
 import * as Location from 'expo-location';
+import { useNavigation } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 
@@ -64,11 +59,23 @@ const DEFAULT_CENTER: UserLocation = {
 
 export const SchoolAtlasMapScreen: React.FC = () => {
   const mapRef = useRef<UnifiedMapViewRef | null>(null);
+  const navigation = useNavigation();
 
   // Navigation State
   const [scaleLens, setScaleLens] = useState<SpatialScaleLens>('national');
   const [metricView, setMetricView] = useState<SpatialMetricView>('theaterDelta');
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerSearchBarOptions: {
+        placeholder: 'Search schools or districts…',
+        onChangeText: (event: { nativeEvent: { text: string } }) =>
+          setSearchQuery(event.nativeEvent.text),
+        onCancelButtonPress: () => setSearchQuery(''),
+      },
+    });
+  }, [navigation]);
   const [selectedDistrictId, setSelectedDistrictId] = useState<string | null>(null);
 
   // Active selections

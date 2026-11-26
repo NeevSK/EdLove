@@ -1,5 +1,6 @@
 import { type CameraType, CameraView, scanFromURLAsync, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
+import { imagePickerOptionsFor } from '@repo/core/logic/files/filePolicy';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -88,11 +89,8 @@ export default function ScannerModal({
   const pickImage = async () => {
     setGalleryError(null);
     try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true, // let user crop to QR area
-        quality: 1,
-      });
+      // Crop to the code; full quality, downsampled afterwards (file policy: scan).
+      const result = await ImagePicker.launchImageLibraryAsync(imagePickerOptionsFor('scan'));
 
       if (!result.canceled && result.assets?.[0]?.uri) {
         await processImage(result.assets[0].uri);

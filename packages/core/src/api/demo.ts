@@ -1,4 +1,4 @@
-import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useExperienceState } from '@repo/core/lib/experienceState.store';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 
 /**

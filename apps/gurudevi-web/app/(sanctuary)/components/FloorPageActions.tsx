@@ -1,5 +1,3 @@
-'use client';
-
 import { Image, PanelsTopLeft, Settings2 } from 'lucide-react';
 import { useRef } from 'react';
 import styles from './floor-page-actions.module.css';

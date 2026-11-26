@@ -31,7 +31,7 @@ vi.mock('@repo/core/store/useAuthStore', () => {
   return { useAuthStore: mockUseAuthStore };
 });
 
-vi.mock('@repo/core/lib/sync/useMutationQueue', () => {
+vi.mock('@repo/core/lib/sync/mutationQueue.store', () => {
   const mockUseMutationQueue = Object.assign(
     <Value>(selector: (state: any) => Value) => selector({ addToQueue: mocks.addToQueue }),
     {
@@ -42,7 +42,7 @@ vi.mock('@repo/core/lib/sync/useMutationQueue', () => {
   return { useMutationQueue: mockUseMutationQueue };
 });
 
-vi.mock('@repo/core/lib/sync/MutationAuditLog', () => {
+vi.mock('@repo/core/lib/sync/mutationAuditLog.store', () => {
   const mockUseMutationAuditLog = Object.assign(
     <Value>(selector: (state: any) => Value) => selector({ logEntry: mocks.logAudit }),
     {

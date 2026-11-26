@@ -1,0 +1,170 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import CinematicBackground from '../../components/CinematicBackground.astro';
+import ExpandableContent from '../../components/ExpandableContent.astro';
+import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
+
+const gurudeviEntries = await getCollection('gurudevi', ({ data }) => !data.draft);
+gurudeviEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+
+const roles = [
+  {
+    num: '01',
+    title: 'Design Science Intervention',
+    label: 'Practical Grounding',
+    desc: 'Grounded software engineered to reduce administrative overhead and streamline daily school operations, giving educators more time to teach.',
+  },
+  {
+    num: '02',
+    title: 'Pedagogical & Ethical Vehicle',
+    label: 'Calm & Dignified Design',
+    desc: 'Embodying calm, private, and distraction-free software principles: zero advertising, zero behavioral manipulation, and complete learner data privacy.',
+  },
+  {
+    num: '03',
+    title: 'Research Artefact',
+    label: 'Epistemic Feedback Loop',
+    desc: 'Software deployed in live classroom environments, generating authentic field observations and returning empirical evidence to EdResearch.',
+  },
+];
+---
+
+<Layout title="Gurudevi | Flagship Educational Platform · EdLove & Intuitui Labs" canonicalUrl="https://edlove.org/tech/gurudevi">
+    <CinematicBackground />
+
+    <main class="relative z-10 pb-24 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
+        <!-- Breadcrumb -->
+        <nav class="max-w-4xl mx-auto mb-6 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[var(--color-gold)]">
+            <a href="/tech" class="hover:underline">EdTech</a>
+            <span>/</span>
+            <span class="text-[var(--color-primaryInk)]">Gurudevi Platform</span>
+        </nav>
+
+        <!-- Hero Header -->
+        <section class="text-center space-y-6 mb-20 animate-fade-in-up">
+            <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--color-gold)] block">
+                An EdLove Initiative &middot; Built by Intuitui Labs
+            </span>
+
+            <div class="space-y-3">
+                <h1 class="text-5xl md:text-7xl font-heading font-bold text-[var(--color-primaryInk)] leading-none">Gurudevi</h1>
+                <p class="font-serif italic text-2xl md:text-3xl text-[var(--color-mutedInk)]">&ldquo;Calm software for teachers and the living classroom.&rdquo;</p>
+            </div>
+
+            <div class="h-px w-16 bg-[var(--color-primaryInk)]/15 mx-auto"></div>
+
+            <p class="font-serif text-xl text-[var(--color-secondaryInk)] max-w-2xl mx-auto leading-relaxed">
+                An offline-first, local-first platform designed to reduce administrative drag, protect teacher focus, and support pedagogical reflection in schools.
+            </p>
+
+            <!-- Primary CTAs -->
+            <div class="pt-4 flex flex-wrap items-center justify-center gap-4 animate-fade-in-up delay-200">
+                <a 
+                    href="https://gurudevi.app" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-3 bg-[var(--color-primaryInk)] text-white px-8 py-3.5 rounded-full shadow-md hover:bg-[var(--color-secondaryInk)] transition-all duration-300 font-heading text-sm font-semibold tracking-wide"
+                >
+                    <span>Visit Gurudevi.app</span>
+                    <span>&rarr;</span>
+                </a>
+                <a 
+                    href="/tech" 
+                    class="inline-flex items-center gap-3 bg-white/60 text-[var(--color-primaryInk)] border border-[var(--color-primaryInk)]/15 px-8 py-3.5 rounded-full hover:bg-white transition-all duration-300 font-heading text-sm font-semibold tracking-wide"
+                >
+                    <span>&larr; Back to EdTech</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- The Three Roles of Gurudevi (Canonical Tripartite Architecture) -->
+        <section class="max-w-4xl mx-auto mb-20 space-y-10">
+            <div class="space-y-2">
+                <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">Tripartite Architecture</span>
+                <h2 class="text-3xl sm:text-4xl font-heading font-bold text-[var(--color-primaryInk)]">
+                    The Three Roles of Gurudevi
+                </h2>
+                <p class="font-serif text-lg text-[var(--color-secondaryInk)]">
+                    Gurudevi is structured around three foundational roles in the constellation architecture:
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 border-t border-b border-[var(--color-primaryInk)]/12 md:divide-x md:divide-[var(--color-primaryInk)]/12">
+                {roles.map((r) => (
+                    <div class="p-8 space-y-4 hover:bg-white/40 transition-colors">
+                        <div class="flex items-center justify-between text-sm font-heading">
+                            <span class="font-semibold text-[var(--color-gold)] tracking-wide">Role {r.num}</span>
+                            <span class="text-[var(--color-mutedInk)]">{r.label}</span>
+                        </div>
+                        <h3 class="text-2xl font-heading font-bold text-[var(--color-primaryInk)]">{r.title}</h3>
+                        <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">{r.desc}</p>
+                    </div>
+                ))}
+            </div>
+        </section>
+
+        <!-- Institutional Partnership Architecture Block -->
+        <section class="max-w-4xl mx-auto mb-20 p-8 sm:p-10 rounded-3xl bg-white/60 border border-[var(--color-primaryInk)]/12 space-y-6">
+            <span class="text-xs font-heading font-bold uppercase tracking-widest text-[var(--color-gold)] block">
+                Partnership &amp; Separation of Concerns
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+                The Confluence of Pedagogy and Software Engineering
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
+                <div class="space-y-3">
+                    <h3 class="text-lg font-heading font-bold text-[var(--color-primaryInk)]">EdLove Foundation</h3>
+                    <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">
+                        Holds the educational philosophy, pedagogical principles, classroom research intent, and continuous feedback loop from working educators and students.
+                    </p>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-lg font-heading font-bold text-[var(--color-primaryInk)]">Intuitui Labs</h3>
+                    <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">
+                        The independent technology firm responsible for systems engineering, offline-first local database architecture, interface craft, and technical execution.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Architectural Pillars -->
+        <section class="max-w-4xl mx-auto space-y-10">
+            <div class="space-y-2">
+                <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">System Modules</span>
+                <h2 class="text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+                    The Four Pillars of Gurudevi
+                </h2>
+                <p class="font-serif text-lg text-[var(--color-secondaryInk)]">
+                    Engineered to address both daily administrative tasks and deeper relational needs in the school environment.
+                </p>
+            </div>
+
+            <div class="space-y-6">
+                {gurudeviEntries.map(async (entry) => {
+                    const { Content } = await render(entry);
+                    return (
+                        <ExpandableContent title={entry.data.title} subtitle={entry.data.subtitle} icon={entry.data.icon}>
+                            <div class="py-6 space-y-6 text-[var(--color-secondaryInk)] prose prose-slate max-w-none">
+                                <Content />
+                            </div>
+                        </ExpandableContent>
+                    );
+                })}
+            </div>
+
+            <div class="pt-12">
+                <ProvenanceColophon
+                    cadence="living-document"
+                    author="EdLove Foundation & Intuitui Labs"
+                    createdDate={new Date('2026-08-01')}
+                    updatedDate={new Date('2026-11-22')}
+                    version="Gurudevi Overview v2.0"
+                    canonicalUrl="https://edlove.org/tech/gurudevi"
+                    readingTime={3}
+                    customNote="Official integration document between EdLove educational research and Intuitui Labs engineering."
+                />
+            </div>
+        </section>
+    </main>
+</Layout>

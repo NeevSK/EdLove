@@ -78,9 +78,11 @@
 }
 .commandPaletteTrigger {
   display: inline-flex;
-  width: 2.5rem;
-  height: 2.5rem;
-  flex: 0 0 2.5rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 2.75rem;
   align-items: center;
   justify-content: center;
   padding: 0;
@@ -88,7 +90,7 @@
   border-radius: 50%;
   background: var(--w-raised);
   color: var(--w-ink-soft);
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -140,9 +142,11 @@
   box-sizing: border-box;
   position: relative;
   display: inline-grid;
-  width: 2.5rem;
-  height: 2.5rem;
-  flex: 0 0 2.5rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 2.75rem;
   place-items: center;
   border: 1px solid var(--w-line);
   border-radius: 999px;
@@ -204,17 +208,21 @@
 }
 .headerBadge {
   position: absolute;
-  top: -0.15rem;
-  right: -0.15rem;
-  min-width: 1rem;
-  padding: 0.1rem 0.2rem;
+  top: -0.2rem;
+  right: -0.2rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1.5px solid var(--w-ground);
   border-radius: 999px;
-  background: var(--w-lamp);
-  color: var(--w-on-lamp);
-  font-size: 0.6rem;
-  font-weight: 700;
-  line-height: 1.1;
+  background: var(--w-lamp-deep, var(--w-action));
+  color: var(--w-ground, #fff);
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1;
   text-align: center;
 }
 .exploreBanner {
@@ -746,6 +754,8 @@
   min-width: 0;
   min-height: 100%;
   padding: clamp(0.75rem, 2cqi, 2rem);
+  container-name: sanctuary-stage;
+  container-type: inline-size;
 }
 .quickAccessNotice {
   width: fit-content;
@@ -999,18 +1009,19 @@
     align-items: center;
     gap: 0.1rem;
     margin: 0;
-    padding: 0.15rem 0.2rem;
+    padding: 0.25rem 0.2rem;
     border: 0;
-    font-size: 0.68rem;
+    font-size: 0.8125rem;
+    min-height: 3.25rem;
     position: relative;
   }
   .horizontalNavigation .navSymbol,
   .shell[data-navigation-layout="horizontal"] .horizontalNavigation .navSymbol,
   .shell[data-navigation-layout="side"] .horizontalNavigation .navSymbol {
     display: inline-flex;
-    width: 1.3rem;
-    height: 1.3rem;
-    font-size: 1.15rem;
+    width: 1.4rem;
+    height: 1.4rem;
+    font-size: 1.25rem;
     line-height: 1;
     align-items: center;
     justify-content: center;
@@ -1025,8 +1036,9 @@
     clip-path: none;
     text-overflow: clip;
     white-space: nowrap;
-    font-size: 0.68rem;
+    font-size: 0.8125rem;
     font-weight: 600;
+    letter-spacing: 0.015em;
   }
   .horizontalNavigation .navLink[aria-current="page"]::before,
   .shell[data-navigation-layout="horizontal"] .horizontalNavigation .navLink[aria-current="page"]::before,
@@ -1305,5 +1317,19 @@
   .navLink:active {
     transform: none;
     filter: none;
+  }
+}
+
+/* Main navigation placement: in the header deck on wider screens, a bottom bar on phones.
+   Kept last so these win the equal-specificity rules above. */
+.shell .horizontalNavigation[data-placement="bottom"] {
+  display: none;
+}
+@media (max-width: 48rem) {
+  .shell .horizontalNavigation[data-placement="deck"] {
+    display: none;
+  }
+  .shell .horizontalNavigation[data-placement="bottom"] {
+    display: flex;
   }
 }

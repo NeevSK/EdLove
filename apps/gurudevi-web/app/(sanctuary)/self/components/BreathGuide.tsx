@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { playSingingBowlChime } from '../../../../lib/sanctuary/audioSanctuary';

@@ -51,9 +51,21 @@ const environmentSchema = z
     API_BROWSER_ORIGINS: browserOrigins,
     // Ed25519 private key (PKCS#8 PEM) for offline permission snapshots; held in Doppler.
     SNAPSHOT_SIGNING_PRIVATE_KEY: z.string().trim().min(1).optional(),
-    // PowerSync instance origin and the ES256 private JWK that signs its grants; held in Doppler.
+    // The PowerSync instance devices sync with, and the private ES256 JWK (JSON) that signs
+    // their sync grants; both held in Doppler. Without both, identity.syncGrant is unavailable.
     POWERSYNC_URL: z.url().optional(),
     POWERSYNC_SIGNING_JWK: z.string().trim().min(1).optional(),
+    // Configurable asset storage policy (R2 or Supabase Storage presigned URLs).
+    ASSET_STORAGE_DRIVER: z.enum(['disabled', 'r2', 'supabase']).default('disabled'),
+    ASSET_SIGNED_URL_TTL_SECONDS: z.coerce.number().int().min(30).max(86_400).default(900),
+    ASSET_PUBLIC_CDN_URL: z.url().optional(),
+    R2_ENDPOINT: z.url().optional(),
+    R2_ACCESS_KEY_ID: z.string().trim().min(1).optional(),
+    R2_SECRET_ACCESS_KEY: z.string().trim().min(1).optional(),
+    R2_BUCKET: z.string().trim().min(1).optional(),
+    SUPABASE_URL: z.url().optional(),
+    SUPABASE_SERVICE_ROLE_KEY: z.string().trim().min(1).optional(),
+    SUPABASE_STORAGE_BUCKET: z.string().trim().min(1).default('files'),
   })
   .refine((config) => config.NODE_HEADERS_TIMEOUT_MS <= config.NODE_REQUEST_TIMEOUT_MS, {
     path: ['NODE_HEADERS_TIMEOUT_MS'],
@@ -98,7 +110,30 @@ const environmentSchema = z
   .refine((config) => Boolean(config.POWERSYNC_URL) === Boolean(config.POWERSYNC_SIGNING_JWK), {
     path: ['POWERSYNC_SIGNING_JWK'],
     message: 'PowerSync needs both its URL and its signing key, or neither',
-  });
+  })
+  .refine(
+    (config) =>
+      config.ASSET_STORAGE_DRIVER !== 'r2' ||
+      Boolean(
+        config.R2_ENDPOINT &&
+          config.R2_ACCESS_KEY_ID &&
+          config.R2_SECRET_ACCESS_KEY &&
+          config.R2_BUCKET,
+      ),
+    {
+      path: ['ASSET_STORAGE_DRIVER'],
+      message: 'R2 storage driver requires R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, and R2_BUCKET',
+    },
+  )
+  .refine(
+    (config) =>
+      config.ASSET_STORAGE_DRIVER !== 'supabase' ||
+      Boolean(config.SUPABASE_URL && config.SUPABASE_SERVICE_ROLE_KEY),
+    {
+      path: ['ASSET_STORAGE_DRIVER'],
+      message: 'Supabase storage driver requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY',
+    },
+  );
 
 export type ServerConfig = z.infer<typeof environmentSchema>;
 

@@ -8,7 +8,7 @@ import {
   fetchTomorrowPrepItems,
   updateTomorrowPrepItem,
 } from '@repo/self/data/selfFeature.data';
-import type { DailyPrepItem } from '@repo/self/types';
+import type { DailyPrepItem } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const PREP_CACHE_KEY = 'gurudevi-prep-cache';

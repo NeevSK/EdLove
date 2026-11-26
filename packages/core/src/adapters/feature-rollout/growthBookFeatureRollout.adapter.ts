@@ -1,5 +1,5 @@
 import { GrowthBook, setPolyfills } from '@growthbook/growthbook';
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import type {
   FeatureRolloutSnapshot,

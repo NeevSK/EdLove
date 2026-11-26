@@ -31,8 +31,8 @@ class RobustAsyncStorage implements StorageInterface {
   private async init() {
     try {
       const keys = await AsyncStorage.getAllKeys();
-      const pairs = await AsyncStorage.multiGet(keys);
-      pairs.forEach(([key, value]) => {
+      const pairs = await AsyncStorage.getMany(keys);
+      for (const [key, value] of Object.entries(pairs)) {
         if (value !== null) {
           if (value === 'true') this.cache.set(key, true);
           else if (value === 'false') this.cache.set(key, false);
@@ -40,7 +40,7 @@ class RobustAsyncStorage implements StorageInterface {
             this.cache.set(key, Number(value));
           else this.cache.set(key, value);
         }
-      });
+      }
       this.initialized = true;
     } catch {
       // Silently fail during hydration to avoid HMR issues, or defer to a safe time

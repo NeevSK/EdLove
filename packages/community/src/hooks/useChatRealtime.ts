@@ -1,5 +1,5 @@
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus.adapter';
 import { CHAT_SEND_COMMAND } from '@repo/core/logic/schemas/chat-command.schema';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';

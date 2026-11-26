@@ -207,7 +207,8 @@
   border: 1px solid #ded8cf;
   border-radius: 0.5rem;
   background: white;
-  font-size: 0.8rem;
+  min-height: 44px;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   color: #71695f;
@@ -269,7 +270,7 @@
   background: #edf6eb;
   color: #24501d;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
 }
 
 .streamList {
@@ -305,12 +306,12 @@
 }
 
 .streamItemRoll {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: #71695f;
 }
 
 .streamItemTime {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #3b7b32;
   font-variant-numeric: tabular-nums;

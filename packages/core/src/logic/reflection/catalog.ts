@@ -5,7 +5,7 @@
  * Clean-room pattern (concepts from classic cognitive-distortion families;
  * all labels/copy authored for the Gurudevi audience).
  */
-import type { ThinkingTrap, TrapSlope } from './types';
+import type { ThinkingTrap, TrapSlope } from '../../types/reflection';
 
 /** Resolve a trap by id within the given catalog. */
 export function findTrapById(traps: ThinkingTrap[], id: string): ThinkingTrap | undefined {

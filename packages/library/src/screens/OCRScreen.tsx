@@ -6,16 +6,17 @@ import { ScrollView } from 'react-native';
 import { WaitingSign } from '@repo/ui/components/native';
 import { ArrowLeft, Download, ScanLine } from '@repo/ui/icons';
 import { Box, Button, ButtonText, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 const LANGUAGES = ['eng', 'sin', 'tam'] as const;
 
 export default function OCRScreen() {
   const params = useLocalSearchParams<Record<string, string>>();
   const { t } = useTranslation();
-  const router = useRouter();
+  const router = useNavigator();
   const { bytes, loading, error } = useLoadedBytes(params);
 
   const [lang, setLang] = useState<(typeof LANGUAGES)[number]>('eng');

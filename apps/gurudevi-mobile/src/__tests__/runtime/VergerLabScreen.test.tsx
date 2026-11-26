@@ -36,7 +36,10 @@ vi.mock('@shopify/flash-list', async () => {
       ),
   };
 });
-vi.mock('expo-router', () => ({ router: { push: vi.fn(), replace: vi.fn() } }));
+vi.mock('expo-router', () => {
+  const router = { push: vi.fn(), replace: vi.fn() };
+  return { router, useRouter: () => router };
+});
 vi.mock('@react-native-async-storage/async-storage', () => ({
   default: { getItem: vi.fn(), setItem: vi.fn(), removeItem: vi.fn() },
 }));

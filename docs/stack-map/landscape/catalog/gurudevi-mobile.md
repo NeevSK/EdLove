@@ -29,7 +29,7 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 | [@repo/verger-react-native](../stack-map.md#repoverger-react-native) | domain | Verger's React Native shell: VergerRoot runs and binds verger, feeds app state, touches, reduced motion and long tasks, and applies the global reduced-motion lever. |
 | [@repo/workforce](../stack-map.md#repoworkforce) | domain | Future non-academic & job-structure domain — school-wide operations beyond classrooms. |
 
-## External deps (182 direct)
+## External deps (183 direct)
 
 ```text
 @azure/core-asynciterator-polyfill
@@ -47,6 +47,7 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 @journeyapps/wa-sqlite
 @legendapp/list
 @lottiefiles/dotlottie-react
+@maplibre/maplibre-react-native
 @op-engineering/op-sqlite
 @powersync/drizzle-driver
 @powersync/react
@@ -66,6 +67,7 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 @stripe/stripe-react-native
 @supabase/postgrest-js
 @supabase/supabase-js
+@swmansion/react-native-bottom-sheet
 @tanstack/react-pacer
 @tanstack/react-query
 @tanstack/react-store
@@ -205,7 +207,6 @@ react-native-url-polyfill
 react-native-webview
 react-native-worklets
 scheduler
-sonner-native
 styleq
 tailwindcss
 use-latest-callback
@@ -216,7 +217,7 @@ zod
 zustand
 ```
 
-## Dev tooling (35)
+## Dev tooling (39)
 
 ```text
 @babel/runtime
@@ -234,12 +235,16 @@ zustand
 @testing-library/react-native
 @types/react
 @types/react-test-renderer
+@typescript-eslint/eslint-plugin
 babel-preset-expo
 cross-env
 eas-cli
 eslint
 eslint-config-expo
+eslint-plugin-import-x
+eslint-plugin-react
 eslint-plugin-react-compiler
+eslint-plugin-react-native
 eslint-plugin-react-native-a11y
 expo-doctor
 globals

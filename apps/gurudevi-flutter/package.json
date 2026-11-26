@@ -1,0 +1,12 @@
+{
+  "name": "gurudevi-flutter",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "flutter run",
+    "android": "flutter run -d android",
+    "test": "flutter test",
+    "check-types": "flutter analyze",
+    "clean": "flutter clean"
+  }
+}

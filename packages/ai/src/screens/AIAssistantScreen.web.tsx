@@ -62,9 +62,10 @@ export default function AIAssistantScreen() {
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 60);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleSend = useCallback(async () => {

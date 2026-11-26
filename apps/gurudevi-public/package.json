@@ -1,0 +1,34 @@
+{
+  "name": "apps-gurudevi-public",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "description": "gurudevi.app public site: static pages built at deploy time, React islands only where a page needs interaction.",
+  "scripts": {
+    "dev": "astro dev --port 4321",
+    "build": "astro build",
+    "preview": "astro preview --port 4321",
+    "check-types": "astro sync && tsc --runExternalCode --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@astrojs/react": "7.1.9",
+    "@astrojs/sitemap": "^3.7.6",
+    "@repo/core": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@tailwindcss/vite": "^4.3.5",
+    "astro": "^7.4.13",
+    "lucide-react": "^1.79.0",
+    "oxc-transform-react": "0.158.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "tailwindcss": "4.3.5"
+  },
+  "devDependencies": {
+    "@astrojs/ts-content-mapper": "^0.2.0",
+    "@types/react": "^19.3.2",
+    "@types/react-dom": "19.3.0",
+    "typescript": "7.1.0-beta",
+    "vitest": "5.1.1"
+  }
+}

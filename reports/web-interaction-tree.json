@@ -1,0 +1,359 @@
+{
+  "root": "http://explore.localhost:3000/welcome",
+  "timestamp": "2026-11-17T07:52:08.348Z",
+  "nodes": [
+    {
+      "level": 0,
+      "path": "/welcome",
+      "title": "Welcome | Gurudevi Sanctuary",
+      "actionsCount": 12,
+      "actions": [
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Skip to main content",
+          "href": "#main-content",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Gurudevi",
+          "href": "/welcome",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "EN",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "Forest canopy",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "One more thing →",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Sign in to Sanctuary",
+          "href": "/sign-in",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Privacy Policy",
+          "href": "http://localhost:3000/privacy",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Terms of Use",
+          "href": "http://localhost:3000/terms",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Community Guidelines",
+          "href": "http://localhost:3000/guidelines",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Account & Data",
+          "href": "http://localhost:3000/delete-account",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "System Status",
+          "href": "http://localhost:3000/status",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "EdLove Foundation",
+          "href": "https://edlove.org",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "step": "orientation",
+      "actionsCount": 12,
+      "actions": [
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Skip to main content",
+          "href": "#main-content",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Gurudevi",
+          "href": "/welcome",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "EN",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "Forest canopy",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "Choose your perspective →",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "← Back",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Privacy Policy",
+          "href": "http://localhost:3000/privacy",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Terms of Use",
+          "href": "http://localhost:3000/terms",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Community Guidelines",
+          "href": "http://localhost:3000/guidelines",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Account & Data",
+          "href": "http://localhost:3000/delete-account",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "System Status",
+          "href": "http://localhost:3000/status",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "EdLove Foundation",
+          "href": "https://edlove.org",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "step": "capacity_selection",
+      "actionsCount": 12,
+      "actions": [
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Skip to main content",
+          "href": "#main-content",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Gurudevi",
+          "href": "/welcome",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "EN",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "Forest canopy",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "Enter Guest House →",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "← Back",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Privacy Policy",
+          "href": "http://localhost:3000/privacy",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Terms of Use",
+          "href": "http://localhost:3000/terms",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Community Guidelines",
+          "href": "http://localhost:3000/guidelines",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Account & Data",
+          "href": "http://localhost:3000/delete-account",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "System Status",
+          "href": "http://localhost:3000/status",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "EdLove Foundation",
+          "href": "https://edlove.org",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "path": "/self",
+      "title": "Welcome | Gurudevi Sanctuary",
+      "actionsCount": 12,
+      "actions": [
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Skip to main content",
+          "href": "#main-content",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Gurudevi",
+          "href": "/welcome",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "EN",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "Forest canopy",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "Enter Guest House →",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "role": "button",
+          "text": "← Back",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Privacy Policy",
+          "href": "http://localhost:3000/privacy",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Terms of Use",
+          "href": "http://localhost:3000/terms",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Community Guidelines",
+          "href": "http://localhost:3000/guidelines",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "Account & Data",
+          "href": "http://localhost:3000/delete-account",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "System Status",
+          "href": "http://localhost:3000/status",
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "role": "a",
+          "text": "EdLove Foundation",
+          "href": "https://edlove.org",
+          "disabled": false
+        }
+      ]
+    }
+  ],
+  "uncaughtErrors": [],
+  "status": "SUCCESS"
+}

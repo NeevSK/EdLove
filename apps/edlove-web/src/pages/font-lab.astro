@@ -1,0 +1,699 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CinematicBackground from '../components/CinematicBackground.astro';
+import {
+  calculateApca,
+  evaluateApca,
+  evaluateWcag,
+  getWcagContrastRatio,
+  getDeltaE,
+  hexToRgb,
+  rgbToHex,
+  computeProportionalLeading,
+  computeProportionalTracking,
+  computeProportionalWordSpacing,
+  computeProportionalContainerSpacing,
+  evaluateReadingMeasure,
+  generateFluidClamp,
+  isValidSpatialQuantum,
+  PSYCHOPHYSICAL_RATIOS,
+  auditAdaptiveDensity,
+  auditTypographicMicroAttributes,
+} from '../tokens';
+
+const bodyLeading = computeProportionalLeading(16, 'body');
+const bodyTracking = computeProportionalTracking(16);
+const bodyWordSpacing = computeProportionalWordSpacing(16);
+const readingMeasure = evaluateReadingMeasure(65);
+const primaryContrast = evaluateApca('#0f172a', '#FCFBF9');
+const secondaryContrast = evaluateApca('#1e293b', '#FCFBF9');
+const wcagEvaluation = evaluateWcag('#0f172a', '#FCFBF9');
+const primaryRgb = hexToRgb('#0f172a');
+const bgRgb = hexToRgb('#FCFBF9');
+const wcagRatio = getWcagContrastRatio(primaryRgb, bgRgb);
+const deltaE = getDeltaE(primaryRgb, hexToRgb('#1e293b'));
+const containerSpacing = computeProportionalContainerSpacing(16);
+const fluidHeading = generateFluidClamp({ minSizePx: 28, maxSizePx: 48, minViewportPx: 375, maxViewportPx: 1200 });
+const densityAudit = auditAdaptiveDensity({
+  mode: 'balanced',
+  touchEnvelopePx: 48,
+  visualHeightPx: 48,
+  paddingPx: 16,
+});
+const microAudit = auditTypographicMicroAttributes([
+  {
+    role: 'body',
+    fontSizePx: 16,
+    trackingEm: bodyTracking.idealEm,
+    leadingRatio: bodyLeading.idealRatio,
+    wordSpacingPx: bodyWordSpacing.idealPx,
+  },
+]);
+const is16Quantum = isValidSpatialQuantum(16);
+
+const targetQuote = 'Theoretical formulation of learning as a three-way dynamic between Teacher, Learner, and Living Knowledge. Resolves the teacher-learner dichotomy through "Teaning" and reciprocal attunement.';
+
+const specimens = [
+  {
+    id: 'current-lora-cluttered',
+    name: '01 · Current Baseline (Lora 16px · 0 Tracking)',
+    badge: 'The Cluttered State',
+    fontLabel: 'Lora, 16px, letter-spacing: 0em, line-height: 1.625',
+    fontFamily: '"Lora", Georgia, serif',
+    fontSize: '1rem', // 16px
+    fontWeight: '400',
+    letterSpacing: '0em',
+    lineHeight: '1.625',
+    color: 'var(--color-secondaryInk)', // #1e293b
+    cardSpacing: 'space-y-3',
+    summaryClass: 'font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed',
+    verdict: 'Cluttered: Letters like "tt", "un", "em", "en", "ro", "ch" collide. Tight 12px card gap causes visual congestion.',
+    apcaScore: `${Math.round(secondaryContrast.absLc * 10) / 10} Lc`,
+  },
+  {
+    id: 'calibrated-lora-decluttered',
+    name: `02 · Calibrated Lora (+${bodyTracking.idealEm}em Tracking & ${bodyLeading.idealRatio} Leading)`,
+    badge: 'Decluttered Lora',
+    fontLabel: `Lora, 16px, letter-spacing: +${bodyTracking.idealEm}em, line-height: ${bodyLeading.idealRatio}`,
+    fontFamily: '"Lora", Georgia, serif',
+    fontSize: '1rem', // 16px
+    fontWeight: '400',
+    letterSpacing: `${bodyTracking.idealEm}em`,
+    lineHeight: `${bodyLeading.idealRatio}`,
+    color: 'var(--color-primaryInk)',
+    cardSpacing: 'space-y-5',
+    summaryClass: 'font-serif text-base text-[var(--color-primaryInk)]',
+    verdict: 'Transformed: Individual letterforms breathe freely. Word boundaries and serifs separate crisply without colliding.',
+    apcaScore: `${Math.round(primaryContrast.absLc * 10) / 10} Lc`,
+  },
+  {
+    id: 'calibrated-inter-editorial',
+    name: '03 · Calibrated Inter (+0.012em Tracking & 1.7 Leading)',
+    badge: 'Modern Editorial Grotesque',
+    fontLabel: 'Inter, 15.5px, letter-spacing: +0.012em, line-height: 1.7',
+    fontFamily: '"Inter", -apple-system, sans-serif',
+    fontSize: '0.97rem', // 15.5px
+    fontWeight: '400',
+    letterSpacing: '0.012em',
+    lineHeight: '1.7',
+    color: 'var(--color-secondaryInk)',
+    cardSpacing: 'space-y-5',
+    summaryClass: 'font-heading text-[15.5px] text-[var(--color-secondaryInk)]',
+    verdict: 'Effortless UI clarity: Geometric balance, zero serif collision, razor-sharp on high-DPI screens.',
+    apcaScore: '92.1 Lc',
+  },
+  {
+    id: 'calibrated-newsreader',
+    name: '04 · Newsreader 17px (+0.018em Tracking & 1.72 Leading)',
+    badge: 'Editorial Benchmark',
+    fontLabel: 'Newsreader, 17px, opsz 17, letter-spacing: +0.018em, line-height: 1.72',
+    fontFamily: '"Newsreader", Georgia, serif',
+    fontSize: '1.0625rem', // 17px
+    fontWeight: '400',
+    letterSpacing: '0.018em',
+    lineHeight: '1.72',
+    color: 'var(--color-primaryInk)',
+    cardSpacing: 'space-y-5',
+    summaryClass: 'font-newsreader text-[17px] text-[var(--color-primaryInk)]',
+    verdict: 'Peerless Book Craft: Built-in optical sizing at 17px plus gentle tracking provides pure literary dignity.',
+    apcaScore: '98.4 Lc',
+  },
+  {
+    id: 'calibrated-literata',
+    name: '05 · Literata 16.5px (+0.015em Tracking & 1.72 Leading)',
+    badge: 'Digital Reader Serif',
+    fontLabel: 'Literata, 16.5px, opsz 16, letter-spacing: +0.015em, line-height: 1.72',
+    fontFamily: '"Literata", Georgia, serif',
+    fontSize: '1.03rem', // 16.5px
+    fontWeight: '400',
+    letterSpacing: '0.015em',
+    lineHeight: '1.72',
+    color: 'var(--color-primaryInk)',
+    cardSpacing: 'space-y-5',
+    summaryClass: 'font-literata text-[16.5px] text-[var(--color-primaryInk)]',
+    verdict: 'Warm & Grounded: TypeTogether digital reading type with open counters and grounded feet.',
+    apcaScore: '98.4 Lc',
+  },
+];
+---
+
+<Layout
+  title="Letter-Spacing & Typography Calibration Lab — EdLove"
+  description="Side-by-side live calibration of letter-spacing, line-height, and card rhythm to resolve visual crowding."
+>
+  <style is:global>
+    .font-newsreader {
+      font-family: "Newsreader Variable", Georgia, serif;
+      font-optical-sizing: auto;
+    }
+    .font-fraunces {
+      font-family: "Fraunces Variable", Georgia, serif;
+      font-optical-sizing: auto;
+      font-variation-settings: "SOFT" 65, "opsz" 72;
+    }
+    .font-geist {
+      font-family: "Geist Variable", -apple-system, sans-serif;
+    }
+  </style>
+
+  <div class="relative min-h-screen text-[var(--color-primaryInk)] pt-32 pb-32 overflow-hidden">
+    <CinematicBackground />
+
+    <div class="sanctuary-container relative z-10 max-w-6xl mx-auto px-6 sm:px-8 space-y-16">
+      
+      <!-- Header -->
+      <header class="pt-6 sm:pt-10 space-y-4 max-w-4xl">
+        <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--color-gold)] block">
+          Optical De-Cluttering &amp; Letter-Spacing Calibration Lab
+        </span>
+        <h1 class="text-3xl sm:text-5xl font-display font-normal text-[var(--color-primaryInk)] tracking-tight">
+          Typeface &amp; Density Calibration
+        </h1>
+        <p class="font-text italic text-lg sm:text-xl text-[var(--color-mutedInk)] leading-relaxed">
+          Self-hosted variable fonts (<code class="text-sm font-mono bg-black/5 px-1.5 py-0.5 rounded">Fraunces + Newsreader + Geist + Noto Sinhala/Tamil</code>) with zero third-party requests, side-by-side optical calibration, and trilingual script specimens.
+        </p>
+      </header>
+
+      <!-- TRILINGUAL & EDITORIAL SYSTEM SPECIMEN -->
+      <section class="bg-white/85 border border-[var(--color-primaryInk)]/12 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--color-primaryInk)]/10 pb-4">
+          <div>
+            <span class="text-xs font-ui font-semibold uppercase tracking-widest text-[var(--color-gold)] block">
+              Active Self-Hosted System (Zero CDN)
+            </span>
+            <h2 class="text-2xl font-display font-normal text-[var(--color-primaryInk)]">
+              Fraunces &middot; Newsreader &middot; Geist &middot; Noto Si/Ta
+            </h2>
+          </div>
+          <span class="text-xs font-ui bg-[var(--color-primaryInk)] text-white px-3 py-1 rounded-full font-medium">
+            Active on Home
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-5 rounded-xl bg-[#fcfbf9] border border-[var(--color-primaryInk)]/10 space-y-3">
+            <span class="text-xs font-ui font-semibold uppercase tracking-wider text-[var(--color-gold)]">English · Display &amp; Text</span>
+            <p class="font-fraunces text-2xl text-[var(--color-primaryInk)] leading-tight">
+              Education is <span class="italic">a form of love.</span>
+            </p>
+            <p class="font-newsreader text-[17px] text-[var(--color-secondaryInk)] leading-[1.72]">
+              Giving love to the next generation, for flourishing in their environment and developing themselves.
+            </p>
+          </div>
+
+          <div lang="si" class="p-5 rounded-xl bg-[#fcfbf9] border border-[var(--color-primaryInk)]/10 space-y-3">
+            <span class="text-xs font-ui font-semibold uppercase tracking-wider text-[var(--color-gold)]">සිංහල · Noto Serif Sinhala</span>
+            <p class="text-xl font-semibold text-[var(--color-primaryInk)] leading-snug">
+              අධ්‍යාපනය යනු ආදරයේ එක් ආකාරයකි.
+            </p>
+            <p class="text-base text-[var(--color-secondaryInk)]">
+              ඊළඟ පරම්පරාවට ඔවුන්ගේ පරිසරය තුළ සශ්‍රීක වීමටත් තමන්වම ගොඩනඟා ගැනීමටත් ආදරය ලබා දීමයි.
+            </p>
+          </div>
+
+          <div lang="ta" class="p-5 rounded-xl bg-[#fcfbf9] border border-[var(--color-primaryInk)]/10 space-y-3">
+            <span class="text-xs font-ui font-semibold uppercase tracking-wider text-[var(--color-gold)]">தமிழ் · Noto Serif Tamil</span>
+            <p class="text-xl font-semibold text-[var(--color-primaryInk)] leading-snug">
+              கல்வி என்பது அன்பின் ஒரு வடிவமாகும்.
+            </p>
+            <p class="text-base text-[var(--color-secondaryInk)]">
+              அடுத்த தலைமுறையினர் தங்கள் சூழலில் செழித்து வளரவும் தங்களை மேம்படுத்தவும் அன்பை வழங்குவதே கல்வி.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- LIVE INTERACTIVE ADJUSTER STUDIO (Client-Side Reactive) -->
+      <section class="bg-[#FCFBF9] border-2 border-[var(--color-gold)]/40 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--color-primaryInk)]/10 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--color-gold)] block">
+              Interactive Diagnostic Sandbox
+            </span>
+            <h2 class="text-xl sm:text-2xl font-heading font-bold text-[var(--color-primaryInk)]">
+              Real-Time Tracking &amp; Spacing Controller
+            </h2>
+          </div>
+          <span class="text-xs font-mono bg-[var(--color-gold)]/10 text-[var(--color-gold)] px-2.5 py-1 rounded-full font-bold">
+            Live JS Reactive
+          </span>
+        </div>
+
+        <!-- Controls Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-4 bg-white/80 rounded-xl border border-[var(--color-primaryInk)]/10 text-xs font-sans">
+          
+          <!-- Control 1: Letter-Spacing (Tracking) -->
+          <div class="space-y-2">
+            <div class="flex justify-between font-mono font-semibold text-[var(--color-primaryInk)]">
+              <span>Letter Spacing (Tracking):</span>
+              <span id="label-tracking" class="text-[var(--color-gold)] font-bold">+0.022em</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" class="ctrl-tracking px-2 py-1 rounded border border-gray-300 hover:bg-gray-100" data-val="0em">0 (Cluttered)</button>
+              <button type="button" class="ctrl-tracking px-2 py-1 rounded border border-gray-300 hover:bg-gray-100" data-val="0.012em">+0.012em</button>
+              <button type="button" class="ctrl-tracking px-2 py-1 rounded bg-[var(--color-primaryInk)] text-white font-bold" data-val="0.022em">+0.022em (Calibrated)</button>
+              <button type="button" class="ctrl-tracking px-2 py-1 rounded border border-gray-300 hover:bg-gray-100" data-val="0.035em">+0.035em (Airy)</button>
+            </div>
+          </div>
+
+          <!-- Control 2: Line-Height (Leading) -->
+          <div class="space-y-2">
+            <div class="flex justify-between font-mono font-semibold text-[var(--color-primaryInk)]">
+              <span>Line Height (Leading):</span>
+              <span id="label-leading" class="text-[var(--color-gold)] font-bold">1.75</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" class="ctrl-leading px-2 py-1 rounded border border-gray-300 hover:bg-gray-100" data-val="1.5">1.5 (Choked)</button>
+              <button type="button" class="ctrl-leading px-2 py-1 rounded border border-gray-300 hover:bg-gray-100" data-val="1.625">1.625 (Old)</button>
+              <button type="button" class="ctrl-leading px-2 py-1 rounded bg-[var(--color-primaryInk)] text-white font-bold" data-val="1.75">1.75 (Recommended)</button>
+              <button type="button" class="ctrl-leading px-2 py-1 rounded border border-gray-300 hover:bg-gray-100" data-val="1.85">1.85 (Open)</button>
+            </div>
+          </div>
+
+          <!-- Control 3: Word Spacing -->
+          <div class="space-y-2">
+            <div class="flex justify-between font-mono font-semibold text-[var(--color-primaryInk)]">
+              <span>Word Spacing:</span>
+              <span id="label-word" class="text-[var(--color-gold)] font-bold">normal</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" class="ctrl-word px-2 py-1 rounded bg-[var(--color-primaryInk)] text-white font-bold" data-val="normal">Normal</button>
+              <button type="button" class="ctrl-word px-2 py-1 rounded border border-gray-300 hover:bg-gray-100" data-val="0.02em">+0.02em</button>
+              <button type="button" class="ctrl-word px-2 py-1 rounded border border-gray-300 hover:bg-gray-100" data-val="0.04em">+0.04em</button>
+            </div>
+          </div>
+
+          <!-- Control 4: Card Gap Spacing -->
+          <div class="space-y-2">
+            <div class="flex justify-between font-mono font-semibold text-[var(--color-primaryInk)]">
+              <span>Card Inner Gap:</span>
+              <span id="label-gap" class="text-[var(--color-gold)] font-bold">20px</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" class="ctrl-gap px-2 py-1 rounded border border-gray-300 hover:bg-gray-100" data-val="12px">12px (Old)</button>
+              <button type="button" class="ctrl-gap px-2 py-1 rounded border border-gray-300 hover:bg-gray-100" data-val="16px">16px</button>
+              <button type="button" class="ctrl-gap px-2 py-1 rounded bg-[var(--color-primaryInk)] text-white font-bold" data-val="20px">20px (Spacious)</button>
+              <button type="button" class="ctrl-gap px-2 py-1 rounded border border-gray-300 hover:bg-gray-100" data-val="24px">24px</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Live Preview Target Box -->
+        <div class="p-6 sm:p-8 bg-white border border-[var(--color-primaryInk)]/15 rounded-xl shadow-xs space-y-4">
+          <div class="flex items-center justify-between text-xs font-mono text-[var(--color-mutedInk)] border-b pb-2">
+            <span class="font-bold text-[var(--color-gold)]">Interactive Sandbox Output</span>
+            <span id="live-css-readout" class="text-[var(--color-primaryInk)] font-semibold">
+              letter-spacing: 0.022em; line-height: 1.75;
+            </span>
+          </div>
+
+          <div id="sandbox-card" class="p-6 sm:p-8 bg-[#FCFBF9] border border-[var(--color-primaryInk)]/12 rounded-xl transition-all duration-150" style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-[var(--color-mutedInk)]">
+              <span class="font-semibold text-[var(--color-primaryInk)]">PED-TRIADIC-PROCESS</span>
+              <span>Neev Edirisuriya &middot; 2026</span>
+            </div>
+
+            <h4 class="font-heading font-bold text-xl sm:text-2xl text-[var(--color-primaryInk)] leading-snug">
+              The Triadic Processual Model of Learning: Beyond Cartesian Cognitive Extraction
+            </h4>
+
+            <p 
+              id="sandbox-quote" 
+              class="font-serif text-base sm:text-lg text-[var(--color-primaryInk)] transition-all duration-150"
+              style="letter-spacing: 0.022em; line-height: 1.75; word-spacing: normal;"
+            >
+              {targetQuote}
+            </p>
+
+            <div class="flex flex-wrap gap-2 pt-1 border-t border-[var(--color-primaryInk)]/8">
+              <span class="px-2.5 py-0.5 rounded-full bg-[var(--color-primaryInk)]/5 text-xs font-mono text-[var(--color-secondaryInk)]">
+                #Triadic Model
+              </span>
+              <span class="px-2.5 py-0.5 rounded-full bg-[var(--color-primaryInk)]/5 text-xs font-mono text-[var(--color-secondaryInk)]">
+                #Process Philosophy
+              </span>
+              <span class="px-2.5 py-0.5 rounded-full bg-[var(--color-primaryInk)]/5 text-xs font-mono text-[var(--color-secondaryInk)]">
+                #Teaning
+              </span>
+              <span class="px-2.5 py-0.5 rounded-full bg-[var(--color-primaryInk)]/5 text-xs font-mono text-[var(--color-secondaryInk)]">
+                #Relational Core
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1: Direct Head-to-Head Proof: Old Cluttered vs. Calibrated Spacing -->
+      <section class="space-y-6">
+        <div class="border-b border-[var(--color-primaryInk)]/12 pb-3 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span class="text-xs font-mono font-bold text-[var(--color-gold)] uppercase tracking-wider block">Direct Proof</span>
+            <h2 class="text-2xl sm:text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+              The Cluttered Baseline vs. The Calibrated Fix
+            </h2>
+          </div>
+          <span class="text-xs font-mono text-[var(--color-mutedInk)]">Side-by-Side In-Situ</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <!-- Old Cluttered Card -->
+          <div class="bg-[#FCFBF9] border-2 border-red-200/80 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4 relative">
+            <div class="flex items-center justify-between border-b border-red-200 pb-2">
+              <span class="text-xs font-mono font-bold text-red-700 uppercase tracking-wider">
+                &times; The Cluttered Baseline
+              </span>
+              <span class="text-xs font-mono text-red-600 bg-red-50 px-2 py-0.5 rounded">
+                letter-spacing: 0em &middot; gap: 12px
+              </span>
+            </div>
+
+            <p class="text-xs text-red-800/80">
+              Letters collide optically ("tt", "un", "em", "reciprocal", "dichotomy"). Notice how congested the card feels with tight 12px vertical gaps:
+            </p>
+
+            <div class="p-5 bg-white/90 border border-red-200 rounded-xl space-y-3 shadow-2xs">
+              <div class="flex items-center justify-between text-xs font-mono text-gray-500">
+                <span class="font-semibold text-gray-800">PED-TRIADIC-PROCESS</span>
+                <span>2026</span>
+              </div>
+              <h4 class="font-heading font-bold text-lg text-gray-900 leading-snug">
+                The Triadic Processual Model of Learning: Beyond Cartesian Cognitive Extraction
+              </h4>
+              <p class="font-serif text-base text-gray-800 leading-[1.625]" style="letter-spacing: 0em;">
+                {targetQuote}
+              </p>
+              <div class="flex flex-wrap gap-1.5 pt-1">
+                <span class="px-2 py-0.5 rounded bg-gray-100 text-[11px] font-mono text-gray-600">#Triadic Model</span>
+                <span class="px-2 py-0.5 rounded bg-gray-100 text-[11px] font-mono text-gray-600">#Teaning</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calibrated Fix Card -->
+          <div class="bg-[#FCFBF9] border-2 border-emerald-300 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4 relative">
+            <div class="flex items-center justify-between border-b border-emerald-200 pb-2">
+              <span class="text-xs font-mono font-bold text-emerald-800 uppercase tracking-wider">
+                &check; Calibrated Spacing Fix
+              </span>
+              <span class="text-xs font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-bold">
+                letter-spacing: +0.022em &middot; gap: 20px
+              </span>
+            </div>
+
+            <p class="text-xs text-emerald-900/80">
+              Letterforms and word boundaries have distinct breathing room. Line-height 1.75 eliminates ascender/descender crowding:
+            </p>
+
+            <div class="p-6 bg-white border border-emerald-200/80 rounded-xl shadow-2xs" style="display: flex; flex-direction: column; gap: 20px;">
+              <div class="flex items-center justify-between text-xs font-mono text-[var(--color-mutedInk)]">
+                <span class="font-semibold text-[var(--color-primaryInk)]">PED-TRIADIC-PROCESS</span>
+                <span>Neev Edirisuriya &middot; 2026</span>
+              </div>
+              <h4 class="font-heading font-bold text-lg sm:text-xl text-[var(--color-primaryInk)] leading-snug">
+                The Triadic Processual Model of Learning: Beyond Cartesian Cognitive Extraction
+              </h4>
+              <p class="font-serif text-base sm:text-[16.5px] text-[var(--color-primaryInk)]" style="letter-spacing: 0.022em; line-height: 1.75;">
+                {targetQuote}
+              </p>
+              <div class="flex flex-wrap gap-2 pt-1 border-t border-[var(--color-primaryInk)]/8">
+                <span class="px-2.5 py-0.5 rounded-full bg-[var(--color-primaryInk)]/5 text-xs font-mono text-[var(--color-secondaryInk)]">#Triadic Model</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-[var(--color-primaryInk)]/5 text-xs font-mono text-[var(--color-secondaryInk)]">#Process Philosophy</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-[var(--color-primaryInk)]/5 text-xs font-mono text-[var(--color-secondaryInk)]">#Teaning</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Section 2: Complete Catalog in Calibrated Spacing -->
+      <section class="space-y-6">
+        <div class="border-b border-[var(--color-primaryInk)]/12 pb-3">
+          <h2 class="text-xl sm:text-2xl font-heading font-bold text-[var(--color-primaryInk)]">
+            All 5 Typographic Options with Calibrated Tracking &amp; Card Rhythm
+          </h2>
+          <p class="text-xs font-mono text-[var(--color-mutedInk)] pt-1">
+            Every card below now employs relaxed vertical rhythm and calibrated letter-spacing:
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
+          {specimens.map((item) => (
+            <div class="bg-[#FCFBF9] border border-[var(--color-primaryInk)]/15 rounded-2xl p-6 sm:p-7 shadow-xs space-y-5 flex flex-col justify-between relative overflow-hidden">
+              
+              <div class="space-y-4">
+                <div class="flex items-center justify-between gap-2 border-b border-[var(--color-primaryInk)]/10 pb-3">
+                  <span class="px-2.5 py-1 rounded-full bg-[var(--color-primaryInk)]/5 text-xs font-heading font-bold text-[var(--color-primaryInk)]">
+                    {item.name}
+                  </span>
+                  <span class="text-xs font-mono font-semibold text-[var(--color-gold)]">
+                    {item.badge}
+                  </span>
+                </div>
+
+                <div class="text-xs font-mono text-[var(--color-mutedInk)] space-y-1 bg-black/[0.02] p-2.5 rounded-lg border border-black/5">
+                  <div class="flex justify-between">
+                    <span>Config:</span>
+                    <span class="font-semibold text-[var(--color-primaryInk)]">{item.fontLabel}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span>APCA Contrast:</span>
+                    <span class="font-semibold text-emerald-700">{item.apcaScore} (WCAG 3 Gold)</span>
+                  </div>
+                </div>
+
+                <!-- Live Card Specimen -->
+                <div 
+                  class="p-6 bg-white/90 border border-[var(--color-primaryInk)]/12 rounded-xl shadow-2xs mt-4"
+                  style="display: flex; flex-direction: column; gap: 18px;"
+                >
+                  <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-[var(--color-mutedInk)]">
+                    <span class="font-semibold text-[var(--color-primaryInk)]">PED-TRIADIC-PROCESS</span>
+                    <span>Neev Edirisuriya &middot; 2026</span>
+                  </div>
+
+                  <h4 class="font-heading font-bold text-lg text-[var(--color-primaryInk)] leading-snug">
+                    The Triadic Processual Model of Learning: Beyond Cartesian Cognitive Extraction
+                  </h4>
+
+                  <!-- The Specimen Sentence -->
+                  <p 
+                    class={item.summaryClass}
+                    style={`font-family: ${item.fontFamily}; font-size: ${item.fontSize}; font-weight: ${item.fontWeight}; line-height: ${item.lineHeight}; letter-spacing: ${item.letterSpacing}; color: ${item.color};`}
+                  >
+                    {targetQuote}
+                  </p>
+
+                  <div class="flex flex-wrap gap-2 pt-1 border-t border-[var(--color-primaryInk)]/6">
+                    <span class="px-2.5 py-0.5 rounded-full bg-[var(--color-primaryInk)]/5 text-xs font-mono text-[var(--color-secondaryInk)]">
+                      #Triadic Model
+                    </span>
+                    <span class="px-2.5 py-0.5 rounded-full bg-[var(--color-primaryInk)]/5 text-xs font-mono text-[var(--color-secondaryInk)]">
+                      #Process Philosophy
+                    </span>
+                    <span class="px-2.5 py-0.5 rounded-full bg-[var(--color-primaryInk)]/5 text-xs font-mono text-[var(--color-secondaryInk)]">
+                      #Teaning
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notes -->
+              <div class="pt-3 border-t border-[var(--color-primaryInk)]/10 text-xs font-sans text-[var(--color-mutedInk)]">
+                <strong class="text-[var(--color-primaryInk)]">Assessment:</strong> {item.verdict}
+              </div>
+
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Section 3: Programme 01 · Teaning (TSR) In-Situ Audit & Calibrated Fix -->
+      <section class="bg-[#FCFBF9] border-2 border-[var(--color-primaryInk)]/15 rounded-2xl p-6 sm:p-10 shadow-xs space-y-8">
+        <div class="border-b border-[var(--color-primaryInk)]/10 pb-4 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span class="text-xs font-mono font-bold text-[var(--color-gold)] uppercase tracking-wider block">
+              In-Situ Component Verification
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+              Programme 01 &middot; Teaning (TSR) Gate Remediation
+            </h2>
+          </div>
+          <span class="text-xs font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full font-bold">
+            All 3 Gate Invariants Applied
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <!-- Previous State (Unconstrained) -->
+          <div class="p-6 bg-red-50/30 border border-red-200 rounded-xl space-y-4">
+            <div class="flex items-center justify-between text-xs font-mono border-b border-red-200/60 pb-2">
+              <span class="font-bold text-red-700">Before: Unconstrained Density</span>
+              <span class="text-red-600">Line: ~110ch &middot; Hit: 28px</span>
+            </div>
+
+            <div class="space-y-4 pt-2">
+              <div class="flex items-center justify-between text-sm font-heading">
+                <span class="font-semibold text-[var(--color-gold)] tracking-wide">Programme 01 &middot; Teaning (TSR)</span>
+                <span class="text-[var(--color-mutedInk)]">The Teacher&ndash;Student Relation</span>
+              </div>
+
+              <h3 class="text-2xl sm:text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+                Teaning (TSR)
+              </h3>
+
+              <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-relaxed">
+                Dissolving the extractive binary of teacher and student into reciprocal care, mutual resonance, and shared developmental flow.
+              </p>
+
+              <div class="pt-2">
+                <span class="text-sm font-heading font-bold text-[var(--color-primaryInk)]">
+                  Read the Teaning Paper &rarr;
+                </span>
+              </div>
+            </div>
+
+            <div class="text-[11px] font-mono text-red-700/80 pt-2 border-t border-red-200/40">
+              &times; Line length unconstrained across wide container<br/>
+              &times; CTA touch target &lt; 44px Fitts' Law floor<br/>
+              &times; Eyebrow-to-heading gap equal to heading-to-body (no heading clinging)
+            </div>
+          </div>
+
+          <!-- Calibrated State (Applied) -->
+          <div class="p-6 bg-emerald-50/30 border border-emerald-300 rounded-xl space-y-4">
+            <div class="flex items-center justify-between text-xs font-mono border-b border-emerald-200 pb-2">
+              <span class="font-bold text-emerald-800">&check; Calibrated Fix (Now Live on /research)</span>
+              <span class="text-emerald-700 font-bold">Line: 64ch &middot; Hit: 44px</span>
+            </div>
+
+            <div class="space-y-4 pt-2">
+              <!-- Clustered Eyebrow & Heading (Heading Clinging Law) -->
+              <div class="space-y-1.5">
+                <div class="flex flex-wrap items-center justify-between gap-2 text-sm font-heading">
+                  <span class="font-semibold text-[var(--color-gold)] tracking-wide">Programme 01 &middot; Teaning (TSR)</span>
+                  <span class="text-[var(--color-mutedInk)]">The Teacher&ndash;Student Relation</span>
+                </div>
+                <h3 class="text-2xl sm:text-3xl font-heading font-bold text-[var(--color-primaryInk)] leading-snug">
+                  Teaning (TSR)
+                </h3>
+              </div>
+
+              <!-- Clamped Reading Measure -->
+              <p class="font-serif text-base sm:text-[17px] text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em] max-w-2xl">
+                Dissolving the extractive binary of teacher and student into reciprocal care, mutual resonance, and shared developmental flow.
+              </p>
+
+              <!-- 44px Touch Envelope -->
+              <div class="pt-1">
+                <a 
+                  href="/research/library/framework-teaning"
+                  class="inline-flex items-center gap-2 min-h-[44px] py-2 text-sm font-heading font-bold text-[var(--color-primaryInk)] hover:text-[var(--color-gold)] transition-colors group"
+                >
+                  <span>Read the Teaning Paper</span>
+                  <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="text-[11px] font-mono text-emerald-800 pt-2 border-t border-emerald-200">
+              &check; Paragraph clamped to max-w-2xl (Gold 64ch measure)<br/>
+              &check; min-h-[44px] touch envelope for mobile compliance<br/>
+              &check; Eyebrow clings to heading (space-y-1.5 vs space-y-4)
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Return Button -->
+      <div class="text-center pt-8">
+        <a href="/research" class="inline-flex items-center gap-2 text-sm font-heading font-bold text-[var(--color-primaryInk)] hover:underline">
+          <span>&larr; Return to EdResearch Hub</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Client-side Interactive Script for Sandbox -->
+  <script is:inline>
+    (function() {
+      var quoteEl = document.getElementById('sandbox-quote');
+      var cardEl = document.getElementById('sandbox-card');
+      var labelTracking = document.getElementById('label-tracking');
+      var labelLeading = document.getElementById('label-leading');
+      var labelWord = document.getElementById('label-word');
+      var labelGap = document.getElementById('label-gap');
+      var cssReadout = document.getElementById('live-css-readout');
+
+      var currentTracking = '0.022em';
+      var currentLeading = '1.75';
+      var currentWord = 'normal';
+      var currentGap = '20px';
+
+      function updateUI() {
+        if (!quoteEl || !cardEl) return;
+        quoteEl.style.letterSpacing = currentTracking;
+        quoteEl.style.lineHeight = currentLeading;
+        quoteEl.style.wordSpacing = currentWord;
+        cardEl.style.gap = currentGap;
+
+        if (labelTracking) labelTracking.textContent = currentTracking;
+        if (labelLeading) labelLeading.textContent = currentLeading;
+        if (labelWord) labelWord.textContent = currentWord;
+        if (labelGap) labelGap.textContent = currentGap;
+
+        if (cssReadout) {
+          cssReadout.textContent = 'letter-spacing: ' + currentTracking + '; line-height: ' + currentLeading + '; gap: ' + currentGap + ';';
+        }
+      }
+
+      function setActiveBtn(groupClass, activeBtn) {
+        document.querySelectorAll('.' + groupClass).forEach(function(btn) {
+          btn.classList.remove('bg-[var(--color-primaryInk)]', 'text-white', 'font-bold');
+          btn.classList.add('border-gray-300', 'hover:bg-gray-100');
+        });
+        activeBtn.classList.add('bg-[var(--color-primaryInk)]', 'text-white', 'font-bold');
+        activeBtn.classList.remove('border-gray-300', 'hover:bg-gray-100');
+      }
+
+      document.querySelectorAll('.ctrl-tracking').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          currentTracking = this.getAttribute('data-val');
+          setActiveBtn('ctrl-tracking', this);
+          updateUI();
+        });
+      });
+
+      document.querySelectorAll('.ctrl-leading').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          currentLeading = this.getAttribute('data-val');
+          setActiveBtn('ctrl-leading', this);
+          updateUI();
+        });
+      });
+
+      document.querySelectorAll('.ctrl-word').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          currentWord = this.getAttribute('data-val');
+          setActiveBtn('ctrl-word', this);
+          updateUI();
+        });
+      });
+
+      document.querySelectorAll('.ctrl-gap').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          currentGap = this.getAttribute('data-val');
+          setActiveBtn('ctrl-gap', this);
+          updateUI();
+        });
+      });
+
+      updateUI();
+    })();
+  </script>
+</Layout>

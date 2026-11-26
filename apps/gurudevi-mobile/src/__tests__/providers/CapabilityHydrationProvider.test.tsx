@@ -20,7 +20,7 @@ const mocks = vi.hoisted(() => ({
   isLoading: false,
 }));
 
-vi.mock('@repo/core/providers/AuthProvider', () => ({
+vi.mock('@repo/core/hooks/useAuth', () => ({
   useAuth: () => mocks.auth,
 }));
 

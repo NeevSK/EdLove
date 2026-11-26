@@ -1,0 +1,54 @@
+---
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  widths?: number[];
+  sizes?: string;
+  aspectClass?: string;
+  roundedClass?: string;
+  class?: string;
+  imgClass?: string;
+  priority?: boolean;
+  caption?: string;
+  credit?: string;
+}
+
+const {
+  src,
+  alt,
+  widths = [480, 800, 1280],
+  sizes = '(max-width: 768px) 100vw, 50vw',
+  aspectClass = 'aspect-[4/3]',
+  roundedClass = 'rounded-none',
+  class: className = '',
+  imgClass = '',
+  priority = false,
+  caption,
+  credit,
+} = Astro.props;
+---
+
+<figure class:list={['w-full', className]}>
+  <div class:list={['overflow-hidden bg-[#ede9e0]', roundedClass, aspectClass]}>
+    <Picture
+      src={src}
+      alt={alt}
+      widths={widths}
+      sizes={sizes}
+      formats={['avif', 'webp']}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding={priority ? 'sync' : 'async'}
+      fetchpriority={priority ? 'high' : 'auto'}
+      class:list={['w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]', imgClass]}
+    />
+  </div>
+  {(caption || credit) && (
+    <figcaption class="mt-2.5 flex flex-wrap items-baseline justify-between gap-2 text-xs font-ui text-[var(--color-mutedInk)] leading-relaxed">
+      {caption && <span>{caption}</span>}
+      {credit && <span class="opacity-75">{credit}</span>}
+    </figcaption>
+  )}
+</figure>

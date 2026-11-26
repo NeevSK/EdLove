@@ -3,7 +3,7 @@ import { handleAPIError } from '@repo/core';
 import { useDeviceAccounts } from '@repo/core/hooks';
 import { useMachineActor } from '@repo/core/hooks/useMachineActor';
 import { accountPin, getSessionIdentityMode } from '@repo/core/logic';
-import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink';
+import { handleDeepLink } from '@repo/core/logic/deeplink/handleDeepLink.adapter';
 import {
   authorizeExistingAccountTransfer,
   beginGuestConversion,

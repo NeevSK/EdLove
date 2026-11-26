@@ -1,11 +1,12 @@
 import { GURUDEVI_PLATFORM_URL } from '@repo/core/config/publicUrls';
 import { resolveQR } from '@repo/core/logic/utils/QRResolver';
+import { containsTraversal, hasUnsafeUrlText } from '@repo/core/routing/internalHref';
 import { isValidAppRoutePath } from '@repo/core/routing/routeManifest';
 import type { QRPayload } from '@repo/core/types/QRPayload';
-import { Data, Effect } from 'effect';
+import * as Effect from 'effect/Effect';
+import * as Schema from 'effect/Schema';
 
 export const MAX_DEEP_LINK_LENGTH = 8192;
-const FORBIDDEN_URL_PATTERN = /[<>'";\0\r\n]|%00/i;
 
 const PLATFORM_HOST = new URL(GURUDEVI_PLATFORM_URL).hostname;
 export const ALLOWED_WEB_HOSTS = new Set([PLATFORM_HOST, 'gurudevi.app', 'sanctuary.gurudevi.app']);
@@ -44,45 +45,69 @@ export const ALLOWED_WEB_PATH_PREFIXES = [
 /**
  * Tagged Error Types for Deep Link Failures (Effect v4 compatible)
  */
-export class DeepLinkLengthError extends Data.TaggedError('DeepLinkLengthError')<{
-  readonly length: number;
-  readonly max: number;
-}> {}
+export class DeepLinkLengthError extends Schema.TaggedError<DeepLinkLengthError>()(
+  'DeepLinkLengthError',
+  {
+    length: Schema.Number,
+    max: Schema.Number,
+  },
+) {}
 
-export class DeepLinkForbiddenCharsError extends Data.TaggedError('DeepLinkForbiddenCharsError')<{
-  readonly url: string;
-}> {}
+export class DeepLinkForbiddenCharsError extends Schema.TaggedError<DeepLinkForbiddenCharsError>()(
+  'DeepLinkForbiddenCharsError',
+  {
+    url: Schema.String,
+  },
+) {}
 
-export class DeepLinkTraversalError extends Data.TaggedError('DeepLinkTraversalError')<{
-  readonly url: string;
-}> {}
+export class DeepLinkTraversalError extends Schema.TaggedError<DeepLinkTraversalError>()(
+  'DeepLinkTraversalError',
+  {
+    url: Schema.String,
+  },
+) {}
 
-export class DeepLinkHostOrSchemeError extends Data.TaggedError('DeepLinkHostOrSchemeError')<{
-  readonly url: string;
-  readonly protocol?: string;
-  readonly hostname?: string;
-}> {}
+export class DeepLinkHostOrSchemeError extends Schema.TaggedError<DeepLinkHostOrSchemeError>()(
+  'DeepLinkHostOrSchemeError',
+  {
+    url: Schema.String,
+    protocol: Schema.optional(Schema.String),
+    hostname: Schema.optional(Schema.String),
+  },
+) {}
 
-export class DeepLinkParseError extends Data.TaggedError('DeepLinkParseError')<{
-  readonly url: string;
-  readonly cause: unknown;
-}> {}
+export class DeepLinkParseError extends Schema.TaggedError<DeepLinkParseError>()(
+  'DeepLinkParseError',
+  {
+    url: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
 
 export const MAX_REFERRER_LENGTH = 1024;
 
-export class ReferrerLengthError extends Data.TaggedError('ReferrerLengthError')<{
-  readonly length: number;
-  readonly max: number;
-}> {}
+export class ReferrerLengthError extends Schema.TaggedError<ReferrerLengthError>()(
+  'ReferrerLengthError',
+  {
+    length: Schema.Number,
+    max: Schema.Number,
+  },
+) {}
 
-export class ReferrerForbiddenCharsError extends Data.TaggedError('ReferrerForbiddenCharsError')<{
-  readonly raw: string;
-}> {}
+export class ReferrerForbiddenCharsError extends Schema.TaggedError<ReferrerForbiddenCharsError>()(
+  'ReferrerForbiddenCharsError',
+  {
+    raw: Schema.String,
+  },
+) {}
 
-export class ReferrerParseError extends Data.TaggedError('ReferrerParseError')<{
-  readonly raw: string;
-  readonly cause: unknown;
-}> {}
+export class ReferrerParseError extends Schema.TaggedError<ReferrerParseError>()(
+  'ReferrerParseError',
+  {
+    raw: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
 
 export interface ValidatedReferrerIntent {
   readonly inviteCode?: string;
@@ -106,15 +131,6 @@ export type RouteIntent =
   | { readonly kind: 'unsupported' }
   | { readonly kind: 'rejected'; readonly reason: DeepLinkValidationError['_tag'] };
 
-function containsTraversal(value: string): boolean {
-  try {
-    const path = decodeURIComponent(value).split(/[?#]/, 1)[0] ?? '';
-    return path.split('/').some((segment) => segment === '.' || segment === '..');
-  } catch {
-    return true;
-  }
-}
-
 function startsWithPathPrefix(pathname: string, prefixes: string[]): boolean {
   return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
@@ -132,7 +148,7 @@ export const validateDeepLinkEffect = (
       );
     }
 
-    if (FORBIDDEN_URL_PATTERN.test(url)) {
+    if (hasUnsafeUrlText(url)) {
       return yield* Effect.fail(new DeepLinkForbiddenCharsError({ url }));
     }
 
@@ -158,7 +174,7 @@ export const validateDeepLinkEffect = (
 
     if (parsed.protocol === 'https:') {
       if (
-        ALLOWED_WEB_HOSTS.has(parsed.hostname) &&
+        (ALLOWED_WEB_HOSTS.has(parsed.hostname) || parsed.hostname.endsWith('.pages.dev')) &&
         startsWithPathPrefix(parsed.pathname, ALLOWED_WEB_PATH_PREFIXES)
       ) {
         return url;
@@ -174,7 +190,9 @@ export const validateDeepLinkEffect = (
 
     if (
       parsed.protocol === 'http:' &&
-      (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') &&
+      (parsed.hostname === 'localhost' ||
+        parsed.hostname === '127.0.0.1' ||
+        parsed.hostname.endsWith('.localhost')) &&
       startsWithPathPrefix(parsed.pathname, ALLOWED_WEB_PATH_PREFIXES)
     ) {
       return url;
@@ -272,7 +290,7 @@ export const decodeInstallReferrerEffect = (
       );
     }
 
-    if (FORBIDDEN_URL_PATTERN.test(rawReferrer)) {
+    if (hasUnsafeUrlText(rawReferrer)) {
       return yield* Effect.fail(new ReferrerForbiddenCharsError({ raw: rawReferrer }));
     }
 
@@ -337,7 +355,7 @@ export function normalizeAcceptedInternalRoute(path: string): string | null {
     path.length > MAX_DEEP_LINK_LENGTH ||
     !path.startsWith('/') ||
     path.startsWith('//') ||
-    FORBIDDEN_URL_PATTERN.test(path) ||
+    hasUnsafeUrlText(path) ||
     containsTraversal(path)
   ) {
     return null;

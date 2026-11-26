@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Award,
   Bell,
@@ -14,7 +12,7 @@ import {
   User,
   Users,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useState } from 'react';
 import styles from './guardian.module.css';
 

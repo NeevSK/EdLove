@@ -1,4 +1,4 @@
-import { requireTeacherAccess } from '@repo/core/lib/authorization';
+import { requireTeacherAccess } from '@repo/core/lib/authorization.adapter';
 import { teacher, teacherInsights } from '@repo/core/logic/managers/factory';
 import type { Task, TeacherNote } from '@repo/core/types';
 

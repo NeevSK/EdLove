@@ -18,14 +18,15 @@ import {
 import { saveBytes } from '@repo/library/utils/bytes';
 import { SpreadsheetGrid } from '@repo/library/components/SpreadsheetGrid';
 import { useLoadedBytes } from '@repo/library/hooks/useLoadedBytes';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export default function SpreadsheetViewer() {
   const params = useLocalSearchParams<Record<string, string>>();
   const { t } = useTranslation();
-  const router = useRouter();
+  const router = useNavigator();
   const { bytes, loading, error, detected } = useLoadedBytes(params);
 
   const [grids, setGrids] = useState<GridData[]>([]);

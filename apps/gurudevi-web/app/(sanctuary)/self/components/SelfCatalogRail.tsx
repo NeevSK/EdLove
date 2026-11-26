@@ -1,5 +1,3 @@
-'use client';
-
 import { getMaxPinnedForWorkspace } from '@repo/core/logic/workspace/canvas';
 import type { WorkbenchTaskDescriptor } from '@repo/core/types';
 import type { SelfFeatureManifestItem } from '@repo/self/features/catalog';

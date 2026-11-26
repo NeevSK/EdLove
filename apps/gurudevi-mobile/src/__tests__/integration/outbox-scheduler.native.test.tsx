@@ -1,8 +1,8 @@
 import { closeReplayAdmission, openReplayAdmission } from '@repo/core/lib/sync/replayAdmission';
 import SyncOrchestrator from '@repo/core/lib/sync/sync/SyncOrchestrator';
-import type { QueuedMutation } from '@repo/core/lib/sync/types';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
+import type { QueuedMutation } from '@repo/core/types/mutationQueue';
 import { act, render } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -15,7 +15,7 @@ const fixture = vi.hoisted(() => ({
   toast: vi.fn(),
   conflicts: { addConflict: vi.fn(), activeConflicts: [] },
 }));
-vi.mock('@repo/core/lib/storageWrapper', () => ({
+vi.mock('@repo/core/lib/storageWrapper.adapter', () => ({
   SafeZustandStorage: {
     getItem: async () => null,
     setItem: async () => undefined,
@@ -25,7 +25,7 @@ vi.mock('@repo/core/lib/storageWrapper', () => ({
 vi.mock('@repo/core/lib/sync/registry', () => ({
   MUTATION_REGISTRY: { schedulerCommand: fixture.execute },
 }));
-vi.mock('@repo/core/lib/sync/replayIdentity', () => ({
+vi.mock('@repo/core/lib/sync/replayIdentity.adapter', () => ({
   isReplayPrincipalCurrent: fixture.authCheck,
 }));
 vi.mock('@repo/core/offline/useOfflineStatus', () => ({
@@ -39,11 +39,15 @@ vi.mock('@repo/core/store/useAuthStore', () => {
     }),
   };
 });
-vi.mock('@repo/core/lib/sync/MutationAuditLog', () => ({
+vi.mock('@repo/core/lib/sync/mutationAuditLog.store', () => ({
   useMutationAuditLog: () => ({ updateEntry: fixture.updateEntry }),
 }));
-vi.mock('@repo/core/store/useConflictStore', () => ({ useConflictStore: () => fixture.conflicts }));
-vi.mock('@repo/core/lib/sync/versionGating', () => ({
+// The orchestrator reads the store through selectors (atomic-selector rule).
+vi.mock('@repo/core/store/useConflictStore', () => ({
+  useConflictStore: <T,>(selector?: (state: typeof fixture.conflicts) => T) =>
+    selector ? selector(fixture.conflicts) : fixture.conflicts,
+}));
+vi.mock('@repo/core/lib/sync/versionGating.store', () => ({
   useVersionGatingStore: { getState: () => ({ isBlocked: false }) },
 }));
 vi.mock('@repo/core/monitoring/breadcrumbs', () => ({ leaveBreadcrumb: vi.fn() }));

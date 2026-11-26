@@ -1,5 +1,5 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import {
   getLocalGuestIdentity,
   migrateGuestDataToAuthenticatedUser,

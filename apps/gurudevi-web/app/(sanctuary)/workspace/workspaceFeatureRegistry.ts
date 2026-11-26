@@ -1,263 +1,149 @@
 import {
-  CAPABILITY_MANIFEST,
   type CapabilityDeclaration,
   declaredCapability,
-  getCapabilitiesForCapacity,
   resolvePracticeAvailability,
 } from '@repo/core/logic/registry/capabilityManifest';
-import type { WorkspaceRoleFilter } from '../components/RoleLensSwitcher';
+import {
+  WORKSPACE_FEATURES as CATALOG,
+  type WorkspaceFeature,
+  type WorkspaceFeatureId,
+  workspaceFloor,
+} from '@repo/core/logic/places/workspaceCatalog';
 
-export interface WorkspaceFeatureItem {
-  id: string;
-  label: string;
-  href: string;
-  symbol: string;
-  description: string;
-  roles: readonly ('teacher' | 'student' | 'principal' | 'guardian')[];
-  isCommon: boolean;
-  category: 'operations' | 'academics' | 'institutional' | 'communications';
-  capabilityId?: 'attendance' | 'climate_sensing' | 'learning_studio' | 'family_bridge';
-  temporalCapabilities: {
-    hasReview: boolean;
-    hasPlan: boolean;
-  };
+/**
+ * How the browser opens each Workspace feature. What exists, and which capacity's floor it is on,
+ * is the catalog in `@repo/core/logic/places/workspaceCatalog`; this records only the web's route
+ * for it. A feature with no entry here is not offered on the web (the QR scanner has no browser
+ * route yet).
+ */
+interface WebDelivery {
+  readonly href: string;
+  readonly capabilityId?: 'attendance' | 'climate_sensing' | 'learning_studio' | 'family_bridge';
+  readonly temporalCapabilities: Readonly<{ hasReview: boolean; hasPlan: boolean }>;
 }
 
-export const WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = [
-  {
-    id: 'attendance',
-    label: 'Daily Attendance',
+const WEB_DELIVERY: Readonly<Partial<Record<WorkspaceFeatureId, WebDelivery>>> = {
+  attendance: {
     href: '/workspace',
-    symbol: '🗓️',
-    description: 'Classroom roll call, presence logs, and student arrival tracking.',
-    roles: ['teacher', 'student', 'principal', 'guardian'],
-    isCommon: true,
-    category: 'operations',
     capabilityId: 'attendance',
     temporalCapabilities: { hasReview: true, hasPlan: true },
   },
-  {
-    id: 'qr_scanner',
-    label: 'QR Scanner',
-    href: '/qr',
-    symbol: '📷',
-    description: 'Scan classroom enrollment codes, attendance badges, or resource tokens directly in browser.',
-    roles: ['teacher', 'student', 'principal', 'guardian'],
-    isCommon: true,
-    category: 'operations',
-    temporalCapabilities: { hasReview: false, hasPlan: false },
-  },
-  {
-    id: 'timetable',
-    label: 'Timetable',
+  timetable: {
     href: '/workspace/timetable',
-    symbol: '📅',
-    description: 'Weekly schedule of periods, subjects, and classroom venues.',
-    roles: ['teacher', 'student'],
-    isCommon: true,
-    category: 'academics',
     temporalCapabilities: { hasReview: true, hasPlan: true },
   },
-  {
-    id: 'notices',
-    label: 'Circulars & Notices',
+  notices: {
     href: '/workspace/notices',
-    symbol: '📢',
-    description: 'Institutional announcements, letters, and community broadcasts.',
-    roles: ['teacher', 'student', 'principal', 'guardian'],
-    isCommon: true,
-    category: 'communications',
     capabilityId: 'family_bridge',
     temporalCapabilities: { hasReview: true, hasPlan: true },
   },
-  {
-    id: 'submissions',
-    label: 'Assignment Submissions',
+  submissions: {
     href: '/workspace/submissions',
-    symbol: '📥',
-    description: 'Coursework turn-in, student assignment uploads, and teacher feedback desk.',
-    roles: ['teacher', 'student'],
-    isCommon: false,
-    category: 'academics',
     capabilityId: 'learning_studio',
     temporalCapabilities: { hasReview: true, hasPlan: true },
   },
-  {
-    id: 'climate',
-    label: 'Climate Sensing',
+  climate: {
     href: '/workspace/climate',
-    symbol: '⛅',
-    description: 'Classroom psychological safety, attunement, peer belonging, and wellbeing pulse.',
-    roles: ['teacher', 'principal'],
-    isCommon: false,
-    category: 'operations',
     capabilityId: 'climate_sensing',
     temporalCapabilities: { hasReview: true, hasPlan: false },
   },
-  {
-    id: 'tuition',
-    label: 'Tuition & Fees',
-    href: '/workspace/tuition',
-    symbol: '💳',
-    description: 'Institutional fee ledgers, payment receipt generation, and family dues tracking.',
-    roles: ['principal', 'guardian'],
-    isCommon: false,
-    category: 'institutional',
-    temporalCapabilities: { hasReview: true, hasPlan: true },
-  },
-  {
-    id: 'gradebook',
-    label: 'Gradebook & Marks',
+  tuition: { href: '/workspace/tuition', temporalCapabilities: { hasReview: true, hasPlan: true } },
+  gradebook: {
     href: '/workspace/gradebook',
-    symbol: '📊',
-    description: 'Continuous assessment marks, rubrics, and academic performance.',
-    roles: ['teacher', 'student', 'guardian'],
-    isCommon: false,
-    category: 'academics',
     temporalCapabilities: { hasReview: true, hasPlan: true },
   },
-  {
-    id: 'plan',
-    label: 'Curriculum & Lesson Plans',
-    href: '/workspace/plan',
-    symbol: '📝',
-    description: 'Pedagogical plans, lesson notes, and instructional pacing.',
-    roles: ['teacher', 'principal'],
-    isCommon: false,
-    category: 'academics',
-    temporalCapabilities: { hasReview: true, hasPlan: true },
-  },
-  {
-    id: 'kiosk',
-    label: 'Doorway Kiosk',
-    href: '/workspace/kiosk',
-    symbol: '🚪',
-    description: 'Barcode & QR scanner station for gate entrance and arrival tracking.',
-    roles: ['principal'],
-    isCommon: false,
-    category: 'institutional',
-    temporalCapabilities: { hasReview: true, hasPlan: false },
-  },
-  {
-    id: 'badges',
-    label: 'ID Badges',
-    href: '/workspace/badges',
-    symbol: '📇',
-    description: 'Student, teacher, and institutional QR credential cards.',
-    roles: ['principal'],
-    isCommon: false,
-    category: 'institutional',
-    temporalCapabilities: { hasReview: false, hasPlan: false },
-  },
-  {
-    id: 'workforce',
-    label: 'Workforce & Leave',
+  plan: { href: '/workspace/plan', temporalCapabilities: { hasReview: true, hasPlan: true } },
+  kiosk: { href: '/workspace/kiosk', temporalCapabilities: { hasReview: true, hasPlan: false } },
+  badges: { href: '/workspace/badges', temporalCapabilities: { hasReview: false, hasPlan: false } },
+  workforce: {
     href: '/workspace/workforce',
-    symbol: '💼',
-    description: 'Staff directory, presence logs, and leave management.',
-    roles: ['teacher', 'principal'],
-    isCommon: false,
-    category: 'institutional',
     temporalCapabilities: { hasReview: true, hasPlan: true },
   },
-  {
-    id: 'school',
-    label: 'School Profile',
-    href: '/workspace/school',
-    symbol: '🏫',
-    description: 'Institutional directory, campus structure, and governance settings.',
-    roles: ['principal'],
-    isCommon: false,
-    category: 'institutional',
-    temporalCapabilities: { hasReview: false, hasPlan: false },
-  },
-  {
-    id: 'events',
-    label: 'Events ERP',
-    href: '/workspace/events',
-    symbol: '🎉',
-    description: 'Campus events, assembly schedules, and community calendar.',
-    roles: ['teacher', 'principal'],
-    isCommon: false,
-    category: 'institutional',
-    temporalCapabilities: { hasReview: true, hasPlan: true },
-  },
-  {
-    id: 'claim',
-    label: 'Claim Spot',
-    href: '/workspace/claim',
-    symbol: '🎓',
-    description: 'Self-service classroom desk claiming and enrollment verification.',
-    roles: ['student', 'guardian'],
-    isCommon: false,
-    category: 'operations',
-    temporalCapabilities: { hasReview: false, hasPlan: false },
-  },
-  {
-    id: 'guardian',
-    label: 'Guardian Portal',
+  school: { href: '/workspace/school', temporalCapabilities: { hasReview: false, hasPlan: false } },
+  events: { href: '/workspace/events', temporalCapabilities: { hasReview: true, hasPlan: true } },
+  claim: { href: '/workspace/claim', temporalCapabilities: { hasReview: false, hasPlan: false } },
+  guardian: {
     href: '/workspace/guardian',
-    symbol: '🛡️',
-    description: 'Enrolled learner presence, academic progress, and institutional communications bridge.',
-    roles: ['guardian', 'principal'],
-    isCommon: true,
-    category: 'communications',
     capabilityId: 'family_bridge',
     temporalCapabilities: { hasReview: true, hasPlan: true },
   },
-  {
-    id: 'principal',
-    label: 'Principal Command Center',
-    href: '/admin/principal',
-    symbol: '🏛️',
-    description: 'Executive situational intelligence, curriculum pacing, and institutional faculty oversight.',
-    roles: ['principal'],
-    isCommon: true,
-    category: 'institutional',
-    temporalCapabilities: { hasReview: true, hasPlan: true },
-  },
-  {
-    id: 'editorial',
-    label: 'Editorial Commons',
+  principal: { href: '/admin/principal', temporalCapabilities: { hasReview: true, hasPlan: true } },
+  editorial: {
     href: '/workspace/editorial',
-    symbol: '✍️',
-    description: 'Collaborative student and educator writing, journal publishing, and essays.',
-    roles: ['teacher', 'student'],
-    isCommon: false,
-    category: 'communications',
     temporalCapabilities: { hasReview: true, hasPlan: true },
   },
-] as const;
+  founder_command: {
+    href: '/admin/founder',
+    temporalCapabilities: { hasReview: false, hasPlan: false },
+  },
+  agent_lab: { href: '/agent-lab', temporalCapabilities: { hasReview: false, hasPlan: false } },
+  icon_lab: { href: '/icon-lab', temporalCapabilities: { hasReview: false, hasPlan: false } },
+};
+
+export interface WorkspaceFeatureItem extends WorkspaceFeature, WebDelivery {
+  readonly id: WorkspaceFeatureId;
+}
+
+function item(id: WorkspaceFeatureId): WorkspaceFeatureItem | undefined {
+  const delivery = WEB_DELIVERY[id];
+  return delivery ? { id, ...CATALOG[id], ...delivery } : undefined;
+}
+
+/** Every Workspace feature the web can open, for finding one by id or route. Not a menu. */
+export const WEB_WORKSPACE_FEATURES: readonly WorkspaceFeatureItem[] = (
+  Object.keys(CATALOG) as WorkspaceFeatureId[]
+).flatMap((id) => item(id) ?? []);
+
+/** The features on a capacity's floor that the web can open, in floor order: the only menu. */
+export function workspaceFeaturesFor(
+  capacity: string | null | undefined,
+): readonly WorkspaceFeatureItem[] {
+  return capacity ? workspaceFloor(capacity).flatMap((id) => item(id) ?? []) : [];
+}
+
+/** The Workspace feature a route belongs to, if any. */
+export function workspaceFeatureAt(pathname: string): WorkspaceFeatureItem | undefined {
+  return WEB_WORKSPACE_FEATURES.find((feature) => feature.href === pathname);
+}
+
+/**
+ * Whether a destination may be offered to a capacity. A link into a Workspace feature is offered
+ * only when that feature is on the capacity's floor; any other destination is not Workspace's call.
+ */
+export function isOfferedTo(capacity: string | null | undefined, href: string): boolean {
+  const feature = workspaceFeatureAt(href.split('?')[0] ?? href);
+  return !feature || workspaceFeaturesFor(capacity).some((offered) => offered.id === feature.id);
+}
 
 export function getCoreCapabilityForFeature(featureId: string): CapabilityDeclaration | undefined {
-  const item = WORKSPACE_FEATURES.find((f) => f.id === featureId);
-  if (!item?.capabilityId) return undefined;
-  return declaredCapability(item.capabilityId);
+  const feature = WEB_WORKSPACE_FEATURES.find((f) => f.id === featureId);
+  return feature?.capabilityId ? declaredCapability(feature.capabilityId) : undefined;
 }
 
-export function isPracticeAvailableForRole(
+export function isPracticeAvailableForCapacity(
   featureId: string,
-  role?: WorkspaceRoleFilter,
+  capacity?: string | null,
 ): boolean {
-  const item = WORKSPACE_FEATURES.find((f) => f.id === featureId);
-  if (!item?.capabilityId) return true;
-  const effectiveRole = role && role !== 'all' && role !== 'common' ? role : undefined;
-  const result = resolvePracticeAvailability({
-    featureId: item.capabilityId,
+  const feature = WEB_WORKSPACE_FEATURES.find((f) => f.id === featureId);
+  if (!feature?.capabilityId) return true;
+  return resolvePracticeAvailability({
+    featureId: feature.capabilityId,
     platform: 'browser',
-    capacity: effectiveRole,
+    capacity: capacity ?? undefined,
     hasSelectedScope: true,
-  });
-  return result.available;
+  }).available;
 }
 
-export function filterWorkspaceFeatures(
-  features: readonly WorkspaceFeatureItem[],
-  roleFilter: WorkspaceRoleFilter,
-): WorkspaceFeatureItem[] {
-  if (roleFilter === 'all') return [...features];
-  if (roleFilter === 'common') return features.filter((f) => f.isCommon);
-  return features.filter((f) => f.isCommon || f.roles.includes(roleFilter));
+/** Which wording the Workspace overview speaks in. Copy only; what is offered is the floor. */
+export type WorkspaceVoice = 'teacher' | 'student' | 'principal' | 'guardian';
+
+export function workspaceVoice(capacity: string | null | undefined): WorkspaceVoice {
+  const lower = capacity?.toLowerCase();
+  if (lower === 'student' || lower === 'member') return 'student';
+  if (lower === 'principal' || lower === 'assistantprincipal' || lower === 'admin')
+    return 'principal';
+  if (lower === 'guardian' || lower === 'parent') return 'guardian';
+  return 'teacher';
 }
 
 export interface WorkspaceOverviewPosture {
@@ -269,14 +155,14 @@ export interface WorkspaceOverviewPosture {
 }
 
 export function getWorkspaceOverviewPosture(
-  role: WorkspaceRoleFilter,
+  voice: WorkspaceVoice,
   intent: 'current' | 'review' | 'plan',
   dateLabel: string,
 ): WorkspaceOverviewPosture {
   const isReview = intent === 'review';
   const isPlan = intent === 'plan';
 
-  switch (role) {
+  switch (voice) {
     case 'student':
       if (isReview) {
         return {
@@ -326,7 +212,8 @@ export function getWorkspaceOverviewPosture(
       return {
         eyebrow: 'Overview · Family Circle',
         title: 'Daily Family Space & Presence',
-        description: 'Check in on your child’s learning circle, dialogue with educators, and family notices.',
+        description:
+          'Check in on your child’s learning circle, dialogue with educators, and family notices.',
         actionText: 'Open Family Space',
         badgeText: 'Live Practice',
       };

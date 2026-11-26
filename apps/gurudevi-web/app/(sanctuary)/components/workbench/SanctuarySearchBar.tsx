@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useRef, useId, useState } from 'react';
 import styles from './sanctuary-search-bar.module.css';
 

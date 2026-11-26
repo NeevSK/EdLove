@@ -1,4 +1,8 @@
-import { Layer } from 'effect';
+import { EntitlementPort } from '@repo/core/logic/ports/entitlement.port';
+import { GrowthPort } from '@repo/core/logic/ports/growth.port';
+import { PermissionSnapshotPort } from '@repo/core/logic/ports/permissionSnapshot.port';
+import * as Effect from 'effect/Effect';
+import * as Layer from 'effect/Layer';
 
 /**
  * Dependency Injection Layer composition for @repo/core.
@@ -11,8 +15,39 @@ import { Layer } from 'effect';
  * - v4 note: Context.Tag maps to Context.Service with inverted argument order.
  */
 
-export {
-  GrowthLayer,
+/** Growth data from Supabase, loaded on first use like the others. Not in AppLayer until consumed. */
+export const GrowthLive = Layer.effect(
   GrowthPort,
-  GrowthPortLive,
-} from '@repo/core/logic/ports/growth.tags';
+  Effect.orDie(
+    Effect.tryPromise(() =>
+      import('@repo/core/adapters/supabase/growth.adapter').then(
+        (m) => new m.SupabaseGrowthAdapter(),
+      ),
+    ),
+  ),
+);
+
+/**
+ * Entitlements come from Supabase. The adapter is loaded on first use: a static import here would
+ * pull its database and session chain into every module that imports the runtime.
+ */
+export const EntitlementLive = Layer.effect(
+  EntitlementPort,
+  Effect.orDie(
+    Effect.tryPromise(() =>
+      import('@repo/core/adapters/supabase/supabaseEntitlement.adapter').then(
+        (m) => new m.SupabaseEntitlementAdapter(),
+      ),
+    ),
+  ),
+);
+
+/** The signed permission snapshot, read and checked from the local PowerSync database. */
+export const PermissionSnapshotLive = Layer.succeed(PermissionSnapshotPort, {
+  read: async (userId, scopeId) => {
+    const { powerSyncPermissionSnapshots } = await import(
+      '@repo/core/adapters/powersync/permissionSnapshot.adapter'
+    );
+    return powerSyncPermissionSnapshots.read(userId, scopeId);
+  },
+});

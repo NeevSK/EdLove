@@ -92,7 +92,7 @@
 }
 
 .uploadHint {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--color-ink-soft, #453c35);
 }
 
@@ -155,23 +155,23 @@
 }
 
 .submissionSub {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--color-ink-soft, #453c35);
 }
 
 .statusGraded {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 700;
-  padding: 0.2rem 0.5rem;
+  padding: 0.25rem 0.6rem;
   border-radius: 4px;
   background: #e6f4ea;
   color: #137333;
 }
 
 .statusPendingGrade {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 700;
-  padding: 0.2rem 0.5rem;
+  padding: 0.25rem 0.6rem;
   border-radius: 4px;
   background: #fef7e0;
   color: #b06000;

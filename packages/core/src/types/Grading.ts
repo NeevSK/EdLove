@@ -77,3 +77,24 @@ export const WEIGHTED_GRADING_SCALE: GradingScale = {
     { min: 0, max: 64, grade: 'F', gpa: 0.0 },
   ],
 };
+
+// Moved from packages/analytics/src/types/GradingTypes.ts (2026-11-11): @repo/core owns every contract.
+
+export interface GradingPeriod {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  weight: number;
+}
+
+export interface ClassGradingConfig {
+  classId: string;
+  scale: GradingScale;
+  periods: GradingPeriod[];
+  categories: {
+    name: string;
+    weight: number;
+    dropLowest?: number;
+  }[];
+}

@@ -1,8 +1,12 @@
 import type { CommercialPerspective, SanctuaryPerspective } from '@repo/core/types/Perspective';
 import type {
+  WorkspaceSwitcherDestination,
   WorkspaceSwitcherTarget,
   WorkspaceSwitcherTargetId,
 } from '@repo/core/types/Workspace';
+
+/** Every target opens Workspace; the perspective it switches to chooses the floor shown there. */
+const WORKSPACE: WorkspaceSwitcherDestination = { kind: 'place', place: 'workspace' };
 
 export function formatCommercialPerspectiveTitle(p: CommercialPerspective): string {
   if (p.customAlias && p.customAlias.trim().length > 0) {
@@ -65,10 +69,7 @@ export function resolveWorkspaceSwitcherTargets({
     id: 'personal',
     title: personalPerspective?.displayName || 'Personal Sanctuary',
     description: 'Private studio, master lesson drafts, question vault, and pedagogical notes.',
-    destination: {
-      kind: 'tab',
-      name: 'Classroom',
-    },
+    destination: WORKSPACE,
     enabled: true,
     perspectiveId: personalPerspective?.id || 'personal',
     category: 'personal',
@@ -86,10 +87,7 @@ export function resolveWorkspaceSwitcherTargets({
       id: 'commercial',
       title: formatCommercialPerspectiveTitle(comm),
       description: `${comm.batchName} · ${comm.role.replace('_', ' ').toUpperCase()}`,
-      destination: {
-        kind: 'tab',
-        name: 'Classroom',
-      },
+      destination: WORKSPACE,
       enabled: true,
       perspectiveId: comm.id,
       category: 'commercial',
@@ -105,10 +103,7 @@ export function resolveWorkspaceSwitcherTargets({
       title: 'Founder workspace',
       description:
         'Platform-scale stewardship, cross-tenant signal, and founder-owned launch surfaces.',
-      destination: {
-        kind: 'route',
-        name: 'FounderDashboard',
-      },
+      destination: WORKSPACE,
       enabled: true,
       category: 'institutional',
       status: currentWorkspace === 'founder' ? 'current' : 'available',
@@ -121,10 +116,7 @@ export function resolveWorkspaceSwitcherTargets({
       title: 'Admin workspace',
       description:
         'Platform-system operations, tenant health, policy repair, and audit-driven interventions.',
-      destination: {
-        kind: 'route',
-        name: 'AdminDashboard',
-      },
+      destination: WORKSPACE,
       enabled: true,
       category: 'institutional',
       status: currentWorkspace === 'admin' ? 'current' : 'available',
@@ -144,9 +136,7 @@ export function resolveWorkspaceSwitcherTargets({
             : 'teacher') as WorkspaceSwitcherTargetId,
         title: inst.schoolName || inst.displayName,
         description: `${inst.capacity.toUpperCase()} · ${inst.schoolName || 'Academic Institution'}`,
-        destination: isPrincipal
-          ? { kind: 'route', name: 'PrincipalDashboard' }
-          : { kind: 'tab', name: 'Classroom' },
+        destination: WORKSPACE,
         enabled: true,
         perspectiveId: inst.id,
         category: 'institutional',
@@ -162,7 +152,7 @@ export function resolveWorkspaceSwitcherTargets({
         title: 'Principal operations',
         description:
           'Institution-specific governance and operational drill-in for a chosen school.',
-        destination: { kind: 'route', name: 'PrincipalDashboard' },
+        destination: WORKSPACE,
         enabled: true,
         category: 'institutional',
         status: currentWorkspace === 'principal' ? 'current' : 'available',
@@ -173,7 +163,7 @@ export function resolveWorkspaceSwitcherTargets({
         id: 'teacher',
         title: 'Teacher workspace',
         description: 'Academic daily-work surfaces currently composed through the classroom shell.',
-        destination: { kind: 'tab', name: 'Classroom' },
+        destination: WORKSPACE,
         enabled: true,
         category: 'institutional',
         status: currentWorkspace === 'teacher' ? 'current' : 'available',
@@ -185,7 +175,7 @@ export function resolveWorkspaceSwitcherTargets({
         title: 'Student workspace',
         description:
           'Learning-flow and progress surfaces currently composed through the classroom shell.',
-        destination: { kind: 'tab', name: 'Classroom' },
+        destination: WORKSPACE,
         enabled: true,
         category: 'institutional',
         status: currentWorkspace === 'student' ? 'current' : 'available',
@@ -201,10 +191,7 @@ export function resolveWorkspaceSwitcherTargets({
         id: 'guardian',
         title: ward.wardName ? `${ward.wardName}'s Progress` : ward.displayName || 'Ward Overview',
         description: 'Child visibility, attendance tracking, and school communication.',
-        destination: {
-          kind: 'route',
-          name: 'GuardianDashboard',
-        },
+        destination: WORKSPACE,
         enabled: true,
         perspectiveId: ward.id,
         category: 'guardian',
@@ -217,10 +204,7 @@ export function resolveWorkspaceSwitcherTargets({
       id: 'guardian',
       title: 'Guardian workspace',
       description: 'Family-facing oversight with child visibility, announcements, and events.',
-      destination: {
-        kind: 'route',
-        name: 'GuardianDashboard',
-      },
+      destination: WORKSPACE,
       enabled: true,
       category: 'guardian',
       badge: '👨‍👧 Family',

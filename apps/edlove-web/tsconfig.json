@@ -1,6 +1,10 @@
 {
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
+    "skipLibCheck": true,
+    "declaration": false,
+    "declarationMap": false,
+    "types": ["astro/client", "vitest/globals"],
     "paths": {
       "@/*": ["./src/*"],
       "@/types": ["./src/types"],
@@ -36,6 +40,12 @@
       "@repo/workforce/*": ["../../packages/workforce/src/*"]
     }
   },
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"]
+  "contentMappers": [
+    {
+      "package": "@astrojs/ts-content-mapper",
+      "extensions": [".astro"]
+    }
+  ],
+  "include": [".astro/types.d.ts", "src/**/*", "astro.config.mjs", "vitest.config.ts"],
+  "exclude": ["dist", "app", "tests", "node_modules", "../../node_modules"]
 }

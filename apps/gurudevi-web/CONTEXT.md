@@ -16,9 +16,11 @@ Host routing is enforced at the edge/proxy level in `lib/host-routing.ts` and `p
 
 ## Architecture
 
-- Next.js App Router with semantic HTML and CSS.
-- Route groups isolate public marketing in `(marketing)` from future product
-  work in `(sanctuary)` without changing public URLs.
+- Vite 8.3.5 SPA with `@tanstack/react-router` (`spa/`), React 19, and Tailwind CSS v4.
+- Static client application deployed to Cloudflare Pages.
+- Explore showroom built with `--mode explore` running on local sample data (zero network).
+- Sanctuary workspace built with default mode communicating with the Sanctuary v1 API (`/api/v1`).
+- Public marketing, journal, and SEO live in `apps/gurudevi-public` built with Astro.
 - Design mobile-first at 360–430 px, then enhance for wider screens.
 - Share domain contracts, validation, API clients, and design tokens with native
   only when they are platform-neutral. Do not share React Native UI JSX or
@@ -26,6 +28,7 @@ Host routing is enforced at the edge/proxy level in `lib/host-routing.ts` and `p
 
 ## Related decisions
 
+- `docs/decisions/2026-11-12-web-stack-astro-vite.md`
 - `docs/decisions/2026-09-12-gurudevi-web-canonical-platform.md`
 - `docs/current_progress/2026-09-12-gurudevi-web-migration-plan.md`
 

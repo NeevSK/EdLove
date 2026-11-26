@@ -12,7 +12,14 @@ export const GuardianAssessmentReadAuditEventSchema = z.object({
   guardian_id: z.uuid(),
   student_id: z.uuid(),
   outcome: z.enum(['allowed', 'denied']),
-  reason: z.enum(['allowed', 'no_relationship', 'permission_missing', 'no_published_results']),
+  reason: z.enum([
+    'allowed',
+    'no_relationship',
+    'invalid_relationship',
+    'permission_missing',
+    'permission_denied',
+    'no_published_results',
+  ]),
   result_count: z.number().int().nonnegative(),
   occurred_at: z.iso.datetime(),
 });

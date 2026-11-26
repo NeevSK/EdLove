@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { getExploreCapacityMeta, isExploreCapacity } from '@/lib/explore/exploreCapacity';
 import { type ChatMessage, useCommunityChat } from '@/lib/hooks/useCommunityChat';
@@ -85,7 +83,7 @@ export function DirectMessageFloor({
         <div className={styles.headerInfo}>
           <div style={{ marginBottom: '0.25rem' }}>
             <Link
-              href="/community"
+              to="/community"
               style={{
                 fontSize: '0.75rem',
                 fontWeight: 650,

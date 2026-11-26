@@ -1,5 +1,8 @@
 export type TemporalPoint = string;
 
+/** The zoom levels a time view can show. */
+export type TemporalScale = 'day' | 'week' | 'month' | 'year' | 'custom';
+
 export interface TemporalBounds {
   occurredAt: TemporalPoint;
   recordedAt: TemporalPoint;
@@ -18,4 +21,24 @@ export interface LongitudinalRecord<TSnapshot = Record<string, unknown>> extends
   source_table: string;
   snapshot: TSnapshot;
   recorded_by?: string | null;
+}
+
+/** Where the view sits relative to today. */
+export type TemporalPhase = 'past' | 'present' | 'future';
+export type TemporalViewMode = 'spotlight' | 'timeline';
+/** Whether reads may reach the network or must use what is cached. */
+export type TemporalReadPolicy = 'live' | 'cached-only';
+/** What kind of truth a record holds over time; only some kinds can be filtered by a time window. */
+export type TemporalCapability =
+  | 'snapshot'
+  | 'event_stream'
+  | 'business_fact'
+  | 'effective_dated'
+  | 'audit_history';
+
+/** The time window a read is for: the date in view, its scale, and whether it is the present. */
+export interface TemporalView {
+  viewDate: string;
+  phase: TemporalPhase;
+  viewScale: TemporalScale;
 }

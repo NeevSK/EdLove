@@ -15,12 +15,12 @@ tags: [AGENTS.md, quality, guardrails, architecture]
 > 0. **The Cognitive Handshake (Active Reasoning Invariant)**: Passive reading decays. Before proposing code or diffs, the agent MUST output the 3-line Bounding Triad: (1) Surface & Mode, (2) Grounded Substrate (files/types inspected), (3) Active Seam & Constraints.
 > 1. **Context Boundary Rules**: Monorepo packages are strictly divided into Domain Logic (`@repo/core`, `@repo/classroom`), UI Theme, Tokens and Kit (`@repo/ui/theme`, `@repo/ui/tokens`, `@repo/ui/components/native|web`), Native Apps (`apps/gurudevi-mobile`), and Browser Web (`apps/gurudevi-web`). Never cross these boundaries.
 > 2. **Verification Protocol**: Before declaring completion, verify your changes against the monorepo toolchain. Never submit unverified code.
-> 3. **The Deletion Veto**: Working behavior, tests, fallbacks, or routes must NEVER be silently deleted. If you need to deprecate or remove code, you MUST request explicit human approval first.
+> 3. **The Deletion Veto**: Working behavior, tests, fallbacks, or routes must NEVER be silently deleted. If you need to deprecate or remove code, you MUST request explicit human approval first. A **move is not a deletion**: moving code to its new home, re-pointing every importer and removing the old file in the same change needs no sign-off when behaviour is unchanged and the type-check and test baselines hold. Never move by copying.
 > 4. **Two-Tier Search Protocol (Dated Precision)**: First execute broad architectural pattern discovery, immediately followed by a mandatory dated precision round targeting official release tags, commit changelogs, RFCs, and migration guides tied to the exact active package versions. Never rely on generic high-level keywords.
 > 5. **Source-Code Grounding Over Memory**: When researching APIs, deprecations, or internal architecture of active dependencies (e.g., Reanimated, Worklets, Nitro, React 19, Fabric), NEVER guess or recall from LLM training memory. Directly open and inspect the installed package files in `node_modules/<pkg>/src`, type declarations (`.d.ts`), and native/C++ hooks (`Common/`, `android/`, `ios/`). Ground all dialect migration advice in empirical `@deprecated` annotations and verified runtime signatures.
 > 6. **The Upstream Depth Realism & Threshold Invariant (Layer 0 Meta-Ontology)**: Never commit the Epistemic Fallacy by mistaking Empirical metrics (dashboards, pass rates) for Real generative mechanisms. Never systems-wash heaps or passive tools as living systems. Respect non-linear phase transitions (Thresholds) and the Matthew Effect ($gap(t) = gap_0 \cdot e^{\lambda t}$). Automate the Clear, engineer the Complicated, but bow before and protect the living Complex. Code proposals must enforce the Convivial Limit—software exists to lift administrative drudgery, never to enclose human life. Reference: [`docs/architecture/2026-10-11-the-upstream-epistemic-and-systemic-invariants.md`](file:///c:/x/docs/architecture/2026-10-11-the-upstream-epistemic-and-systemic-invariants.md).
 > 7. **Deterministic Ecosystem Invariant Ledger (Zero-Tolerance Dialect Veto)**: The model CPU is strictly forbidden from emitting legacy dialects. Introducing any of the following triggers an instant gate veto under Step 5 Delta Gate:
->    - **Reanimated 4 / Worklets**: NEVER use `runOnJS` or `runOnUI` from either package: both are `@deprecated` in the installed `react-native-worklets@0.13.1` and `react-native-reanimated@4.7.1`. Use `scheduleOnRN(fn, ...args)` and `scheduleOnUI(worklet, ...args)` from `react-native-worklets`. NEVER import `createWorkletRuntime`, `executeOnUIRuntimeSync` or `makeShareableCloneRecursive` from `react-native-reanimated` (deprecated re-exports; use `react-native-worklets`). On shared values prefer `.get()` / `.set()` (React compiler safe) over assigning `.value`.
+>    - **Reanimated 4.8 / Worklets 0.14**: NEVER use `runOnJS` or `runOnUI` from either package: both are removed/deprecated. ALWAYS use `scheduleOnRN(fn, ...args)` and `scheduleOnUI(worklet, ...args)` from `react-native-worklets` with direct non-curried arguments. NEVER import `createWorkletRuntime`, `executeOnUIRuntimeSync` or `makeShareableCloneRecursive` from `react-native-reanimated` (use `react-native-worklets`). On shared values ALWAYS use `.get()` / `.set()` (React 19 compiler safe) over assigning `.value`. Default to CSS transitions and CSS pseudo-selectors (`:active`, `:active-deepest`, `:hover`, `:focus`) for interaction feedback without React state re-renders. Use `<SharedTransitionBoundary isActive={...}>` for cross-navigator Shared Element Transitions (enabled by default in 4.8.0, moving live native Fabric views). Pass `SharedValue` directly as child to `<Animated.Text>` for zero-rerender UI-thread typography. Use `.withTargetValues(...)` for layout animation overrides.
 >    - **RNGH 3.4**: NEVER use legacy `<PanGestureHandler>` or `useAnimatedGestureHandler`. ALWAYS use `Gesture.Pan()` with `<GestureDetector>`.
 >    - **React 19**: NEVER use `React.forwardRef` (pass `ref` directly as a standard prop). NEVER use `useFormState` (use `useActionState`).
 >    - **React Native 0.88**: NEVER use `findNodeHandle`, `Alert.alert`, `useNativeDriver: false`, or `InteractionManager`.
@@ -30,12 +30,13 @@ tags: [AGENTS.md, quality, guardrails, architecture]
 
 ## 1. Monorepo Map & Sacred Architectural Boundaries
 
-### The Three Apps (Know Which You're In)
+### The Apps (Know Which You're In)
 
 | App | Purpose | Framework | **Build In** |
 | :--- | :--- | :--- | :--- |
 | **`apps/gurudevi-mobile`** | **Native iOS/Android** - flagship mobile | Expo 58 (RN 0.88, New Arch) | ✅ Mobile features |
-| **`apps/gurudevi-web`** | **Unified Web Platform** - EdLove Foundation + Gurudevi Sanctuary + Research Atlas | Next.js 16 (App Router, Tailwind v4, Turbopack) | ✅ **Primary web target** |
+| **`apps/gurudevi-web`** | **Gurudevi web app** - `sanctuary.gurudevi.app` and `explore.gurudevi.app` | Vite + React + TanStack Router (`spa/`), static on Cloudflare Pages ([decision](docs/decisions/2026-11-12-web-stack-astro-vite.md)) | ✅ **Web app** |
+| **`apps/gurudevi-public`** | **Public site** - `gurudevi.app`: pages, journal, legal, SEO and agent files | Astro, static; React islands only where a page is interactive | ✅ **Public pages** |
 | `apps/sanctuary-api` | Sanctuary API | Node.js/Hono | ✅ Active |
 
 ### Domain Packages (Shared Logic Only)
@@ -89,6 +90,18 @@ through the `likec4` MCP server, check it with `pnpm exec likec4 validate docs/a
 and keep it current when a hop changes. Measure hops live with `scripts/probe-hops.mjs`. Bedrock first:
 dependencies at the newest release in their own channel, and a tool's output is grounding only
 once its recall is measured ([plan](apps/sanctuary-api/docs/implementation/2026-11-08-capability-conformance-plan.md)).
+
+**Architecture mental model (read first):** [`docs/architecture/2026-11-12-architecture-mental-model.md`](docs/architecture/2026-11-12-architecture-mental-model.md) explains the whole model in one place: modules versus layers, why each layer exists, the decisions and their costs, a scorecard and the known unverified risks. It also says how the other architecture documents relate. For state, effects, hooks, `useReducer` versus XState, and which library capabilities to use, follow [`docs/architecture/2026-11-12-state-effects-hooks-and-capabilities.md`](docs/architecture/2026-11-12-state-effects-hooks-and-capabilities.md).
+
+**Client runtime plan:** [`docs/architecture/2026-11-12-client-runtime-foundation-plan.md`](docs/architecture/2026-11-12-client-runtime-foundation-plan.md) is the whole client picture, from contracts (Zod is the source of truth) through transport, errors, retry, outbox, queries, feedback, motion and journeys, at baseline, production and enterprise level, with the order of work. Build from the bottom layer up.
+
+**Data stack mental model:** [`docs/architecture/2026-11-13-data-stack-mental-model.md`](docs/architecture/2026-11-13-data-stack-mental-model.md) says where Supabase, the API, ZenStack, Zod, PowerSync (Service, SDK, SQLite), Drizzle, TanStack Query, Zustand/MMKV and the outbox each sit, what goes to PowerSync and what doesn't, and how reads and writes flow end to end. Read it before wiring anything that stores, syncs or fetches data.
+
+**Navigation mental model:** [`docs/architecture/2026-11-13-navigation-mental-model.md`](docs/architecture/2026-11-13-navigation-mental-model.md) separates places (routes), journeys (flows), open work (workbench tasks) and presentation, and describes the navigator: a screen calls `useFlowNavigator().open(flowId, stepId, params)`, not `router.push`. On native (the app and shared packages), every screen change goes through `useNavigator()` from `@repo/ui/components/native/navigation`: typed hrefs, or `follow(raw, source)` for strings known only at runtime such as notification payloads. Never import expo-router's `router`, `useRouter` or `<Redirect>` elsewhere (`directRouterUse` is ratcheted). On the web, runtime strings go through `useNavigator().follow` in `apps/gurudevi-web/lib/navigation` (`uncheckedWebNavigation` is ratcheted). Send people to places with `PLACE_ROUTES`, never screen names; expo-router runs on React Navigation, but app code never uses its screen-name dialect. Run `node scripts/route-catalog.mjs` after adding or removing a route.
+
+**`*.web.ts(x)` outside `apps/gurudevi-web` are reference only.** The web app is `apps/gurudevi-web`. Lint, type checks, tests and the audits skip them, except the live files in `tooling/live-web-files.json` (shared code imports those by name). Don't build on a reference file. If you add or remove an import of a `.web` file, run `node scripts/check-reference-only.mjs`; the ratchet fails while the list is out of date.
+
+**Places, roles and features (read before any navigation, catalog or screen work):** [`docs/architecture/places-roles-and-features.md`](docs/architecture/places-roles-and-features.md) is the one model for how a role becomes what a person sees: one word per idea, Workspace as a floor per role, every other place one floor whose features differ by role, yes/no role relevance, capabilities from the server, and nothing on screen for what a person does not have.
 
 **Platform structure (read before any API, package or screen design):**
 [`docs/architecture/platform-map.md`](docs/architecture/platform-map.md) is the
@@ -145,7 +158,7 @@ for migrations, the signed `canonical_account_id` claim, and real-database proof
 | ❌ NEVER | ✅ INSTEAD |
 | :--- | :--- |
 | Import `*.web.tsx` in `gurudevi-web` | Build browser-native in `apps/gurudevi-web` |
-| Import legacy `@repo/ui` (primitives, `components/ui`, flat `components/*`) in Next.js | Use `@repo/ui/components/web`, `@repo/ui/theme`, `@repo/ui/theme/web` |
+| Import legacy `@repo/ui` (primitives, `components/ui`, flat `components/*`) in the web app | Use `@repo/ui/components/web`, `@repo/ui/theme`, `@repo/ui/theme/web` |
 | Import Expo/RN/PowerSync in `gurudevi-web` | Use `@repo/core/web-auth`, `@repo/core/web-authorized-entry` |
 | Build reusable UI ad hoc in an app (hand-made buttons, pills, fields) | Add it to `@repo/ui/components/web` and `/native` with the same props |
 | Import native storage (MMKV) in `@repo/core` | Use `storageDriver` polyfill proxy (zero native pollution) |
@@ -274,6 +287,7 @@ Every turn must pass an adversarial review gate acting as the **Vibe Maintainer*
   1. Exactly what code/behavior is being removed.
   2. The technical rationale.
   3. The potential risks and compatibility trade-offs.
+* **A MOVE IS NOT A DELETION (owner rule, 2026-11-11):** Relocating code (a file, a type, a component) to its proper home, re-pointing every importer and removing the old copy *in the same change* is a move. It needs no sign-off when behaviour is unchanged and the type-check and test baselines hold. Leaving the old file behind is the failure: every reorganisation here was once done by copying, and the copies drifted (see `docs/current_progress/2026-11-11-unwired-files-and-duplicate-contracts-chronology.md`). Use `scripts/move-modules.mjs` (files) and `scripts/move-exports.mjs` (named exports); they rewrite importers in their original style. Contracts (types and schemas) are owned by `@repo/core`; a package never keeps its own copy.
 
 ### The Adversarial Self-Audit
 Before proposing any code, the agent must ask:
@@ -341,7 +355,7 @@ Never write the unqualified claim **"tests passed"**. A test result is valid onl
 | **G1** | Boundary Mock | Vitest, Jest | External APIs/storage substituted |
 | **G2** | Scenario Contract | Multi-step stateful flow | Network/storage substituted |
 | **G3** | Component Mounting | Real React component tree | Native bridge substituted |
-| **G4** | Platform Bundling | Metro/Next.js bundler + DOM | Real CSS and bundler |
+| **G4** | Platform Bundling | Metro/Vite bundler + DOM | Real CSS and bundler |
 | **G5** | Physical Device | Physical Android/iOS device | Real OS native threads |
 | **R1** | Production Canary | Production canary traffic | Real live systems |
 

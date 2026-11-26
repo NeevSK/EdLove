@@ -7,13 +7,13 @@ interface CrudQueue {
 }
 
 /**
- * The PowerSync connector on the v1 API. Credentials come from `identity.syncCredentials`, a
+ * The PowerSync connector on the v1 API. Credentials come from `identity.syncGrant`, a
  * short-lived grant for the signed-in account. No v1 capability accepts synced writes yet, so
  * `uploadData` leaves them queued and fails, which makes PowerSync retry later; completing the
  * transaction would discard them. Each domain adds its write path when its card is admitted.
  */
 export function createV1SyncConnector(
-  client: { identity: Pick<AppContractClient['identity'], 'syncCredentials'> },
+  client: { identity: Pick<AppContractClient['identity'], 'syncGrant'> },
   /** Re-checked on every call: account, rollout, network and read policy can change mid-session. */
   isAdmitted: () => boolean = () => true,
 ) {
@@ -21,7 +21,7 @@ export function createV1SyncConnector(
     async fetchCredentials(): Promise<PowerSyncCredentials | null> {
       if (!isAdmitted()) return null;
       try {
-        const grant = await client.identity.syncCredentials();
+        const grant = await client.identity.syncGrant();
         return {
           endpoint: grant.endpoint,
           token: grant.token,

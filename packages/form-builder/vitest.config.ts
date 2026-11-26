@@ -27,6 +27,8 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    // Mounted React Native tests run on @repo/ui's setup: see vitest.native.config.mts.
+    exclude: ['src/**/*.native.test.tsx'],
     passWithNoTests: true,
   },
 });

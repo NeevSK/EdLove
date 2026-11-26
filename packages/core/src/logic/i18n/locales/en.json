@@ -972,7 +972,10 @@
     "somethingWentWrong": "Something went wrong",
     "tryAgain": "Try again",
     "noInternet": "No internet connection",
-    "fetchFailed": "Failed to fetch data"
+    "fetchFailed": "Failed to fetch data",
+    "savedForLater": "Saved. It will be sent when you're back online.",
+    "signInAgain": "Please sign in again.",
+    "linkNotValid": "This link can't be opened."
   },
   "grades": {
     "marks": "Marks",

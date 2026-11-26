@@ -1,8 +1,7 @@
-import { Dialog , WorldSkeleton } from '@repo/ui/components/native';
-import { Box, Button, ButtonText, HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
-
-import { useEffect, useState } from 'react';
 import { type TeacherSentEcho, teacherFeedbackAPI } from '@repo/people/feedback';
+import { Dialog, WorldSkeleton } from '@repo/ui/components/native';
+import { Box, Button, ButtonText, HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { useEffect, useState } from 'react';
 
 // —————————————————————————————————————————————————————————————————————————————
 // TYPES
@@ -57,12 +56,7 @@ export default function TeacherEchoHistoryModal({
   }, [teacherId, visible]);
 
   return (
-    <SanctuaryModal
-      isOpen={visible}
-      onClose={onClose}
-      title="Echo History"
-      subtitle="SOVEREIGN FEEDBACK"
-    >
+    <Dialog open={visible} onClose={onClose} title="Echo History" description="SOVEREIGN FEEDBACK">
       <Box className="flex-1">
         {/* Content */}
         <ScrollView
@@ -87,7 +81,9 @@ export default function TeacherEchoHistoryModal({
                   void teacherFeedbackAPI
                     .listSentEchoes(teacherId, 20)
                     .then(setEchoes)
-                    .catch(() => setLoadError('Echo history could not be loaded. Please try again.'))
+                    .catch(() =>
+                      setLoadError('Echo history could not be loaded. Please try again.'),
+                    )
                     .finally(() => setLoading(false));
                 }}
               >

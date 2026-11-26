@@ -1,0 +1,39 @@
+extends:
+  - spectral:oas
+
+rules:
+  # Enforce kebab-case paths for REST endpoints
+  paths-kebab-case:
+    description: All API path segments must be kebab-case
+    message: Path segment '{{property}}' must be lowercase and hyphen-separated
+    severity: warn
+    given: $.paths[*]~
+    then:
+      function: pattern
+      functionOptions:
+        match: "^(/[a-z0-9]+(-[a-z0-9]+)*|/\\{[a-zA-Z0-9_]+\\})+$"
+
+  # Require descriptions on all operations
+  operation-description:
+    description: Operation must have a description explaining product intent
+    severity: warn
+    given: $.paths[*][get,post,put,delete,patch]
+    then:
+      field: description
+      function: defined
+
+  # Require 4xx error responses on modifying operations
+  modifying-operations-error-response:
+    description: POST, PUT, PATCH operations must declare error responses
+    severity: warn
+    given: $.paths[*][post,put,patch].responses
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          anyOf:
+            - required: ["400"]
+            - required: ["401"]
+            - required: ["403"]
+            - required: ["422"]

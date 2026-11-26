@@ -3,7 +3,7 @@ import { Surface } from '@repo/ui/components/native';
 import { Pressable } from 'react-native';
 import { BookOpen, GraduationCap, Lock, Users } from '@repo/ui/icons';
 import React from 'react';
-import type { GroupType } from '@repo/community/types';
+import type { GroupType } from '@repo/core/types/Community';
 
 interface GroupCardProps {
   id: string;

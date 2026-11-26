@@ -1,4 +1,5 @@
-import type { AuthChangeEvent, AuthSession } from '@repo/core/logic/ports/auth.port';
+import type { AuthChangeEvent } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession } from '@repo/core/types/authSession';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -15,11 +16,11 @@ const fixture = vi.hoisted(() => ({
   setDemoMode: vi.fn(),
   records: new Map<string, string | number>(),
 }));
-vi.mock('@repo/core/accounts/authenticatedAccountCapture', () => ({
+vi.mock('@repo/core/accounts/authenticatedAccountCapture.adapter', () => ({
   captureAuthenticatedDeviceAccount: vi.fn(),
   getVerifiedDeviceAccountProfile: vi.fn(),
 }));
-vi.mock('@repo/core/accounts/deviceAccounts', () => ({
+vi.mock('@repo/core/accounts/deviceAccounts.adapter', () => ({
   deviceAccounts: { list: async () => [], retainRefreshedSession: fixture.retainRefreshedSession },
 }));
 vi.mock('@repo/core/adapters/powersync/database', () => ({ disconnectPowerSync: vi.fn() }));
@@ -33,7 +34,7 @@ vi.mock('@repo/core/auth', () => ({
     signOut: vi.fn(),
   },
 }));
-vi.mock('@repo/core/lib/accountScope', () => ({ getActiveAccountId: () => null }));
+vi.mock('@repo/core/lib/accountScope.adapter', () => ({ getActiveAccountId: () => null }));
 vi.mock('@repo/core/lib/sync/replayAdmission', () => ({ openReplayAdmission: vi.fn() }));
 vi.mock('@repo/core/logic/auth/profileResolution', () => ({
   resolveAuthProfile: fixture.resolveAuthProfile,
@@ -67,7 +68,7 @@ vi.mock('@repo/core/store/useAuthStore', () => {
     }),
   };
 });
-vi.mock('@repo/core/lib/experienceState', () => ({
+vi.mock('@repo/core/lib/experienceState.store', () => ({
   useExperienceState: <T,>(select: (state: { setDemoMode: typeof fixture.setDemoMode }) => T) =>
     select({ setDemoMode: fixture.setDemoMode }),
 }));
@@ -88,7 +89,8 @@ vi.mock('react-native', () => ({
 }));
 
 import { useSanctuaryVisitor } from '@repo/core/hooks/useSanctuaryVisitor';
-import { AuthProvider, useAuth } from '@repo/core/providers/AuthProvider';
+import { AuthProvider } from '@repo/core/providers/AuthProvider';
+import { useAuth } from '@repo/core/hooks/useAuth';
 
 function credential(id = 'credential-a', token = 'access-a'): AuthSession {
   return { user: { id }, access_token: token, refresh_token: 'refresh-a' };

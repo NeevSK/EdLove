@@ -1,9 +1,5 @@
-import { captureAuthenticatedDeviceAccount } from '@repo/core/accounts/authenticatedAccountCapture';
-import { deviceAccounts } from '@repo/core/accounts/deviceAccounts';
-import { disconnectPowerSync } from '@repo/core/adapters/powersync/database';
 import { authAPI } from '@repo/core/auth';
-import { getActiveAccountId } from '@repo/core/lib/accountScope';
-import { useExperienceState } from '@repo/core/lib/experienceState';
+import { useExperienceState } from '@repo/core/lib/experienceState.store';
 import { openReplayAdmission } from '@repo/core/lib/sync/replayAdmission';
 import {
   getSessionIdentityMode,
@@ -12,10 +8,8 @@ import {
   isCurrentIdentityResolutionGeneration,
 } from '@repo/core/logic/auth/identityState';
 import { resolveAuthProfile } from '@repo/core/logic/auth/profileResolution';
-import { supabaseIdentityAdapter as identity } from '@repo/core/adapters/supabaseIdentity.adapter';
-import { supabaseRealtimeAdapter as realtime } from '@repo/core/adapters/realtime/supabase.adapter';
-import type { AccountLifecycleStatus, AuthSession } from '@repo/core/logic/ports/auth.port';
-import { clearAuthSubject, identifyAuthSubject, initSentry } from '@repo/core/monitoring';
+import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession } from '@repo/core/types/authSession';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import {
   clearScopeSessionCompatibility,
@@ -25,8 +19,19 @@ import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { APIError } from '@repo/core/types/API';
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
+import { authLifecycle } from '@repo/core/effect/bindings/auth';
+import { sessionScope } from '@repo/core/effect/bindings/state';
 
-export { getVerifiedDeviceAccountProfile } from '@repo/core/accounts/authenticatedAccountCapture';
+const {
+  deviceAccounts,
+  captureAuthenticatedDeviceAccount,
+  disconnectPowerSync,
+  identity,
+  realtime,
+} = authLifecycle;
+const { initSentry, identifyAuthSubject, clearAuthSubject } = authLifecycle.telemetry;
+
+export { getVerifiedDeviceAccountProfile } from '@repo/core/accounts/authenticatedAccountCapture.adapter';
 
 /** Throttle minimum interval for mobile AppState wake-up profile reconciliation. */
 const APP_STATE_RECONCILE_THROTTLE_MS = 60_000;
@@ -120,7 +125,7 @@ export function useAuthLifecycle(readLocalGuestId?: () => Promise<string | null>
           setIdentityAvailability('active');
           resolvedAuthSubjectIdRef.current = authSubjectId;
           setResolvedAuthSubjectId(authSubjectId);
-          if (existingUser && getActiveAccountId() === existingUser.id) {
+          if (existingUser && sessionScope.activeAccountId() === existingUser.id) {
             openReplayAdmission(existingUser.id);
           }
         } else {
@@ -171,7 +176,7 @@ export function useAuthLifecycle(readLocalGuestId?: () => Promise<string | null>
           });
           if (!isCurrentResolution()) return;
 
-          if (getActiveAccountId() === identity.id) openReplayAdmission(identity.id);
+          if (sessionScope.activeAccountId() === identity.id) openReplayAdmission(identity.id);
 
           identifyAuthSubject({
             id: identity.id,

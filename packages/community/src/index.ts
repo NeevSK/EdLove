@@ -15,4 +15,3 @@ export type {
 export { default as BaseChatScreen } from '@repo/community/screens/BaseChatScreen';
 export { default as InviteCodeEntry } from '@repo/community/screens/InviteCodeEntry';
 // Types
-export * from '@repo/community/types';

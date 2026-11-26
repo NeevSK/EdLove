@@ -15,7 +15,8 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 
 export const ResonanceTimeline: React.FC = () => {
   const { journey, loading } = useJourneyData();
-  const { viewScale, viewDate } = useTemporalStore();
+  const viewScale = useTemporalStore((s) => s.viewScale);
+  const viewDate = useTemporalStore((s) => s.viewDate);
 
   if (loading) {
     return (
@@ -47,9 +48,7 @@ export const ResonanceTimeline: React.FC = () => {
       <Animated.View entering={FadeIn.duration(800)}>
         {/* Timeline Header */}
         <View className="items-center mb-8 gap-1">
-          <Text className="text-sacredWhite font-black tracking-tight">
-            {viewDate}
-          </Text>
+          <Text className="text-sacredWhite font-black tracking-tight">{viewDate}</Text>
           <View className="bg-sanctuarySaffron/10 px-3 py-1 rounded-full border border-sanctuarySaffron/20">
             <Text className="text-sanctuarySaffron text-[10px] font-black uppercase tracking-[0.2em]">
               {viewScale} Journey

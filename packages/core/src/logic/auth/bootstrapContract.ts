@@ -41,6 +41,7 @@ export function getBootstrapSessionState(params: {
   onboardingCompleted: boolean;
   hasActiveCapacity?: boolean;
   hasActiveAccessToken?: boolean;
+  isOfflineWithVerifiedProfile?: boolean;
   hasSession?: boolean;
   hasLocalGuestSession?: boolean;
 }): BootstrapSessionState {
@@ -53,6 +54,7 @@ export function getBootstrapSessionState(params: {
     onboardingCompleted,
     hasActiveCapacity = true,
     hasActiveAccessToken = true,
+    isOfflineWithVerifiedProfile = false,
     hasSession,
     hasLocalGuestSession = false,
   } = params;
@@ -64,7 +66,13 @@ export function getBootstrapSessionState(params: {
     }
     return 'ready';
   }
-  if (!hasSession || !hasActiveAccessToken || sessionMode === 'unauthenticated') return 'public';
+  if (
+    !hasSession ||
+    (!hasActiveAccessToken && !isOfflineWithVerifiedProfile) ||
+    sessionMode === 'unauthenticated'
+  ) {
+    return 'public';
+  }
   if (sessionMode === 'anonymous' && (!onboardingCompleted || !hasActiveCapacity)) {
     return 'public';
   }

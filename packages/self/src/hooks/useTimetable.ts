@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 const TIMETABLE_CACHE_KEY = 'gurudevi-timetable-cache';
 
-import type { Period } from '@repo/self/types';
+import type { Period } from '@repo/core/types/Wellbeing';
 export const useTimetable = (activeDay: number) => {
   const authUser = useAuthStore((state) => state.user);
   const [periods, setPeriods] = useState<Period[]>([]);

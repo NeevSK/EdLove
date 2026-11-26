@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Button,
   Chip,
@@ -7,7 +5,7 @@ import {
   Surface,
   Text,
 } from '@repo/ui/components/web';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useState } from 'react';
 import type { FurnitureDefinition } from '../../components/FloorStudioDrawer';
 import { SanctuaryFloorCanvas } from '../../components/SanctuaryFloorCanvas';
@@ -52,7 +50,7 @@ export function EnhancedAnalyticsFloor({
             <Surface tone="raised" className={styles.headerBar}>
               <div className={styles.titleArea}>
                 <div style={{ marginBottom: '0.25rem' }}>
-                  <Link href="/workspace" style={{ textDecoration: 'none' }}>
+                  <Link to="/workspace" style={{ textDecoration: 'none' }}>
                     <Button variant="quiet" size="sm" label="← Back to Sanctuary" />
                   </Link>
                 </div>

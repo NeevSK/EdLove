@@ -1,0 +1,790 @@
+{
+  "metrics": {
+    "pjcFeaturesCount": 9,
+    "pjcIntentsCount": 26,
+    "pjcJourneysCount": 26,
+    "pjcStepsCount": 82,
+    "pjcTotalBindings": 117,
+    "pjcValidBindings": 77,
+    "pjcBrokenBindings": 40,
+    "pjcBindingIntegrityPercent": "65.8",
+    "totalWebRoutes": 69,
+    "coveredWebRoutesCount": 33,
+    "orphanWebRoutesCount": 36,
+    "webRoutePjcCoveragePercent": "47.8",
+    "totalMobileRoutes": 39,
+    "coveredMobileRoutesCount": 16,
+    "orphanMobileRoutesCount": 23,
+    "mobileRoutePjcCoveragePercent": "41.0",
+    "totalWebFloors": 47,
+    "coveredWebFloorsCount": 19,
+    "orphanWebFloorsCount": 28,
+    "webFloorCoveragePercent": "40.4"
+  },
+  "directionA_SpecToCode": {
+    "journeysWithCode": [
+      {
+        "id": "journey:school.accept_invitation",
+        "title": "Accept an invitation",
+        "referencesCount": 3,
+        "existingCount": 3
+      },
+      {
+        "id": "journey:admin.school_connection.legacy",
+        "title": "Connect to a school",
+        "referencesCount": 10,
+        "existingCount": 9
+      },
+      {
+        "id": "journey:principal.school_pulse",
+        "title": "Audit School Attendance & Operational Health",
+        "referencesCount": 4,
+        "existingCount": 2
+      },
+      {
+        "id": "journey:principal.term_setup",
+        "title": "Establish Academic Term & Schedule",
+        "referencesCount": 3,
+        "existingCount": 3
+      },
+      {
+        "id": "journey:ai.assistant_companion",
+        "title": "Unified AI Ingress and Execution Journey",
+        "referencesCount": 6,
+        "existingCount": 4
+      },
+      {
+        "id": "journey:api.secure_operations",
+        "title": "Authenticate, scope, execute and recover a horizontal operation",
+        "referencesCount": 21,
+        "existingCount": 21
+      },
+      {
+        "id": "journey:api.operate_runtime",
+        "title": "Configure, start and drain the canonical Node host",
+        "referencesCount": 16,
+        "existingCount": 16
+      },
+      {
+        "id": "journey:api.ground_architecture",
+        "title": "Read what, apply how, and preserve unresolved decisions",
+        "referencesCount": 9,
+        "existingCount": 8
+      },
+      {
+        "id": "journey:api.execute",
+        "title": "API admission, execution and recovery",
+        "referencesCount": 42,
+        "existingCount": 13
+      },
+      {
+        "id": "journey:api.compose",
+        "title": "Inspect, compile and validate API contracts",
+        "referencesCount": 5,
+        "existingCount": 4
+      },
+      {
+        "id": "journey:classroom.teacher_first_workspace.legacy",
+        "title": "Start teaching in a workspace",
+        "referencesCount": 13,
+        "existingCount": 9
+      },
+      {
+        "id": "journey:teacher.daily_rollcall",
+        "title": "Record Daily Student Attendance",
+        "referencesCount": 7,
+        "existingCount": 4
+      },
+      {
+        "id": "journey:teacher.student_attunement",
+        "title": "Holistic Radar Attunement",
+        "referencesCount": 3,
+        "existingCount": 1
+      },
+      {
+        "id": "journey:teacher.class_answer_view",
+        "title": "Respond to what the class answered",
+        "referencesCount": 4,
+        "existingCount": 4
+      },
+      {
+        "id": "journey:founder.manage_priorities",
+        "title": "Manage Founder Command Deck Directives",
+        "referencesCount": 8,
+        "existingCount": 2
+      },
+      {
+        "id": "journey:founder.consult_mentor_agent",
+        "title": "Consult Platform AI Mentor",
+        "referencesCount": 5,
+        "existingCount": 2
+      },
+      {
+        "id": "journey:founder.charter_school_hub",
+        "title": "Charter New Sanctuary School",
+        "referencesCount": 4,
+        "existingCount": 1
+      },
+      {
+        "id": "journey:founder.triage_support_and_broadcast",
+        "title": "Triage Feedback & Ecosystem Broadcast",
+        "referencesCount": 4,
+        "existingCount": 3
+      },
+      {
+        "id": "journey:school.founder_invitation",
+        "title": "Review and invite",
+        "referencesCount": 3,
+        "existingCount": 2
+      },
+      {
+        "id": "journey:student.daily_prep",
+        "title": "Manage Tomorrow's Preparation",
+        "referencesCount": 5,
+        "existingCount": 3
+      },
+      {
+        "id": "journey:student.timetable_schedule",
+        "title": "View Daily Class Timetable",
+        "referencesCount": 4,
+        "existingCount": 4
+      },
+      {
+        "id": "journey:student.mindful_reflection",
+        "title": "Mindful Breathing Reset",
+        "referencesCount": 3,
+        "existingCount": 3
+      },
+      {
+        "id": "journey:learner.attempt_reflection",
+        "title": "Plan, check and look back on an attempt",
+        "referencesCount": 5,
+        "existingCount": 5
+      },
+      {
+        "id": "journey:learner.claim_growth",
+        "title": "Recognise and keep what I can now do",
+        "referencesCount": 6,
+        "existingCount": 6
+      },
+      {
+        "id": "journey:learner.review_session",
+        "title": "Review what's due, spaced over time",
+        "referencesCount": 4,
+        "existingCount": 4
+      }
+    ],
+    "journeysWithoutCode": [
+      {
+        "id": "journey:founder.fleet_pulse",
+        "title": "Audit Fleet Telemetry & Institutions",
+        "totalReferences": 4
+      }
+    ],
+    "brokenBindings": [
+      {
+        "id": "binding:admin.school_connection.web-0",
+        "journeyId": "journey:admin.school_connection.legacy",
+        "reference": null,
+        "category": "web",
+        "status": "planned",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:admin.school_connection.api-2",
+        "journeyId": "journey:admin.school_connection.legacy",
+        "reference": null,
+        "category": "api",
+        "status": "unknown",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:principal.web_dashboard",
+        "journeyId": "journey:principal.school_pulse",
+        "reference": "packages/admin/src/screens/PrincipalDashboard.web.tsx",
+        "category": "web",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:ai.screen_shared",
+        "journeyId": "journey:ai.assistant_companion",
+        "reference": "packages/ui/src/screens/AIScreen.shared.tsx",
+        "category": "mobile",
+        "status": "planned",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.contract_inspector",
+        "journeyId": "journey:api.execute",
+        "reference": "packages/core/src/api/contractInspection.ts",
+        "category": "tool",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.contract_inspector_test",
+        "journeyId": "journey:api.execute",
+        "reference": "packages/core/src/api/__tests__/contractInspection.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.onboarding_handler",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/core/handlers/onboarding.ts",
+        "category": "api",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.onboarding_test",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/onboarding.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.daily_content_contract",
+        "journeyId": "journey:api.execute",
+        "reference": "packages/core/src/api/dailyContent.orpc.contract.ts",
+        "category": "api",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.daily_content_handler",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/core/handlers/dailyContent.ts",
+        "category": "api",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.daily_content_test",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/daily-content.orpc.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.daily_content_contract_test",
+        "journeyId": "journey:api.execute",
+        "reference": "packages/core/src/api/__tests__/dailyContent.contract.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.privacy_handler",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/core/handlers/privacy.ts",
+        "category": "api",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.privacy_api_test",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/privacy.orpc.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.privacy_contract_test",
+        "journeyId": "journey:api.execute",
+        "reference": "packages/core/src/api/__tests__/privacy.contract.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.contract_conversion",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/core/orpc.ts",
+        "category": "api",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.contract_test",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/contract-conversion.characterization.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.native_client",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/orpc-client.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.native_admission",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/canonical-account.security.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.regular_rewards_test",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/rewards.orpc.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.readiness",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/core/readiness.ts",
+        "category": "failure",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.authority_failure",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/authorization-context-failure.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.http",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/rpc-method-policy.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.mcp_door",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/doors/mcp.ts",
+        "category": "api",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.mcp",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/mcp-door.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.entitlement",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/orpc-entitlement.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.ai_cancel",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/ai-streaming-resilience.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.database_proof",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/integration/api-foundation.pg.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.rewards",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/core/routes/adRewards.ts",
+        "category": "api",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.rewards_test",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/adRewards.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:api.rewards_pg",
+        "journeyId": "journey:api.execute",
+        "reference": "apps/sanctuary-api/src/__tests__/integration/ad-reward.pg.test.ts",
+        "category": "test",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:classroom.teacher_first_workspace.web-0",
+        "journeyId": "journey:classroom.teacher_first_workspace.legacy",
+        "reference": "apps/gurudevi-web/app/(sanctuary)/workspace/page.tsx",
+        "category": "web",
+        "status": "planned",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:classroom.teacher_first_workspace.authorization-4",
+        "journeyId": "journey:classroom.teacher_first_workspace.legacy",
+        "reference": "apps/sanctuary-api/src/core/handlers/workspaceProvisioning.ts",
+        "category": "authorization",
+        "status": "unknown",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:teacher.attendance_screen",
+        "journeyId": "journey:teacher.daily_rollcall",
+        "reference": "packages/classroom/src/screens/AttendanceScreen.tsx",
+        "category": "mobile",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:teacher.holistic_insights",
+        "journeyId": "journey:teacher.student_attunement",
+        "reference": "packages/classroom/src/components/ClassroomHolisticInsights.tsx",
+        "category": "mobile",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:founder.route_mobile",
+        "journeyId": "journey:founder.manage_priorities",
+        "reference": "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx",
+        "category": "mobile",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:founder.dashboard_screen",
+        "journeyId": "journey:founder.manage_priorities",
+        "reference": "packages/admin/src/screens/FounderDashboard.tsx",
+        "category": "mobile",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:founder.stats_bridge",
+        "journeyId": "journey:founder.fleet_pulse",
+        "reference": "packages/admin/src/bridge/founderWorkspace.ts",
+        "category": "api",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:founder.ai_web",
+        "journeyId": "journey:founder.consult_mentor_agent",
+        "reference": "apps/gurudevi-web/app/(sanctuary)/agent-lab/assistant/page.tsx",
+        "category": "web",
+        "status": "implemented",
+        "existsOnDisk": false
+      },
+      {
+        "id": "binding:founder.create_modal",
+        "journeyId": "journey:founder.charter_school_hub",
+        "reference": "packages/admin/src/components/school/CreateSchoolModal.tsx",
+        "category": "mobile",
+        "status": "implemented",
+        "existsOnDisk": false
+      }
+    ]
+  },
+  "directionB_CodeToSpec": {
+    "coveredWebRoutes": [
+      "/admin/analytics",
+      "/admin/documents",
+      "/admin/forms/builder",
+      "/admin/founder",
+      "/admin/principal",
+      "/agent-lab",
+      "/architecture",
+      "/auth/callback",
+      "/auth/complete",
+      "/c/[code]",
+      "/onboarding",
+      "/school/[id]",
+      "/school/[id]/articles/[slug]",
+      "/self",
+      "/workspace",
+      "/workspace/atlas",
+      "/workspace/attendance",
+      "/workspace/badges",
+      "/workspace/claim",
+      "/workspace/classroom/[id]",
+      "/workspace/climate",
+      "/workspace/editorial",
+      "/workspace/events",
+      "/workspace/gradebook",
+      "/workspace/guardian",
+      "/workspace/kiosk",
+      "/workspace/notices",
+      "/workspace/plan",
+      "/workspace/school",
+      "/workspace/submissions",
+      "/workspace/timetable",
+      "/workspace/tuition",
+      "/workspace/workforce"
+    ],
+    "orphanWebRoutes": [
+      "/",
+      "/account-recovery",
+      "/architecture-lab",
+      "/atlas",
+      "/community",
+      "/community/announcements",
+      "/community/chat/[groupId]",
+      "/community/dm/[userId]",
+      "/community/forest",
+      "/explore-intro",
+      "/icon-lab",
+      "/invitation-welcome",
+      "/kit",
+      "/kit/components",
+      "/kit/components/temporal-horizon",
+      "/kit/floor-redesign",
+      "/kit/self",
+      "/library",
+      "/library/collections/[id]",
+      "/library/contribute",
+      "/library/curator",
+      "/library/map",
+      "/library/reader/[bookId]",
+      "/library/review",
+      "/library/tools",
+      "/library/video/[videoId]",
+      "/notifications",
+      "/profile",
+      "/profile/security",
+      "/recovery",
+      "/reset-password",
+      "/settings",
+      "/sign-in",
+      "/support",
+      "/verger-lab",
+      "/welcome"
+    ],
+    "coveredMobileRoutes": [
+      "/(tabs)/self",
+      "/(tabs)/self/wisdom/[id]",
+      "/(tabs)/workspace",
+      "/(tabs)/workspace/atlas",
+      "/(tabs)/workspace/commercial/[batchId]",
+      "/(tabs)/workspace/demo-fee",
+      "/(tabs)/workspace/events",
+      "/(tabs)/workspace/inventory",
+      "/(tabs)/workspace/peers",
+      "/(tabs)/workspace/welfare",
+      "/(tabs)/workspace/workforce-role",
+      "/a-i-assistant",
+      "/auth",
+      "/auth/callback",
+      "/form-builder",
+      "/onboarding"
+    ],
+    "orphanMobileRoutes": [
+      "/",
+      "/(dev)/kit",
+      "/(dev)/kit/KitGalleryNative",
+      "/(modal)/create-form",
+      "/(tabs)/community",
+      "/(tabs)/library",
+      "/(tabs)/notifications",
+      "/(tabs)/profile",
+      "/(tabs)/settings",
+      "/account-recovery",
+      "/atlas",
+      "/companions",
+      "/icon-lab",
+      "/public-form/[slug]",
+      "/pulse",
+      "/reading",
+      "/shell-lab",
+      "/tutii-dance-preview",
+      "/ui-showcase",
+      "/verger-diagnostics",
+      "/verger-lab",
+      "/welcome",
+      "/world-showcase"
+    ],
+    "coveredFloors": [
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/badges/BadgeSheetFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/claim/ClaimSpotFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/classroom/[id]/ClassroomDetailFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/climate/ClimateSensingFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/editorial/EditorialCommonsFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/editorial/EditorialFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/events/EventsFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/gradebook/GradebookFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/guardian/GuardianFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/kiosk/KioskFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/notices/NoticesFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/plan/PlanFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/school/SchoolFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/submissions/SubmissionsFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/TeacherWorkspaceFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/timetable/TimetableFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/tuition/TuitionFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/workforce/WorkforceFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      },
+      {
+        "path": "apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx",
+        "journeys": [
+          "journey:classroom.teacher_first_workspace.legacy",
+          "journey:classroom.teacher_first_workspace.legacy"
+        ]
+      }
+    ],
+    "orphanFloors": [
+      "apps/gurudevi-web/app/(sanctuary)/account-recovery/AccountRecoveryFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/admin/principal/PrincipalFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/atlas/AtlasFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/community/announcements/AnnouncementsFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/community/chat/[groupId]/GroupChatFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/community/components/CommunityDirectMessagesStage.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/community/dm/[userId]/DirectMessageFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/community/forest/SchoolForestFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/library/collections/[id]/CollectionShelfDesk.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/library/contribute/ContributeDesk.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/library/curator/CuratorReviewDesk.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/library/map/LibraryAtlasDesk.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/DocumentReaderDesk.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/library/tools/ToolsWorkbenchDesk.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/library/video/[videoId]/VideoPlayerDesk.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/notifications/NotificationsFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/profile/security/SecurityFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/school/[id]/SchoolPublicFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+      "apps/gurudevi-web/app/(sanctuary)/welcome/WelcomeStage.tsx"
+    ]
+  }
+}

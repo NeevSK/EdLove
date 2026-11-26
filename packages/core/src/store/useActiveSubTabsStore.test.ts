@@ -126,3 +126,26 @@ describe('useActiveSubTabsStore', { tags: ['pure', 'fast'] }, () => {
     expect(migrated.preferences).toMatchObject({ maxTabsPerDomain: 3, showActiveSubTabs: false });
   });
 });
+
+describe('chrome covers / G1', () => {
+  it('counts overlays covering the chrome, releasing each once', () => {
+    const store = useActiveSubTabsStore.getState();
+    const first = store.coverChrome();
+    const second = useActiveSubTabsStore.getState().coverChrome();
+    expect(useActiveSubTabsStore.getState().chromeCovers).toBe(2);
+    first();
+    first();
+    expect(useActiveSubTabsStore.getState().chromeCovers).toBe(1);
+    second();
+    expect(useActiveSubTabsStore.getState().chromeCovers).toBe(0);
+  });
+
+  it('is never persisted', () => {
+    const release = useActiveSubTabsStore.getState().coverChrome();
+    const persisted = useActiveSubTabsStore.persist.getOptions().partialize?.(
+      useActiveSubTabsStore.getState(),
+    );
+    expect(persisted).not.toHaveProperty('chromeCovers');
+    release();
+  });
+});

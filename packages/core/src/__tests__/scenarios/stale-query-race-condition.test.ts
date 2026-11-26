@@ -1,5 +1,5 @@
 import { useLocalFirstQuery } from '@repo/core/hooks/useLocalFirstQuery';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createScenarioTestContext } from '../../testing/scenarioHarness';
 

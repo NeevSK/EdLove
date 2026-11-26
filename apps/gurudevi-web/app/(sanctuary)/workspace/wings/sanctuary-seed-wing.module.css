@@ -37,11 +37,11 @@
 
 .sphereTag {
   display: inline-block;
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 0.2rem 0.5rem;
+  padding: 0.2rem 0.55rem;
   background: #eff6ff;
   color: #1e40af;
   border: 1px solid #bfdbfe;
@@ -91,7 +91,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--color-ink-soft, #74675d);
   margin-top: auto;
   padding-top: 0.5rem;

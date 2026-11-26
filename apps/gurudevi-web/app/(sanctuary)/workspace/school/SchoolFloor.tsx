@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useEffect, useState } from 'react';
 import { editorialAdapter, type SchoolEditorialDraft } from '@/lib/domain';
 import {
@@ -8,6 +6,10 @@ import {
   schoolAdapter,
 } from '@/lib/domain/adapters/school/school.adapter';
 import type { SchoolProfileData, SchoolProfileFact } from '@/lib/domain/ports/school.port';
+import {
+  CommercialSchoolCreationModal,
+  EstablishedSchoolBanner,
+} from './CommercialSchoolCreationModal';
 import styles from './school.module.css';
 
 interface SchoolFloorProps {
@@ -25,6 +27,8 @@ export function SchoolFloor({
   const [articles, setArticles] = useState<readonly SchoolEditorialDraft[]>([]);
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [isEditing, setIsEditing] = useState(false);
+  const [creationModalOpen, setCreationModalOpen] = useState(false);
+  const [createdWelcome, setCreatedWelcome] = useState<SchoolProfileData | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [copyNotice, setCopyNotice] = useState<string | null>(null);
 
@@ -151,7 +155,7 @@ export function SchoolFloor({
           </button>
 
           <Link
-            href={`/school/${fact.handle || fact.id}`}
+            to="/school/$id" params={{ id: fact.handle || fact.id }}
             className={styles.secondaryBtn}
             target="_blank"
             rel="noopener noreferrer"
@@ -159,11 +163,11 @@ export function SchoolFloor({
             <span>↗</span> Live School Website
           </Link>
 
-          <Link href="/workspace/editorial" className={styles.secondaryBtn}>
+          <Link to="/workspace/editorial" className={styles.secondaryBtn}>
             <span>✒️</span> Editorial Media Desk
           </Link>
 
-          <Link href="/workspace/kiosk" className={styles.secondaryBtn}>
+          <Link to="/workspace/kiosk" className={styles.secondaryBtn}>
             <span>⛶</span> Doorway Kiosk
           </Link>
 
@@ -171,11 +175,31 @@ export function SchoolFloor({
             <button
               type="button"
               className={styles.secondaryBtn}
-              onClick={() => setIsEditing(!isEditing)}
+              onClick={() => {
+                setIsEditing(!isEditing);
+                setCreationModalOpen(false);
+              }}
             >
               <span>✎</span> {isEditing ? 'Cancel Edit' : 'Edit Profile'}
             </button>
           )}
+
+          <button
+            type="button"
+            id="btn-open-create-school"
+            className={styles.primaryBtn}
+            style={{
+              backgroundColor: creationModalOpen ? 'var(--color-charcoal, #2a2521)' : '#7a1c20',
+              color: '#ffffff',
+              boxShadow: '0 4px 12px rgba(122, 28, 32, 0.35)',
+            }}
+            onClick={() => {
+              setCreationModalOpen(!creationModalOpen);
+              setIsEditing(false);
+            }}
+          >
+            <span>➕</span> {creationModalOpen ? 'Close Creation Form' : 'Establish Commercial School'}
+          </button>
 
           <button
             type="button"
@@ -186,6 +210,29 @@ export function SchoolFloor({
           </button>
         </div>
       </section>
+
+      {/* Celebratory Banner upon creation */}
+      {createdWelcome && (
+        <EstablishedSchoolBanner
+          profile={createdWelcome}
+          onViewQr={() => setActiveTab('qr')}
+          onDismiss={() => setCreatedWelcome(null)}
+          styles={styles}
+        />
+      )}
+
+      {/* Creation Modal / Form */}
+      <CommercialSchoolCreationModal
+        open={creationModalOpen}
+        onClose={() => setCreationModalOpen(false)}
+        onCreated={(profile) => {
+          setData(profile);
+          setFormData(profile.fact);
+          setCreatedWelcome(profile);
+          setNotice(`Commercial institution "${profile.fact.name}" successfully established!`);
+        }}
+        styles={styles}
+      />
 
       {/* Editing Form when active (Strictly gated to leadership) */}
       {isEditing && isLeader && (
@@ -459,7 +506,7 @@ export function SchoolFloor({
                       <div className={styles.articleFooter}>
                         <span>{article.subEntityName}</span>
                         <Link
-                          href={`/school/${fact.handle}/articles/${article.slug ?? article.id}`}
+                          to="/school/$id/articles/$slug" params={{ id: fact.handle, slug: article.slug ?? article.id }}
                           className={styles.articleLink}
                         >
                           Read ➔
@@ -587,7 +634,7 @@ export function SchoolFloor({
                   bulletins.
                 </p>
               </div>
-              <Link href="/workspace/editorial" className={styles.authorDeskLink}>
+              <Link to="/workspace/editorial" className={styles.authorDeskLink}>
                 ✒️ Open Media Desk
               </Link>
             </div>
@@ -618,7 +665,7 @@ export function SchoolFloor({
                     <div className={styles.articleFooter}>
                       <span>By {article.authorName}</span>
                       <Link
-                        href={`/school/${fact.handle}/articles/${article.slug ?? article.id}`}
+                        to="/school/$id/articles/$slug" params={{ id: fact.handle, slug: article.slug ?? article.id }}
                         className={styles.articleLink}
                       >
                         Read Full Story ➔

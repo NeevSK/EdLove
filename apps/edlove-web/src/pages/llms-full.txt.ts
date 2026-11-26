@@ -29,9 +29,9 @@ EdLove organizes educational transformation across six holistic, interlocking pa
 
 ---
 
-## 3. The 200 Educational Innovations Archive
+## 3. The Global EdTech Atlas
 
-EdLove curates and maintains an open catalog of 200 transformative global educational innovations. Spanning community learning centers, multi-age classrooms, contemplative pedagogy, democratic schools, and open-source learning hardware, the archive provides empirical case studies for school leaders and educational researchers.
+EdLove curates and maintains an open global atlas of 200 educational technologies, platforms, and pedagogical innovations worldwide. Spanning open-source learning management systems, local-first offline tools, community learning networks, and contemplative pedagogy, the atlas provides an empirical directory of available technologies for educators, researchers, and school leaders.
 
 ---
 
@@ -43,7 +43,7 @@ An open research and empirical mapping project documenting Sri Lanka's 10,155 st
 
 ## 5. Gurudevi Integration
 
-Gurudevi (https://gurudevi.app) is the operational realization of the EdLove philosophy for Sri Lanka. While EdLove.org serves as the public epistemic and research foundation, Gurudevi provides the live software sanctuary used daily by schools, teachers, and students.
+Gurudevi (https://gurudevi.app) is an EdLove initiative, built by Intuitui Labs (https://intuituilabs.studio). While EdLove holds the educational philosophy, pedagogy, and research intent, Intuitui Labs engineered the offline-first, local-first software architecture used by schools, teachers, and students.
 `;
 
   return new Response(fullBody, {

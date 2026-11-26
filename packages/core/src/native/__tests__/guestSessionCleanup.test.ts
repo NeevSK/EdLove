@@ -10,7 +10,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('@repo/core/auth', () => ({ authAPI: { signOut: mocks.signOut } }));
-vi.mock('@repo/core/lib/storageWrapper', () => ({
+vi.mock('@repo/core/lib/storageWrapper.adapter', () => ({
   SafeZustandStorage: { removeItem: mocks.removeItem },
 }));
 vi.mock('@repo/core/native/guestStorage', () => ({

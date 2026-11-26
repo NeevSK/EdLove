@@ -1,8 +1,4 @@
-import {
-  type TemporalCapability,
-  type TemporalScale,
-  useTemporalStore,
-} from '@repo/core/store/useTemporalStore';
+import type { TemporalCapability, TemporalScale, TemporalView } from '@repo/core/types/Temporal';
 import {
   endOfDay,
   endOfMonth,
@@ -70,7 +66,7 @@ export interface FilterableQuery {
 }
 
 /**
- * Higher-order utility to apply temporal filtering to a query builder.
+ * Higher-order utility to apply temporal filtering to a query builder, for the window in `view`.
  *
  * Important guardrail: timestamps alone are not equivalent to historical truth.
  * Only event streams, business facts, and audit histories should be filtered here.
@@ -78,9 +74,8 @@ export interface FilterableQuery {
 export function applyTemporalFilter<Q extends FilterableQuery>(
   query: Q,
   spec: TemporalFilterSpec,
+  { viewDate, phase, viewScale }: TemporalView,
 ): Q {
-  const { viewDate, phase, viewScale } = useTemporalStore.getState();
-
   if (phase === 'present' && spec.capability === 'snapshot') {
     return query;
   }

@@ -1,0 +1,21 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TEAMID.app.gurudevi.sanctuary",
+        "paths": [
+          "/qr*",
+          "/invite/*",
+          "/c/*",
+          "/auth/callback*"
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "TEAMID.app.gurudevi.sanctuary"
+    ]
+  }
+}

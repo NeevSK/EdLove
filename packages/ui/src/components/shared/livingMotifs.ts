@@ -25,6 +25,9 @@ export interface WorldMotifDefinition {
 }
 
 export const LIVING_MOTIFS: Readonly<Record<WorldId, WorldMotifDefinition>> = {
+  // 0. Classic (the plain app): no watermark at all.
+  classic: { id: 'classic', paths: [] },
+
   // 1. Kele (Forest canopy - Nature): Vascular leaf spine & lateral canopy veins
   kele: {
     id: 'kele',

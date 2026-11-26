@@ -54,7 +54,7 @@
 }
 
 .badge {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: #a85022;
@@ -82,7 +82,12 @@
   font-size: 16px;
   color: #7a6e5f;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 8px 12px;
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 8px;
 }
 
@@ -92,7 +97,7 @@
 
 .description {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.5;
   color: #5c4e3e;
 }
@@ -126,10 +131,13 @@
 }
 
 .timerBadge {
-  font-size: 12px;
+  font-size: 13px;
   color: #7a6e5f;
   background-color: rgba(212, 132, 58, 0.1);
-  padding: 4px 12px;
+  padding: 6px 14px;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
   border-radius: 20px;
   border: 1px solid rgba(212, 132, 58, 0.2);
 }
@@ -175,14 +183,18 @@
 }
 
 .refreshBtn {
-  padding: 8px 16px;
+  padding: 10px 18px;
+  min-height: 48px;
   border-radius: 10px;
   background-color: #a85022;
   color: #ffffff;
   border: none;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: opacity 0.2s;
 }
 
@@ -201,6 +213,6 @@
 }
 
 .securityNote {
-  font-size: 11px;
+  font-size: 13px;
   color: #8c7e6e;
 }

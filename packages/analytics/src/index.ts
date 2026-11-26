@@ -20,7 +20,6 @@ export * from '@repo/analytics/ml/InsightGenerator';
 // the canonical export; Predictor's copy stays module-local.)
 export { Predictor } from '@repo/analytics/ml/Predictor';
 // Types and interfaces
-export * from '@repo/analytics/types';
 // Utility functions
 export * from '@repo/analytics/utils/analyticsHelpers';
 export * from '@repo/analytics/utils/benchmarking';
@@ -51,15 +50,3 @@ import { GPACalculator as CoreGPACalculator } from '@repo/core/logic';
 const gpaCalculator = new CoreGPACalculator();
 export const marksToGPA = (marks: number) => gpaCalculator.marksToGPA(marks);
 export const calculateRanks = (grades: any[]) => gpaCalculator.calculateRanks(grades);
-// Mock implementation for multiTenantAnalyticsAPI until full implementation is moved
-export const multiTenantAnalyticsAPI = {
-  aggregateTenantMetrics: async (_ids: string[], _range: any) => [],
-  getLiveMetrics: async (_id: string) => ({
-    active_users: 0,
-    api_requests_per_minute: 0,
-    error_rate: 0,
-    system_health: 'healthy' as 'healthy' | 'warning' | 'critical',
-    timestamp: new Date().toISOString(),
-    resource_usage: { cpu: 0, memory: 0, storage: 0 },
-  }),
-};

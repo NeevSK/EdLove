@@ -1,5 +1,3 @@
-'use client';
-
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 import { SignOutIncompleteError, sanctuarySignOut } from '@/lib/sanctuary/signOut';
 import { type BrowserAuthRuntime, type BrowserSession, browserAuthRuntime } from './browserAuth';
@@ -76,4 +74,9 @@ export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
+}
+
+/** The auth context, or null outside AuthProvider (for boundaries that may render without it). */
+export function useOptionalAuth() {
+  return useContext(AuthContext) ?? null;
 }

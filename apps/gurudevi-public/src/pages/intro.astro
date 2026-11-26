@@ -1,0 +1,15 @@
+---
+import { IntroPageContainer } from '../components/intro/IntroPageContainer';
+import PublicLayout from '../layouts/PublicLayout.astro';
+---
+<PublicLayout
+  locale="en"
+  locales={['en']}
+  path="/intro"
+  title="Walkthrough with Tutti · Gurudevi Sanctuary"
+  description="Step-by-step interactive tour with Tutti. Explore the main sanctuary rooms and quick top-bar tools with real time-sequenced flow."
+>
+  <main class="min-h-screen bg-stone-950 flex flex-col justify-center items-center px-4 py-8 sm:px-6 sm:py-12">
+    <IntroPageContainer client:load />
+  </main>
+</PublicLayout>

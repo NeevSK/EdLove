@@ -1,4 +1,4 @@
-import type { FeatureJTBDGraph } from '@repo/core/types/FlowDAG';
+import type { FeatureJTBDGraph } from '@repo/core/types/domainEntry';
 
 export const studentClaimPassFlow: FeatureJTBDGraph = {
   featureId: 'classroom.student_desk_pass',
@@ -35,7 +35,8 @@ export const studentClaimPassFlow: FeatureJTBDGraph = {
           condition: 'prerequisite_missing',
           fallbackScreenId: 'desk_pass_help',
           fallbackRoute: '/(tabs)/workspace/support',
-          guidancePrompt: 'Passcode expired or not found. Request an invite link from your section teacher.',
+          guidancePrompt:
+            'Passcode expired or not found. Request an invite link from your section teacher.',
           recoveryAction: 'retry',
         },
       ],

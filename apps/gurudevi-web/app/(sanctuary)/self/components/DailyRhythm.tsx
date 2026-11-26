@@ -1,5 +1,3 @@
-'use client';
-
 import { Calendar, Clock, MapPin, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { type Period, useTimetable } from '../../../../lib/sanctuary/selfBrowserAdapters';
@@ -126,6 +124,7 @@ export function DailyRhythm({ userId, onClose }: DailyRhythmProps) {
             <input
               type="text"
               placeholder="Subject / Activity"
+              aria-label="Subject or Activity"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               className={styles.formInput}
@@ -134,12 +133,14 @@ export function DailyRhythm({ userId, onClose }: DailyRhythmProps) {
             <input
               type="text"
               placeholder="Room / Class Name"
+              aria-label="Room or Class Name"
               value={className}
               onChange={(e) => setClassName(e.target.value)}
               className={styles.formInput}
             />
             <select
               value={type}
+              aria-label="Period Type"
               onChange={(e) => setType(e.target.value as Period['type'])}
               className={styles.formSelect}
             >
@@ -153,12 +154,14 @@ export function DailyRhythm({ userId, onClose }: DailyRhythmProps) {
           <div className={styles.formRow}>
             <input
               type="time"
+              aria-label="Start Time"
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
               className={styles.formInput}
             />
             <input
               type="time"
+              aria-label="End Time"
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
               className={styles.formInput}

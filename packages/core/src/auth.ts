@@ -1,5 +1,5 @@
 import { SupabaseAuthAdapter } from '@repo/core/adapters/supabase/auth.adapter';
-import { AuthClient } from './logic/auth/AuthClient';
+import { AuthClient } from './logic/auth/AuthClient.adapter';
 import { supabaseIdentityAdapter as identity } from './adapters/supabaseIdentity.adapter';
 import { resetScopedStores } from '@repo/core/store/resetScopedStores';
 
@@ -138,7 +138,7 @@ export const authAPI = {
   onAuthStateChange(
     callback: (
       event: import('@repo/core/logic/ports/auth.port').AuthChangeEvent,
-      session: import('@repo/core/logic/ports/auth.port').AuthSession | null,
+      session: import('@repo/core/types/authSession').AuthSession | null,
     ) => void | Promise<void>,
   ) {
     return auth.onAuthStateChange(callback);

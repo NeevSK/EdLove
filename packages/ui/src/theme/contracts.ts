@@ -7,6 +7,7 @@
  * both, and an agent that learns one set has learned the other.
  */
 
+import type { FileKind, FileRef } from '@repo/core/logic/files/fileKind';
 import type { ComponentType, ReactNode } from 'react';
 import type { KitSize } from '../tokens/sizes';
 import type { SpaceDensity, SpaceRelation } from '../tokens/space';
@@ -124,6 +125,8 @@ export interface CardContract {
   /** An image or illustration; the card clips it to its corners. */
   media?: ReactNode;
   icon?: ComponentType<KitIconProps>;
+  /** Central emoji or glyph illustration (rendered in place of icon) */
+  emoji?: string;
   selected?: boolean;
   disabled?: boolean;
 }
@@ -204,29 +207,9 @@ export interface CarouselContract<T> {
   onPageChange?: (index: number) => void;
 }
 
-/** What kind of file something is (see `fileKindOf` in components/shared/files). */
-export type FileKind =
-  | 'image'
-  | 'audio'
-  | 'video'
-  | 'pdf'
-  | 'document'
-  | 'sheet'
-  | 'slides'
-  | 'markdown'
-  | 'text'
-  | 'archive'
-  | 'other';
-
-/** A file a component can show: where it is and what it is. */
-export interface FileRef {
-  name: string;
-  uri: string;
-  /** MIME type when known; otherwise the extension decides. */
-  mime?: string;
-  /** Bytes. */
-  size?: number;
-}
+// What kind of file something is, and a file a component can show: owned by core with the
+// file policy (`@repo/core/logic/files`).
+export type { FileKind, FileRef } from '@repo/core/logic/files/fileKind';
 
 /**
  * Long-form text in Markdown. The kit sets it in the world's prose; which
@@ -297,6 +280,24 @@ export interface DocumentContract {
   /** Shown when no adapter can draw this kind, and on failure. */
   onOpenElsewhere?: () => void;
 }
+
+/** Interactive H5P package rendered by an app-supplied host adapter. */
+export interface H5pAdapterProps {
+  /** Extracted H5P package base URL (ending in `/`) or `.h5p` pack identifier. */
+  packageUrl: string;
+  /** Optional shared libraries base URL. */
+  librariesUrl?: string;
+  /** Optional saved H5P state JSON string. */
+  previousState?: string;
+  /** Accessible title for the embedded player frame. */
+  title?: string;
+  onReady?: () => void;
+  onXapi?: (statement: unknown) => void;
+  onStateChange?: (state: string) => void;
+  onError?: (message: string) => void;
+}
+
+export type H5pContract = H5pAdapterProps;
 
 /**
  * A rating or agreement scale (Likert, 1–5 stars, 0–10). One choice from
@@ -490,18 +491,58 @@ export interface SheetContract {
   dismissable?: boolean;
 }
 
+/**
+ * A panel that slides in from a side edge over the current place: details beside a list, filters,
+ * a conversation next to its work. It covers the screen (the shell tucks its chrome away), keeps the
+ * place visible behind a scrim, and has no address of its own.
+ */
+export interface SidePanelContract {
+  open: boolean;
+  onClose: () => void;
+  /** The panel's name; shown as its heading. */
+  title: string;
+  children?: ReactNode;
+  /**
+   * The edge it comes from. `end` (the default) is the right in a left-to-right layout and the
+   * left in a right-to-left one; `start` is the other edge.
+   */
+  side?: 'start' | 'end';
+  /** When false, only `open` closes it: the scrim, Back, Escape and dragging do nothing. */
+  dismissable?: boolean;
+}
+
 export interface ToastAction {
   label: string;
   onPress: () => void;
 }
 
+/**
+ * How much room a toast takes. A `pill` is one short line, centred, for a quiet confirmation
+ * ("Saved"). A `card` carries a description or an action. A `banner` spans the top edge and stays
+ * until it is dismissed or resolved: offline, sync trouble, something that waits on the person.
+ */
+export type ToastSize = 'pill' | 'card' | 'banner';
+
 export interface ToastOptions {
   /** Already translated, one short sentence. */
   message: string;
+  /** A second, quieter line. */
+  description?: string;
   tone?: ToastTone;
+  /** Defaults to `card` when there is a description or an action, otherwise `pill`. */
+  size?: ToastSize;
   action?: ToastAction;
-  /** How long it stays, in ms. Toasts with an action stay longer by default. */
+  /** How long it stays, in ms; `Infinity` until dismissed. Banners stay by default. */
   durationMs?: number;
+  /**
+   * Identifies what the toast is about. Showing a toast with the same key updates the one already
+   * up instead of adding another; the same message again counts up (×2, ×3) rather than stacking.
+   */
+  key?: string;
+  /** Announced assertively and shown ahead of the queue, as danger toasts are. */
+  important?: boolean;
+  /** When false, it can't be swiped or tapped away; it leaves when resolved or dismissed in code. */
+  dismissible?: boolean;
 }
 
 export interface TooltipContract {
@@ -1744,3 +1785,34 @@ export interface ThemeSwitcherContract {
 
 
 
+
+export interface RadarAxis {
+  id: string;
+  /** Already translated ("Maths", "Caring for others"). */
+  label: string;
+}
+
+export interface RadarSeries {
+  id: string;
+  /** Already translated ("Now", "Start of term"). */
+  label: string;
+  /** 0 to 1 for each axis id. A missing axis is drawn at the centre and said aloud as "not yet". */
+  values: Readonly<Record<string, number>>;
+  /** `now` is lit; `then` is a quiet outline behind it, for comparing a person with their own past. */
+  emphasis?: 'now' | 'then';
+}
+
+/**
+ * Many dimensions of one person at once. The kit draws; it never decides what the axes or the
+ * values mean. Callers pass the person's own areas and their own evidence or self-rating, never a
+ * score computed about them or a comparison with others.
+ */
+export interface RadarContract {
+  axes: RadarAxis[];
+  series: RadarSeries[];
+  /** What the chart is, already translated ("Your areas, this term and last"). */
+  label: string;
+  /** Said for an axis with no value ("not yet"), already translated. */
+  missingLabel: string;
+  size?: number;
+}

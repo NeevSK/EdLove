@@ -51,17 +51,38 @@ packages have matured.
 
 | Package | Held at | Why | Re-check when |
 | --- | --- | --- | --- |
-| `@op-engineering/op-sqlite`, `@journeyapps/wa-sqlite`, `@powersync/*`, `expo-sqlite` | Current | Owner decision. These move together with the sync work | Sync connector is rebuilt |
-| `supabase` CLI | 2.x | Owner decision. 3.0 is a new major | Deliberate CLI migration |
+| `@op-engineering/op-sqlite`, `@journeyapps/wa-sqlite`, `@powersync/*`, `expo-sqlite` | Current | Owner decision. These move together with the sync work (`@powersync/react-native` also requires `op-sqlite <19.0.0`) | Sync connector is rebuilt |
 | `@babel/*` | 7.x | See [Babel 8](#babel-8) | Metro depends on `@babel/core ^8` |
-| `@react-native-async-storage/async-storage` | 2.2.0 | Expo SDK 58 expects exactly this. 3.x renames APIs and needs a device test because it holds auth data | Expo SDK moves, or a planned migration |
 | `@sentry/browser` | 10.x | `@sentry/react-native` is built on the 10 line; v11 would put two Sentry cores in one tree | `@sentry/react-native` moves to 11 |
 | `react-native-web` | 0.21 | Latest, and pulled in by Expo. Brings `inline-style-prefixer`, which looks old but is its latest (last published 2024) | RN Web is retired |
-| TypeScript 6 alias | `overrides` | ESLint and ZenStack tooling need the TS 6 API. Everything else is on 7 | Those tools support 7 |
+| TypeScript 6 alias | `overrides` | ESLint (typescript-eslint and `eslint-plugin-sonarjs`) and ZenStack tooling need the TS 6 API. Everything else is on 7. Without the sonarjs alias, ESLint crashes on every file (`TypeFlags` undefined) | Those tools support 7 |
 
 Duplicates that remain come from tools, not the app: `eas-cli` brings older `@expo/*` packages,
 `vercel` brings its own `esbuild`, `rolldown` and `@types/node`, and `@rozenite/ui` brings older
-`lucide-react` and `tailwindcss`.
+`lucide-react` and `tailwindcss`. `devalue`, `glob`, and `katex` are pinned via `pnpm-workspace.yaml` `overrides` (pulled by `astro`/`svelte`, `@expo/config`/`jest`/`rimraf`, and `react-native-enriched-markdown`/`remark-math` respectively).
+
+## Hono 5 everywhere
+
+Decided by the owner on 2026-11-11: nothing in the tree uses Hono 4. The API and `@repo/core`
+pin `hono` 5.0.0-rc.1 (the newest v5). `pnpm-workspace.yaml` overrides `hono` to 5.0.0-rc.1 and
+`@hono/node-server` to `^2.1.6` (the first line that accepts Hono 5) for every dependency.
+
+Some tools declare Hono 4 themselves and are forced onto 5 by that override. They use Hono only
+for HTTP serving, never for the stdio paths the repo runs:
+
+| Tool | Where it uses Hono | Checked on Hono 5 |
+| --- | --- | --- |
+| `@modelcontextprotocol/sdk` 1.26+ (via promptfoo, aislop, argent, sequential-thinking) | `server/streamableHttp.js` | `initialize` and a tool call over HTTP |
+| `@modelcontextprotocol/node` 2.x (via the Supabase MCP server) | Node HTTP adapter | Same round trip |
+| `@zenstackhq/cli` (`zen proxy` only) and `@zenstackhq/server/hono` | Proxy server | Needed a patch: Hono 5 removed `c.req.routePath`. `patches/@zenstackhq__server@3.10.1.patch` uses `routePath(c)` from `hono/route`. `zen generate` doesn't touch Hono |
+| promptfoo | `promptfoo mcp` over HTTP | Loads; same `getRequestListener` as the SDK |
+
+Re-check when Hono 5 is stable, when any of these tools publishes a version that accepts Hono 5
+(then remove the override for it), and whenever ZenStack moves (rebuild or drop the patch).
+
+## XState 6 beta
+
+`xstate@6.0.0-beta.2` and `@xstate/effect@1.0.0-beta.1`, exact pins, in every package that uses XState. Taken inside the 24-hour window with the owner's approval (2026-11-11); drop the `minimumReleaseAgeExclude` entries once both are older than a day. Persisted actors restore through `xstate/persist`; see the statechart ADR, section 6.
 
 ## Babel 8
 

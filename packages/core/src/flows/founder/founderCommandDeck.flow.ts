@@ -1,4 +1,4 @@
-import type { FeatureJTBDGraph } from '@repo/core/types/FlowDAG';
+import type { FeatureJTBDGraph } from '@repo/core/types/domainEntry';
 
 export const founderCommandDeckFlow: FeatureJTBDGraph = {
   featureId: 'platform.founder_cockpit',
@@ -32,7 +32,8 @@ export const founderCommandDeckFlow: FeatureJTBDGraph = {
           condition: 'permission_denied',
           fallbackScreenId: 'workspace_hub',
           fallbackRoute: '/(tabs)/workspace',
-          guidancePrompt: 'Founder command deck is restricted to sovereign platform stewards (founder, co-founder, director).',
+          guidancePrompt:
+            'Founder command deck is restricted to sovereign platform stewards (founder, co-founder, director).',
           recoveryAction: 'switch_role',
         },
       ],

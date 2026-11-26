@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { useSecurityControls } from '@/lib/sanctuary/useSecurityControls';
 import styles from './security.module.css';
 
@@ -20,7 +18,7 @@ export function SecurityFloor({
   return (
     <div className={styles.container}>
       <header className={styles.headerBar}>
-        <Link href="/profile">← Back to Profile</Link>
+        <Link to="/profile">← Back to Profile</Link>
         <h1>Account security</h1>
         <p>Review sign-in methods for {displayName} and verify sensitive account changes.</p>
       </header>
@@ -204,7 +202,7 @@ export function SecurityFloor({
           Device inventory, individual device revocation and passkey setup are not available here
           yet. This page does not assign a browser trust score.
         </p>
-        <Link href="/profile">Return to profile</Link>
+        <Link to="/profile">Return to profile</Link>
       </section>
     </div>
   );

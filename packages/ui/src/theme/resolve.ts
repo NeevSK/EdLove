@@ -10,12 +10,14 @@
 import { buildRecipes } from './build';
 import { alpha, legible, mix } from './color';
 import type {
+  ComfortSize,
   Phase,
   ResolvedWorld,
   WorldAccess,
   WorldDefinition,
   WorldId,
   WorldMode,
+  WorldRecipes,
   WorldTokens,
 } from './types';
 import { DEFAULT_WORLD, isWorldId, WORLDS } from './worlds';
@@ -65,29 +67,106 @@ function moreContrast(t: WorldTokens): WorldTokens {
   };
 }
 
+/**
+ * Sunlight: glare washes out mid-tones, so every ink moves most of the way to full strength
+ * (secondary 10:1, faint 7:1, lines 4.5:1) and the main ink reaches at least 15:1.
+ */
+export function sunlightTokens(t: WorldTokens): WorldTokens {
+  return {
+    ...t,
+    ink: legible(t.ink, '#000000', t.ground, 15),
+    inkSoft: legible(t.inkSoft, t.ink, t.ground, 10),
+    inkFaint: legible(t.inkFaint, t.ink, t.ground, 7),
+    line: legible(t.line, t.ink, t.ground, 4.5),
+  };
+}
+
+/** How much bigger or smaller the things you touch, and the air between them, become. */
+export const COMFORT_SCALE: Readonly<Record<ComfortSize, number>> = {
+  compact: 0.88,
+  standard: 1,
+  large: 1.22,
+};
+
+/** Keys whose numbers are sizes of touchable things or spacing (never type, radii or lines). */
+const COMFORT_KEYS = new Set([
+  'height',
+  'minHeight',
+  'padding',
+  'paddingX',
+  'paddingY',
+  'gap',
+  'indent',
+]);
+/** Numbers under these are left alone wherever they sit. */
+const COMFORT_SKIP = new Set(['text', 'radius', 'fontSize', 'lineHeight', 'shadow', 'glow']);
+
+function scaleTree(value: unknown, f: number, sizing: boolean): unknown {
+  if (typeof value === 'number') return sizing ? Math.round(value * f * 2) / 2 : value;
+  if (Array.isArray(value) || value === null || typeof value !== 'object') return value;
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+    out[k] = COMFORT_SKIP.has(k) ? v : scaleTree(v, f, sizing || COMFORT_KEYS.has(k));
+  }
+  return out;
+}
+
+/**
+ * Scales every control height, padding and gap in the recipes by `f`; type is left to the
+ * reading settings. Pure: the recipes passed in are not changed.
+ */
+export function scaleRecipes(recipes: WorldRecipes, f: number): WorldRecipes {
+  return scaleTree(recipes, f, false) as WorldRecipes;
+}
+
 export function resolveWorld(
   world: WorldId | WorldDefinition,
-  phase: Phase = 'morning',
-  mode: WorldMode = 'light',
+  clockPhase: Phase = 'morning',
+  clockMode: WorldMode = 'light',
   access: WorldAccess = STANDARD_ACCESS,
 ): ResolvedWorld {
+  // In sunlight the world wears its light palette at a neutral hour: dusk's warmth and night's
+  // dark both lose to glare.
+  const sun = access.sunlight === true;
+  const phase: Phase = sun ? 'morning' : clockPhase;
+  const mode: WorldMode = sun ? 'light' : clockMode;
   const definition =
     typeof world === 'string' ? WORLDS[isWorldId(world) ? world : DEFAULT_WORLD] : world;
-  const key = `${definition.id}:${phase}:${mode}:${access.contrast}:${access.transparency}`;
+  const size = access.size ?? 'standard';
+  const simple = access.simple === true;
+  const key = `${definition.id}:${phase}:${mode}:${access.contrast}:${access.transparency}:${size}:${simple}:${sun}`;
   const cached = typeof world === 'string' ? cache.get(key) : undefined;
   if (cached) return cached;
 
   const phased = phaseTokens(definition.palette[mode], mode, phase);
-  const more = access.contrast === 'more';
-  const solid = access.transparency === 'reduced';
-  const tokens = more ? moreContrast(phased) : phased;
+  const more = access.contrast === 'more' || sun;
+  const solid = access.transparency === 'reduced' || sun;
+  const tokens = sun ? sunlightTokens(phased) : more ? moreContrast(phased) : phased;
   const style = {
     ...definition.style,
-    ...(more ? { lineWeight: Math.max(1, definition.style.lineWeight) } : null),
-    ...(solid ? { material: { ...definition.style.material, light: 'none' as const } } : null),
+    ...(more || simple
+      ? { lineWeight: Math.max(sun ? 1.5 : 1, definition.style.lineWeight) }
+      : null),
+    ...(solid || simple
+      ? {
+          material: {
+            ...definition.style.material,
+            light: 'none' as const,
+            ...(simple ? { grain: 0 } : null),
+          },
+        }
+      : null),
+    // Simpler: the world keeps its colours, faces and corners, and drops its ornaments.
+    ...(simple
+      ? {
+          ornament: 'hairline' as const,
+          boundary: { dense: 'margin' as const, calm: 'margin' as const },
+        }
+      : null),
   };
   const built = buildRecipes(tokens, style, mode);
-  const refined = definition.refine ? definition.refine(built, tokens, mode) : built;
+  const shaped = definition.refine ? definition.refine(built, tokens, mode) : built;
+  const refined = size === 'standard' ? shaped : scaleRecipes(shaped, COMFORT_SCALE[size]);
   // Reduced transparency: the veils that let a screen or photo show through go solid.
   const recipes = solid
     ? {

@@ -50,6 +50,14 @@ export default defineConfig({
         replacement: path.resolve(import.meta.dirname, 'test-shims/expo-ui.tsx'),
       },
       {
+        find: /.*expo-glass-effect.*/,
+        replacement: path.resolve(import.meta.dirname, 'test-shims/glass.ts'),
+      },
+      {
+        find: 'react-native-skia',
+        replacement: path.resolve(import.meta.dirname, 'test-shims/skia.ts'),
+      },
+      {
         find: /^@repo\/ui\/(.*)$/,
         replacement: `${path.resolve(import.meta.dirname, '../ui/src')}/$1`,
       },
@@ -64,6 +72,10 @@ export default defineConfig({
       {
         find: '@repo/core',
         replacement: path.resolve(import.meta.dirname, '../core/src/index.ts'),
+      },
+      {
+        find: '@repo/verger-core',
+        replacement: path.resolve(import.meta.dirname, '../verger-core/src/index.ts'),
       },
       {
         find: '@cedar-policy/cedar-wasm/web',

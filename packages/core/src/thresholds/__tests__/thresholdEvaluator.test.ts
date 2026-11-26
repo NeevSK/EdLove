@@ -8,7 +8,7 @@ import {
   evaluateCascade,
   evaluateThreshold,
 } from '../thresholdEvaluator';
-import type { ThresholdCascade, ThresholdDefinition } from '../types';
+import type { ThresholdCascade, ThresholdDefinition } from '../../types/thresholds';
 
 describe('Threshold Mathematical Engine', () => {
   describe('calculateMatthewDivergence', () => {

@@ -1,17 +1,15 @@
 import { useReducedMotion } from '@repo/core/hooks/useAccessibility';
 import type { SelfViewFeature } from '@repo/self/components/BaseSelfView.types';
 import type { SelfNavigatorMode } from '@repo/self/hooks/useSelfNavigatorMode';
-import { EmptyState, ErrorState } from '@repo/ui/components/native';
-import { WaitingSign } from '@repo/ui/components/native';
-
 import { useBreakpoint, useResponsiveGrid } from '@repo/ui/components/layout';
-import { FlashList } from '@shopify/flash-list';
+import { EmptyState, ErrorState, WaitingSign } from '@repo/ui/components/native';
 import { Layers, LayoutGrid } from '@repo/ui/icons';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { tokens } from '@repo/ui/tokens';
 import { hapticLight, hapticMedium, hapticSelection } from '@repo/ui/utils/haptics';
+import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useState } from 'react';
-import { Platform, useWindowDimensions, View, Text, Pressable } from 'react-native';
+import { Platform, Pressable, Text, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { FadeIn, FadeOut, Layout } from 'react-native-reanimated';
 
@@ -159,7 +157,7 @@ export function SelfNavigator({
   if (isLoading) {
     return (
       <View className="py-8 items-center gap-3">
-        <WaitingSign size="sm" />
+        <WaitingSign size={20} />
         <Text className="text-xs font-semibold" style={{ color: tokens.colors.textMuted }}>
           Gathering your spaces…
         </Text>
@@ -169,7 +167,11 @@ export function SelfNavigator({
 
   if (error) {
     return (
-      <ErrorState title="Spaces are resting" message={error.message} retry={onRetry ? { label: "Try again", onPress: onRetry } : undefined} />
+      <ErrorState
+        title="Spaces are resting"
+        message={error.message}
+        retry={onRetry ? { label: 'Try again', onPress: onRetry } : undefined}
+      />
     );
   }
 

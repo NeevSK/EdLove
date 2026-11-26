@@ -7,7 +7,7 @@ import {
   burnFireJournalEntry,
   fetchFireJournalHistoryForView,
 } from '@repo/self/data/wellbeing.data';
-import type { FireJournalEntry } from '@repo/self/types';
+import type { FireJournalEntry } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const JOURNAL_CACHE_KEY = 'gurudevi-journal-cache';

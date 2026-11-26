@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import type { SelfFeatureManifestItem } from '@repo/self/features/catalog';
 import styles from '../self-floor.module.css';

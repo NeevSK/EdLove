@@ -15,7 +15,7 @@ vi.mock('react-native', () => ({
   ScrollView: 'ScrollView',
   Share: { share: vi.fn(async () => ({})) },
 }));
-vi.mock('expo-router', () => ({ router: { replace } }));
+vi.mock('expo-router', () => ({ router: { replace }, useRouter: () => ({ replace }) }));
 vi.mock('expo-application', () => ({ getAndroidId: () => 'install-1' }));
 vi.mock('@repo/core/native/storage', () => ({
   storage: {

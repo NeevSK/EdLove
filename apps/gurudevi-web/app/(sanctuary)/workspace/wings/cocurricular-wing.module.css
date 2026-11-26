@@ -37,11 +37,11 @@
 
 .sphereTag {
   display: inline-block;
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 0.2rem 0.5rem;
+  padding: 0.2rem 0.55rem;
   background: #fdf6ec;
   color: #b45309;
   border: 1px solid #fde68a;
@@ -86,10 +86,10 @@
 }
 
 .categoryBadge {
-  font-size: 0.7rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 0.15rem 0.4rem;
+  padding: 0.15rem 0.45rem;
   border-radius: 0.25rem;
   background: var(--color-paper, #f7f2e8);
   border: 1px solid var(--color-border, #e8ddd3);
@@ -100,7 +100,7 @@
 .metaRow {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   color: var(--color-ink-soft, #74675d);
 }
 
@@ -114,7 +114,7 @@
   border-left: 3px solid var(--color-gold-deep, #9a5b2d);
   border-radius: 0 0.5rem 0.5rem 0;
   padding: 0.6rem 0.75rem;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -126,7 +126,7 @@
 }
 
 .eventDetails {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--color-ink-soft, #74675d);
 }
 
@@ -142,9 +142,10 @@
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
+  min-height: 44px;
   padding: 0.45rem 0.75rem;
   border-radius: 0.5rem;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
   background: var(--color-surface, #fffdfa);

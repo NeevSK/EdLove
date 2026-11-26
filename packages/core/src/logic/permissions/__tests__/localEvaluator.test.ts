@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, expectTypeOf, it, test, vi } from 'vitest';
-import { checkLocalPermission, getLocalResourceAttributes } from '../localEvaluator';
+import { checkLocalPermission, getLocalResourceAttributes } from '../localEvaluator.adapter';
 
 // Mock database wrapper
 const mockDrizzle = {
@@ -19,7 +19,7 @@ vi.mock('../../../adapters/powersync/database', () => ({
   registerPermissionValidator: vi.fn(),
 }));
 
-vi.mock('../../../lib/security/deviceTrust', () => ({
+vi.mock('../../../lib/security/deviceTrust.adapter', () => ({
   DeviceTrustEngine: {
     checkDeviceTrustStatus: vi.fn(() => Promise.resolve(true)),
   },

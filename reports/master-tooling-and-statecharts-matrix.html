@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polymath Master Architecture, Statecharts & Documentation Hub (2026)</title>
+  <style>
+    :root[data-theme="dark"] {
+      --bg: #090d16;
+      --bg-alt: #0d1322;
+      --surface: #111827;
+      --surface-hover: #1f293d;
+      --border: #1f293d;
+      --border-subtle: #162032;
+      --text: #f3f4f6;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #7dd3fc;
+      --accent-alt: #818cf8;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --danger: #f87171;
+      --panel-bg: #0d121f;
+      --code-bg: #06090f;
+      --pill-bg: #1e293b;
+      --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+    }
+    :root[data-theme="light"] {
+      --bg: #f8fafc;
+      --bg-alt: #f1f5f9;
+      --surface: #ffffff;
+      --surface-hover: #f1f5f9;
+      --border: #e2e8f0;
+      --border-subtle: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --accent-alt: #6366f1;
+      --success: #10b981;
+      --warning: #d97706;
+      --danger: #ef4444;
+      --panel-bg: #ffffff;
+      --code-bg: #f8fafc;
+      --pill-bg: #e2e8f0;
+      --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    /* Top Navigation Header */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.65rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      z-index: 20;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .logo-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.01em;
+    }
+    .logo-badge .version {
+      font-size: 0.7rem;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      padding: 0.15rem 0.45rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.35rem;
+      background: var(--bg);
+      padding: 0.25rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+    .tab-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .tab-btn.active {
+      background: var(--surface);
+      color: var(--accent);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .theme-toggle-btn {
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .theme-toggle-btn:hover {
+      border-color: var(--accent);
+    }
+
+    /* Main Container & Split Layout */
+    .app-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 58px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .main-view {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.75rem 2rem;
+      transition: width 0.3s ease;
+    }
+
+    /* Side Panel */
+    .side-panel {
+      width: 0;
+      opacity: 0;
+      pointer-events: none;
+      background: var(--panel-bg);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+      overflow: hidden;
+      z-index: 10;
+      box-shadow: var(--shadow);
+    }
+    .side-panel.open {
+      width: 52%;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .side-panel.fullscreen {
+      width: 85%;
+    }
+
+    .panel-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+    .panel-header-left {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      gap: 0.2rem;
+    }
+    .panel-header-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .panel-meta {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      align-items: center;
+    }
+    .panel-meta-badge {
+      background: var(--pill-bg);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+    }
+    .panel-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .panel-btn {
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.75rem;
+      cursor: pointer;
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .panel-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      line-height: 1;
+    }
+    .close-btn:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    .panel-content {
+      flex: 1;
+      padding: 1.25rem 1.5rem;
+      overflow-y: auto;
+      font-size: 0.88rem;
+      background: var(--code-bg);
+      color: var(--text);
+    }
+    
+    /* Code Viewer */
+    pre.code-view {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      white-space: pre;
+      tab-size: 2;
+      overflow-x: auto;
+    }
+
+    /* Markdown Formatted Viewer */
+    .markdown-view {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.7;
+      color: var(--text);
+      max-width: 900px;
+    }
+    .markdown-view h1 { font-size: 1.6rem; color: var(--accent); margin: 1.5rem 0 0.8rem 0; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    .markdown-view h2 { font-size: 1.3rem; color: var(--accent-alt); margin: 1.25rem 0 0.6rem 0; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.3rem; }
+    .markdown-view h3 { font-size: 1.1rem; color: var(--text); margin: 1rem 0 0.4rem 0; }
+    .markdown-view p { margin-bottom: 0.9rem; }
+    .markdown-view ul, .markdown-view ol { margin: 0.5rem 0 1rem 1.5rem; }
+    .markdown-view li { margin-bottom: 0.3rem; }
+    .markdown-view blockquote {
+      border-left: 4px solid var(--accent);
+      padding: 0.6rem 1rem;
+      background: rgba(56, 189, 248, 0.08);
+      margin: 1rem 0;
+      border-radius: 0 6px 6px 0;
+      font-style: italic;
+    }
+    .markdown-view code {
+      font-family: ui-monospace, Menlo, Monaco, Consolas, monospace;
+      background: var(--pill-bg);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      color: var(--accent);
+    }
+    .markdown-view pre {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+    .markdown-view pre code {
+      background: transparent;
+      padding: 0;
+      color: var(--text);
+      font-size: 0.82rem;
+    }
+    .markdown-view table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: var(--surface);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .markdown-view th, .markdown-view td {
+      padding: 0.6rem 0.9rem;
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+      text-align: left;
+    }
+    .markdown-view th {
+      background: var(--surface-hover);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* TAB 1: MASTER MATRIX STYLING */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(129, 140, 248, 0.08) 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .hero-banner h2 {
+      font-size: 1.4rem;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .hero-banner p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 900px;
+    }
+
+    .critique-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .critique-card h3 {
+      font-size: 1.15rem;
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .critique-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+    .critique-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .critique-item h4 {
+      font-size: 1rem;
+      color: var(--text);
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      width: fit-content;
+    }
+    .tag.installed { background: rgba(52, 211, 153, 0.15); color: var(--success); border: 1px solid rgba(52, 211, 153, 0.3); }
+    .tag.analyzed { background: rgba(129, 140, 248, 0.15); color: var(--accent-alt); border: 1px solid rgba(129, 140, 248, 0.3); }
+    .tag.verified { background: rgba(56, 189, 248, 0.15); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.3); }
+
+    .critique-text {
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+    }
+    .critique-reality {
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: var(--text);
+      border-top: 1px dashed var(--border);
+      padding-top: 0.6rem;
+    }
+
+    table.matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.25rem;
+      background: var(--surface);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    table.matrix-table th, table.matrix-table td {
+      padding: 0.85rem 1.1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    table.matrix-table th {
+      background: var(--surface-hover);
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.73rem;
+      letter-spacing: 0.05em;
+    }
+    table.matrix-table tr:hover {
+      background: var(--surface-hover);
+    }
+    .clickable-link {
+      color: var(--accent);
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: 600;
+      transition: color 0.15s;
+    }
+    .clickable-link:hover {
+      color: var(--accent-hover);
+    }
+
+    /* TAB 2: DOCS & CODE DIRECTORY */
+    .search-bar-container {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      align-items: center;
+    }
+    .search-box {
+      flex: 1;
+      padding: 0.75rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.92rem;
+      transition: all 0.2s;
+    }
+    .search-box:focus {
+      outline: 2px solid var(--accent);
+      border-color: transparent;
+    }
+
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.75rem;
+    }
+    .cat-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .cat-pill:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+    .cat-pill.active {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .file-group {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .file-group-header {
+      padding: 0.85rem 1.25rem;
+      background: var(--surface-hover);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .file-group-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .file-group-count {
+      background: var(--pill-bg);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+    }
+    .file-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 0.6rem;
+      padding: 1rem;
+    }
+    .file-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.7rem 0.9rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.15s ease;
+    }
+    .file-card:hover {
+      background: var(--surface-hover);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .file-card-info {
+      overflow: hidden;
+    }
+    .file-card-name {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .file-card-path {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ext-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .ext-md { background: rgba(56, 189, 248, 0.15); color: var(--accent); }
+    .ext-yaml { background: rgba(251, 191, 36, 0.15); color: var(--warning); }
+    .ext-ts { background: rgba(129, 140, 248, 0.15); color: var(--accent-alt); }
+    .ext-c4 { background: rgba(52, 211, 153, 0.15); color: var(--success); }
+
+    /* TAB 3: HARMONIZATION GUIDE */
+    .layer-split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 900px) {
+      .layer-split-grid { grid-template-columns: 1fr; }
+    }
+    .layer-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+    .layer-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .layer-1-header { color: var(--warning); }
+    .layer-2-header { color: var(--accent); }
+    .seam-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .seam-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header>
+    <div class="header-left">
+      <div class="logo-badge">
+        <span>Polymath Engine Hub</span>
+        <span class="version">2026 Sovereign</span>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-btn-matrix" onclick="switchTab('matrix')">
+          <span>🏛️</span> Master Matrix & Reality Check
+        </button>
+        <button class="tab-btn" id="tab-btn-docs" onclick="switchTab('docs')">
+          <span>📚</span> Repo Docs & Code Index
+        </button>
+        <button class="tab-btn" id="tab-btn-harmonization" onclick="switchTab('harmonization')">
+          <span>⚖️</span> Two-Layer Harmonization Seam
+        </button>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="theme-toggle-btn" onclick="toggleTheme()" title="Switch Light/Dark Mode">
+        <span id="theme-icon">🌙</span> <span id="theme-text">Dark Mode</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <!-- Main Scrollable Content View -->
+    <div class="main-view" id="main-view">
+      
+      <!-- ========================================== -->
+      <!-- TAB 1: MASTER MATRIX & REALITY CHECK       -->
+      <!-- ========================================== -->
+      <div id="tab-matrix">
+        <div class="hero-banner">
+          <h2>Master Architecture & Statecharts Reality Check</h2>
+          <p>
+            Critical evaluation of the 2026 agent-friendly statechart ecosystem alongside the monorepo's two-layer reconciliation substrate. Grounded in actual package binaries and verified physical code seams.
+          </p>
+        </div>
+
+        <div class="critique-card">
+          <h3><span>🔍</span> The 2026 Agent-Friendly Statechart Ecosystem: Myth vs. Substrate Reality</h3>
+          <div class="critique-grid">
+            <div class="critique-item">
+              <span class="tag installed">Installed (@statelyai/agent@1.1.6)</span>
+              <h4>1. Stately Agent (`@statelyai/agent`)</h4>
+              <div class="critique-text">
+                <strong>The Claim:</strong> Constrains LLM loops within deterministic XState machines. The LLM cannot invent transitions; it can only propose an event, which the statechart validates or rejects.
+              </div>
+              <div class="critique-reality">
+                <strong>Substrate Reality:</strong> Prevents illegal <em>transitions</em>, but does zero validation of event <em>payload semantics</em> or physical screen presentation. Without coupling to physical routes (`NAVIGATION_POLICY`), the UX remains disconnected from reality.
+              </div>
+            </div>
+
+            <div class="critique-item">
+              <span class="tag analyzed">Analyzed / Bounded</span>
+              <h4>2. Formal Spec Skills (pstack / TLA+ / TLC)</h4>
+              <div class="critique-text">
+                <strong>The Claim:</strong> Mathematical proof of zero deadlocks before writing code; finds unreachable screens and emits Mermaid counterexamples straight into agent context.
+              </div>
+              <div class="critique-reality">
+                <strong>Substrate Reality:</strong> Indispensable for distributed consistency (e.g. SQLite outbox WAL transactions and auth handshakes). Too rigid and brittle for fluid mobile gesture physics, spring animations, and bottom sheet detents.
+              </div>
+            </div>
+
+            <div class="critique-item">
+              <span class="tag installed">Installed (@xstate/graph@3.0.4)</span>
+              <h4>3. Model-Based Testing (`@xstate/graph`)</h4>
+              <div class="critique-text">
+                <strong>The Claim:</strong> QA writes zero manual path tests; graph traverser tests 100% of statechart permutations and clicks automatically.
+              </div>
+              <div class="critique-reality">
+                <strong>Substrate Reality:</strong> The graph traverser generates path combinations, but <em>cannot generate assertions</em> out of thin air. It requires concrete Vitest/Playwright test harnesses wired to real DOM/Native elements.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+          <span>Exhaustive Tooling & Wiring Matrix</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">Click any underlined path to inspect in the side panel</span>
+        </h3>
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Layer & Category</th>
+              <th>Tool / Asset</th>
+              <th>Status / Origin</th>
+              <th>Location / File</th>
+              <th>Role Governed</th>
+              <th>Physical Seam & Wiring</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Layer 1: Intent</strong></td>
+              <td><code>pjc/*.yaml</code></td>
+              <td><span class="tag verified">Substrate</span></td>
+              <td><span class="clickable-link" onclick="openFile('packages/core/src/flows/pjc/pjc.catalog.yaml')">packages/core/src/flows/pjc/pjc.catalog.yaml</span></td>
+              <td>Product / BA</td>
+              <td>10 canonical YAML modules enriched with <code>purpose</code> and <code>presentation {compact, regular}</code>. Validated via <code>scripts/pjc.ts check</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>Layer 1: Intent</strong></td>
+              <td>OpenSpec</td>
+              <td><span class="tag installed">mise pnpm</span></td>
+              <td><code>devDependencies (@fission-ai/openspec@2.0.0)</code></td>
+              <td>Product / Agent</td>
+              <td>Authoritative change proposal engine. Generates delta specs in <code>openspec/</code> before committing to PJC YAML.</td>
+            </tr>
+            <tr>
+              <td><strong>Agent Statecharts</strong></td>
+              <td><code>@statelyai/agent</code></td>
+              <td><span class="tag installed">mise pnpm</span></td>
+              <td><code>node_modules (@statelyai/agent@1.1.6)</code></td>
+              <td>Autonomous Agent</td>
+              <td>Restricts agent actions to valid states inside deterministic statecharts. Emits visual replay logs.</td>
+            </tr>
+            <tr>
+              <td><strong>State Traversal</strong></td>
+              <td><code>@xstate/graph</code></td>
+              <td><span class="tag installed">mise pnpm</span></td>
+              <td><code>node_modules (@xstate/graph@3.0.4)</code></td>
+              <td>QA / Verification</td>
+              <td>Traverses statecharts and generates simple paths for model-based automated path verification.</td>
+            </tr>
+            <tr>
+              <td><strong>Architecture Topology</strong></td>
+              <td>LikeC4 Model</td>
+              <td><span class="tag verified">Substrate</span></td>
+              <td><span class="clickable-link" onclick="openFile('docs/architecture/model/gurudevi.c4')">docs/architecture/model/gurudevi.c4</span></td>
+              <td>Systems Architect</td>
+              <td>Validated via <code>likec4 validate</code>. Ingested into <code>ScoutService</code> for agent topology navigation.</td>
+            </tr>
+            <tr>
+              <td><strong>API Contract Linter</strong></td>
+              <td>Spectral Ruleset</td>
+              <td><span class="tag verified">Substrate</span></td>
+              <td><span class="clickable-link" onclick="openFile('.spectral.yaml')">.spectral.yaml</span></td>
+              <td>API / Protocol Eng</td>
+              <td>Governed by root <code>.spectral.yaml</code>. Enforces kebab-case URLs, descriptions, and error contracts.</td>
+            </tr>
+            <tr>
+              <td><strong>Layer 2: Execution</strong></td>
+              <td>Classroom Attendance Flow</td>
+              <td><span class="tag verified">Substrate</span></td>
+              <td><span class="clickable-link" onclick="openFile('packages/core/src/flows/classroom/teacherRollCall.flow.ts')">packages/core/src/flows/classroom/teacherRollCall.flow.ts</span></td>
+              <td>Core Runtime / Dev</td>
+              <td>15 live <code>FeatureJTBDGraph</code> flows with fallback routes, circadian triggers, and error branches.</td>
+            </tr>
+            <tr>
+              <td><strong>Layer 2: Physics</strong></td>
+              <td>Navigation Policy</td>
+              <td><span class="tag verified">Substrate</span></td>
+              <td><span class="clickable-link" onclick="openFile('packages/core/src/flows/navigationPolicy.ts')">packages/core/src/flows/navigationPolicy.ts</span></td>
+              <td>Design / UI Eng</td>
+              <td>Defines layout breakpoints, sheet detents <code>[0.5, 1.0]</code>, modals, panels, and NavOps.</td>
+            </tr>
+            <tr>
+              <td><strong>Execution Engine</strong></td>
+              <td>Flow Navigator</td>
+              <td><span class="tag verified">Substrate</span></td>
+              <td><span class="clickable-link" onclick="openFile('packages/core/src/flows/navigator.ts')">packages/core/src/flows/navigator.ts</span></td>
+              <td>Core Runtime</td>
+              <td>Pure function resolving <code>(flowId, stepId, context) -> ResolvedStep</code> with concrete routes and NavOps.</td>
+            </tr>
+            <tr>
+              <td><strong>Physical Route Catalog</strong></td>
+              <td>Generated Routes</td>
+              <td><span class="tag verified">Substrate</span></td>
+              <td><span class="clickable-link" onclick="openFile('packages/core/src/routing/routeCatalog.generated.ts')">packages/core/src/routing/routeCatalog.generated.ts</span></td>
+              <td>Compiler / Build</td>
+              <td>Mechanically compiled route trees from Expo 58 and TanStack Router file structures.</td>
+            </tr>
+            <tr>
+              <td><strong>Harmonization Seam</strong></td>
+              <td>Flow DAG Audit</td>
+              <td><span class="tag verified">Substrate</span></td>
+              <td><span class="clickable-link" onclick="openFile('scripts/audit-flow-dag.mjs')">scripts/audit-flow-dag.mjs</span></td>
+              <td>Reconciler</td>
+              <td>Verifies that live routes satisfy the <code>FeatureJTBDGraph</code> nodes, detecting unrendered steps.</td>
+            </tr>
+            <tr>
+              <td><strong>Two-Layer Guide</strong></td>
+              <td>Harmonization Doc</td>
+              <td><span class="tag verified">Substrate</span></td>
+              <td><span class="clickable-link" onclick="openFile('docs/architecture/2026-11-18-two-layer-harmonization-and-tool-registry.md')">docs/architecture/2026-11-18-two-layer-harmonization-and-tool-registry.md</span></td>
+              <td>Architecture Standard</td>
+              <td>Canonical guide explaining Intent vs. Reality and reconciliation mechanisms.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- TAB 2: REPO DOCS & CODE DIRECTORY         -->
+      <!-- ========================================== -->
+      <div id="tab-docs" style="display: none;">
+        <div class="hero-banner">
+          <h2>Repository Knowledge Base & Code Index</h2>
+          <p>
+            Complete directory of all 1,000+ architecture documents, decision records, PJC catalogs, flow graphs, LikeC4 models, agent skills, and reconciliation scripts. Click any file to inspect immediately in the side panel.
+          </p>
+        </div>
+
+        <div class="search-bar-container">
+          <input type="text" class="search-box" id="file-search" placeholder="Filter files by name, path or keyword (e.g. 'pjc', 'architecture', 'verger', 'attendance', 'powersync')..." oninput="filterFiles()">
+        </div>
+
+        <div class="category-pills" id="category-pills">
+          <button class="cat-pill active" onclick="selectCategory('ALL')">All Files (<span id="total-file-count">0</span>)</button>
+        </div>
+
+        <div id="files-container">Loading complete repository index...</div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- TAB 3: TWO-LAYER HARMONIZATION SEAM       -->
+      <!-- ========================================== -->
+      <div id="tab-harmonization" style="display: none;">
+        <div class="hero-banner">
+          <h2>Two-Layer Harmonization: Intent vs. Presentation Physics</h2>
+          <p>
+            Systems that treat specification and implementation as identical break because real user experiences have physical presentation constraints (bottom sheet detents, modals, layout breakpoints, offline states). Harmonization reconciles them without forcing false equivalences.
+          </p>
+        </div>
+
+        <div class="layer-split-grid">
+          <div class="layer-card">
+            <h3 class="layer-1-header"><span>📋</span> Layer 1: Intent & Assurance (Product / BA / QA)</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">
+              Declarative truth of what should exist. Written in PJC YAML, OpenAPI/OpenSpec, and Gherkin features. High-level, human-readable, and business-focused.
+            </p>
+            <ul class="seam-list">
+              <li class="seam-item">
+                <strong>Format:</strong> <code>packages/core/src/flows/pjc/*.yaml</code>
+                <div style="color: var(--text-muted); margin-top: 0.2rem;">Captures user journeys, roles, step purposes, and business preconditions.</div>
+              </li>
+              <li class="seam-item">
+                <strong>Purpose Field:</strong> <code>purpose: "take_attendance"</code>
+                <div style="color: var(--text-muted); margin-top: 0.2rem;">Explains why the step exists regardless of how the screen renders.</div>
+              </li>
+              <li class="seam-item">
+                <strong>Contract:</strong> <code>OpenSpec</code> delta proposals & Spectral OpenAPI linting.
+              </li>
+            </ul>
+          </div>
+
+          <div class="layer-card">
+            <h3 class="layer-2-header"><span>📱</span> Layer 2: Execution & Physics (Dev / UI Eng / Runtime)</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">
+              Physical truth of what actually happens on the screen. Written in TypeScript flows, navigation policies, gesture handlers, and route catalogs.
+            </p>
+            <ul class="seam-list">
+              <li class="seam-item">
+                <strong>Format:</strong> <code>*.flow.ts</code> + <code>navigationPolicy.ts</code>
+                <div style="color: var(--text-muted); margin-top: 0.2rem;">Captures layout modes (compact, regular), sheet detents <code>[0.5, 1.0]</code>, and transitions.</div>
+              </li>
+              <li class="seam-item">
+                <strong>Navigation Operations:</strong> <code>PUSH</code>, <code>REPLACE</code>, <code>SHEET</code>, <code>PANEL</code>, <code>MODAL</code>.
+                <div style="color: var(--text-muted); margin-top: 0.2rem;">Determines physical screen motion based on device viewport.</div>
+              </li>
+              <li class="seam-item">
+                <strong>Runtime Engine:</strong> <code>navigator.ts</code> resolving concrete routes against <code>routeCatalog.generated.ts</code>.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="critique-card" style="margin-top: 1.5rem;">
+          <h3><span>⚡</span> The Harmonization Seam in Action</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+            How the monorepo verifies alignment between Layer 1 Intent and Layer 2 Execution:
+          </p>
+          <div class="seam-item" style="margin-bottom: 0.75rem;">
+            <strong>1. PJC Validation (`scripts/pjc.ts check`):</strong> Verifies all 10 YAML modules conform to Zod hierarchy schema with valid steps and presentations.
+          </div>
+          <div class="seam-item" style="margin-bottom: 0.75rem;">
+            <strong>2. Flow DAG Audit (`scripts/audit-flow-dag.mjs`):</strong> Verifies that every step in active flows resolves to a real route without deadlocks.
+          </div>
+          <div class="seam-item">
+            <strong>3. Master Spec Pipeline (`pnpm run audit:spec-pipeline`):</strong> Runs OpenSpec, PJC, LikeC4, Spectral, and Route Catalog checks in one single command.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SLIDE-OUT SIDE PANEL (CODE & DOCS VIEWER)  -->
+    <!-- ========================================== -->
+    <div class="side-panel" id="side-panel">
+      <div class="panel-header">
+        <div class="panel-header-left">
+          <div class="panel-header-title" id="panel-title">File Preview</div>
+          <div class="panel-meta">
+            <span class="panel-meta-badge" id="panel-badge">DOC</span>
+            <span id="panel-meta-info">0 lines • 0 KB</span>
+          </div>
+        </div>
+        <div class="panel-header-actions">
+          <button class="panel-btn" id="toggle-view-btn" onclick="toggleMarkdownView()" style="display: none;" title="Toggle Formatted / Raw View">
+            <span id="toggle-view-icon">📄</span> <span id="toggle-view-label">Raw</span>
+          </button>
+          <button class="panel-btn" onclick="copyFilePath()" title="Copy Path to Clipboard">
+            📋 Path
+          </button>
+          <button class="panel-btn" onclick="copyFileContent()" title="Copy File Content">
+            📄 Copy
+          </button>
+          <button class="panel-btn" onclick="toggleMaximize()" title="Maximize / Split View">
+            ⛶
+          </button>
+          <button class="close-btn" onclick="closePanel()" title="Close (Esc)">✕</button>
+        </div>
+      </div>
+      <div class="panel-content" id="panel-content">
+        Select a file to inspect.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allFiles = [];
+    let selectedCategory = 'ALL';
+    let currentFile = null;
+    let isRenderedMarkdown = true;
+
+    // Theme Management
+    function initTheme() {
+      const saved = localStorage.getItem('polymath_theme') || 'dark';
+      applyTheme(saved);
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem('polymath_theme', next);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      const icon = document.getElementById('theme-icon');
+      const text = document.getElementById('theme-text');
+      if (icon && text) {
+        icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+        text.textContent = theme === 'dark' ? 'Dark Mode' : 'Light Mode';
+      }
+    }
+
+    // Tab Switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-matrix').style.display = 'none';
+      document.getElementById('tab-docs').style.display = 'none';
+      document.getElementById('tab-harmonization').style.display = 'none';
+
+      document.getElementById('tab-btn-' + tabId).classList.add('active');
+      document.getElementById('tab-' + tabId).style.display = 'block';
+
+      if (tabId === 'docs' && allFiles.length === 0) {
+        loadFiles();
+      }
+    }
+
+    // Load file index from server API
+    async function loadFiles() {
+      const container = document.getElementById('files-container');
+      container.innerHTML = '<div style="padding: 1rem; color: var(--text-muted)">Loading repository files...</div>';
+      try {
+        const res = await fetch('/api/files');
+        allFiles = await res.json();
+        document.getElementById('total-file-count').textContent = allFiles.length;
+        renderCategoryPills();
+        renderFiles();
+      } catch (err) {
+        container.innerHTML = '<div style="padding: 1rem; color: var(--danger)">Failed to load file index: ' + err.message + '</div>';
+      }
+    }
+
+    function renderCategoryPills() {
+      const pillsContainer = document.getElementById('category-pills');
+      const categories = {};
+      allFiles.forEach(f => {
+        categories[f.category] = (categories[f.category] || 0) + 1;
+      });
+
+      let html = `<button class="cat-pill ${selectedCategory === 'ALL' ? 'active' : ''}" onclick="selectCategory('ALL')">All Files (${allFiles.length})</button>`;
+      Object.keys(categories).forEach(cat => {
+        html += `<button class="cat-pill ${selectedCategory === cat ? 'active' : ''}" onclick="selectCategory('${cat.replace(/'/g, "\\'")}')">${cat} (${categories[cat]})</button>`;
+      });
+      pillsContainer.innerHTML = html;
+    }
+
+    function selectCategory(cat) {
+      selectedCategory = cat;
+      renderCategoryPills();
+      renderFiles();
+    }
+
+    function filterFiles() {
+      renderFiles();
+    }
+
+    function renderFiles() {
+      const container = document.getElementById('files-container');
+      const query = (document.getElementById('file-search')?.value || '').toLowerCase().trim();
+
+      const filtered = allFiles.filter(f => {
+        const matchesCat = selectedCategory === 'ALL' || f.category === selectedCategory;
+        const matchesQuery = !query || f.path.toLowerCase().includes(query) || f.name.toLowerCase().includes(query);
+        return matchesCat && matchesQuery;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted)">No files match your search criteria.</div>';
+        return;
+      }
+
+      // Group by category
+      const groups = {};
+      filtered.forEach(f => {
+        if (!groups[f.category]) groups[f.category] = [];
+        groups[f.category].push(f);
+      });
+
+      let html = '';
+      Object.keys(groups).forEach(cat => {
+        const list = groups[cat];
+        html += `
+          <div class="file-group">
+            <div class="file-group-header">
+              <span class="file-group-title"><span>📂</span> ${cat}</span>
+              <span class="file-group-count">${list.length} files</span>
+            </div>
+            <div class="file-grid">
+              ${list.map(f => `
+                <div class="file-card" onclick="openFile('${f.path}')" title="${f.path}">
+                  <div class="file-card-info">
+                    <div class="file-card-name">${f.name}</div>
+                    <div class="file-card-path">${f.path}</div>
+                  </div>
+                  <span class="ext-badge ext-${f.ext}">${f.ext}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // Open file in side panel
+    async function openFile(filePath) {
+      const panel = document.getElementById('side-panel');
+      const title = document.getElementById('panel-title');
+      const badge = document.getElementById('panel-badge');
+      const metaInfo = document.getElementById('panel-meta-info');
+      const content = document.getElementById('panel-content');
+      const toggleBtn = document.getElementById('toggle-view-btn');
+
+      panel.classList.add('open');
+      title.textContent = filePath;
+      badge.textContent = filePath.split('.').pop() || 'FILE';
+      metaInfo.textContent = 'Loading...';
+      content.innerHTML = '<div style="padding: 1rem; color: var(--text-muted);">Fetching file contents...</div>';
+
+      try {
+        const apiBase = (window.location.protocol === 'file:' || window.location.origin === 'null') 
+          ? 'http://localhost:4242' 
+          : '';
+        const res = await fetch(apiBase + '/api/file?path=' + encodeURIComponent(filePath));
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        currentFile = data;
+
+        metaInfo.textContent = `${data.lines} lines • ${(data.size / 1024).toFixed(1)} KB`;
+
+        const isMd = data.ext === 'md';
+        toggleBtn.style.display = isMd ? 'flex' : 'none';
+        isRenderedMarkdown = isMd;
+
+        renderPanelContent();
+      } catch (err) {
+        content.innerHTML = `
+          <div style="padding: 1.25rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); border-radius: 8px; margin: 1rem 0;">
+            <h4 style="color: var(--danger); margin: 0 0 0.5rem 0;">⚠️ Resource Inspection Notice</h4>
+            <p style="color: var(--text); font-size: 0.9rem; margin: 0 0 0.6rem 0;">
+              Could not fetch <code>${filePath}</code> (${err.message}).
+            </p>
+            <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin: 0 0 0.75rem 0;">
+              When opening static HTML files directly from disk, active endpoints require the Sovereign Portal server daemon.
+            </p>
+            <a href="http://localhost:4242/" target="_blank" style="display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(56, 189, 248, 0.15); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.3); padding: 0.4rem 0.85rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; text-decoration: none;">
+              🌐 Open Full Dev-Console at http://localhost:4242/ ↗
+            </a>
+          </div>
+        `;
+      }
+    }
+
+    function renderPanelContent() {
+      const content = document.getElementById('panel-content');
+      const toggleLabel = document.getElementById('toggle-view-label');
+      const toggleIcon = document.getElementById('toggle-view-icon');
+
+      if (!currentFile) return;
+
+      if (currentFile.ext === 'md' && isRenderedMarkdown) {
+        toggleLabel.textContent = 'Raw';
+        toggleIcon.textContent = '💻';
+        content.innerHTML = `<div class="markdown-view">${simpleMarkdownToHtml(currentFile.content)}</div>`;
+      } else {
+        toggleLabel.textContent = 'Formatted';
+        toggleIcon.textContent = '📄';
+        content.innerHTML = `<pre class="code-view"><code>${escapeHtml(currentFile.content)}</code></pre>`;
+      }
+    }
+
+    function toggleMarkdownView() {
+      isRenderedMarkdown = !isRenderedMarkdown;
+      renderPanelContent();
+    }
+
+    function toggleMaximize() {
+      document.getElementById('side-panel').classList.toggle('fullscreen');
+    }
+
+    function closePanel() {
+      document.getElementById('side-panel').classList.remove('open');
+      document.getElementById('side-panel').classList.remove('fullscreen');
+    }
+
+    function copyFilePath() {
+      if (!currentFile) return;
+      navigator.clipboard.writeText(currentFile.path).then(() => {
+        alert('Copied path: ' + currentFile.path);
+      });
+    }
+
+    function copyFileContent() {
+      if (!currentFile) return;
+      navigator.clipboard.writeText(currentFile.content).then(() => {
+        alert('File content copied to clipboard (' + currentFile.lines + ' lines).');
+      });
+    }
+
+    // Escape HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Simple robust client-side markdown renderer
+    function simpleMarkdownToHtml(md) {
+      if (!md) return '';
+      let html = md;
+
+      // Escape raw HTML first
+      html = escapeHtml(html);
+
+      // Fenced code blocks
+      html = html.replace(/```([a-zA-Z0-9_\-]+)?\n([\s\S]*?)```/g, function(match, lang, code) {
+        return `<pre><code>${code}</code></pre>`;
+      });
+
+      // Headers
+      html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+      html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+      html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+
+      // Blockquotes
+      html = html.replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>');
+
+      // Bold & Italic
+      html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+      // Inline code
+      html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      // Bullet lists
+      html = html.replace(/^\s*-\s+(.*$)/gim, '<li>$1</li>');
+      html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+
+      // Paragraphs
+      html = html.split('\n\n').map(p => {
+        p = p.trim();
+        if (p.startsWith('<h') || p.startsWith('<pre') || p.startsWith('<ul') || p.startsWith('<block')) return p;
+        return `<p>${p.replace(/\n/g, '<br>')}</p>`;
+      }).join('\n');
+
+      return html;
+    }
+
+    // Keyboard shortcut Esc to close panel
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closePanel();
+    });
+
+    // Initialize on load
+    initTheme();
+  </script>
+</body>
+</html>

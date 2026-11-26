@@ -1,5 +1,5 @@
-import { defineFeatureLifecycle } from '@repo/core/logic/registry/domainEntry';
 import type { DomainFeature } from '@repo/core/types';
+import { defineFeatureLifecycle } from '@repo/core/types/domainEntry';
 
 const AI_BETA_LIFECYCLE = defineFeatureLifecycle({
   owner: 'ai',

@@ -1,7 +1,4 @@
-'use client';
-
-import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 import { LanguagePicker } from '@repo/ui/components/web';
 import { DiurnalThemeToggle } from './DiurnalThemeToggle';
@@ -59,16 +56,17 @@ export function GatewayHeader({
     >
       <Link
         className="flex items-center gap-2.5 group no-underline text-[var(--ink)] rounded-full focus-visible:outline-2 focus-visible:outline-[var(--w-focus,var(--color-sanctuary-saffron))] focus-visible:outline-offset-2 transition-transform duration-150"
-        href={homeHref}
+        to={homeHref}
         aria-label={`${t('brand.name')} welcome`}
       >
         <div className="w-8 h-8 rounded-full bg-[var(--paper-light)] border border-[var(--line)] flex items-center justify-center p-1.5 transition-transform duration-200 group-hover:scale-105 shadow-xs">
-          <Image
+          <img
             src="/gurudevi-mark.svg"
             alt=""
             width={20}
             height={20}
-            priority
+            fetchPriority="high"
+            decoding="async"
             className="w-5 h-5 object-contain"
           />
         </div>

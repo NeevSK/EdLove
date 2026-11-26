@@ -9,7 +9,7 @@ export default defineConfig({
     sharedViteServer: true,
     globals: true,
     environment: 'node',
-    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    include: ['src/**/*.{test,spec}.{ts,tsx}', 'tests/**/*.{test,spec}.{ts,tsx}'],
     passWithNoTests: true,
   },
 });

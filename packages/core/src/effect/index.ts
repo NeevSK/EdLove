@@ -1,4 +1,5 @@
-import { Effect, pipe } from 'effect';
+import * as Effect from 'effect/Effect';
+import { pipe } from 'effect/Function';
 import { normalizeError, reportBestEffort, runForkBestEffort, runToPromise } from './Runtime';
 
 /**
@@ -13,6 +14,8 @@ import { normalizeError, reportBestEffort, runForkBestEffort, runToPromise } fro
  * - @repo/core/effect/layers    — Dependency injection layers
  */
 
+// ─── 3. Runtime Boundaries & Adapters ────────────────────────────────
+export { AppLayer, type AppServices, appRuntime, TelemetryLoggerLayer } from './AppRuntime';
 // ─── 2. Tagged Domain Errors ─────────────────────────────────────────
 export {
   DatabaseQueryError,
@@ -23,10 +26,14 @@ export {
   SyncTableError,
   UnauthorizedError,
 } from './Errors';
-// ─── 3. Runtime Boundaries & Adapters ────────────────────────────────
 export { normalizeError, reportBestEffort, runForkBestEffort, runToPromise } from './Runtime';
 // ─── 1. Canonical Schedules ──────────────────────────────────────────
-export { defaultRetryPolicy, retryPolicy, strictRetryPolicy } from './Schedules';
+export {
+  defaultRetryPolicy,
+  retryPolicy,
+  retryTransient,
+  strictRetryPolicy,
+} from './Schedules';
 
 /**
  * Shared Promise-to-Effect adapter for fallible I/O.

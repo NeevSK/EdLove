@@ -23,13 +23,15 @@ export type AuthRouteInput = {
   onboardingCompleted: boolean;
   hasActiveCapacity?: boolean;
   hasActiveAccessToken?: boolean;
+  isOfflineWithVerifiedProfile?: boolean;
   hasSession?: boolean;
   hasLocalGuestSession?: boolean;
+  hasRememberedAccounts?: boolean;
   guestOnboardingIntent?: boolean;
   appEntryPath?: AppEntryPath;
 };
 
-export type AppEntryPath = '/self' | '/workspace';
+export type AppEntryPath = '/self' | '/workspace' | '/library' | '/community' | '/profile';
 
 export function getAuthRouteDecision(params: AuthRouteInput): RouteDecision {
   return getAuthRouteTarget(params).decision;
@@ -42,12 +44,12 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     pathname === '/welcome' ||
     pathname === '/auth' ||
     pathname === '/auth/callback' ||
-    pathname === '/onboarding' ||
     pathname.startsWith('/public-form');
   const isAppEntryPath = pathname === '/' || pathname === '/auth' || pathname === '/auth/callback';
   const isOnboardingPath = pathname === '/onboarding';
   const isAccountRecoveryPath = pathname === '/account-recovery';
   const appEntryPath = params.appEntryPath ?? '/self';
+  const publicEntryPath = params.hasRememberedAccounts ? '/auth' : '/welcome';
 
   if (state === 'booting') {
     return {
@@ -67,12 +69,12 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     if (params.sessionMode !== 'anonymous' && !params.hasLocalGuestSession) {
       return {
         decision: 'public',
-        redirectTo: '/welcome',
+        redirectTo: publicEntryPath,
         policy: {
           state: 'public',
-          entryPoint: 'welcome',
+          entryPoint: params.hasRememberedAccounts ? 'auth' : 'welcome',
           reason: 'no-session',
-          redirectTo: '/welcome',
+          redirectTo: publicEntryPath,
           canRenderCurrentPath: false,
         },
       };
@@ -93,12 +95,12 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     }
 
     return {
-      decision: 'public',
+      decision: 'onboarding',
       redirectTo: null,
       policy: {
-        state: 'public',
+        state: 'onboarding-needed',
         entryPoint: 'onboarding',
-        reason: 'already-public',
+        reason: 'needs-onboarding',
         redirectTo: null,
         canRenderCurrentPath: true,
       },
@@ -108,16 +110,16 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
   if (state === 'public') {
     return {
       decision: 'public',
-      redirectTo: isPublicPath ? null : '/welcome',
+      redirectTo: isPublicPath ? null : publicEntryPath,
       policy: {
         state,
         entryPoint: pathname.startsWith('/public-form')
           ? 'public-form'
-          : pathname === '/auth'
+          : pathname === '/auth' || (!isPublicPath && params.hasRememberedAccounts)
             ? 'auth'
             : 'welcome',
         reason: isPublicPath ? 'already-public' : 'no-session',
-        redirectTo: isPublicPath ? null : '/welcome',
+        redirectTo: isPublicPath ? null : publicEntryPath,
         canRenderCurrentPath: isPublicPath,
       },
     };
@@ -151,7 +153,7 @@ export function getAuthRouteTarget(params: AuthRouteInput): RouteTarget {
     };
   }
 
-  if (params.sessionMode === 'anonymous') {
+  if (params.sessionMode === 'anonymous' || params.hasLocalGuestSession) {
     if (pathname === '/auth' || pathname === '/auth/callback') {
       return {
         decision: 'public',
@@ -188,7 +190,17 @@ export function isPublicBootstrapRoute(pathname: string): boolean {
     pathname === '/welcome' ||
     pathname === '/auth' ||
     pathname === '/auth/callback' ||
-    pathname === '/onboarding' ||
     pathname.startsWith('/public-form')
   );
+}
+
+/**
+ * Whether the app's own routes (the tabs and their modals) may render. The router enforces this
+ * through `Stack.Protected`, so a protected screen never mounts for a person who isn't admitted:
+ * during booting, sign-out, inactive-account, or unfinished onboarding, the guard stays closed.
+ * Launch deep links are preserved in `pendingIntentStore` by `+native-intent.tsx` and replayed
+ * once `decision === 'app'`.
+ */
+export function admitsAppRoutes(decision: RouteDecision): boolean {
+  return decision === 'app';
 }

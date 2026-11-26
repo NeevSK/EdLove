@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import styles from './claim.module.css';
@@ -111,10 +109,10 @@ export function ClaimSpotFloor({ mode, subjectId }: ClaimSpotFloorProps) {
             </div>
 
             <div className={styles.actionsRow}>
-              <Link href="/self" className={styles.primaryLink}>
+              <Link to="/self" className={styles.primaryLink}>
                 Open Student Studio & Journal →
               </Link>
-              <Link href="/workspace" className={styles.secondaryLink}>
+              <Link to="/workspace" className={styles.secondaryLink}>
                 View Class Workspace
               </Link>
             </div>

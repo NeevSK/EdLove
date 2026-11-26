@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useState } from 'react';
 import styles from './forest.module.css';
 
@@ -90,7 +88,7 @@ export function SchoolForestFloor({ displayName, capacity }: Readonly<SchoolFore
         <div className={styles.titleArea}>
           <div style={{ marginBottom: '0.5rem' }}>
             <Link
-              href="/community"
+              to="/community"
               style={{
                 fontSize: '0.8rem',
                 fontWeight: 650,

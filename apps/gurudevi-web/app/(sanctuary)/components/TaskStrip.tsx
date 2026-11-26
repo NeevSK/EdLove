@@ -1,5 +1,3 @@
-'use client';
-
 import type { WorkbenchTaskDescriptor } from '@repo/core/types';
 import { createPortal } from 'react-dom';
 import type { QuickAccessUsage } from '../../../lib/workbench/quickAccessPreferences';

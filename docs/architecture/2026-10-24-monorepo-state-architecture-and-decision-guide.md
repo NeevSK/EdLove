@@ -8,7 +8,11 @@ scribe: "Antigravity"
 tags: [architecture, state-management, zustand, react-context, singleton, decision-guide, canon]
 ---
 
+> **Status 2026-11-12:** the "Singleton Service" option is superseded by coordinators (`*.coordinator.ts`) and bindings (`effect/bindings/*`); see [the mental model](2026-11-12-architecture-mental-model.md) and [State, effects and hooks](2026-11-12-state-effects-hooks-and-capabilities.md). The Context-versus-Zustand guidance still applies.
+
 # Monorepo State & Architecture Separation Guidance
+
+> **Updated 2026-11-11.** Read [product shape and tool ownership](2026-11-11-product-shape-and-tool-ownership.md) first. It keeps this document's decision and adds errors, the Effect runtime, the authority read and current versions; where they differ, it wins.
 
 > **"Reasoning is the weapon, reality is the ammunition."**  
 > Software performance decays when concerns are conflated. When global data is forced into React component trees, re-renders explode; when hardware actions are trapped in hooks, background threads fail. This document defines the definitive decision matrix for the Polymath / Gurudevi platform.

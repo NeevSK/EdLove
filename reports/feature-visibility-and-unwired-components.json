@@ -1,0 +1,4333 @@
+{
+  "summary": {
+    "totalScreensScanned": 310,
+    "totalComponentsScanned": 611,
+    "wiredComponentsCount": 294,
+    "unwiredComponentsCount": 317,
+    "visibilityViolationsCount": 0
+  },
+  "visibilityViolations": [],
+  "unwiredComponents": [
+    {
+      "name": "AccessibleTouchable",
+      "path": "packages/ui/src/components/AccessibleTouchable.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "AccountPinModal",
+      "path": "packages/ui/src/components/AccountPinModal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "AchievementUnlockOverlay",
+      "path": "packages/ui/src/components/AchievementUnlockOverlay.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "AdaptiveLayout",
+      "path": "packages/ui/src/components/AdaptiveLayout.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "AuthorizeDeviceModal",
+      "path": "packages/ui/src/components/AuthorizeDeviceModal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "BondBadge",
+      "path": "packages/ui/src/components/BondBadge.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "BrandedEmptyState",
+      "path": "packages/ui/src/components/BrandedEmptyState.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "BreathAnimation",
+      "path": "packages/ui/src/components/BreathAnimation.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "BreathingLoader",
+      "path": "packages/ui/src/components/BreathingLoader.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "CelebrationOverlay",
+      "path": "packages/ui/src/components/CelebrationOverlay.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ChatComposer",
+      "path": "packages/ui/src/components/ChatComposer.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "CollectionCard",
+      "path": "packages/ui/src/components/CollectionCard.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "CommercialBatchModal",
+      "path": "packages/ui/src/components/CommercialBatchModal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ConflictResolver",
+      "path": "packages/ui/src/components/ConflictResolver.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ContentComposer",
+      "path": "packages/ui/src/components/ContentComposer.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ConversationSheet",
+      "path": "packages/ui/src/components/ConversationSheet.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "DeleteAccountModal",
+      "path": "packages/ui/src/components/DeleteAccountModal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "DerivedHistoryView",
+      "path": "packages/ui/src/components/DerivedHistoryView.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "DeviceSecurityCenter",
+      "path": "packages/ui/src/components/DeviceSecurityCenter.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "DeviceSecurityCenter.web",
+      "path": "packages/ui/src/components/DeviceSecurityCenter.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "DomainSubHeader",
+      "path": "packages/ui/src/components/DomainSubHeader.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "EaseView",
+      "path": "packages/ui/src/components/EaseView.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "EaseView.web",
+      "path": "packages/ui/src/components/EaseView.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "EntityModal",
+      "path": "packages/ui/src/components/EntityModal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "EntityModal.web",
+      "path": "packages/ui/src/components/EntityModal.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "EntityView",
+      "path": "packages/ui/src/components/EntityView.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "EnvironmentGuard",
+      "path": "packages/ui/src/components/EnvironmentGuard.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "FeatureDiscoveryModal",
+      "path": "packages/ui/src/components/FeatureDiscoveryModal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "FeatureInfoIcon",
+      "path": "packages/ui/src/components/FeatureInfoIcon.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "FireflyFeedbackScene",
+      "path": "packages/ui/src/components/FireflyFeedbackScene.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "FireflyMascot",
+      "path": "packages/ui/src/components/FireflyMascot.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "FireflyProductMoment",
+      "path": "packages/ui/src/components/FireflyProductMoment.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "FocusRing",
+      "path": "packages/ui/src/components/FocusRing.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "FocusRing.web",
+      "path": "packages/ui/src/components/FocusRing.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "FounderGlow",
+      "path": "packages/ui/src/components/FounderGlow.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "GatewayFooter.web",
+      "path": "packages/ui/src/components/GatewayFooter.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "GatewayHeader.web",
+      "path": "packages/ui/src/components/GatewayHeader.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "GatewayScreenShell.web",
+      "path": "packages/ui/src/components/GatewayScreenShell.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "GlobalHeader",
+      "path": "packages/ui/src/components/GlobalHeader.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "GlobalHeader.web",
+      "path": "packages/ui/src/components/GlobalHeader.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "GuestDataSyncModal",
+      "path": "packages/ui/src/components/GuestDataSyncModal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "HeroBanner",
+      "path": "packages/ui/src/components/HeroBanner.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "HorizontalChipRow",
+      "path": "packages/ui/src/components/HorizontalChipRow.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "IdentityCard",
+      "path": "packages/ui/src/components/IdentityCard.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "InteractiveRadarChart",
+      "path": "packages/ui/src/components/InteractiveRadarChart.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "InternalBrowser",
+      "path": "packages/ui/src/components/InternalBrowser.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "InternalBrowser.web",
+      "path": "packages/ui/src/components/InternalBrowser.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "JourneyErrorBoundary",
+      "path": "packages/ui/src/components/JourneyErrorBoundary.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "JourneyHistoryCard",
+      "path": "packages/ui/src/components/JourneyHistoryCard.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "LifecycleMonitor",
+      "path": "packages/ui/src/components/LifecycleMonitor.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "LinkWardModal",
+      "path": "packages/ui/src/components/LinkWardModal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "LivingFirefly",
+      "path": "packages/ui/src/components/LivingFirefly.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "LivingGlow",
+      "path": "packages/ui/src/components/LivingGlow.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "LoadingOverlay",
+      "path": "packages/ui/src/components/LoadingOverlay.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "LogoutModal",
+      "path": "packages/ui/src/components/LogoutModal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "LotusDropdown",
+      "path": "packages/ui/src/components/LotusDropdown.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "LotusLoader",
+      "path": "packages/ui/src/components/LotusLoader.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "LotusPetalFAB",
+      "path": "packages/ui/src/components/LotusPetalFAB.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "MapProvider",
+      "path": "packages/ui/src/components/maps/MapProvider.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "UnifiedMapView",
+      "path": "packages/ui/src/components/maps/UnifiedMapView.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "UnifiedMapView.web",
+      "path": "packages/ui/src/components/maps/UnifiedMapView.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "UnifiedMarker",
+      "path": "packages/ui/src/components/maps/UnifiedMarker.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "UnifiedMarker.web",
+      "path": "packages/ui/src/components/maps/UnifiedMarker.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "MascotPod",
+      "path": "packages/ui/src/components/MascotPod.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "AssetCollectionPicker",
+      "path": "packages/ui/src/components/media/AssetCollectionPicker.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "AssetCreationPortal",
+      "path": "packages/ui/src/components/media/AssetCreationPortal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "AssetShareModal",
+      "path": "packages/ui/src/components/media/AssetShareModal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "PdfViewer",
+      "path": "packages/ui/src/components/media/PdfViewer.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ResourceActionSheet",
+      "path": "packages/ui/src/components/media/ResourceActionSheet.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ResourceCard",
+      "path": "packages/ui/src/components/media/ResourceCard.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "UniversalDocumentPortal",
+      "path": "packages/ui/src/components/media/UniversalDocumentPortal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "VideoPlayer.web",
+      "path": "packages/ui/src/components/media/VideoPlayer.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "AgentCards",
+      "path": "packages/ui/src/components/native/Agent/AgentCards.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ButtonPulse",
+      "path": "packages/ui/src/components/native/Button/ButtonPulse.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "Scrim",
+      "path": "packages/ui/src/components/native/Dialog/Scrim.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "Keypad",
+      "path": "packages/ui/src/components/native/Keyboard/Keypad.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "TypingBar",
+      "path": "packages/ui/src/components/native/Keyboard/TypingBar.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "Launcher",
+      "path": "packages/ui/src/components/native/Launcher/Launcher.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "TwoPane",
+      "path": "packages/ui/src/components/native/Layout/TwoPane.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "EnrichedMarkdownAdapter",
+      "path": "packages/ui/src/components/native/Media/EnrichedMarkdownAdapter.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "EnrichedRichTextAdapter",
+      "path": "packages/ui/src/components/native/Media/EnrichedRichTextAdapter.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ExpoVideoAdapter",
+      "path": "packages/ui/src/components/native/Media/ExpoVideoAdapter.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "FileCard",
+      "path": "packages/ui/src/components/native/Media/FileCard.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "WorldMoment",
+      "path": "packages/ui/src/components/native/Moment/WorldMoment.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "Perch",
+      "path": "packages/ui/src/components/native/Perch/Perch.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "Radar",
+      "path": "packages/ui/src/components/native/Radar/Radar.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SceneWeather",
+      "path": "packages/ui/src/components/native/Scene/SceneWeather.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SettingsRows",
+      "path": "packages/ui/src/components/native/Settings/SettingsRows.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "WorldTabBar",
+      "path": "packages/ui/src/components/native/Shell/WorldTabBar.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ArtLife",
+      "path": "packages/ui/src/components/native/Stage/ArtLife.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ArtStill",
+      "path": "packages/ui/src/components/native/Stage/ArtStill.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "CompanionOnFloor",
+      "path": "packages/ui/src/components/native/Stage/CompanionOnFloor.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "FloorOverlays",
+      "path": "packages/ui/src/components/native/Stage/FloorOverlays.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "StageContext",
+      "path": "packages/ui/src/components/native/Stage/StageContext.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "WorldFloor",
+      "path": "packages/ui/src/components/native/Stage/WorldFloor.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SwipeRow",
+      "path": "packages/ui/src/components/native/SwipeRow/SwipeRow.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "DateTravel",
+      "path": "packages/ui/src/components/native/Time/DateTravel.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "TimeDial",
+      "path": "packages/ui/src/components/native/Time/TimeDial.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "NetworkStatusBanner",
+      "path": "packages/ui/src/components/NetworkStatusBanner.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "NotificationDrawer",
+      "path": "packages/ui/src/components/NotificationDrawer.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "NotificationSettingsPanel",
+      "path": "packages/ui/src/components/NotificationSettingsPanel.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "PollWidget",
+      "path": "packages/ui/src/components/PollWidget.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "PositiveInvitation",
+      "path": "packages/ui/src/components/PositiveInvitation.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "PostCard",
+      "path": "packages/ui/src/components/PostCard.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "PredictiveButton",
+      "path": "packages/ui/src/components/PredictiveButton.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "PressableScale",
+      "path": "packages/ui/src/components/PressableScale.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ProgressIndicator",
+      "path": "packages/ui/src/components/ProgressIndicator.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SchoolJoinPrompt",
+      "path": "packages/ui/src/components/prompts/SchoolJoinPrompt.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SignupPrompt",
+      "path": "packages/ui/src/components/prompts/SignupPrompt.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "UpgradePrompt",
+      "path": "packages/ui/src/components/prompts/UpgradePrompt.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "QRCodeGenerator",
+      "path": "packages/ui/src/components/QRCodeGenerator.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ResonantHeatmap",
+      "path": "packages/ui/src/components/ResonantHeatmap.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SafeButton",
+      "path": "packages/ui/src/components/SafeButton.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryBackground",
+      "path": "packages/ui/src/components/SanctuaryBackground.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryCard",
+      "path": "packages/ui/src/components/SanctuaryCard.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryCarousel",
+      "path": "packages/ui/src/components/SanctuaryCarousel.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryChatScrollView",
+      "path": "packages/ui/src/components/SanctuaryChatScrollView.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryChip",
+      "path": "packages/ui/src/components/SanctuaryChip.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryDoorwayActions",
+      "path": "packages/ui/src/components/SanctuaryDoorwayActions.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryFlashList",
+      "path": "packages/ui/src/components/SanctuaryFlashList.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryFlashList.web",
+      "path": "packages/ui/src/components/SanctuaryFlashList.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryGlobalStyles",
+      "path": "packages/ui/src/components/SanctuaryGlobalStyles.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryGuard",
+      "path": "packages/ui/src/components/SanctuaryGuard.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryInput",
+      "path": "packages/ui/src/components/SanctuaryInput.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryLegendList",
+      "path": "packages/ui/src/components/SanctuaryLegendList.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryLegendList.web",
+      "path": "packages/ui/src/components/SanctuaryLegendList.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryModal",
+      "path": "packages/ui/src/components/SanctuaryModal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryModal.web",
+      "path": "packages/ui/src/components/SanctuaryModal.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryNudge",
+      "path": "packages/ui/src/components/SanctuaryNudge.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryProgressBar",
+      "path": "packages/ui/src/components/SanctuaryProgressBar.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryRealmSelector",
+      "path": "packages/ui/src/components/SanctuaryRealmSelector.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuarySignal",
+      "path": "packages/ui/src/components/SanctuarySignal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryStatsCard",
+      "path": "packages/ui/src/components/SanctuaryStatsCard.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryTable",
+      "path": "packages/ui/src/components/SanctuaryTable.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryTable.web",
+      "path": "packages/ui/src/components/SanctuaryTable.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryToast.web",
+      "path": "packages/ui/src/components/SanctuaryToast.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SanctuaryVirtualTable.web",
+      "path": "packages/ui/src/components/SanctuaryVirtualTable.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SandboxBanner",
+      "path": "packages/ui/src/components/SandboxBanner.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ScreenWrapper",
+      "path": "packages/ui/src/components/ScreenWrapper.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ScreenWrapper.web",
+      "path": "packages/ui/src/components/ScreenWrapper.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SettingsGroup",
+      "path": "packages/ui/src/components/SettingsGroup.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "Skeleton",
+      "path": "packages/ui/src/components/Skeleton.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "Skeleton.web",
+      "path": "packages/ui/src/components/Skeleton.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SkeletonLoader",
+      "path": "packages/ui/src/components/SkeletonLoader.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SkeletonLoader.web",
+      "path": "packages/ui/src/components/SkeletonLoader.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SkiaGlowAura",
+      "path": "packages/ui/src/components/SkiaGlowAura.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SkiaGlowAura.web",
+      "path": "packages/ui/src/components/SkiaGlowAura.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SmartShelf",
+      "path": "packages/ui/src/components/SmartShelf.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "CommunityPresence",
+      "path": "packages/ui/src/components/social/CommunityPresence.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "CommunityPresence.web",
+      "path": "packages/ui/src/components/social/CommunityPresence.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SocialShieldModal",
+      "path": "packages/ui/src/components/social/SocialShieldModal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SovereignVirtualList",
+      "path": "packages/ui/src/components/SovereignVirtualList.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "StepIndicator",
+      "path": "packages/ui/src/components/StepIndicator.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SyncStatusCompact",
+      "path": "packages/ui/src/components/SyncStatusCompact.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SyncStatusFull",
+      "path": "packages/ui/src/components/SyncStatusFull.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SyncStatusIndicator",
+      "path": "packages/ui/src/components/SyncStatusIndicator.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SyncStatusRetryButton",
+      "path": "packages/ui/src/components/SyncStatusRetryButton.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SyncStatusStats",
+      "path": "packages/ui/src/components/SyncStatusStats.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "TemporalNavigator",
+      "path": "packages/ui/src/components/TemporalNavigator.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "TemporalPilot",
+      "path": "packages/ui/src/components/TemporalPilot.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "TemporalProvider",
+      "path": "packages/ui/src/components/TemporalProvider.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "TemporalProvider.web",
+      "path": "packages/ui/src/components/TemporalProvider.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "TemporalScrubber",
+      "path": "packages/ui/src/components/TemporalScrubber.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "TemporalShield",
+      "path": "packages/ui/src/components/TemporalShield.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "TutiiLiving",
+      "path": "packages/ui/src/components/TutiiLiving.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "UniversalModal",
+      "path": "packages/ui/src/components/UniversalModal.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "UniversalModal.web",
+      "path": "packages/ui/src/components/UniversalModal.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "UserAvatar",
+      "path": "packages/ui/src/components/UserAvatar.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "VisualCapabilityInspector",
+      "path": "packages/ui/src/components/VisualCapabilityInspector.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "AstroView",
+      "path": "packages/ui/src/components/visualization/AstroView.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "DharmaView",
+      "path": "packages/ui/src/components/visualization/DharmaView.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "JyotiView",
+      "path": "packages/ui/src/components/visualization/JyotiView.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "TerraView",
+      "path": "packages/ui/src/components/visualization/TerraView.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "UniversalPerspective",
+      "path": "packages/ui/src/components/visualization/UniversalPerspective.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "VastuView",
+      "path": "packages/ui/src/components/visualization/VastuView.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "VastuView.web",
+      "path": "packages/ui/src/components/visualization/VastuView.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "VatyaView",
+      "path": "packages/ui/src/components/visualization/VatyaView.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "VatyaView.web",
+      "path": "packages/ui/src/components/visualization/VatyaView.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "AgentCards",
+      "path": "packages/ui/src/components/web/Agent/AgentCards.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "Basics",
+      "path": "packages/ui/src/components/web/Basics/Basics.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "Launcher",
+      "path": "packages/ui/src/components/web/Launcher/Launcher.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "FileCard",
+      "path": "packages/ui/src/components/web/Media/FileCard.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "Perch",
+      "path": "packages/ui/src/components/web/Perch/Perch.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "Radar",
+      "path": "packages/ui/src/components/web/Radar/Radar.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SettingsRows",
+      "path": "packages/ui/src/components/web/Settings/SettingsRows.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "SwipeRow",
+      "path": "packages/ui/src/components/web/SwipeRow/SwipeRow.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "WebScreenHeader.web",
+      "path": "packages/ui/src/components/WebScreenHeader.web.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "CanvasSurfaceCard",
+      "path": "packages/ui/src/components/workspace/CanvasSurfaceCard.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "CanvasZoneColumn",
+      "path": "packages/ui/src/components/workspace/CanvasZoneColumn.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "DraggableCanvasSurface",
+      "path": "packages/ui/src/components/workspace/DraggableCanvasSurface.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "MobileWorkspaceCanvas",
+      "path": "packages/ui/src/components/workspace/renderers/MobileWorkspaceCanvas.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "TabletWorkspaceCanvas",
+      "path": "packages/ui/src/components/workspace/renderers/TabletWorkspaceCanvas.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "WebWorkspaceCanvas",
+      "path": "packages/ui/src/components/workspace/renderers/WebWorkspaceCanvas.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "ResponsiveWorkspaceCanvas",
+      "path": "packages/ui/src/components/workspace/ResponsiveWorkspaceCanvas.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "WebCanvasZoneColumn",
+      "path": "packages/ui/src/components/workspace/WebCanvasZoneColumn.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "WebDraggableCanvasSurface",
+      "path": "packages/ui/src/components/workspace/WebDraggableCanvasSurface.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "WorkspaceRenderer",
+      "path": "packages/ui/src/components/workspace/WorkspaceRenderer.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "WorkspaceSettingsSurface",
+      "path": "packages/ui/src/components/workspace/WorkspaceSettingsSurface.tsx",
+      "category": "ui"
+    },
+    {
+      "name": "BulkStudentCreation",
+      "path": "packages/classroom/src/components/BulkStudentCreation.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "ClassroomAccessState",
+      "path": "packages/classroom/src/components/ClassroomAccessState.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "GradebookTable",
+      "path": "packages/classroom/src/components/grading/GradebookTable.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "GradeEntryForm",
+      "path": "packages/classroom/src/components/grading/GradeEntryForm.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "GradingSettings",
+      "path": "packages/classroom/src/components/grading/GradingSettings.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "ReportCard",
+      "path": "packages/classroom/src/components/grading/ReportCard.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "IdentityInitialState",
+      "path": "packages/classroom/src/components/IdentityInitialState.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "OCRScanner",
+      "path": "packages/classroom/src/components/OCRScanner.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "PrincipalOnboardingView.web",
+      "path": "packages/classroom/src/components/onboarding/PrincipalOnboardingView.web.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "StudentOnboardingView",
+      "path": "packages/classroom/src/components/onboarding/StudentOnboardingView.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "StudentOnboardingView.web",
+      "path": "packages/classroom/src/components/onboarding/StudentOnboardingView.web.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "TeacherOnboardingView",
+      "path": "packages/classroom/src/components/onboarding/TeacherOnboardingView.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "TeacherOnboardingView.web",
+      "path": "packages/classroom/src/components/onboarding/TeacherOnboardingView.web.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "CreateClassroomAction",
+      "path": "packages/classroom/src/components/poa/CreateClassroomAction.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "MyEchoesAction",
+      "path": "packages/classroom/src/components/poa/MyEchoesAction.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "PrincipalEchoAction",
+      "path": "packages/classroom/src/components/poa/PrincipalEchoAction.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "ScanQRAction",
+      "path": "packages/classroom/src/components/poa/ScanQRAction.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "TeacherActions",
+      "path": "packages/classroom/src/components/poa/TeacherActions.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "TeacherEchoActions",
+      "path": "packages/classroom/src/components/poa/TeacherEchoActions.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "TeacherPrimaryActions",
+      "path": "packages/classroom/src/components/poa/TeacherPrimaryActions.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "QuickAnalytics",
+      "path": "packages/classroom/src/components/QuickAnalytics.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "StudentGrowthPoints",
+      "path": "packages/classroom/src/components/student/StudentGrowthPoints.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "StudentHeader",
+      "path": "packages/classroom/src/components/student/StudentHeader.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "StudentProgressOverview",
+      "path": "packages/classroom/src/components/student/StudentProgressOverview.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "StudentStats",
+      "path": "packages/classroom/src/components/student/StudentStats.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "StudentStudySuite",
+      "path": "packages/classroom/src/components/student/StudentStudySuite.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "StudentUpcomingAssignments",
+      "path": "packages/classroom/src/components/student/StudentUpcomingAssignments.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "SubmissionModal",
+      "path": "packages/classroom/src/components/SubmissionModal.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "SubmissionModal.web",
+      "path": "packages/classroom/src/components/SubmissionModal.web.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "TeacherActivePeriodCard",
+      "path": "packages/classroom/src/components/teacher/TeacherActivePeriodCard.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "TeacherAdminActions",
+      "path": "packages/classroom/src/components/teacher/TeacherAdminActions.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "TeacherAssignmentsSidebar",
+      "path": "packages/classroom/src/components/teacher/TeacherAssignmentsSidebar.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "TeacherClassroomList",
+      "path": "packages/classroom/src/components/teacher/TeacherClassroomList.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "TeacherSnapshot",
+      "path": "packages/classroom/src/components/teacher/TeacherSnapshot.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "TeacherStats",
+      "path": "packages/classroom/src/components/teacher/TeacherStats.tsx",
+      "category": "classroom"
+    },
+    {
+      "name": "GuardianEvents",
+      "path": "packages/admin/src/components/guardian/GuardianEvents.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "GuardianNotifications",
+      "path": "packages/admin/src/components/guardian/GuardianNotifications.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "GuardianStudentsGrid",
+      "path": "packages/admin/src/components/guardian/GuardianStudentsGrid.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "PrincipalOnboardingView",
+      "path": "packages/admin/src/components/onboarding/PrincipalOnboardingView.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "GuardianChildrenList",
+      "path": "packages/admin/src/components/poa/GuardianChildrenList.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "GuardianHeader",
+      "path": "packages/admin/src/components/poa/GuardianHeader.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "CurriculumPulse",
+      "path": "packages/admin/src/components/principal/CurriculumPulse.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "DashboardEcho",
+      "path": "packages/admin/src/components/principal/DashboardEcho.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "ManagementStation",
+      "path": "packages/admin/src/components/principal/ManagementStation.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "PrincipalActions",
+      "path": "packages/admin/src/components/principal/PrincipalActions.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "PrincipalModuleAtlas",
+      "path": "packages/admin/src/components/principal/PrincipalModuleAtlas.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "PrincipalObservationsSection",
+      "path": "packages/admin/src/components/principal/PrincipalObservationsSection.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "PrincipalOnboardingView",
+      "path": "packages/admin/src/components/principal/PrincipalOnboardingView.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "PrincipalSetupWizard",
+      "path": "packages/admin/src/components/principal/PrincipalSetupWizard.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "SchoolOverview",
+      "path": "packages/admin/src/components/principal/SchoolOverview.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "SchoolStats",
+      "path": "packages/admin/src/components/principal/SchoolStats.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "StaffDirectory",
+      "path": "packages/admin/src/components/principal/StaffDirectory.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "InviteCodeManager",
+      "path": "packages/admin/src/components/school/InviteCodeManager.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "SchoolSettingsSheet",
+      "path": "packages/admin/src/components/school/SchoolSettingsSheet.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "StepBasicInfo",
+      "path": "packages/admin/src/components/school/StepBasicInfo.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "StepDemographics",
+      "path": "packages/admin/src/components/school/StepDemographics.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "StepHierarchy",
+      "path": "packages/admin/src/components/school/StepHierarchy.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "StepLocation",
+      "path": "packages/admin/src/components/school/StepLocation.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "AdminAuditLog",
+      "path": "packages/admin/src/screens/AdminAuditLog.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "AdminFeatureRegistry",
+      "path": "packages/admin/src/screens/AdminFeatureRegistry.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "AdminRoomShell",
+      "path": "packages/admin/src/screens/AdminRoomShell.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "AnalyticsDashboardScreen",
+      "path": "packages/admin/src/screens/AnalyticsDashboardScreen.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "DocumentListScreen",
+      "path": "packages/admin/src/screens/DocumentListScreen.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "DocumentListScreen.web",
+      "path": "packages/admin/src/screens/DocumentListScreen.web.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "EnhancedAnalyticsDashboard.web",
+      "path": "packages/admin/src/screens/EnhancedAnalyticsDashboard.web.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "FounderVisionScreen",
+      "path": "packages/admin/src/screens/FounderVisionScreen.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "GradeHeadDashboard",
+      "path": "packages/admin/src/screens/GradeHeadDashboard.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "GuardianCommunicationBridgeScreen",
+      "path": "packages/admin/src/screens/guardian/GuardianCommunicationBridgeScreen.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "GuardianRoomShell",
+      "path": "packages/admin/src/screens/guardian/GuardianRoomShell.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "CommandCenter",
+      "path": "packages/admin/src/screens/principal/CommandCenter.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "DashboardContent",
+      "path": "packages/admin/src/screens/principal/DashboardContent.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "HierarchyDashboard",
+      "path": "packages/admin/src/screens/principal/HierarchyDashboard.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "InstitutionalArcCard",
+      "path": "packages/admin/src/screens/principal/InstitutionalArcCard.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "LegacyDashboard",
+      "path": "packages/admin/src/screens/principal/LegacyDashboard.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "PrincipalRoomShell",
+      "path": "packages/admin/src/screens/principal/PrincipalRoomShell.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "PrincipalWorkspaceContainer",
+      "path": "packages/admin/src/screens/PrincipalWorkspaceContainer.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "SchoolProfileScreen.web",
+      "path": "packages/admin/src/screens/SchoolProfileScreen.web.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "SectionHeadDashboard",
+      "path": "packages/admin/src/screens/SectionHeadDashboard.tsx",
+      "category": "admin"
+    },
+    {
+      "name": "AcademicHistoryTimeline",
+      "path": "packages/self/src/components/AcademicHistoryTimeline.tsx",
+      "category": "self"
+    },
+    {
+      "name": "ShadowAgentDrawer.web",
+      "path": "packages/self/src/components/archive/ShadowAgentDrawer.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "BaseSelfView",
+      "path": "packages/self/src/components/BaseSelfView.tsx",
+      "category": "self"
+    },
+    {
+      "name": "BaseSelfView.web",
+      "path": "packages/self/src/components/BaseSelfView.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "BreathGuide.web",
+      "path": "packages/self/src/components/BreathGuide.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "ClassroomLegacyTimeline",
+      "path": "packages/self/src/components/ClassroomLegacyTimeline.tsx",
+      "category": "self"
+    },
+    {
+      "name": "CommunityPresence",
+      "path": "packages/self/src/components/CommunityPresence.tsx",
+      "category": "self"
+    },
+    {
+      "name": "CommunityPresence.web",
+      "path": "packages/self/src/components/CommunityPresence.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "DailyRhythm.web",
+      "path": "packages/self/src/components/DailyRhythm.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "EnergyBarChart",
+      "path": "packages/self/src/components/EnergyBarChart.tsx",
+      "category": "self"
+    },
+    {
+      "name": "EnergyBarChart.web",
+      "path": "packages/self/src/components/EnergyBarChart.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "EnergyForecast.web",
+      "path": "packages/self/src/components/EnergyForecast.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "FeatureErrorBoundary",
+      "path": "packages/self/src/components/FeatureErrorBoundary.tsx",
+      "category": "self"
+    },
+    {
+      "name": "FeaturePicker",
+      "path": "packages/self/src/components/FeaturePicker.tsx",
+      "category": "self"
+    },
+    {
+      "name": "FireJournal.web",
+      "path": "packages/self/src/components/FireJournal.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "GenesisNode",
+      "path": "packages/self/src/components/GenesisNode.tsx",
+      "category": "self"
+    },
+    {
+      "name": "GovernanceHistoryTimeline",
+      "path": "packages/self/src/components/GovernanceHistoryTimeline.tsx",
+      "category": "self"
+    },
+    {
+      "name": "GratitudeGlimmers.web",
+      "path": "packages/self/src/components/GratitudeGlimmers.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "JoyJar.web",
+      "path": "packages/self/src/components/JoyJar.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "MoodLotus.web",
+      "path": "packages/self/src/components/MoodLotus.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "MoodPickerCard",
+      "path": "packages/self/src/components/MoodPickerCard.tsx",
+      "category": "self"
+    },
+    {
+      "name": "MyGradesView.web",
+      "path": "packages/self/src/components/MyGradesView.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "OrientationCaptureStep",
+      "path": "packages/self/src/components/OrientationCaptureStep.tsx",
+      "category": "self"
+    },
+    {
+      "name": "ProgressTree.web",
+      "path": "packages/self/src/components/ProgressTree.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "ResonancePatternCard.web",
+      "path": "packages/self/src/components/ResonancePatternCard.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "ResonanceTimeline",
+      "path": "packages/self/src/components/ResonanceTimeline.tsx",
+      "category": "self"
+    },
+    {
+      "name": "RoleWeightEditor",
+      "path": "packages/self/src/components/RoleWeightEditor.tsx",
+      "category": "self"
+    },
+    {
+      "name": "SchoolLegacyTimeline",
+      "path": "packages/self/src/components/SchoolLegacyTimeline.tsx",
+      "category": "self"
+    },
+    {
+      "name": "SelfNavigator",
+      "path": "packages/self/src/components/SelfNavigator.tsx",
+      "category": "self"
+    },
+    {
+      "name": "SleepTracker.web",
+      "path": "packages/self/src/components/SleepTracker.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "SpotlightEmpty",
+      "path": "packages/self/src/components/SpotlightEmpty.tsx",
+      "category": "self"
+    },
+    {
+      "name": "StudentGoals.web",
+      "path": "packages/self/src/components/StudentGoals.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "SwipeableTodoRow",
+      "path": "packages/self/src/components/SwipeableTodoRow.tsx",
+      "category": "self"
+    },
+    {
+      "name": "TeacherVitalityCard",
+      "path": "packages/self/src/components/TeacherVitalityCard.tsx",
+      "category": "self"
+    },
+    {
+      "name": "TimelineEvent",
+      "path": "packages/self/src/components/TimelineEvent.tsx",
+      "category": "self"
+    },
+    {
+      "name": "TomorrowPrep.web",
+      "path": "packages/self/src/components/TomorrowPrep.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "VoiceJournaling.web",
+      "path": "packages/self/src/components/VoiceJournaling.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "WelcomeModal",
+      "path": "packages/self/src/components/WelcomeModal.tsx",
+      "category": "self"
+    },
+    {
+      "name": "WelcomeModal.web",
+      "path": "packages/self/src/components/WelcomeModal.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "WindDownRitual.web",
+      "path": "packages/self/src/components/WindDownRitual.web.tsx",
+      "category": "self"
+    },
+    {
+      "name": "WisdomSeeds.web",
+      "path": "packages/self/src/components/WisdomSeeds.web.tsx",
+      "category": "self"
+    }
+  ],
+  "wiredComponents": [
+    {
+      "name": "ActiveSubTabStrip",
+      "path": "packages/ui/src/components/ActiveSubTabStrip.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ]
+    },
+    {
+      "name": "BrandPulse",
+      "path": "packages/ui/src/components/BrandPulse.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-mobile/app/pulse.tsx"
+      ]
+    },
+    {
+      "name": "Collapse",
+      "path": "packages/ui/src/components/Collapse.tsx",
+      "consumerCount": 5,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture-lab/ArchitectureLabClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/components/WebPostComposer.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/LayeredDeckHeader/LayeredDeckHeader.tsx"
+      ]
+    },
+    {
+      "name": "EmptyState",
+      "path": "packages/ui/src/components/EmptyState.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/commercial/[batchId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx"
+      ]
+    },
+    {
+      "name": "ErrorBoundary",
+      "path": "packages/ui/src/components/ErrorBoundary.tsx",
+      "consumerCount": 30,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorErrorBoundary.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx",
+        "apps/gurudevi-mobile/app/(modal)/create-form.tsx"
+      ]
+    },
+    {
+      "name": "ErrorMessage",
+      "path": "packages/ui/src/components/ErrorMessage.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/DeviceLinkQRModal.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/profile/ThuthimalClaimModal.tsx"
+      ]
+    },
+    {
+      "name": "ErrorState",
+      "path": "packages/ui/src/components/ErrorState.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
+        "apps/gurudevi-mobile/app/auth/callback.tsx"
+      ]
+    },
+    {
+      "name": "FeatureStateBoundary",
+      "path": "packages/ui/src/components/FeatureStateBoundary.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/FireJournal.tsx"
+      ]
+    },
+    {
+      "name": "FeatureStateBoundary.web",
+      "path": "packages/ui/src/components/FeatureStateBoundary.web.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/FireJournal.tsx"
+      ]
+    },
+    {
+      "name": "HistoryTimeline",
+      "path": "packages/ui/src/components/HistoryTimeline.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/TeachingHistoryTimeline.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "Mascot",
+      "path": "packages/ui/src/components/Mascot.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/welcome/WelcomeStage.tsx"
+      ]
+    },
+    {
+      "name": "VideoPlayer",
+      "path": "packages/ui/src/components/media/VideoPlayer.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/library/video/[videoId]/VideoPlayerDesk.tsx",
+        "apps/gurudevi-web/spa/routes/_app/library/video/$videoId.tsx"
+      ]
+    },
+    {
+      "name": "MessageBubble",
+      "path": "packages/ui/src/components/MessageBubble.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/community/dm/[userId]/DirectMessageFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TutiiSidePanel.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx"
+      ]
+    },
+    {
+      "name": "Composer",
+      "path": "packages/ui/src/components/native/Agent/Composer.tsx",
+      "consumerCount": 9,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/community/components/CirclePostStream.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/components/CommentDrawer.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/components/CommunityDirectMessagesStage.tsx"
+      ]
+    },
+    {
+      "name": "Fab",
+      "path": "packages/ui/src/components/native/Agent/Fab.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ]
+    },
+    {
+      "name": "Message",
+      "path": "packages/ui/src/components/native/Agent/Message.tsx",
+      "consumerCount": 29,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportForm.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/architecture-lab/ArchitectureLabClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/auth/DeviceLinkQRModal.tsx"
+      ]
+    },
+    {
+      "name": "Disclosure",
+      "path": "packages/ui/src/components/native/Basics/Disclosure.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/floor-redesign/FloorRedesignClient.tsx",
+        "apps/gurudevi-web/spa/routes/_dev/kit/self.tsx"
+      ]
+    },
+    {
+      "name": "Notice",
+      "path": "packages/ui/src/components/native/Basics/Notice.tsx",
+      "consumerCount": 42,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx"
+      ]
+    },
+    {
+      "name": "NumberStepper",
+      "path": "packages/ui/src/components/native/Basics/NumberStepper.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/events.tsx"
+      ]
+    },
+    {
+      "name": "SearchField",
+      "path": "packages/ui/src/components/native/Basics/SearchField.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/KitTableOfContents.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/temporal-horizon/TemporalHorizonComparison.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor.tsx"
+      ]
+    },
+    {
+      "name": "Steps",
+      "path": "packages/ui/src/components/native/Basics/Steps.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx"
+      ]
+    },
+    {
+      "name": "Button",
+      "path": "packages/ui/src/components/native/Button/Button.tsx",
+      "consumerCount": 60,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx"
+      ]
+    },
+    {
+      "name": "Card",
+      "path": "packages/ui/src/components/native/Card/Card.tsx",
+      "consumerCount": 86,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx"
+      ]
+    },
+    {
+      "name": "Carousel",
+      "path": "packages/ui/src/components/native/Carousel/Carousel.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx"
+      ]
+    },
+    {
+      "name": "Checkbox",
+      "path": "packages/ui/src/components/native/Checkbox/Checkbox.tsx",
+      "consumerCount": 6,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/AccountSwitcher.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/editorial/EditorialFloor.tsx"
+      ]
+    },
+    {
+      "name": "Chip",
+      "path": "packages/ui/src/components/native/Chip/Chip.tsx",
+      "consumerCount": 15,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx"
+      ]
+    },
+    {
+      "name": "Dialog",
+      "path": "packages/ui/src/components/native/Dialog/Dialog.tsx",
+      "consumerCount": 9,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/DeviceLinkQRModal.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/QuickAccessRail.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TaskStrip.tsx"
+      ]
+    },
+    {
+      "name": "Group",
+      "path": "packages/ui/src/components/native/Group/Group.tsx",
+      "consumerCount": 43,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/DeviceLinkQRModal.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/auth/PasswordlessEntry.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/auth/SignInForm.tsx"
+      ]
+    },
+    {
+      "name": "Icon",
+      "path": "packages/ui/src/components/native/Icon/Icon.tsx",
+      "consumerCount": 38,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/DeviceLinkQRModal.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/announcements/AnnouncementsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/components/CirclePostStream.tsx"
+      ]
+    },
+    {
+      "name": "IconButton",
+      "path": "packages/ui/src/components/native/IconButton/IconButton.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/TutiiSidePanel.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx"
+      ]
+    },
+    {
+      "name": "LanguagePicker",
+      "path": "packages/ui/src/components/native/LanguagePicker/LanguagePicker.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/GatewayHeader.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx"
+      ]
+    },
+    {
+      "name": "Grid",
+      "path": "packages/ui/src/components/native/Layout/Grid.tsx",
+      "consumerCount": 56,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/principal/PrincipalFloor.tsx"
+      ]
+    },
+    {
+      "name": "Layout",
+      "path": "packages/ui/src/components/native/Layout/Layout.tsx",
+      "consumerCount": 24,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/LayeredDeckHeader/LayeredDeckHeader.tsx"
+      ]
+    },
+    {
+      "name": "Link",
+      "path": "packages/ui/src/components/native/Link/Link.tsx",
+      "consumerCount": 76,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/account-recovery/AccountRecoveryFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx"
+      ]
+    },
+    {
+      "name": "List",
+      "path": "packages/ui/src/components/native/List/List.tsx",
+      "consumerCount": 71,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx"
+      ]
+    },
+    {
+      "name": "LivingGround",
+      "path": "packages/ui/src/components/native/LivingGround/LivingGround.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/AuthFrame.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/welcome/WelcomeStage.tsx"
+      ]
+    },
+    {
+      "name": "adapters",
+      "path": "packages/ui/src/components/native/Media/adapters.tsx",
+      "consumerCount": 12,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/DocumentReaderDesk.tsx"
+      ]
+    },
+    {
+      "name": "Capture",
+      "path": "packages/ui/src/components/native/Media/Capture.tsx",
+      "consumerCount": 6,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/self/SelfKitClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/library/video/[videoId]/VideoPlayerDesk.tsx"
+      ]
+    },
+    {
+      "name": "DocumentView",
+      "path": "packages/ui/src/components/native/Media/DocumentView.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/DocumentReaderDesk.tsx"
+      ]
+    },
+    {
+      "name": "Markdown",
+      "path": "packages/ui/src/components/native/Media/Markdown.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/library/tools/ToolsWorkbenchDesk.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/editorial/EditorialFloor.tsx"
+      ]
+    },
+    {
+      "name": "Media",
+      "path": "packages/ui/src/components/native/Media/Media.tsx",
+      "consumerCount": 14,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorAtmosphere.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx"
+      ]
+    },
+    {
+      "name": "RichTextEditor",
+      "path": "packages/ui/src/components/native/Media/RichTextEditor.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx"
+      ]
+    },
+    {
+      "name": "Menu",
+      "path": "packages/ui/src/components/native/Menu/Menu.tsx",
+      "consumerCount": 8,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorPageActions.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorReception.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx"
+      ]
+    },
+    {
+      "name": "GoTo",
+      "path": "packages/ui/src/components/native/navigation/GoTo.tsx",
+      "consumerCount": 5,
+      "consumers": [
+        "apps/gurudevi-web/spa/routes/welcome.tsx",
+        "apps/gurudevi-web/spa/routes/_account/account-recovery.tsx",
+        "apps/gurudevi-web/spa/routes/_app.tsx"
+      ]
+    },
+    {
+      "name": "Pebble",
+      "path": "packages/ui/src/components/native/Pebble/Pebble.tsx",
+      "consumerCount": 6,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/PracticeCardCandidates.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/self/SelfKitClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/ContourCohortDeck.tsx"
+      ]
+    },
+    {
+      "name": "PebbleCornerSlot",
+      "path": "packages/ui/src/components/native/Pebble/PebbleCornerSlot.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/self/SelfKitClient.tsx"
+      ]
+    },
+    {
+      "name": "Popover",
+      "path": "packages/ui/src/components/native/Popover/Popover.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/PracticeCardCandidates.tsx"
+      ]
+    },
+    {
+      "name": "Question",
+      "path": "packages/ui/src/components/native/Question/Question.tsx",
+      "consumerCount": 6,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/components/WebPostComposer.tsx"
+      ]
+    },
+    {
+      "name": "RadioGroup",
+      "path": "packages/ui/src/components/native/Radio/RadioGroup.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-mobile/app/onboarding.tsx"
+      ]
+    },
+    {
+      "name": "Rail",
+      "path": "packages/ui/src/components/native/Rail/Rail.tsx",
+      "consumerCount": 17,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/components/CommunityDirectMessagesStage.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/QuickAccessRail.tsx"
+      ]
+    },
+    {
+      "name": "Row",
+      "path": "packages/ui/src/components/native/Row/Row.tsx",
+      "consumerCount": 61,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/atlas/AtlasFloor.tsx"
+      ]
+    },
+    {
+      "name": "SceneBackdrop",
+      "path": "packages/ui/src/components/native/Scene/SceneBackdrop.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldGroundSurface.tsx"
+      ]
+    },
+    {
+      "name": "SceneStill",
+      "path": "packages/ui/src/components/native/Scene/SceneStill.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SceneStillLayer.tsx"
+      ]
+    },
+    {
+      "name": "ScrollArea",
+      "path": "packages/ui/src/components/native/ScrollArea/ScrollArea.tsx",
+      "consumerCount": 15,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/CommandPalette.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx"
+      ]
+    },
+    {
+      "name": "Section",
+      "path": "packages/ui/src/components/native/Section/Section.tsx",
+      "consumerCount": 37,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx"
+      ]
+    },
+    {
+      "name": "SegmentedControl",
+      "path": "packages/ui/src/components/native/Segmented/SegmentedControl.tsx",
+      "consumerCount": 6,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/TutiiSidePanel.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/library/map/LibraryAtlasDesk.tsx"
+      ]
+    },
+    {
+      "name": "Select",
+      "path": "packages/ui/src/components/native/Select/Select.tsx",
+      "consumerCount": 63,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx"
+      ]
+    },
+    {
+      "name": "Sheet",
+      "path": "packages/ui/src/components/native/Sheet/Sheet.tsx",
+      "consumerCount": 12,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/QuickAccessRail.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TaskStrip.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/QuickAccessRail.tsx"
+      ]
+    },
+    {
+      "name": "AppHeader",
+      "path": "packages/ui/src/components/native/Shell/AppHeader.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx"
+      ]
+    },
+    {
+      "name": "NotificationItem",
+      "path": "packages/ui/src/components/native/Shell/NotificationItem.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/notifications/NotificationsFloor.tsx"
+      ]
+    },
+    {
+      "name": "SwitchRow",
+      "path": "packages/ui/src/components/native/Shell/SwitchRow.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx"
+      ]
+    },
+    {
+      "name": "TaskTabs",
+      "path": "packages/ui/src/components/native/Shell/TaskTabs.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/floor-redesign/FloorRedesignClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx"
+      ]
+    },
+    {
+      "name": "WorldHeader",
+      "path": "packages/ui/src/components/native/Shell/WorldHeader.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ]
+    },
+    {
+      "name": "YouSheet",
+      "path": "packages/ui/src/components/native/Shell/YouSheet.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ]
+    },
+    {
+      "name": "SidePanel",
+      "path": "packages/ui/src/components/native/SidePanel/SidePanel.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TutiiSidePanel.tsx"
+      ]
+    },
+    {
+      "name": "Slider",
+      "path": "packages/ui/src/components/native/Slider/Slider.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorReception.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalHorizonRefined.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/floor-redesign/FloorRedesignClient.tsx"
+      ]
+    },
+    {
+      "name": "States",
+      "path": "packages/ui/src/components/native/States/States.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx"
+      ]
+    },
+    {
+      "name": "Status",
+      "path": "packages/ui/src/components/native/Status/Status.tsx",
+      "consumerCount": 36,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/principal/PrincipalFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/architecture-lab/ArchitectureLabClient.tsx"
+      ]
+    },
+    {
+      "name": "Surface",
+      "path": "packages/ui/src/components/native/Surface/Surface.tsx",
+      "consumerCount": 39,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx"
+      ]
+    },
+    {
+      "name": "Switch",
+      "path": "packages/ui/src/components/native/Switch/Switch.tsx",
+      "consumerCount": 26,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/architecture-lab/ArchitectureLabClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/auth/AccountSwitcher.tsx"
+      ]
+    },
+    {
+      "name": "Table",
+      "path": "packages/ui/src/components/native/Table/Table.tsx",
+      "consumerCount": 13,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/architecture-lab/ArchitectureLabClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/KitComponentsDirectory.tsx"
+      ]
+    },
+    {
+      "name": "Tabs",
+      "path": "packages/ui/src/components/native/Tabs/Tabs.tsx",
+      "consumerCount": 25,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx"
+      ]
+    },
+    {
+      "name": "Text",
+      "path": "packages/ui/src/components/native/Text/Text.tsx",
+      "consumerCount": 71,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx"
+      ]
+    },
+    {
+      "name": "TextField",
+      "path": "packages/ui/src/components/native/TextField/TextField.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx"
+      ]
+    },
+    {
+      "name": "ThemeSwitcher",
+      "path": "packages/ui/src/components/native/ThemeSwitcher/ThemeSwitcher.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx"
+      ]
+    },
+    {
+      "name": "Date",
+      "path": "packages/ui/src/components/native/Time/Date.tsx",
+      "consumerCount": 70,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportForm.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx"
+      ]
+    },
+    {
+      "name": "DateTimeCombo",
+      "path": "packages/ui/src/components/native/Time/DateTimeCombo.tsx",
+      "consumerCount": 9,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorReception.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/DateTimeCombo.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/WorkspaceRouteTabs.tsx"
+      ]
+    },
+    {
+      "name": "Fields",
+      "path": "packages/ui/src/components/native/Time/Fields.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-mobile/app/public-form/[slug].tsx"
+      ]
+    },
+    {
+      "name": "MonthGrid",
+      "path": "packages/ui/src/components/native/Time/MonthGrid.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalHorizonRefined.tsx"
+      ]
+    },
+    {
+      "name": "Time",
+      "path": "packages/ui/src/components/native/Time/Time.tsx",
+      "consumerCount": 75,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/account-recovery/AccountRecoveryFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx"
+      ]
+    },
+    {
+      "name": "TimeAgo",
+      "path": "packages/ui/src/components/native/Time/TimeAgo.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/community/components/CirclePostStream.tsx"
+      ]
+    },
+    {
+      "name": "Timeline",
+      "path": "packages/ui/src/components/native/Time/Timeline.tsx",
+      "consumerCount": 6,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/agent-lab/AgentLabClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/floor-redesign/FloorRedesignClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/TeachingHistoryTimeline.tsx"
+      ]
+    },
+    {
+      "name": "words",
+      "path": "packages/ui/src/components/native/Time/words.tsx",
+      "consumerCount": 8,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/PasswordlessEntry.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/auth/ResetPasswordForm.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/self/SelfKitClient.tsx"
+      ]
+    },
+    {
+      "name": "ToastHost",
+      "path": "packages/ui/src/components/native/Toast/ToastHost.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FeedbackToasts.tsx"
+      ]
+    },
+    {
+      "name": "Tooltip",
+      "path": "packages/ui/src/components/native/Tooltip/Tooltip.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalHorizonRefined.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/PracticeCardCandidates.tsx"
+      ]
+    },
+    {
+      "name": "Waiting",
+      "path": "packages/ui/src/components/native/Waiting/Waiting.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/plan/PlanFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx"
+      ]
+    },
+    {
+      "name": "WaitingSign",
+      "path": "packages/ui/src/components/native/WaitingSign/WaitingSign.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx"
+      ]
+    },
+    {
+      "name": "WorldPicker",
+      "path": "packages/ui/src/components/native/WorldPicker/WorldPicker.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorStudioDrawer.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ]
+    },
+    {
+      "name": "PerspectiveSwitcherSheet",
+      "path": "packages/ui/src/components/PerspectiveSwitcherSheet.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ]
+    },
+    {
+      "name": "SanctuaryButton",
+      "path": "packages/ui/src/components/SanctuaryButton.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx"
+      ]
+    },
+    {
+      "name": "SanctuaryToast",
+      "path": "packages/ui/src/components/SanctuaryToast.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-mobile/app/account-recovery.tsx"
+      ]
+    },
+    {
+      "name": "SchoolInviteCodeModal",
+      "path": "packages/ui/src/components/SchoolInviteCodeModal.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ]
+    },
+    {
+      "name": "Success",
+      "path": "packages/ui/src/components/Success.tsx",
+      "consumerCount": 11,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/library/contribute/ContributeDesk.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/profile/AccountDeletionControl.tsx"
+      ]
+    },
+    {
+      "name": "Composer",
+      "path": "packages/ui/src/components/web/Agent/Composer.tsx",
+      "consumerCount": 9,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/community/components/CirclePostStream.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/components/CommentDrawer.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/components/CommunityDirectMessagesStage.tsx"
+      ]
+    },
+    {
+      "name": "Fab",
+      "path": "packages/ui/src/components/web/Agent/Fab.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ]
+    },
+    {
+      "name": "Message",
+      "path": "packages/ui/src/components/web/Agent/Message.tsx",
+      "consumerCount": 29,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportForm.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/architecture-lab/ArchitectureLabClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/auth/DeviceLinkQRModal.tsx"
+      ]
+    },
+    {
+      "name": "Breadcrumb",
+      "path": "packages/ui/src/components/web/Breadcrumb/Breadcrumb.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorReception.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/floor-redesign/FloorRedesignClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx"
+      ]
+    },
+    {
+      "name": "Button",
+      "path": "packages/ui/src/components/web/Button/Button.tsx",
+      "consumerCount": 60,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx"
+      ]
+    },
+    {
+      "name": "Card",
+      "path": "packages/ui/src/components/web/Card/Card.tsx",
+      "consumerCount": 86,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx"
+      ]
+    },
+    {
+      "name": "Carousel",
+      "path": "packages/ui/src/components/web/Carousel/Carousel.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx"
+      ]
+    },
+    {
+      "name": "Checkbox",
+      "path": "packages/ui/src/components/web/Checkbox/Checkbox.tsx",
+      "consumerCount": 6,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/AccountSwitcher.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/editorial/EditorialFloor.tsx"
+      ]
+    },
+    {
+      "name": "Chip",
+      "path": "packages/ui/src/components/web/Chip/Chip.tsx",
+      "consumerCount": 15,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx"
+      ]
+    },
+    {
+      "name": "Dialog",
+      "path": "packages/ui/src/components/web/Dialog/Dialog.tsx",
+      "consumerCount": 9,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/DeviceLinkQRModal.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/QuickAccessRail.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TaskStrip.tsx"
+      ]
+    },
+    {
+      "name": "Group",
+      "path": "packages/ui/src/components/web/Group/Group.tsx",
+      "consumerCount": 43,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/DeviceLinkQRModal.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/auth/PasswordlessEntry.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/auth/SignInForm.tsx"
+      ]
+    },
+    {
+      "name": "Icon",
+      "path": "packages/ui/src/components/web/Icon/Icon.tsx",
+      "consumerCount": 38,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/DeviceLinkQRModal.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/announcements/AnnouncementsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/components/CirclePostStream.tsx"
+      ]
+    },
+    {
+      "name": "IconButton",
+      "path": "packages/ui/src/components/web/IconButton/IconButton.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/TutiiSidePanel.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx"
+      ]
+    },
+    {
+      "name": "LanguagePicker",
+      "path": "packages/ui/src/components/web/LanguagePicker/LanguagePicker.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/GatewayHeader.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx"
+      ]
+    },
+    {
+      "name": "Grid",
+      "path": "packages/ui/src/components/web/Layout/Grid.tsx",
+      "consumerCount": 56,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/principal/PrincipalFloor.tsx"
+      ]
+    },
+    {
+      "name": "Layout",
+      "path": "packages/ui/src/components/web/Layout/Layout.tsx",
+      "consumerCount": 24,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/LayeredDeckHeader/LayeredDeckHeader.tsx"
+      ]
+    },
+    {
+      "name": "Link",
+      "path": "packages/ui/src/components/web/Link/Link.tsx",
+      "consumerCount": 76,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/account-recovery/AccountRecoveryFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx"
+      ]
+    },
+    {
+      "name": "List",
+      "path": "packages/ui/src/components/web/List/List.tsx",
+      "consumerCount": 71,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx"
+      ]
+    },
+    {
+      "name": "LivingGround",
+      "path": "packages/ui/src/components/web/LivingGround/LivingGround.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/AuthFrame.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/welcome/WelcomeStage.tsx"
+      ]
+    },
+    {
+      "name": "adapters",
+      "path": "packages/ui/src/components/web/Media/adapters.tsx",
+      "consumerCount": 12,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/DocumentReaderDesk.tsx"
+      ]
+    },
+    {
+      "name": "BrowserPdfAdapter",
+      "path": "packages/ui/src/components/web/Media/BrowserPdfAdapter.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/DocumentReaderDesk.tsx"
+      ]
+    },
+    {
+      "name": "Capture",
+      "path": "packages/ui/src/components/web/Media/Capture.tsx",
+      "consumerCount": 6,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/self/SelfKitClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/library/video/[videoId]/VideoPlayerDesk.tsx"
+      ]
+    },
+    {
+      "name": "DocumentView",
+      "path": "packages/ui/src/components/web/Media/DocumentView.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/DocumentReaderDesk.tsx"
+      ]
+    },
+    {
+      "name": "Markdown",
+      "path": "packages/ui/src/components/web/Media/Markdown.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/library/tools/ToolsWorkbenchDesk.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/editorial/EditorialFloor.tsx"
+      ]
+    },
+    {
+      "name": "Media",
+      "path": "packages/ui/src/components/web/Media/Media.tsx",
+      "consumerCount": 14,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorAtmosphere.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx"
+      ]
+    },
+    {
+      "name": "RichTextEditor",
+      "path": "packages/ui/src/components/web/Media/RichTextEditor.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx"
+      ]
+    },
+    {
+      "name": "Menu",
+      "path": "packages/ui/src/components/web/Menu/Menu.tsx",
+      "consumerCount": 8,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorPageActions.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorReception.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx"
+      ]
+    },
+    {
+      "name": "Pebble",
+      "path": "packages/ui/src/components/web/Pebble/Pebble.tsx",
+      "consumerCount": 6,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/PracticeCardCandidates.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/self/SelfKitClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/ContourCohortDeck.tsx"
+      ]
+    },
+    {
+      "name": "PebbleCornerSlot",
+      "path": "packages/ui/src/components/web/Pebble/PebbleCornerSlot.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/self/SelfKitClient.tsx"
+      ]
+    },
+    {
+      "name": "Popover",
+      "path": "packages/ui/src/components/web/Popover/Popover.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/PracticeCardCandidates.tsx"
+      ]
+    },
+    {
+      "name": "Question",
+      "path": "packages/ui/src/components/web/Question/Question.tsx",
+      "consumerCount": 6,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/components/WebPostComposer.tsx"
+      ]
+    },
+    {
+      "name": "RadioGroup",
+      "path": "packages/ui/src/components/web/Radio/RadioGroup.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-mobile/app/onboarding.tsx"
+      ]
+    },
+    {
+      "name": "Rail",
+      "path": "packages/ui/src/components/web/Rail/Rail.tsx",
+      "consumerCount": 17,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/components/CommunityDirectMessagesStage.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/QuickAccessRail.tsx"
+      ]
+    },
+    {
+      "name": "Row",
+      "path": "packages/ui/src/components/web/Row/Row.tsx",
+      "consumerCount": 61,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/atlas/AtlasFloor.tsx"
+      ]
+    },
+    {
+      "name": "ScrollArea",
+      "path": "packages/ui/src/components/web/ScrollArea/ScrollArea.tsx",
+      "consumerCount": 15,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/CommandPalette.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx"
+      ]
+    },
+    {
+      "name": "Section",
+      "path": "packages/ui/src/components/web/Section/Section.tsx",
+      "consumerCount": 37,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx"
+      ]
+    },
+    {
+      "name": "SegmentedControl",
+      "path": "packages/ui/src/components/web/Segmented/SegmentedControl.tsx",
+      "consumerCount": 6,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/TutiiSidePanel.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/library/map/LibraryAtlasDesk.tsx"
+      ]
+    },
+    {
+      "name": "Select",
+      "path": "packages/ui/src/components/web/Select/Select.tsx",
+      "consumerCount": 63,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx"
+      ]
+    },
+    {
+      "name": "Sheet",
+      "path": "packages/ui/src/components/web/Sheet/Sheet.tsx",
+      "consumerCount": 12,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/QuickAccessRail.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TaskStrip.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/QuickAccessRail.tsx"
+      ]
+    },
+    {
+      "name": "AppHeader",
+      "path": "packages/ui/src/components/web/Shell/AppHeader.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx"
+      ]
+    },
+    {
+      "name": "NotificationItem",
+      "path": "packages/ui/src/components/web/Shell/NotificationItem.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/notifications/NotificationsFloor.tsx"
+      ]
+    },
+    {
+      "name": "SwitchRow",
+      "path": "packages/ui/src/components/web/Shell/SwitchRow.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx"
+      ]
+    },
+    {
+      "name": "TaskTabs",
+      "path": "packages/ui/src/components/web/Shell/TaskTabs.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/floor-redesign/FloorRedesignClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx"
+      ]
+    },
+    {
+      "name": "SidePanel",
+      "path": "packages/ui/src/components/web/SidePanel/SidePanel.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TutiiSidePanel.tsx"
+      ]
+    },
+    {
+      "name": "Slider",
+      "path": "packages/ui/src/components/web/Slider/Slider.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorReception.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalHorizonRefined.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/floor-redesign/FloorRedesignClient.tsx"
+      ]
+    },
+    {
+      "name": "States",
+      "path": "packages/ui/src/components/web/States/States.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx"
+      ]
+    },
+    {
+      "name": "Status",
+      "path": "packages/ui/src/components/web/Status/Status.tsx",
+      "consumerCount": 36,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/principal/PrincipalFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/architecture-lab/ArchitectureLabClient.tsx"
+      ]
+    },
+    {
+      "name": "Surface",
+      "path": "packages/ui/src/components/web/Surface/Surface.tsx",
+      "consumerCount": 39,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx"
+      ]
+    },
+    {
+      "name": "Switch",
+      "path": "packages/ui/src/components/web/Switch/Switch.tsx",
+      "consumerCount": 26,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/architecture-lab/ArchitectureLabClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/auth/AccountSwitcher.tsx"
+      ]
+    },
+    {
+      "name": "Table",
+      "path": "packages/ui/src/components/web/Table/Table.tsx",
+      "consumerCount": 13,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/architecture-lab/ArchitectureLabClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/KitComponentsDirectory.tsx"
+      ]
+    },
+    {
+      "name": "Tabs",
+      "path": "packages/ui/src/components/web/Tabs/Tabs.tsx",
+      "consumerCount": 25,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx"
+      ]
+    },
+    {
+      "name": "Text",
+      "path": "packages/ui/src/components/web/Text/Text.tsx",
+      "consumerCount": 71,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx"
+      ]
+    },
+    {
+      "name": "TextField",
+      "path": "packages/ui/src/components/web/TextField/TextField.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx",
+        "apps/gurudevi-mobile/app/(dev)/kit/KitGalleryNative.tsx"
+      ]
+    },
+    {
+      "name": "ThemeSwitcher",
+      "path": "packages/ui/src/components/web/ThemeSwitcher/ThemeSwitcher.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx"
+      ]
+    },
+    {
+      "name": "CircadianClockDial",
+      "path": "packages/ui/src/components/web/Time/CircadianClockDial.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/CircadianClockDial.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalCombo.tsx"
+      ]
+    },
+    {
+      "name": "Clock",
+      "path": "packages/ui/src/components/web/Time/Clock.tsx",
+      "consumerCount": 18,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/principal/PrincipalFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/CircadianClockDial.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalCombo.tsx"
+      ]
+    },
+    {
+      "name": "Date",
+      "path": "packages/ui/src/components/web/Time/Date.tsx",
+      "consumerCount": 70,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportForm.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx"
+      ]
+    },
+    {
+      "name": "DateTimeCombo",
+      "path": "packages/ui/src/components/web/Time/DateTimeCombo.tsx",
+      "consumerCount": 9,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorReception.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/DateTimeCombo.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/WorkspaceRouteTabs.tsx"
+      ]
+    },
+    {
+      "name": "MonthGrid",
+      "path": "packages/ui/src/components/web/Time/MonthGrid.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalHorizonRefined.tsx"
+      ]
+    },
+    {
+      "name": "Time",
+      "path": "packages/ui/src/components/web/Time/Time.tsx",
+      "consumerCount": 75,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/account-recovery/AccountRecoveryFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx"
+      ]
+    },
+    {
+      "name": "words",
+      "path": "packages/ui/src/components/web/Time/words.tsx",
+      "consumerCount": 8,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/PasswordlessEntry.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/auth/ResetPasswordForm.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/self/SelfKitClient.tsx"
+      ]
+    },
+    {
+      "name": "ToastHost",
+      "path": "packages/ui/src/components/web/Toast/ToastHost.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FeedbackToasts.tsx"
+      ]
+    },
+    {
+      "name": "Tooltip",
+      "path": "packages/ui/src/components/web/Tooltip/Tooltip.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/architecture/ArchitectureClient.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalHorizonRefined.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/PracticeCardCandidates.tsx"
+      ]
+    },
+    {
+      "name": "Waiting",
+      "path": "packages/ui/src/components/web/Waiting/Waiting.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/plan/PlanFloor.tsx",
+        "apps/gurudevi-web/spa/routes/_app.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx"
+      ]
+    },
+    {
+      "name": "WaitingSign",
+      "path": "packages/ui/src/components/web/WaitingSign/WaitingSign.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx"
+      ]
+    },
+    {
+      "name": "WorldPicker",
+      "path": "packages/ui/src/components/web/WorldPicker/WorldPicker.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorStudioDrawer.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ]
+    },
+    {
+      "name": "shared",
+      "path": "packages/ui/src/components/workspace/shared.tsx",
+      "consumerCount": 11,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/c/[code]/ClassroomInvitation.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/community/components/CirclePostStream.tsx"
+      ]
+    },
+    {
+      "name": "WorkspaceCanvas",
+      "path": "packages/ui/src/components/workspace/WorkspaceCanvas.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx"
+      ]
+    },
+    {
+      "name": "WorkspaceWallpaper",
+      "path": "packages/ui/src/components/workspace/WorkspaceWallpaper.tsx",
+      "consumerCount": 5,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorStudioDrawer.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SceneImageLayer.tsx"
+      ]
+    },
+    {
+      "name": "StudentGoals",
+      "path": "packages/classroom/src/components/student/StudentGoals.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/StudentGoals.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "SchoolConnectionWelcome",
+      "path": "packages/admin/src/components/school/SchoolConnectionWelcome.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx"
+      ]
+    },
+    {
+      "name": "ShadowAgentDrawer",
+      "path": "packages/self/src/components/archive/ShadowAgentDrawer.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/ShadowAgentDrawer.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "BreathGuide",
+      "path": "packages/self/src/components/BreathGuide.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/BreathGuide.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/MoodLotusModal.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ]
+    },
+    {
+      "name": "DailyRhythm",
+      "path": "packages/self/src/components/DailyRhythm.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/DailyRhythm.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "DecisionJournalSection",
+      "path": "packages/self/src/components/DecisionJournalSection.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/DecisionJournalSection.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "EnergyForecast",
+      "path": "packages/self/src/components/EnergyForecast.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/EnergyForecast.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "FireJournal",
+      "path": "packages/self/src/components/FireJournal.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/FireJournal.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/SelfOverview.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "GratitudeGlimmers",
+      "path": "packages/self/src/components/GratitudeGlimmers.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/GratitudeGlimmers.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "JoyJar",
+      "path": "packages/self/src/components/JoyJar.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/JoyJar.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "MoodLotus",
+      "path": "packages/self/src/components/MoodLotus.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/MoodLotusModal.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "MyGradesView",
+      "path": "packages/self/src/components/MyGradesView.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/MyGradesView.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "ProgressTree",
+      "path": "packages/self/src/components/ProgressTree.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/ProgressTree.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "PulseDashboard",
+      "path": "packages/self/src/components/PulseDashboard.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/PulseDashboard.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "RemindersPanel",
+      "path": "packages/self/src/components/RemindersPanel.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/RemindersPanel.tsx"
+      ]
+    },
+    {
+      "name": "ResonancePatternCard",
+      "path": "packages/self/src/components/ResonancePatternCard.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/ResonancePatternCard.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "SelfCanvas",
+      "path": "packages/self/src/components/SelfCanvas.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/SelfCatalogRail.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/SelfOverview.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "SelfFeatureRenderer",
+      "path": "packages/self/src/components/SelfFeatureRenderer.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-mobile/app/(tabs)/self/index.tsx"
+      ]
+    },
+    {
+      "name": "SleepTracker",
+      "path": "packages/self/src/components/SleepTracker.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/SleepTracker.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "StudentGoals",
+      "path": "packages/self/src/components/StudentGoals.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/StudentGoals.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "TeachingHistoryTimeline",
+      "path": "packages/self/src/components/TeachingHistoryTimeline.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/TeachingHistoryTimeline.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "TodoView",
+      "path": "packages/self/src/components/TodoView.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TodoView.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/TomorrowPrep.tsx"
+      ]
+    },
+    {
+      "name": "TomorrowPrep",
+      "path": "packages/self/src/components/TomorrowPrep.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/TomorrowPrep.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "VoiceJournaling",
+      "path": "packages/self/src/components/VoiceJournaling.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/VoiceJournaling.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "WindDownRitual",
+      "path": "packages/self/src/components/WindDownRitual.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/WindDownRitual.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "WisdomSeeds",
+      "path": "packages/self/src/components/WisdomSeeds.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/WisdomSeeds.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "AccountSignOut",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/AccountSignOut.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/AccountSignOut.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx"
+      ]
+    },
+    {
+      "name": "CapacityPerspectiveSwitcher",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/CapacityPerspectiveSwitcher.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/CapacityPerspectiveSwitcher.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx"
+      ]
+    },
+    {
+      "name": "CommandPalette",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/CommandPalette.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/CommandPalette.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx"
+      ]
+    },
+    {
+      "name": "DiurnalThemeToggle",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/DiurnalThemeToggle.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/GatewayHeader.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx"
+      ]
+    },
+    {
+      "name": "ExamLockdownBanner",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/ExamLockdownBanner.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/ExamLockdownBanner.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx"
+      ]
+    },
+    {
+      "name": "FeedbackToasts",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/FeedbackToasts.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FeedbackToasts.tsx"
+      ]
+    },
+    {
+      "name": "FloorAtmosphere",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/FloorAtmosphere.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorAtmosphere.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorStudioDrawer.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx"
+      ]
+    },
+    {
+      "name": "FloorErrorBoundary",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/FloorErrorBoundary.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorErrorBoundary.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx"
+      ]
+    },
+    {
+      "name": "FloorPageActions",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/FloorPageActions.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorPageActions.tsx"
+      ]
+    },
+    {
+      "name": "FloorReception",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/FloorReception.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorReception.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx"
+      ]
+    },
+    {
+      "name": "FloorStudioDrawer",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/FloorStudioDrawer.tsx",
+      "consumerCount": 12,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx"
+      ]
+    },
+    {
+      "name": "GatewayFooter",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/GatewayFooter.tsx",
+      "consumerCount": 5,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/AuthFrame.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/GatewayFooter.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/GatewayHeader.tsx"
+      ]
+    },
+    {
+      "name": "GatewayHeader",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/GatewayHeader.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/auth/AuthFrame.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/GatewayHeader.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/welcome/WelcomeStage.tsx"
+      ]
+    },
+    {
+      "name": "LayeredDeckHeader",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/LayeredDeckHeader/LayeredDeckHeader.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/LayeredDeckHeader/LayeredDeckHeader.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx"
+      ]
+    },
+    {
+      "name": "LivingCard",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/LivingCard.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/LivingCard.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/MorningSituationalBrief.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx"
+      ]
+    },
+    {
+      "name": "MorningSituationalBrief",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/MorningSituationalBrief.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/MorningSituationalBrief.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/workspace/WorkspaceFloor.tsx"
+      ]
+    },
+    {
+      "name": "PreferredNameEntry",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/PreferredNameEntry.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/PreferredNameEntry.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/onboarding/OnboardingForm.tsx",
+        "apps/gurudevi-mobile/app/onboarding.tsx"
+      ]
+    },
+    {
+      "name": "QuickAccessRail",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/QuickAccessRail.tsx",
+      "consumerCount": 7,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/QuickAccessRail.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TaskStrip.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/QuickAccessRail.tsx"
+      ]
+    },
+    {
+      "name": "RoleCardGrid",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/RoleCardGrid.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/RoleCardGrid.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/onboarding/OnboardingForm.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/welcome/WelcomeStage.tsx"
+      ]
+    },
+    {
+      "name": "RoomAperture",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/RoomAperture.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/RoomAperture.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "SacredSpatialQR",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SacredSpatialQR.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SacredSpatialQR.tsx"
+      ]
+    },
+    {
+      "name": "SanctuaryFloorCanvas",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx",
+      "consumerCount": 12,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx"
+      ]
+    },
+    {
+      "name": "SanctuaryNavIcon",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryNavIcon.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryNavIcon.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx"
+      ]
+    },
+    {
+      "name": "SanctuaryShell",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/school/[id]/articles/[slug]/SchoolArticleReader.tsx",
+        "apps/gurudevi-web/spa/routes/_app.tsx"
+      ]
+    },
+    {
+      "name": "SceneImageLayer",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SceneImageLayer.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SceneImageLayer.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorkspaceWallpaperLayer.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldGroundSurface.tsx"
+      ]
+    },
+    {
+      "name": "SceneLiveLayer",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SceneLiveLayer.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SceneLiveLayer.tsx"
+      ]
+    },
+    {
+      "name": "AngamporaWorldScene",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/scenes/AngamporaWorldScene.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/scenes/AngamporaWorldScene.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldSceneSvg.tsx"
+      ]
+    },
+    {
+      "name": "ColomboWorldScene",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/scenes/ColomboWorldScene.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/scenes/ColomboWorldScene.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldSceneSvg.tsx"
+      ]
+    },
+    {
+      "name": "KandyanWorldScene",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/scenes/KandyanWorldScene.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/scenes/KandyanWorldScene.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldSceneSvg.tsx"
+      ]
+    },
+    {
+      "name": "KeleWorldScene",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/scenes/KeleWorldScene.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/scenes/KeleWorldScene.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldSceneSvg.tsx"
+      ]
+    },
+    {
+      "name": "PeraheraWorldScene",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/scenes/PeraheraWorldScene.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/scenes/PeraheraWorldScene.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldSceneSvg.tsx"
+      ]
+    },
+    {
+      "name": "RatnaWorldScene",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/scenes/RatnaWorldScene.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/scenes/RatnaWorldScene.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldSceneSvg.tsx"
+      ]
+    },
+    {
+      "name": "RosaWorldScene",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/scenes/RosaWorldScene.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/scenes/RosaWorldScene.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldSceneSvg.tsx"
+      ]
+    },
+    {
+      "name": "SanctuaryWorldScene",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/scenes/SanctuaryWorldScene.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/scenes/SanctuaryWorldScene.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldSceneSvg.tsx"
+      ]
+    },
+    {
+      "name": "SparkWorldScene",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/scenes/SparkWorldScene.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/scenes/SparkWorldScene.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldSceneSvg.tsx"
+      ]
+    },
+    {
+      "name": "TeaWorldScene",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/scenes/TeaWorldScene.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/scenes/TeaWorldScene.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldSceneSvg.tsx"
+      ]
+    },
+    {
+      "name": "WewaWorldScene",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/scenes/WewaWorldScene.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/scenes/WewaWorldScene.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldSceneSvg.tsx"
+      ]
+    },
+    {
+      "name": "SceneStillLayer",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SceneStillLayer.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SceneStillLayer.tsx"
+      ]
+    },
+    {
+      "name": "SkipLink",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SkipLink.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SkipLink.tsx",
+        "apps/gurudevi-web/spa/routes/__root.tsx"
+      ]
+    },
+    {
+      "name": "SyncStatusPill",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/SyncStatusPill.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SyncStatusPill.tsx"
+      ]
+    },
+    {
+      "name": "TaskStrip",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/TaskStrip.tsx",
+      "consumerCount": 9,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/LayeredDeckHeader/LayeredDeckHeader.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TaskStrip.tsx"
+      ]
+    },
+    {
+      "name": "TodoView",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/TodoView.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TodoView.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/TomorrowPrep.tsx"
+      ]
+    },
+    {
+      "name": "TutiiConciergeHub",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/TutiiConciergeHub.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TutiiConciergeHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/SelfOverview.tsx"
+      ]
+    },
+    {
+      "name": "TutiiGreeting",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/TutiiGreeting.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/TutiiGreeting.tsx"
+      ]
+    },
+    {
+      "name": "TutiiSidePanel",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/TutiiSidePanel.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TutiiSidePanel.tsx"
+      ]
+    },
+    {
+      "name": "CircadianClockDial",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/workbench/CircadianClockDial.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/CircadianClockDial.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalCombo.tsx"
+      ]
+    },
+    {
+      "name": "Date",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/workbench/Date.tsx",
+      "consumerCount": 70,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportForm.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx"
+      ]
+    },
+    {
+      "name": "DateTimeCombo",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/workbench/DateTimeCombo.tsx",
+      "consumerCount": 9,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/FloorReception.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/DateTimeCombo.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/WorkspaceRouteTabs.tsx"
+      ]
+    },
+    {
+      "name": "QuickAccessRail",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/workbench/QuickAccessRail.tsx",
+      "consumerCount": 7,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/QuickAccessRail.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TaskStrip.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/QuickAccessRail.tsx"
+      ]
+    },
+    {
+      "name": "SanctuarySearchBar",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/workbench/SanctuarySearchBar.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/SanctuarySearchBar.tsx"
+      ]
+    },
+    {
+      "name": "TaskStrip",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/workbench/TaskStrip.tsx",
+      "consumerCount": 9,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/LayeredDeckHeader/LayeredDeckHeader.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/TaskStrip.tsx"
+      ]
+    },
+    {
+      "name": "TemporalCombo",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalCombo.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/DateTimeCombo.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalCombo.tsx"
+      ]
+    },
+    {
+      "name": "TemporalHorizonRefined",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalHorizonRefined.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/Date.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalCombo.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/TemporalHorizonRefined.tsx"
+      ]
+    },
+    {
+      "name": "Time",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/workbench/Time.tsx",
+      "consumerCount": 75,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/(support)/SupportHub.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/account-recovery/AccountRecoveryFloor.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx"
+      ]
+    },
+    {
+      "name": "WorkbenchContextHeader",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/workbench/WorkbenchContextHeader.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/WorkbenchContextHeader.tsx"
+      ]
+    },
+    {
+      "name": "WorkspaceRouteTabs",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/workbench/WorkspaceRouteTabs.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/WorkspaceRouteTabs.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorkspaceRouteTabs.tsx"
+      ]
+    },
+    {
+      "name": "WorkspaceLayoutRecoveryControl",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/WorkspaceLayoutRecoveryControl.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorkspaceLayoutRecoveryControl.tsx"
+      ]
+    },
+    {
+      "name": "WorkspaceLayoutRecoveryNotice",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/WorkspaceLayoutRecoveryNotice.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/WorkspaceLayoutRecoveryControl.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorkspaceLayoutRecoveryNotice.tsx"
+      ]
+    },
+    {
+      "name": "WorkspaceRouteTabs",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/WorkspaceRouteTabs.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/workbench/WorkspaceRouteTabs.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorkspaceRouteTabs.tsx"
+      ]
+    },
+    {
+      "name": "WorkspaceScopeSwitcher",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/WorkspaceScopeSwitcher.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryShell.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorkspaceScopeSwitcher.tsx"
+      ]
+    },
+    {
+      "name": "WorkspaceWallpaperLayer",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/WorkspaceWallpaperLayer.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorkspaceWallpaperLayer.tsx"
+      ]
+    },
+    {
+      "name": "WorldGroundSurface",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/WorldGroundSurface.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SanctuaryFloorCanvas.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SceneLiveLayer.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/SceneStillLayer.tsx"
+      ]
+    },
+    {
+      "name": "WorldSceneSvg",
+      "path": "apps/gurudevi-web/app/(sanctuary)/components/WorldSceneSvg.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldGroundSurface.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/components/WorldSceneSvg.tsx"
+      ]
+    },
+    {
+      "name": "BreathGuide",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/BreathGuide.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/BreathGuide.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/MoodLotusModal.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/_layout.tsx"
+      ]
+    },
+    {
+      "name": "ContourCohortDeck",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/ContourCohortDeck.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/ContourCohortDeck.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/SelfOverview.tsx"
+      ]
+    },
+    {
+      "name": "DailyContentCard",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/DailyContentCard.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/DailyContentCard.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "DailyRhythm",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/DailyRhythm.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/DailyRhythm.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "DailySadhanaModal",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/DailySadhanaModal.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/DailySadhanaModal.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "DecisionJournalSection",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/DecisionJournalSection.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/DecisionJournalSection.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "DynamicCareIsland",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/DynamicCareIsland.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/DynamicCareIsland.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "EmberCanvasOverlay",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/EmberCanvasOverlay.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/EmberCanvasOverlay.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/FireJournal.tsx"
+      ]
+    },
+    {
+      "name": "EnergyForecast",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/EnergyForecast.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/EnergyForecast.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "FireJournal",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/FireJournal.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/FireJournal.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/SelfOverview.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "GratitudeGlimmers",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/GratitudeGlimmers.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/GratitudeGlimmers.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "HearthAnchorCard",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/HearthAnchorCard.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/HearthAnchorCard.tsx"
+      ]
+    },
+    {
+      "name": "JoyJar",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/JoyJar.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/JoyJar.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "MoodLotusModal",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/MoodLotusModal.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/MoodLotusModal.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "MyGradesView",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/MyGradesView.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/MyGradesView.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "ProgressTree",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/ProgressTree.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/ProgressTree.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "PulseDashboard",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/PulseDashboard.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/PulseDashboard.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "ReframeWizard",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/ReframeWizard.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/ReframeWizard.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "RemindersManager",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/RemindersManager.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/RemindersManager.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "RemindersPanel",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/RemindersPanel.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/RemindersPanel.tsx"
+      ]
+    },
+    {
+      "name": "ResonancePatternCard",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/ResonancePatternCard.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/ResonancePatternCard.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "SacredLotusMandala",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/SacredLotusMandala.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/components/SacredSpatialQR.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/BreathGuide.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/components/DailySadhanaModal.tsx"
+      ]
+    },
+    {
+      "name": "SelfCatalogRail",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/SelfCatalogRail.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/SelfCatalogRail.tsx"
+      ]
+    },
+    {
+      "name": "SelfOverview",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/SelfOverview.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/SelfOverview.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "ShadowAgentDrawer",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/ShadowAgentDrawer.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/ShadowAgentDrawer.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "SleepTracker",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/SleepTracker.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/SleepTracker.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "SomaticTelemetryCard",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/SomaticTelemetryCard.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/SomaticTelemetryCard.tsx"
+      ]
+    },
+    {
+      "name": "StudentGoals",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/StudentGoals.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/StudentGoals.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "TeachingHistoryTimeline",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/TeachingHistoryTimeline.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/TeachingHistoryTimeline.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "TomorrowPrep",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/TomorrowPrep.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/TomorrowPrep.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "TopAnchorRow",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/TopAnchorRow.tsx",
+      "consumerCount": 1,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/TopAnchorRow.tsx"
+      ]
+    },
+    {
+      "name": "UnavailableTask",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/UnavailableTask.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/UnavailableTask.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "VoiceJournaling",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/VoiceJournaling.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/VoiceJournaling.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "WarmMirrorCard",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/WarmMirrorCard.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/WarmMirrorCard.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "WindDownRitual",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/WindDownRitual.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/WindDownRitual.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "WisdomSeeds",
+      "path": "apps/gurudevi-web/app/(sanctuary)/self/components/WisdomSeeds.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/self/components/WisdomSeeds.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx"
+      ]
+    },
+    {
+      "name": "KitComponentsDirectory",
+      "path": "apps/gurudevi-web/app/(sanctuary)/kit/components/KitComponentsDirectory.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/KitComponentsDirectory.tsx",
+        "apps/gurudevi-web/spa/routes/kit/components/index.tsx"
+      ]
+    },
+    {
+      "name": "KitTableOfContents",
+      "path": "apps/gurudevi-web/app/(sanctuary)/kit/components/KitTableOfContents.tsx",
+      "consumerCount": 4,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/KitComponentsDirectory.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/KitTableOfContents.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/temporal-horizon/TemporalHorizonComparison.tsx"
+      ]
+    },
+    {
+      "name": "LanguageExhibition",
+      "path": "apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/LanguageExhibition.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx"
+      ]
+    },
+    {
+      "name": "PracticeCardCandidates",
+      "path": "apps/gurudevi-web/app/(sanctuary)/kit/components/PracticeCardCandidates.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/PracticeCardCandidates.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/KitGalleryClient.tsx"
+      ]
+    },
+    {
+      "name": "ScrollInstrumentsShowcase",
+      "path": "apps/gurudevi-web/app/(sanctuary)/kit/components/ScrollInstrumentsShowcase.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/KitComponentsDirectory.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/ScrollInstrumentsShowcase.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/temporal-horizon/TemporalHorizonComparison.tsx"
+      ]
+    },
+    {
+      "name": "TemporalHorizonComparison",
+      "path": "apps/gurudevi-web/app/(sanctuary)/kit/components/temporal-horizon/TemporalHorizonComparison.tsx",
+      "consumerCount": 2,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/temporal-horizon/TemporalHorizonComparison.tsx",
+        "apps/gurudevi-web/spa/routes/kit/components/temporal-horizon.tsx"
+      ]
+    },
+    {
+      "name": "TemporalOrbit",
+      "path": "apps/gurudevi-web/app/(sanctuary)/kit/components/TemporalOrbit.tsx",
+      "consumerCount": 3,
+      "consumers": [
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/KitComponentsDirectory.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/temporal-horizon/TemporalHorizonComparison.tsx",
+        "apps/gurudevi-web/app/(sanctuary)/kit/components/TemporalOrbit.tsx"
+      ]
+    }
+  ]
+}

@@ -50,9 +50,9 @@ function at(p: number, phase: number): number {
 }
 
 function Flame({ p, s, t }: Part) {
-  const glow = useAnimatedStyle(() => ({ opacity: 0.18 + 0.3 * wave(p.value) }));
+  const glow = useAnimatedStyle(() => ({ opacity: 0.18 + 0.3 * wave(p.get()) }));
   const flame = useAnimatedStyle(() => ({
-    transform: [{ scaleY: 0.92 + 0.12 * wave(p.value) }, { rotate: '45deg' }],
+    transform: [{ scaleY: 0.92 + 0.12 * wave(p.get()) }, { rotate: '45deg' }],
   }));
   const d = s * 0.36;
   return (
@@ -82,7 +82,7 @@ function Flame({ p, s, t }: Part) {
 
 function Ring({ p, s, t, phase }: Part & { phase: number }) {
   const style = useAnimatedStyle(() => {
-    const v = at(p.value, phase);
+    const v = at(p.get(), phase);
     return { opacity: 0.85 * (1 - v), transform: [{ scale: 0.25 + 0.75 * v }] };
   });
   return (
@@ -109,8 +109,8 @@ function Ripple(part: Part) {
 function Glint({ p, s, t }: Part) {
   const d = s * 0.6;
   const sweep = useAnimatedStyle(() => ({
-    transform: [{ translateX: (p.value * 2 - 1) * d }, { rotate: '-45deg' }],
-    opacity: wave(p.value),
+    transform: [{ translateX: (p.get() * 2 - 1) * d }, { rotate: '-45deg' }],
+    opacity: wave(p.get()),
   }));
   return (
     <View
@@ -139,7 +139,7 @@ function Glint({ p, s, t }: Part) {
 function Leaf({ p, s, t }: Part) {
   const d = s * 0.5;
   const sway = useAnimatedStyle(() => {
-    const v = Math.sin(2 * Math.PI * p.value);
+    const v = Math.sin(2 * Math.PI * p.get());
     return { transform: [{ translateY: v * s * 0.04 }, { rotate: `${-45 + v * 18}deg` }] };
   });
   return (
@@ -164,8 +164,8 @@ function Bar({ p, s, t, index, count }: Part & { index: number; count: number })
   const fill = useAnimatedStyle(() => {
     // Each row fills in its share of the loop, then all fade together at the end.
     const start = index / (count + 1);
-    const v = Math.min(1, Math.max(0, (p.value - start) * (count + 1)));
-    return { transform: [{ scaleX: v }], opacity: p.value > 0.9 ? (1 - p.value) * 10 : 1 };
+    const v = Math.min(1, Math.max(0, (p.get() - start) * (count + 1)));
+    return { transform: [{ scaleX: v }], opacity: p.get() > 0.9 ? (1 - p.get()) * 10 : 1 };
   });
   return (
     <View
@@ -199,7 +199,7 @@ function Rows(part: Part) {
 
 function Rule({ p, s, t, phase }: Part & { phase: number }) {
   const draw = useAnimatedStyle(() => {
-    const v = at(p.value, phase);
+    const v = at(p.get(), phase);
     return { transform: [{ scaleX: Math.min(1, v * 1.6) }], opacity: v > 0.8 ? (1 - v) * 5 : 1 };
   });
   return (
@@ -233,7 +233,7 @@ function Band(part: Part) {
 function Lamp({ p, s, t }: Part) {
   // The flame lights quickly, holds, then dims: a lamp being lit, not a pulse.
   const flame = useAnimatedStyle(() => {
-    const v = p.value < 0.25 ? p.value * 4 : p.value > 0.8 ? (1 - p.value) * 5 : 1;
+    const v = p.get() < 0.25 ? p.get() * 4 : p.get() > 0.8 ? (1 - p.get()) * 5 : 1;
     return { opacity: 0.25 + 0.75 * v, transform: [{ scale: 0.7 + 0.3 * v }] };
   });
   return (
@@ -254,7 +254,7 @@ function Dot({
 }: Part & { phase: number; color: string; square?: boolean }) {
   const beat = useAnimatedStyle(() => {
     // A struck beat: fast up, slower down.
-    const v = at(p.value, phase);
+    const v = at(p.get(), phase);
     const hit = v < 0.15 ? v / 0.15 : Math.max(0, 1 - (v - 0.15) / 0.45);
     return { opacity: 0.35 + 0.65 * hit, transform: [{ scale: 0.8 + 0.35 * hit }] };
   });
@@ -304,7 +304,7 @@ function Petal({ s, t, turn }: Omit<Part, 'p'> & { turn: number }) {
 
 function Bloom({ p, s, t }: Part) {
   const open = useAnimatedStyle(() => {
-    const v = wave(p.value);
+    const v = wave(p.get());
     return { transform: [{ scale: 0.62 + 0.38 * v }, { rotate: `${v * 24}deg` }] };
   });
   return (
@@ -331,7 +331,7 @@ function Signal(part: Part) {
 
 function Segment({ p, t, index, w, h }: Omit<Part, 's'> & { index: number; w: number; h: number }) {
   const lit = useAnimatedStyle(() => ({
-    opacity: p.value * 5 > index && p.value < 0.95 ? 1 : 0.12,
+    opacity: p.get() * 5 > index && p.get() < 0.95 ? 1 : 0.12,
   }));
   return <Animated.View style={[{ width: w, height: h, backgroundColor: t.lamp }, lit]} />;
 }
@@ -362,6 +362,17 @@ function Charge({ p, s, t }: Part) {
   );
 }
 
+/** Three round dots in turn: the familiar sign of a plain app (Classic). */
+function Dots(part: Part) {
+  return (
+    <View style={{ flexDirection: 'row', gap: part.s * 0.1, alignItems: 'center' }}>
+      {[0, 1, 2].map((i) => (
+        <Dot key={i} {...part} color={part.t.lamp} phase={-i / 3} />
+      ))}
+    </View>
+  );
+}
+
 const DRAW: Readonly<Record<SignKind, (part: Part) => ReactNode>> = {
   flame: Flame,
   ripple: Ripple,
@@ -374,6 +385,7 @@ const DRAW: Readonly<Record<SignKind, (part: Part) => ReactNode>> = {
   petal: Bloom,
   signal: Signal,
   charge: Charge,
+  dots: Dots,
 };
 
 function circle(d: number): ViewStyle {
@@ -419,7 +431,7 @@ export function WaitingSign({ size = 40, kind, still = false }: WaitingSignProps
     };
   }, [moving, breathing, cycle, sign, p, breath]);
 
-  const fade = useAnimatedStyle(() => ({ opacity: breath.value }));
+  const fade = useAnimatedStyle(() => ({ opacity: breath.get() }));
   const Draw = DRAW[sign];
 
   return (

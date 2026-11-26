@@ -1,6 +1,6 @@
 import { VideoPlayer } from '@repo/ui/components/media/VideoPlayer';
-import { safeBack } from '@repo/ui/utils/navigation';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 import { useCallback } from 'react';
 
@@ -15,11 +15,11 @@ export default function VideoPlayerScreen() {
     url: string;
     creator: string;
   }>();
-  const router = useRouter();
+  const router = useNavigator();
 
   const handleClose = useCallback(() => {
-    safeBack('/library');
-  }, []);
+    router.back('/library');
+  }, [router]);
 
   return <VideoPlayer url={url} title={title} creator={creator} onClose={handleClose} />;
 }

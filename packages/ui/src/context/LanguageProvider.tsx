@@ -1,4 +1,4 @@
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import i18n from 'i18next';
 import {
   createContext,

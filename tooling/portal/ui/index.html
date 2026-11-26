@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polymath Sovereign Dev-Console</title>
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/base.css">
+  <style>
+    /* Component Styles for Views */
+    .critique-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .critique-card h3 {
+      font-size: 1.15rem;
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .critique-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+    .critique-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .critique-item h4 {
+      font-size: 1.05rem;
+      color: var(--text);
+      font-weight: 700;
+    }
+    .critique-text {
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+    .critique-reality {
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: var(--text);
+      border-top: 1px dashed var(--border);
+      padding-top: 0.6rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.1rem 1.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .stat-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .stat-value {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .stat-subtext {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* Split Grids & Seams */
+    .layer-split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 900px) {
+      .layer-split-grid { grid-template-columns: 1fr; }
+    }
+    .layer-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+    .seam-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.85rem 1.1rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* Matrix Table */
+    table.matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.25rem;
+      background: var(--surface);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    table.matrix-table th, table.matrix-table td {
+      padding: 0.95rem 1.2rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    table.matrix-table th {
+      background: var(--surface-hover);
+      color: var(--text);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+    }
+    table.matrix-table tr:hover {
+      background: var(--surface-hover);
+    }
+
+    /* File Explorer & Card Grids */
+    .search-bar-container {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      align-items: center;
+    }
+    .search-box {
+      flex: 1;
+      padding: 0.85rem 1.35rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    .search-box:focus {
+      outline: 2px solid var(--accent);
+      border-color: transparent;
+    }
+
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 1.75rem;
+    }
+    .cat-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.45rem 0.85rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .cat-pill:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+    .cat-pill.active {
+      background: var(--accent);
+      color: #0f172a;
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    .file-group {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .file-group-header {
+      padding: 0.95rem 1.35rem;
+      background: var(--surface-hover);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+    .file-group-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .file-group-count {
+      background: var(--pill-bg);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+    }
+    .file-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 0.75rem;
+      padding: 1rem;
+    }
+    .file-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.6rem;
+      transition: all 0.15s ease;
+    }
+    .file-card:hover {
+      background: var(--surface-hover);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .file-card-info {
+      overflow: hidden;
+    }
+    .file-card-name {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .file-card-path {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 0.15rem;
+    }
+    .ext-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .ext-md { background: rgba(56, 189, 248, 0.15); color: var(--accent); }
+    .ext-yaml { background: rgba(251, 191, 36, 0.15); color: var(--warning); }
+    .ext-ts { background: rgba(129, 140, 248, 0.15); color: var(--accent-alt); }
+    .ext-c4 { background: rgba(52, 211, 153, 0.15); color: var(--success); }
+
+    /* Side Panel */
+    .side-panel {
+      width: 0;
+      opacity: 0;
+      pointer-events: none;
+      background: var(--panel-bg);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+      overflow: hidden;
+      z-index: 10;
+      box-shadow: var(--shadow);
+    }
+    .side-panel.open {
+      width: 52%;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .side-panel.fullscreen {
+      width: 85%;
+    }
+    .panel-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+    .panel-header-left {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      gap: 0.2rem;
+    }
+    .panel-header-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .panel-meta {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      align-items: center;
+    }
+    .panel-meta-badge {
+      background: var(--pill-bg);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+    }
+    .panel-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .panel-btn {
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.75rem;
+      cursor: pointer;
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .panel-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      line-height: 1;
+    }
+    .close-btn:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+    .panel-content {
+      flex: 1;
+      padding: 1.25rem 1.5rem;
+      overflow-y: auto;
+      font-size: 0.88rem;
+      background: var(--code-bg);
+      color: var(--text);
+    }
+
+    pre.code-view {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      white-space: pre;
+      tab-size: 2;
+      overflow-x: auto;
+    }
+    .markdown-view {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.7;
+      color: var(--text);
+      max-width: 900px;
+    }
+    .markdown-view h1 { font-size: 1.6rem; color: var(--accent); margin: 1.5rem 0 0.8rem 0; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    .markdown-view h2 { font-size: 1.3rem; color: var(--accent-alt); margin: 1.25rem 0 0.6rem 0; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.3rem; }
+    .markdown-view h3 { font-size: 1.1rem; color: var(--text); margin: 1rem 0 0.4rem 0; }
+    .markdown-view p { margin-bottom: 0.9rem; }
+    .markdown-view ul, .markdown-view ol { margin: 0.5rem 0 1rem 1.5rem; }
+    .markdown-view li { margin-bottom: 0.3rem; }
+    .markdown-view blockquote {
+      border-left: 4px solid var(--accent);
+      padding: 0.6rem 1rem;
+      background: rgba(56, 189, 248, 0.08);
+      margin: 1rem 0;
+      border-radius: 0 6px 6px 0;
+      font-style: italic;
+    }
+    .markdown-view code {
+      font-family: ui-monospace, Menlo, Monaco, Consolas, monospace;
+      background: var(--pill-bg);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      color: var(--accent);
+    }
+    .markdown-view pre {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+    .markdown-view pre code {
+      background: transparent;
+      padding: 0;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header>
+    <div class="header-left">
+      <div class="logo-badge">
+        <span>Polymath Dev-Console</span>
+        <span class="version">2026 Sovereign</span>
+      </div>
+      <div class="tabs-scroll-wrapper">
+        <button class="nav-scroll-btn" id="tabs-scroll-left" title="Scroll tabs left">‹</button>
+        <div class="tabs" id="main-nav-tabs">
+          <button class="tab-btn active" data-tab="walkthrough">
+            <span>🗺️</span> Platform Map & Walkthrough
+          </button>
+          <button class="tab-btn" data-tab="deps">
+            <span>📦</span> Dependency Stack & Ecosystem
+          </button>
+          <button class="tab-btn" data-tab="drift">
+            <span>⚠️</span> Incompatibilities & Drift
+          </button>
+          <button class="tab-btn" data-tab="matrix">
+            <span>🏛️</span> Deterministic AI SDLC Matrix
+          </button>
+          <button class="tab-btn" data-tab="docs">
+            <span>📚</span> Docs & Code Index
+          </button>
+          <button class="tab-btn" data-tab="dag">
+            <span>📐</span> Architecture Tiers DAG
+          </button>
+          <button class="tab-btn" data-tab="erd">
+            <span>🗄️</span> Code ERD & Identity
+          </button>
+          <button class="tab-btn" data-tab="permissions">
+            <span>🛡️</span> Permissions Graph
+          </button>
+          <button class="tab-btn" data-tab="web-state">
+            <span>🌐</span> Web State Crawl
+          </button>
+        </div>
+        <button class="nav-scroll-btn" id="tabs-scroll-right" title="Scroll tabs right">›</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="theme-toggle-btn" id="theme-toggle-btn" title="Switch Light/Dark Mode">
+        <span id="theme-icon">🌙</span> <span id="theme-text">Dark Mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- App Body -->
+  <div class="app-body">
+    <!-- Main Content Area -->
+    <div class="main-view" id="main-view">
+      <div class="tab-view-container" id="view-walkthrough"></div>
+      <div class="tab-view-container" id="view-deps" style="display: none;"></div>
+      <div class="tab-view-container" id="view-drift" style="display: none;"></div>
+      <div class="tab-view-container" id="view-matrix" style="display: none;"></div>
+      <div class="tab-view-container" id="view-docs" style="display: none;"></div>
+      <div class="tab-view-container" id="view-dag" style="display: none;"></div>
+      <div class="tab-view-container" id="view-erd" style="display: none;"></div>
+      <div class="tab-view-container" id="view-permissions" style="display: none;"></div>
+      <div class="tab-view-container" id="view-web-state" style="display: none;"></div>
+    </div>
+
+    <!-- Universal Slide-out Side Panel -->
+    <div class="side-panel" id="side-panel">
+      <div class="panel-header">
+        <div class="panel-header-left">
+          <div class="panel-header-title" id="panel-title">File Preview</div>
+          <div class="panel-meta">
+            <span class="panel-meta-badge" id="panel-badge">FILE</span>
+            <span id="panel-meta-info">0 lines • 0 KB</span>
+          </div>
+        </div>
+        <div class="panel-header-actions">
+          <button class="panel-btn" id="toggle-view-btn" style="display: none;" title="Toggle Formatted / Raw View">
+            <span id="toggle-view-icon">📄</span> <span id="toggle-view-label">Raw</span>
+          </button>
+          <button class="panel-btn" id="copy-path-btn" title="Copy Path to Clipboard">📋 Path</button>
+          <button class="panel-btn" id="copy-content-btn" title="Copy Content">📄 Copy</button>
+          <button class="panel-btn" id="maximize-btn" title="Maximize View">⛶</button>
+          <button class="close-btn" id="close-btn" title="Close (Esc)">✕</button>
+        </div>
+      </div>
+      <div class="panel-content" id="panel-content">Select a file to inspect.</div>
+    </div>
+  </div>
+
+  <!-- Native ES Module Bootstrap -->
+  <script type="module">
+    import { Shell } from './components/shell.js';
+    import { SidePanel } from './components/sidePanel.js';
+    import { WalkthroughView } from './views/walkthroughView.js';
+    import { DepsView } from './views/depsView.js';
+    import { DriftView } from './views/driftView.js';
+    import { MatrixView } from './views/matrixView.js';
+    import { DocsView } from './views/docsView.js';
+    import { TopologicalDagView } from './views/topologicalDagView.js';
+    import { ErdView } from './views/erdView.js';
+    import { PermissionsView } from './views/permissionsView.js';
+    import { WebStateView } from './views/webStateView.js';
+
+    // Initialize Universal Side Panel
+    const sidePanel = new SidePanel();
+    document.getElementById('toggle-view-btn')?.addEventListener('click', () => sidePanel.toggleMarkdownView());
+    document.getElementById('copy-path-btn')?.addEventListener('click', () => sidePanel.copyPath());
+    document.getElementById('copy-content-btn')?.addEventListener('click', () => sidePanel.copyContent());
+    document.getElementById('maximize-btn')?.addEventListener('click', () => sidePanel.toggleMaximize());
+    document.getElementById('close-btn')?.addEventListener('click', () => sidePanel.close());
+
+    // Track mounted views to avoid redundant network queries
+    const mountedViews = new Set();
+
+    function mountTab(tabId) {
+      if (mountedViews.has(tabId)) return;
+      mountedViews.add(tabId);
+
+      switch (tabId) {
+        case 'walkthrough':
+          WalkthroughView.render(sidePanel);
+          break;
+        case 'deps':
+          DepsView.render(sidePanel);
+          break;
+        case 'drift':
+          DriftView.render(sidePanel);
+          break;
+        case 'matrix':
+          MatrixView.render(sidePanel);
+          break;
+        case 'docs':
+          DocsView.render(sidePanel);
+          break;
+        case 'dag':
+          TopologicalDagView.render(sidePanel);
+          break;
+        case 'erd':
+          ErdView.render(sidePanel);
+          break;
+        case 'permissions':
+          PermissionsView.render(sidePanel);
+          break;
+        case 'web-state':
+          WebStateView.render(sidePanel);
+          break;
+      }
+    }
+
+    // Initialize Shell with 9 Tabs
+    const tabs = [
+      { id: 'walkthrough', label: 'Platform Map & Walkthrough' },
+      { id: 'deps', label: 'Dependency Stack & Ecosystem' },
+      { id: 'drift', label: 'Incompatibilities & Drift' },
+      { id: 'matrix', label: 'Deterministic AI SDLC Matrix' },
+      { id: 'docs', label: 'Docs & Code Index' },
+      { id: 'dag', label: 'Architecture Tiers DAG' },
+      { id: 'erd', label: 'Code ERD & Identity' },
+      { id: 'permissions', label: 'Permissions Graph' },
+      { id: 'web-state', label: 'Web State Crawl' }
+    ];
+
+    const shell = new Shell({
+      tabs,
+      onTabChange: (tabId) => mountTab(tabId),
+      onThemeChange: () => {}
+    });
+
+    // Mount initial default tab
+    mountTab('walkthrough');
+  </script>
+</body>
+</html>

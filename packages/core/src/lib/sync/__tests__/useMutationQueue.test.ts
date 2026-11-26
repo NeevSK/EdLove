@@ -1,14 +1,14 @@
-import { setActiveAccountId } from '@repo/core/lib/accountScope';
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { setActiveAccountId } from '@repo/core/lib/accountScope.adapter';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
+import {
+  isQueuedMutationAcknowledged,
+  useMutationQueue,
+} from '@repo/core/lib/sync/mutationQueue.store';
 import {
   MAX_DEAD_LETTER_QUEUE_SIZE,
   MAX_MUTATION_QUEUE_SIZE,
   MutationQueueCapacityError,
-} from '@repo/core/lib/sync/types';
-import {
-  isQueuedMutationAcknowledged,
-  useMutationQueue,
-} from '@repo/core/lib/sync/useMutationQueue';
+} from '@repo/core/types/mutationQueue';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('useMutationQueue (G0 Unit / G1 State)', () => {
@@ -26,15 +26,13 @@ describe('useMutationQueue (G0 Unit / G1 State)', () => {
     vi.spyOn(SafeZustandStorage, 'getItem').mockReturnValue(read.promise);
     const write = vi.spyOn(SafeZustandStorage, 'setItem').mockResolvedValue(undefined);
     const initialRead = useMutationQueue.persist.rehydrate();
-    const append = useMutationQueue
-      .getState()
-      .addToQueue({
-        name: 'new-work',
-        scope: 'chat',
-        type: 'CREATE',
-        variables: { text: 'new' },
-        userId: 'account-a',
-      });
+    const append = useMutationQueue.getState().addToQueue({
+      name: 'new-work',
+      scope: 'chat',
+      type: 'CREATE',
+      variables: { text: 'new' },
+      userId: 'account-a',
+    });
     await Promise.resolve();
     expect(write).not.toHaveBeenCalled();
     const saved = {
@@ -71,15 +69,13 @@ describe('useMutationQueue (G0 Unit / G1 State)', () => {
     const write = vi.spyOn(SafeZustandStorage, 'setItem').mockResolvedValue(undefined);
     await useMutationQueue.persist.rehydrate();
     await expect(
-      useMutationQueue
-        .getState()
-        .addToQueue({
-          name: 'new-work',
-          scope: 'chat',
-          type: 'CREATE',
-          variables: { text: 'retain draft' },
-          userId: 'account-a',
-        }),
+      useMutationQueue.getState().addToQueue({
+        name: 'new-work',
+        scope: 'chat',
+        type: 'CREATE',
+        variables: { text: 'retain draft' },
+        userId: 'account-a',
+      }),
     ).rejects.toThrow('Original work was retained');
     expect(write).not.toHaveBeenCalled();
   });
@@ -240,33 +236,20 @@ describe('useMutationQueue (G0 Unit / G1 State)', () => {
 
   it('prevents duplicate intents for the same user without blocking other users', async () => {
     const { addToQueue } = useMutationQueue.getState();
+    const likeAs = (userId: string) =>
+      addToQueue({
+        name: 'likePost',
+        scope: 'community',
+        type: 'UPDATE',
+        variables: { postId: 'post-1' },
+        userId,
+      });
 
-    // User 1 adds an intent
-    await addToQueue({
-      name: 'likePost',
-      scope: 'community',
-      type: 'UPDATE',
-      variables: { postId: 'post-1' },
-      userId: 'user-123',
-    });
-
-    // User 1 submits same intent again -> should be deduplicated
-    await addToQueue({
-      name: 'likePost',
-      scope: 'community',
-      type: 'UPDATE',
-      variables: { postId: 'post-1' },
-      userId: 'user-123',
-    });
-
-    // User 2 submits the identical variables -> MUST NOT be suppressed
-    await addToQueue({
-      name: 'likePost',
-      scope: 'community',
-      type: 'UPDATE',
-      variables: { postId: 'post-1' },
-      userId: 'user-456',
-    });
+    await likeAs('user-123');
+    // User 1 submits the same intent again -> deduplicated
+    await likeAs('user-123');
+    // User 2 submits identical variables -> MUST NOT be suppressed
+    await likeAs('user-456');
 
     const queue = useMutationQueue.getState().queue;
     expect(queue).toHaveLength(2);

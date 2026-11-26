@@ -5,7 +5,7 @@
  * Provides offline-first local persistence and bridges @repo/core/logic/erp/institutionalErpEngine.
  */
 
-import { storage } from '@repo/core/lib/storage';
+import { storage } from '@repo/core/lib/storage.adapter';
 import {
   type AllocationRequest,
   type AllocationResult,

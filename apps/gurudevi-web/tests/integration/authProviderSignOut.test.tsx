@@ -10,7 +10,7 @@ vi.mock('@/app/(sanctuary)/auth/browserAuth', () => ({
       status: 'authenticated',
       session: {
         access_token: 'test-token',
-        user: { id: 'usr-123', email: 'scholar@gurudevi.app' },
+        user: { id: 'usr-123', email: 'scholar@gurudevi.lk' },
       },
     }),
     client: {

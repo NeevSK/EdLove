@@ -34,9 +34,10 @@ export interface ScoringStrategy {
     phase: 'morning' | 'afternoon' | 'night',
   ): number;
 }
-export class RoleAffinityStrategy implements ScoringStrategy {
+/** The person's own weighting of a feature. The catalog never weights by role. */
+export class PersonalWeightStrategy implements ScoringStrategy {
   score(feature: AccessibleFeature, roleWeights: Record<string, number>): number {
-    return roleWeights[feature.id] ?? feature.roleAffinity ?? 0;
+    return roleWeights[feature.id] ?? 0;
   }
 }
 export class TemporalPhaseStrategy implements ScoringStrategy {
@@ -62,7 +63,7 @@ export class CompositeScoringStrategy implements ScoringStrategy {
   }
 }
 const defaultScoring = new CompositeScoringStrategy([
-  new RoleAffinityStrategy(),
+  new PersonalWeightStrategy(),
   new TemporalPhaseStrategy(),
 ]);
 

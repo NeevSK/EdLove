@@ -47,7 +47,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -175,9 +175,9 @@
 }
 
 .roomTag {
-  padding: 0.2rem 0.5rem;
+  padding: 0.25rem 0.6rem;
   border-radius: 6px;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 700;
   background: var(--w-sunken, #f8fafc);
   color: var(--w-lamp-deep, #9a5b2d);
@@ -189,7 +189,7 @@
   align-items: center;
   padding-top: 0.75rem;
   border-top: 1px dashed var(--w-line, #e2e8f0);
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   color: var(--w-ink-soft, #64748b);
 }
 
@@ -221,21 +221,21 @@
 }
 
 .slotTime {
-  font-size: 0.72rem;
+  font-size: 0.875rem;
   font-weight: 700;
-  color: var(--w-ink-muted, #94a3b8);
+  color: var(--w-ink-soft, #475569);
   margin: 0;
 }
 
 .slotSubject {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--w-ink, #1e293b);
   margin: 0;
 }
 
 .slotRoom {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--w-ink-soft, #64748b);
   margin: 0;
 }

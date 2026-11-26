@@ -18,16 +18,14 @@ export interface TemporalPilotProps {
 }
 
 export const TemporalPilot: React.FC<TemporalPilotProps> = ({ onSearch }) => {
-  const {
-    viewScale,
-    setScale,
-    viewMode,
-    setViewMode,
-    timelineFocus,
-    setTimelineFocus,
-    readPolicy,
-    setReadPolicy,
-  } = useTemporalStore();
+  const viewScale = useTemporalStore((s) => s.viewScale);
+  const setScale = useTemporalStore((s) => s.setScale);
+  const viewMode = useTemporalStore((s) => s.viewMode);
+  const setViewMode = useTemporalStore((s) => s.setViewMode);
+  const timelineFocus = useTemporalStore((s) => s.timelineFocus);
+  const setTimelineFocus = useTemporalStore((s) => s.setTimelineFocus);
+  const readPolicy = useTemporalStore((s) => s.readPolicy);
+  const setReadPolicy = useTemporalStore((s) => s.setReadPolicy);
   const [isCalendarVisible, setCalendarVisible] = useState(false);
 
   return (

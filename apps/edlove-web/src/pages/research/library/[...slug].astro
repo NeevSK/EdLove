@@ -1,0 +1,72 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import CinematicBackground from '../../../components/CinematicBackground.astro';
+import ProvenanceColophon from '../../../components/ProvenanceColophon.astro';
+import { absoluteUrl } from '../../../lib/site';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('library', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const canonical = entry.data.canonicalUrl ?? absoluteUrl(`/research/library/${entry.id}`);
+const cadenceMap = {
+  framework: 'perennial',
+  thinker: 'perennial',
+  manifesto: 'perennial',
+  diagnostic: 'diagnostic',
+  pattern: 'living-document',
+} as const;
+const cadence = cadenceMap[entry.data.category as keyof typeof cadenceMap] ?? 'living-document';
+---
+
+<Layout 
+  title={`${entry.data.title} | EdResearch Library`} 
+  description={entry.data.subtitle} 
+  ogType="article"
+  canonicalUrl={canonical}
+>
+  <CinematicBackground />
+  <main class="relative z-10 pb-24 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
+    <article class="max-w-[68ch] mx-auto pt-8 space-y-8">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[var(--color-gold)]">
+        <a href="/research" class="hover:underline">EdResearch</a>
+        <span>/</span>
+        <a href="/research/library" class="hover:underline">Library</a>
+        <span>/</span>
+        <span class="text-[var(--color-primaryInk)] truncate">{entry.data.title}</span>
+      </nav>
+
+      <header class="space-y-4 border-b border-[var(--color-primaryInk)]/12 pb-8">
+        <p class="font-heading text-xs uppercase tracking-[0.3em] font-bold text-[var(--color-gold)]">{entry.data.category}</p>
+        <h1 class="font-heading text-4xl md:text-5xl font-bold text-[var(--color-primaryInk)] leading-tight">{entry.data.title}</h1>
+        {entry.data.subtitle && <p class="font-serif text-xl text-[var(--color-secondaryInk)] italic leading-relaxed">{entry.data.subtitle}</p>}
+        <div class="pt-2">
+          <ProvenanceColophon
+            cadence={cadence}
+            author={entry.data.author}
+            createdDate={entry.data.publishDate}
+            updatedDate={entry.data.updatedDate}
+            version="Canon v1.0"
+            canonicalUrl={canonical}
+            license={entry.data.license}
+            customNote={`Archived entry in EdLove Pedagogical Library (${entry.data.category}).`}
+          />
+        </div>
+      </header>
+
+      <div class="prose prose-base sm:prose-lg max-w-none text-[var(--color-secondaryInk)] font-serif leading-relaxed prose-headings:font-heading prose-headings:text-[var(--color-primaryInk)] prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-p:my-5 prose-blockquote:border-[var(--color-gold)] prose-img:rounded-3xl prose-figcaption:text-center prose-figcaption:italic prose-figcaption:opacity-75">
+        <Content />
+      </div>
+
+      <footer class="pt-8 border-t border-[var(--color-primaryInk)]/12 flex items-center justify-between text-sm font-heading font-bold text-[var(--color-secondaryInk)]">
+        <a href="/research/library" class="hover:underline">&larr; Return to Library</a>
+        <a href="/research" class="hover:underline">All EdResearch &rarr;</a>
+      </footer>
+    </article>
+  </main>
+</Layout>

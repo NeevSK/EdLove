@@ -5,7 +5,7 @@ vi.mock('@repo/core/api/orpcClient', () => ({
   orpcClient: { attendance: { getStudentHistory } },
 }));
 
-import { Effect } from 'effect';
+import * as Effect from 'effect/Effect';
 import { attendanceAPI, attendanceAPI$ } from '../attendance';
 
 const row = {

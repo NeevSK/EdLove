@@ -1,5 +1,5 @@
 import { classifyRouteIntent } from '@repo/core/logic/deeplink/deepLinkPolicyPipeline';
-import { Effect } from 'effect';
+import * as Effect from 'effect/Effect';
 
 export type AuthCallbackIntent =
   | Readonly<{ kind: 'code'; code: string }>

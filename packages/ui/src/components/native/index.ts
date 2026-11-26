@@ -10,6 +10,8 @@
 
 export { initialsOf } from '../shared/initials';
 export { toast } from '../shared/toasts';
+export { listenForFeedback } from '../shared/feedbackToasts';
+export { celebrate, WorldMomentHost } from './Moment/WorldMoment';
 export {
   ApprovalCard,
   ArtifactCard,
@@ -46,6 +48,7 @@ export { Launcher, type LauncherProps } from './Launcher/Launcher';
 export { Grid, type GridProps } from './Layout/Grid';
 export { Inline, type InlineProps, Stack, type StackProps } from './Layout/Layout';
 export { useContainerWidth } from './Layout/useContainerWidth';
+export { TWO_PANE_MIN, TwoPane, type TwoPaneProps, twoPaneOf } from './Layout/TwoPane';
 export { Link, type LinkProps } from './Link/Link';
 export { List, type ListProps } from './List/List';
 export {
@@ -98,6 +101,33 @@ export {
   useMinuteClock,
   useScene,
 } from './Scene';
+export {
+  ArtLayerView,
+  ArtLife,
+  ArtStill,
+  clearStagePreview,
+  FloorOverlays,
+  type FloorPicture,
+  type FloorPictures,
+  floorPictureFor,
+  registerFloorPictures,
+  getStagePreview,
+  glowAt,
+  layerShows,
+  motionAt,
+  type StageContextValue,
+  type StagePreview,
+  setStagePreview,
+  splitLayers,
+  useFloorPresence,
+  useStage,
+  useStageContext,
+  useStagePreview,
+  useStageScroll,
+  WorldFloor,
+  WorldStage,
+  type WorldStageProps,
+} from './Stage';
 export { Section, type SectionProps } from './Section/Section';
 export { SegmentedControl, type SegmentedControlProps } from './Segmented/SegmentedControl';
 export { Select, type SelectProps } from './Select/Select';
@@ -110,10 +140,38 @@ export {
   type LinkRowProps,
 } from './Settings/SettingsRows';
 export { Sheet, type SheetProps } from './Sheet/Sheet';
-export { AppHeader, type AppHeaderProps } from './Shell/AppHeader';
+export { SidePanel, type SidePanelProps } from './SidePanel/SidePanel';
+export {
+  AppHeader,
+  type AppHeaderProps,
+  HeaderActionButton,
+  HeaderAvatar,
+} from './Shell/AppHeader';
 export { NotificationItem, type NotificationItemProps } from './Shell/NotificationItem';
 export { SwitchRow, type SwitchRowProps } from './Shell/SwitchRow';
 export { TaskTabs, type TaskTabsProps } from './Shell/TaskTabs';
+export { WorldHeader, type WorldHeaderLayout, type WorldHeaderProps } from './Shell/WorldHeader';
+export { useRoomScroll } from './Shell/useRoomScroll';
+export {
+  type RailHud,
+  WorldTabBar,
+  type WorldTabBarProps,
+  type WorldTabItem,
+} from './Shell/WorldTabBar';
+export { useShellLayout } from './Shell/useShellLayout';
+export {
+  type ConnectionStatus,
+  type ConnectionTone,
+  connectionStatusOf,
+} from './Shell/connectionStatus';
+export {
+  type AssistantChoice,
+  type HeaderLayoutChoice,
+  type TabBarLayoutChoice,
+  type VisualDetailChoice,
+  YouSheet,
+  type YouSheetProps,
+} from './Shell/YouSheet';
 export { Slider, type SliderProps } from './Slider/Slider';
 export {
   EmptyState,
@@ -164,5 +222,23 @@ export {
   ThemeSwitcher,
   type ThemeSwitcherProps,
 } from './ThemeSwitcher/ThemeSwitcher';
-
-
+export {
+  closeKeypad,
+  type KeypadTarget,
+  pressKey,
+  type TypingFocus,
+  useKeypadTarget,
+  useTypingFocus,
+} from './Keyboard/focus';
+export {
+  KEYPAD_FLAT_HEIGHT,
+  KEYPAD_SIDE_WIDTH,
+  KeypadHost,
+  useKeypadSpace,
+} from './Keyboard/Keypad';
+export { TypingBar } from './Keyboard/TypingBar';
+export { Radar, type RadarProps } from './Radar/Radar';
+export {
+  SharedTransitionBoundary,
+  type SharedTransitionBoundaryProps,
+} from './Transition/SharedTransitionBoundary';

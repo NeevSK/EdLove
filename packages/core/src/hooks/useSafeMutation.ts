@@ -1,10 +1,10 @@
 import { OfflineMutationError, runToPromise } from '@repo/core/effect';
-import { showToast } from '@repo/core/lib/feedback';
 import { DeltaResonance } from '@repo/core/lib/sync/delta';
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
-import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
-import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
+import { useMutationAuditLog } from '@repo/core/lib/sync/mutationAuditLog.store';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
+import { feedback } from '@repo/core/effect/bindings/feedback';
+import { network } from '@repo/core/effect/bindings/network';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { executeMutation$ } from '@repo/core/utils/mutation';
 import { useCallback, useRef, useState } from 'react';
@@ -154,7 +154,7 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
       try {
         const result = await runToPromise(
           executeMutation$({
-            isConnected: () => networkMonitor.isConnected(),
+            isConnected: () => network.isConnected(),
             mutation: () => mutationFn(variables),
             retryCount: options?.retryCount,
           }),
@@ -236,7 +236,7 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
             userId: studentId,
           });
 
-          showToast('Saved to Outbox (Offline)', 'info');
+          feedback.toast('Saved to Outbox (Offline)', 'info');
 
           setState({
             status: 'success',
@@ -265,7 +265,7 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
         if (options?.onError) {
           await options.onError(err, variables, context);
         } else {
-          showToast(errorMessage || 'Action failed', 'error');
+          feedback.presentFailure(err, name);
         }
 
         if (options?.onSettled) {
@@ -277,7 +277,7 @@ export function useSafeMutation<TData, TVariables, TContext = unknown>(
         inFlightKeysRef.current.delete(inFlightKey);
       }
     },
-    [mutationFn, options, showToast, addToQueue, logAudit],
+    [mutationFn, options, addToQueue, logAudit],
   );
 
   const mutate = useCallback(

@@ -1,5 +1,3 @@
-'use client';
-
 import { Moon, Sparkles, Sun, X, Zap } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import styles from './shadow-agent-drawer.module.css';

@@ -1,0 +1,324 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CinematicBackground from '../../components/CinematicBackground.astro';
+import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
+import { absoluteUrl } from '../../lib/site';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'EdResearch — EdLove Foundation',
+  description: 'EdResearch works at two orders: research on education (first order), and meta-research on education research in Sri Lanka (second order).',
+  url: absoluteUrl('/research'),
+};
+
+const programmes = [
+  {
+    num: '01',
+    name: 'Teaning (TSR)',
+    label: 'The Teacher–Student Relation',
+    desc: 'Dissolving the extractive binary of teacher and student into reciprocal care, mutual resonance, and shared developmental flow.',
+    link: '/research/library/framework-teaning',
+    linkLabel: 'Read the Teaning Paper',
+  },
+  {
+    num: '02',
+    name: 'The System View',
+    label: 'Ecological & Cybernetic Feedback',
+    desc: 'Viewing education not as isolated factory classrooms, but as deeply coupled socio-ecological, familial, and political ecosystems.',
+    link: '/research/cosmos',
+    linkLabel: 'Explore the Cosmos',
+  },
+  {
+    num: '03',
+    name: 'Meta-Research in Sri Lanka',
+    label: 'Research on Education Research',
+    desc: 'A second-order epistemological audit of how education research is conducted, funded, and framed across Sri Lankan institutions.',
+    link: '/research/sri-lanka',
+    linkLabel: 'Explore Sri Lanka Realities',
+  },
+  {
+    num: '04',
+    name: 'Critical Realist Analysis',
+    label: 'Generative Mechanisms of Schooling',
+    desc: 'Critique of state credentialism, the Rs. 210B parallel shadow tuition economy, and the structural pressures crushing teacher dignity.',
+    link: '/research/sri-lanka',
+    linkLabel: 'Read Ground Diagnostics',
+  },
+];
+
+const canonicalMonographs = [
+  {
+    cluster: 'Institutional School Systems & Macroeconomic Audits',
+    badge: 'Systemic Diagnostics',
+    papers: [
+      {
+        id: 'LK-RES-EDR-NOBLE-LIE',
+        title: "The Noble Lie of Universal Quality Education in Sri Lanka: Why Student-Teacher Ratios Don't Predict Outcomes",
+        author: 'Neev Edirisuriya',
+        year: '2026',
+        summary: 'Demonstrates why aggregate student-teacher ratios (1:17.5) are a statistical illusion failing to predict outcomes. Evaluates the Coleman Paradox and the 373 National vs 9,782 Provincial school divide.',
+        tags: ['Coleman Paradox', 'Statistical Illusion', 'Dual System', 'School Funding'],
+      },
+      {
+        id: 'LK-RES-EDR-STRATEGIC-REPORT',
+        title: 'Strategic Analysis: Sri Lanka Education Ecosystem — Market Mapping, Gap Analysis & Opportunity Assessment',
+        author: 'EdLove Research Group',
+        year: '2026',
+        summary: "Comprehensive market and policy mapping of Sri Lanka's 10,155 schools, 4.2M students, and 236K teachers. Unpacks the Rs. 122B–210B shadow private tutoring economy.",
+        tags: ['Market Mapping', 'Shadow Education', 'Tuition Economy', 'Gap Analysis'],
+      },
+      {
+        id: 'LK-RES-EDR-SCHOOLING-CHRONICLE',
+        title: 'Chronicle: Sri Lankan Schooling — Theory, Practice, and the Limits of Reform (1931–2026)',
+        author: 'Neev Edirisuriya',
+        year: '2026',
+        summary: "Longitudinal political economy chronicle: from the 1934 malaria epidemic and 1943 Kannangara Free Education report to the 8-year curriculum churn cycles and Stafford Beer's POSIWID systemic dualism.",
+        tags: ['Kannangara Compact', 'POSIWID', 'Curriculum Churn', 'Political Economy'],
+      },
+    ],
+  },
+  {
+    cluster: 'Bodily Pedagogy & Triadic Processual Learning Theory',
+    badge: 'Embodied Learning',
+    papers: [
+      {
+        id: 'PED-SAITOU-SHINTAI',
+        title: "Takashi Saitou's Bodily Pedagogy: Shintai, Vocal Resonance, and Somatic Attunement in the Classroom",
+        author: 'EdLove Research Group',
+        year: '2026',
+        summary: 'Deep investigation into bodily pedagogy (Shintai). Explores how posture, vocal resonance, rhythmic breathing, and spatial proximity govern cognitive absorption and emotional safety.',
+        tags: ['Takashi Saitou', 'Bodily Pedagogy', 'Vocal Resonance', 'Somatic Learning'],
+      },
+      {
+        id: 'PED-TRIADIC-PROCESS',
+        title: 'The Triadic Processual Model of Learning: Beyond Cartesian Cognitive Extraction',
+        author: 'Neev Edirisuriya',
+        year: '2026',
+        summary: 'Theoretical formulation of learning as a three-way dynamic between Teacher, Learner, and Living Knowledge. Resolves the teacher-learner dichotomy through "Teaning" and reciprocal attunement.',
+        tags: ['Triadic Model', 'Process Philosophy', 'Teaning', 'Relational Core'],
+      },
+      {
+        id: 'PED-WIRE-PROBLEM',
+        title: 'The Wire Problem: Why Curricula Fail in Transmission and the Geometry of Educational Space',
+        author: 'EdLove Research Group',
+        year: '2026',
+        summary: 'Examines transmission breakdown when state curricula are treated as inert cables delivering data to passive receivers. Formulates topological archetypes for living learning environments.',
+        tags: ['Curriculum Failure', 'Topological Spaces', 'Non-Extractive Learning'],
+      },
+    ],
+  },
+  {
+    cluster: 'Teacher Wellbeing, Occupational Stress & Relational Dyads',
+    badge: 'Educator Sovereignty',
+    papers: [
+      {
+        id: 'RES-TEACHER-STRESS',
+        title: 'Teacher Stress, Occupational Friction & Systemic Burnout: Structural Realities of the Sri Lankan Educator',
+        author: 'EdLove Research Group',
+        year: '2026',
+        summary: 'Surveys psychological and physiological toll on teachers operating under non-academic compliance burdens, centralized surveillance, and curriculum churn.',
+        tags: ['Teacher Wellbeing', 'Burnout', 'Occupational Friction', 'Relational Core'],
+      },
+    ],
+  },
+  {
+    cluster: 'Metaresearch & Epistemic Diagnostics',
+    badge: 'Epistemic Rigor',
+    papers: [
+      {
+        id: 'MET-METHOD-AUDIT',
+        title: 'Sri Lankan Education Research: Methodological Audit & Mechanism Deficit Analysis',
+        author: 'Neev Edirisuriya',
+        year: '2026',
+        summary: 'Examines why educational research in Sri Lanka routinely diagnoses symptoms without addressing generative mechanisms. Formulates a cybernetic audit model.',
+        tags: ['Mechanism Deficits', 'Cybernetics', 'Policy Failure', 'Epistemic Audit'],
+      },
+    ],
+  },
+];
+---
+
+<Layout 
+  title="EdResearch — EdLove Foundation"
+  description="EdResearch operates at two orders: research on education (first order) and meta-research on education research itself (second order)."
+  structuredData={structuredData}
+>
+  <div class="relative min-h-screen text-[var(--color-primaryInk)] pt-32 pb-32 overflow-hidden">
+    <CinematicBackground />
+
+    <article class="sanctuary-container relative z-10 max-w-4xl mx-auto px-6 sm:px-8 space-y-24">
+      
+      <!-- Minimalist Header in Pure Typographic Presence -->
+      <header class="pt-8 sm:pt-14 space-y-6 text-center animate-fade-in-up">
+        <h1 class="text-4xl sm:text-6xl md:text-7xl font-serif font-light text-[var(--color-primaryInk)] tracking-tight leading-[1.08]">
+          Inquiring at Two Orders.
+        </h1>
+
+        <p class="font-serif italic text-xl sm:text-2xl text-[var(--color-mutedInk)] leading-relaxed max-w-2xl mx-auto">
+          &ldquo;Research on education, and research on education research itself.&rdquo;
+        </p>
+      </header>
+
+      <!-- The Two Orders Manifesto (Integrated Editorial Flow) -->
+      <section class="border-y border-[var(--color-primaryInk)]/12 py-16 space-y-8 animate-fade-in-up delay-100">
+        <div class="prose-drop-cap font-serif text-xl sm:text-2xl text-[var(--color-primaryInk)] leading-[1.75] space-y-6">
+          <p>
+            Most educational research is unreflective: it measures test performance, compares curricula, and produces quantitative charts without ever interrogating the unexamined premises of the school itself. It treats the factory model as an immutable law of nature.
+          </p>
+          <p class="text-lg sm:text-xl text-[var(--color-secondaryInk)] leading-relaxed">
+            EdResearch refuses this superficiality. We work at two distinct orders of reflection. In the <em>first order</em>, we study the authentic relational reality of learning: the living bond between educator and learner, the systemic ecology of classrooms, and the systemic decay of well-meaning technology interventions.
+          </p>
+          <p class="text-lg sm:text-xl text-[var(--color-secondaryInk)] leading-relaxed">
+            In the <em>second order</em>, we step back into meta-research: auditing education research itself. Particularly in Sri Lanka, where decades of foreign aid, donor agendas, and centralized policy have produced reports disconnected from rural ground realities, we apply critical realism to uncover the real generative mechanisms driving our national schooling crisis.
+          </p>
+        </div>
+      </section>
+
+      <!-- The Five Core Programmes -->
+      <section class="space-y-10">
+        <div class="space-y-2">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">Inquiry Streams</span>
+          <h2 class="text-3xl sm:text-4xl font-heading font-bold text-[var(--color-primaryInk)]">
+            Five Active Programmes
+          </h2>
+        </div>
+
+        <div class="space-y-10 border-t border-b border-[var(--color-primaryInk)]/12 py-10 divide-y divide-[var(--color-primaryInk)]/12">
+          {programmes.map((p) => (
+            <div class="pt-10 first:pt-0 space-y-4">
+              <!-- Clustered Eyebrow & Heading (Heading Clinging Doctrine) -->
+              <div class="space-y-1.5">
+                <div class="flex flex-wrap items-center justify-between gap-2 text-sm font-heading">
+                  <span class="font-semibold text-[var(--color-gold)] tracking-wide">Programme {p.num} &middot; {p.name}</span>
+                  <span class="text-[var(--color-mutedInk)]">{p.label}</span>
+                </div>
+                <h3 class="text-2xl sm:text-3xl font-heading font-bold text-[var(--color-primaryInk)] leading-snug">
+                  {p.name}
+                </h3>
+              </div>
+
+              <!-- Optimal Reading Measure Clamped Body Text -->
+              <p class="font-serif text-base sm:text-[17px] text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em] max-w-2xl">
+                {p.desc}
+              </p>
+
+              <!-- Touch Target Envelope (44px Fitts' Law / WCAG 2.5.5 Compliant) -->
+              <div class="pt-1">
+                <a 
+                  href={p.link} 
+                  class="inline-flex items-center gap-2 min-h-[44px] py-2 text-sm font-heading font-bold text-[var(--color-primaryInk)] hover:text-[var(--color-gold)] transition-colors group"
+                >
+                  <span>{p.linkLabel}</span>
+                  <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Foundational Field Monographs & Systemic Chronicles -->
+      <section class="space-y-12">
+        <div class="space-y-3">
+          <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--color-gold)] block">
+            Canonical Monographs
+          </span>
+          <h2 class="text-3xl sm:text-5xl font-heading font-bold text-[var(--color-primaryInk)] tracking-tight">
+            Field Monographs &amp; Diagnostics
+          </h2>
+          <p class="font-serif italic text-lg sm:text-xl text-[var(--color-mutedInk)] leading-relaxed max-w-2xl">
+            Eight canonical research works grounded in empirical field observation, macroeconomic audits, and bodily pedagogy frameworks.
+          </p>
+        </div>
+
+        <div class="space-y-10">
+          {canonicalMonographs.map((c, idx) => (
+            <div class="bg-[#FCFBF9] border border-[var(--color-primaryInk)]/12 rounded-2xl p-8 sm:p-10 shadow-xs space-y-6">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-primaryInk)]/10 pb-4">
+                <span class="text-xs font-mono font-bold uppercase tracking-widest text-[var(--color-gold)]">
+                  Cluster 0{idx + 1} &middot; {c.badge}
+                </span>
+                <span class="text-xs font-heading font-medium text-[var(--color-mutedInk)]">
+                  {c.papers.length} {c.papers.length === 1 ? 'Monograph' : 'Monographs'}
+                </span>
+              </div>
+
+              <h3 class="text-2xl sm:text-3xl font-heading font-bold text-[var(--color-primaryInk)]">
+                {c.cluster}
+              </h3>
+
+              <div class="grid grid-cols-1 gap-6 pt-2">
+                {c.papers.map((paper) => (
+                  <div class="p-6 sm:p-7 bg-white/80 border border-[var(--color-primaryInk)]/10 rounded-xl space-y-4 sm:space-y-5 hover:border-[var(--color-gold)]/40 transition-colors shadow-2xs">
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-[var(--color-mutedInk)]">
+                      <span class="font-semibold text-[var(--color-primaryInk)]">{paper.id}</span>
+                      <span>{paper.author} &middot; {paper.year}</span>
+                    </div>
+
+                    <h4 class="font-heading font-bold text-lg sm:text-xl text-[var(--color-primaryInk)] leading-snug">
+                      {paper.title}
+                    </h4>
+
+                    <p class="font-serif text-base sm:text-[16.5px] text-[var(--color-primaryInk)] leading-[1.74] tracking-[0.018em]">
+                      {paper.summary}
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 pt-2 border-t border-[var(--color-primaryInk)]/8">
+                      {paper.tags.map((tag) => (
+                        <span class="px-2.5 py-0.5 rounded-full bg-[var(--color-primaryInk)]/5 text-xs font-mono text-[var(--color-secondaryInk)]">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Living Archives: Cosmos, Sri Lanka & Library -->
+      <section class="space-y-10">
+        <div class="space-y-2">
+          <span class="text-sm font-heading font-semibold text-[var(--color-gold)] uppercase tracking-wider block">Grounded Evidence</span>
+          <h2 class="text-3xl sm:text-4xl font-heading font-bold text-[var(--color-primaryInk)]">
+            The Research Commons
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 border-t border-b border-[var(--color-primaryInk)]/12 sm:divide-x sm:divide-[var(--color-primaryInk)]/12">
+          <a href="/research/cosmos" class="group p-8 space-y-4 hover:bg-white/40 transition-colors">
+            <h4 class="font-heading font-bold text-xl text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors leading-snug">Cosmos</h4>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+              Six pedagogical paradigms: Biological, Industrial, Montessori, Democratic, Unschooling, and Indigenous.
+            </p>
+          </a>
+
+          <a href="/research/sri-lanka" class="group p-8 space-y-4 hover:bg-white/40 transition-colors">
+            <h4 class="font-heading font-bold text-xl text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors leading-snug">Sri Lanka Realities</h4>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+              Field studies into government schooling, shadow tuition economies, and systemic resource disparities.
+            </p>
+          </a>
+
+          <a href="/research/library" class="group p-8 space-y-4 hover:bg-white/40 transition-colors">
+            <h4 class="font-heading font-bold text-xl text-[var(--color-primaryInk)] group-hover:text-[var(--color-gold)] transition-colors leading-snug">Epistemic Library</h4>
+            <p class="font-serif text-base text-[var(--color-secondaryInk)] leading-[1.74] tracking-[0.018em]">
+              Foundational philosophical thinkers, Teaning treatises, and pedagogical frameworks.
+            </p>
+          </a>
+        </div>
+      </section>
+
+      <!-- Provenance -->
+      <ProvenanceColophon 
+        version="Canonical EdResearch v1.0"
+        canonicalUrl="https://edlove.org/research"
+        readingTime={3}
+        customNote="EdResearch arm of EdLove Foundation. Governed by first and second order educational inquiry."
+      />
+    </article>
+  </div>
+</Layout>

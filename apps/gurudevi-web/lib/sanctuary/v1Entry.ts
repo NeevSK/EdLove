@@ -1,5 +1,6 @@
 import { createV1Client } from '@repo/core/api/v1/client';
 import type { AppContractClient } from '@repo/core/api/v1/contract';
+import type { AuthoritativeAuthorizedEntryFacts } from '@repo/core/web-authorized-entry';
 
 export type V1Entry = Awaited<ReturnType<AppContractClient['identity']['entry']>>;
 export type V1Scope = V1Entry['scopes'][number];
@@ -36,4 +37,30 @@ export function chooseActiveScope(
 
 export function personalCapacity(scopes: readonly V1Scope[]): string | null {
   return scopes.find((scope) => scope.entityType === 'PERSONAL')?.capacity ?? null;
+}
+
+/** The account's entry facts from Sanctuary, for the server page and the browser alike. */
+export function authoritativeFacts(
+  entry: V1Entry,
+  subject: string,
+  selectedBondId: string | undefined,
+): AuthoritativeAuthorizedEntryFacts {
+  const active = chooseActiveScope(entry.scopes, selectedBondId);
+  const primary = personalCapacity(entry.scopes) ?? active?.capacity ?? null;
+  return {
+    kind: 'active',
+    accountId: entry.accountId,
+    authSubjectId: subject,
+    displayName: entry.displayName,
+    onboardingCompleted: entry.onboardingCompleted,
+    activeCapacity: active?.capacity ?? null,
+    primaryCapacity: primary,
+    primaryScopeRole: primary,
+    activeScope: active && {
+      bondId: active.bondId,
+      entityId: active.entityId,
+      entityType: active.entityType,
+      roles: [active.capacity],
+    },
+  };
 }

@@ -39,4 +39,24 @@ describe('DomainWorkbenchStore', () => {
     expect(store.getSnapshot().focusedTaskKey).toBe('self:fire-journal');
     expect(store.getSnapshot().tasks.length).toBe(1);
   });
+
+  it('opening a task at capacity changes nothing and tells no one', () => {
+    const store = new DomainWorkbenchStore('self', {
+      storage: createMemoryWorkbenchStorage(),
+      maximumTasks: 1,
+      canEvict: () => false,
+    });
+    store.open(task('fire-journal'), '2026-09-15T10:00:00.000Z');
+    const before = store.getSnapshot();
+    let notified = 0;
+    store.subscribe(() => {
+      notified += 1;
+    });
+
+    const result = store.open(task('daily-pulse'), '2026-09-15T10:05:00.000Z');
+
+    expect(result.kind).toBe('at-capacity');
+    expect(store.getSnapshot()).toBe(before);
+    expect(notified).toBe(0);
+  });
 });

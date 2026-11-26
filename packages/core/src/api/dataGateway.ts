@@ -1,4 +1,4 @@
-import { type ResilienceOptions, withResilience } from '@repo/core/offline/resilience';
+import { type ResilienceOptions, withResilience } from '@repo/core/offline/resilience.adapter';
 
 export interface LocalFirstReadOptions<T> extends ResilienceOptions {
   fetchRemote: () => Promise<T>;

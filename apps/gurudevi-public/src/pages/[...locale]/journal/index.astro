@@ -1,0 +1,27 @@
+---
+import { JournalIndex } from '../../../components/journal/JournalIndex';
+import { LocalizedSection } from '../../../components/sections/LocalizedSection';
+import PublicLayout from '../../../layouts/PublicLayout.astro';
+import { journalEntries } from '../../../content/journal';
+import { LOCALIZED_MARKETING } from '../../../content/localized';
+import type { SupportedLocale } from '../../../site';
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: undefined } },
+    { params: { locale: 'si' } },
+    { params: { locale: 'ta' } },
+  ];
+}
+const locale = (Astro.params.locale ?? 'en') as SupportedLocale;
+const page = locale === 'en' ? null : LOCALIZED_MARKETING[locale].pages.journal;
+const entries = [...journalEntries].sort((a, b) => b.publishDate.localeCompare(a.publishDate));
+---
+<PublicLayout
+  locale={locale}
+  path="/journal"
+  title={page?.title ?? 'Journal | Gurudevi'}
+  description={page?.description ?? 'Stories, practice notes, and reflections for the people who make learning possible.'}
+>
+  {locale === 'en' ? <JournalIndex entries={entries} locale={locale} /> : <LocalizedSection locale={locale} section="journal" />}
+</PublicLayout>

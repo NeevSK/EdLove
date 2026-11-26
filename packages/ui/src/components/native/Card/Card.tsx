@@ -41,6 +41,7 @@ export function Card({
   size = 'md',
   media,
   icon: Glyph,
+  emoji,
   selected = false,
   disabled = false,
   onPress,
@@ -81,6 +82,10 @@ export function Card({
 
   const glyph = Glyph ? (
     <Glyph size={iconSize[size === 'lg' ? 'lg' : 'md']} color={world.tokens.ink} aria-hidden />
+  ) : emoji ? (
+    <RNText style={{ fontSize: size === 'lg' ? 26 : 22, lineHeight: size === 'lg' ? 30 : 26 }} aria-hidden>
+      {emoji}
+    </RNText>
   ) : null;
 
   let body: ReactNode;

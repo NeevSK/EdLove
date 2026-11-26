@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "Gurudevi Sanctuary",
+    "name": "Gurudevi App",
     "slug": "gurudevi-sanctuary",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "scheme": "gurudevi",
@@ -14,9 +14,9 @@
       "associatedDomains": ["applinks:sanctuary.gurudevi.app", "applinks:gurudevi.app"],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSMicrophoneUsageDescription": "Gurudevi Sanctuary requires microphone access to record reflective audio journal entries.",
-        "NSCameraUsageDescription": "Gurudevi Sanctuary requires camera access to scan school QR invites and capture classroom moments.",
-        "NSPhotoLibraryUsageDescription": "Gurudevi Sanctuary requires photo library access to upload profile avatars and educational documents."
+        "NSMicrophoneUsageDescription": "Gurudevi App requires microphone access to record reflective audio journal entries.",
+        "NSCameraUsageDescription": "Gurudevi App requires camera access to scan school QR invites and capture classroom moments.",
+        "NSPhotoLibraryUsageDescription": "Gurudevi App requires photo library access to upload profile avatars and educational documents."
       }
     },
     "android": {
@@ -216,7 +216,6 @@
       "expo-sqlite",
       "expo-video",
       "expo-notifications",
-      "@react-native-community/datetimepicker",
       [
         "expo-build-properties",
         {

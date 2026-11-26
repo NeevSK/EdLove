@@ -2,13 +2,30 @@
 title: "Testing Standards"
 status: "active"
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-11-17
 author: "Naveen"
 scribe: "Antigravity"
-tags: [architecture, testing, standards]
+tags: [architecture, testing, standards, e2e, ui-runtime]
+references:
+  - "docs/architecture/ui-runtime-testing-standard.md"
+  - "docs/architecture/interaction-tree-and-e2e-testing-standard.md"
+  - "docs/engineering/rn-e2e-testing.md"
 ---
 
 # Testing Standards
+
+This document establishes the testing hierarchy and standards across the Polymath Platform.
+
+## Monorepo Testing Architecture Overview
+
+The testing strategy spans three complementary authorities:
+
+1. **API Integration & Contract Testing (This Document)**: In-process Hono HTTP tests, oRPC procedure contracts, and POA assertions.
+2. **UI Runtime & Component Hierarchy**: [`docs/architecture/ui-runtime-testing-standard.md`](ui-runtime-testing-standard.md) defines G0–G5 graduation levels (Contract $\rightarrow$ Harness $\rightarrow$ Scenario $\rightarrow$ Component-real $\rightarrow$ Platform-real $\rightarrow$ Device-confirmed).
+3. **User-Perspective State-Action Tree & E2E Testing**: [`docs/architecture/interaction-tree-and-e2e-testing-standard.md`](interaction-tree-and-e2e-testing-standard.md) defines systematic browser crawling (Playwright / `agent-browser`) and mobile declarative/agentic verification (Maestro / `agent-device`).
+4. **Mobile Native E2E Execution**: [`docs/engineering/rn-e2e-testing.md`](../engineering/rn-e2e-testing.md) defines device matrix execution and Maestro vs. Detox trade-offs in the React Native 0.88 / Expo 58 New Architecture era.
+
+---
 
 ## Integration Tests for API Handlers
 

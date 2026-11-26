@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import type { Membership, ScopeRef } from '@repo/core/types';
 
 interface BondSeed {

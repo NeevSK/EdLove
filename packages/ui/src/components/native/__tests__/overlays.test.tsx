@@ -1,7 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import type { ComponentRef, RefObject } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { usePanGesture } from 'react-native-gesture-handler';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { WorldScope } from '../../../theme/native';
 import { resolveWorld } from '../../../theme/resolve';
@@ -10,6 +9,7 @@ import { resetToasts, toast } from '../../shared/toasts';
 import { Button } from '../Button/Button';
 import { Dialog } from '../Dialog/Dialog';
 import { Popover } from '../Popover/Popover';
+import { lastSheet } from '../../../../vitest-bottom-sheet-mock';
 import { Sheet } from '../Sheet/Sheet';
 import { ToastHost } from '../Toast/ToastHost';
 import { Tooltip } from '../Tooltip/Tooltip';
@@ -71,35 +71,50 @@ describe('Dialog', { tags: ['a11y', 'interaction', 'unit'] }, () => {
   });
 });
 
+// The sheet's drag, snapping and scroll hand-off are native (Software Mansion's bottom sheet), so these
+// tests check what the kit hands it: the open and closed detents, how each kind of close is handled,
+// the window overlay and the world's scrim. The native gestures need a device.
 describe('Sheet', { tags: ['a11y', 'interaction', 'unit'] }, () => {
-  function lastPan() {
-    const calls = vi.mocked(usePanGesture).mock.calls;
-    return calls[calls.length - 1]?.[0] as {
-      onDeactivate: (e: { translationY: number; velocityY: number }) => void;
-    };
-  }
-
   it('is a named dialog with a grabber when it can be dragged away', async () => {
     await render(<Sheet open onClose={() => {}} title="Choose a class" />);
     expect(screen.getByLabelText('Choose a class').props.role).toBe('dialog');
     expect(screen.getByRole('heading', { name: 'Choose a class' })).toBeTruthy();
+    expect(lastSheet()).toMatchObject({ index: 1, windowOverlay: true, lazy: true });
+    expect(lastSheet().detents).toEqual([0, expect.objectContaining({ value: 'content' })]);
   });
 
-  it('a long or fast drag down lets it go; a short one settles back', async () => {
+  it('is closed, at its first detent, while not open', async () => {
+    await render(<Sheet open={false} onClose={() => {}} title="Choose a class" />);
+    expect(lastSheet().index).toBe(0);
+    expect(screen.queryByRole('heading', { name: 'Choose a class' })).toBeNull();
+  });
+
+  it('a drag that lets it go, or a close request, closes it', async () => {
     const onClose = vi.fn();
     await render(<Sheet open onClose={onClose} title="Choose a class" />);
-    lastPan().onDeactivate({ translationY: 40, velocityY: 200 });
+    lastSheet().onIndexChange?.(1);
     expect(onClose).not.toHaveBeenCalled();
-    lastPan().onDeactivate({ translationY: 140, velocityY: 0 });
+    lastSheet().onIndexChange?.(0);
     expect(onClose).toHaveBeenCalledTimes(1);
-    lastPan().onDeactivate({ translationY: 20, velocityY: 1400 });
+    lastSheet().onCloseRequest?.();
     expect(onClose).toHaveBeenCalledTimes(2);
   });
 
-  it('cannot be dragged away when only an action may close it', async () => {
-    await render(<Sheet open onClose={() => {}} title="Required" dismissable={false} />);
-    const config = vi.mocked(usePanGesture).mock.calls.at(-1)?.[0] as { enabled: boolean };
-    expect(config.enabled).toBe(false);
+  it('cannot be dragged or asked away when only an action may close it', async () => {
+    const onClose = vi.fn();
+    await render(<Sheet open onClose={onClose} title="Required" dismissable={false} />);
+    expect(lastSheet().detents).toEqual([
+      { value: 0, programmatic: true },
+      expect.objectContaining({ value: 'content' }),
+    ]);
+    lastSheet().onCloseRequest?.();
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('dims what is behind it with the world scrim, and names that scrim for screen readers', async () => {
+    await render(<Sheet open onClose={() => {}} title="Choose a class" />);
+    expect(typeof lastSheet().scrimColor).toBe('string');
+    expect(lastSheet().scrimAccessibilityLabel).toBe('Close Choose a class');
   });
 });
 
@@ -117,6 +132,8 @@ describe('ToastHost', { tags: ['a11y', 'interaction', 'unit'] }, () => {
       toast.show({ message: 'Could not sync', tone: 'danger' });
       toast.show({ message: 'Deleted', action: { label: 'Undo', onPress: undo } });
     });
+    // Gathered, only the newest is read; fanned out, every toast is.
+    await fireEvent.press(screen.getByTestId('toast-stack'));
     const parentRole = (text: string) => {
       let node = screen.getByText(text).parent;
       while (node && node.props.role === undefined) node = node.parent;
@@ -127,6 +144,45 @@ describe('ToastHost', { tags: ['a11y', 'interaction', 'unit'] }, () => {
     await fireEvent.press(screen.getByRole('button', { name: 'Undo' }));
     expect(undo).toHaveBeenCalledTimes(1);
     expect(screen.queryByText('Deleted')).toBeNull();
+  });
+
+  it('gathers several into a stack where only the newest is read', async () => {
+    await render(<ToastHost />);
+    await act(() => {
+      toast.show({ message: 'First' });
+      toast.show({ message: 'Second' });
+    });
+    expect(screen.getByText('Second')).toBeTruthy();
+    expect(screen.queryByText('First')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Show all 2 notifications' })).toBeTruthy();
+  });
+
+  it('gives each size its own place: banners at the top, the rest in the stack', async () => {
+    await render(<ToastHost />);
+    await act(() => {
+      toast.show({ message: 'Offline', size: 'banner' });
+      toast.show({ message: 'Copied', size: 'pill' });
+    });
+    expect(screen.getByTestId('toast-banners')).toBeTruthy();
+    expect(screen.getByTestId('toast-banner')).toBeTruthy();
+    expect(screen.getByTestId('toast-pill')).toBeTruthy();
+  });
+
+  it('counts repeats under one key and shows a pending toast until it resolves', async () => {
+    await render(<ToastHost />);
+    await act(() => {
+      toast.show({ message: 'Retrying', key: 'sync' });
+      toast.show({ message: 'Retrying', key: 'sync' });
+    });
+    expect(screen.getByText('×2')).toBeTruthy();
+    let finish: (v: string) => void = () => {};
+    await act(() => {
+      void toast.promise(new Promise<string>((r) => { finish = r; }), { loading: 'Uploading', success: 'Uploaded', error: 'Upload failed' });
+    });
+    await fireEvent.press(screen.getByTestId('toast-stack'));
+    expect(screen.getByText('Uploading')).toBeTruthy();
+    await act(async () => { finish('ok'); });
+    expect(screen.getByText('Uploaded')).toBeTruthy();
   });
 });
 

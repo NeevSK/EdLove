@@ -30,7 +30,7 @@ It inventories every repo-tracked file in `packages/analytics`, records the pack
 - UI: components and provider were re-exported from root
 - Hooks: `useAnalytics`, `useStudentPerformance`, `useClassPerformance`, `usePredictions`, `usePerformanceData`
 - Runtime helpers: `initPostHog`, `trackEvent`, `identifyUser`, `resetUser`
-- Compatibility helpers: `marksToGPA`, `calculateRanks`, `multiTenantAnalyticsAPI`
+- Compatibility helpers: `marksToGPA`, `calculateRanks`
 
 #### Root after tightening
 - Engines: GPA calculator, performance analyzer, PostHog native class
@@ -104,4 +104,4 @@ It inventories every repo-tracked file in `packages/analytics`, records the pack
 - The mobile shell uses `initPostHog` only for adapter initialization and uses
   the typed core product-event boundary for product events. The legacy
   arbitrary `trackEvent` helper remains only as a compatibility shim.
-- `multiTenantAnalyticsAPI` remains on the root package as a compatibility helper for admin until a fuller admin analytics boundary is designed.
+- `multiTenantAnalyticsAPI` (root): the placeholder returning zeros was removed on 2026-11-11; the admin analytics screen uses the real API in `@repo/admin/analytics/api`. A copy remains in `stats.ts` with its type test.

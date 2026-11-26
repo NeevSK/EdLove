@@ -27,6 +27,7 @@ import { getGuestEntryErrorMessage } from '@repo/ui/screens/welcomeFlow';
 import { Theme } from '@repo/ui/theme/Theme';
 import { EXTERNAL_URLS } from '@repo/ui/utils';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import type { TFunction } from 'i18next';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -40,7 +41,7 @@ interface LanguagePillProps {
   lang: (typeof LANGUAGES)[number];
   isActive: boolean;
   onPress: (code: string) => void;
-  t: (key: string, options?: Record<string, unknown>) => string;
+  t: TFunction;
 }
 
 const LanguagePill = memo(({ lang, isActive, onPress, t }: LanguagePillProps) => {

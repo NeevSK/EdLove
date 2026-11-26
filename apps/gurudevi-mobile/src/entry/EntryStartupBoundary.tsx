@@ -1,4 +1,5 @@
 import { coreRuntime, deviceAccounts } from '@repo/core';
+import { storage } from '@repo/core/lib/storage.adapter';
 import { bootstrapPlatform } from '@repo/core/native';
 import { BrandPulse, Mascot, MascotProvider } from '@repo/ui';
 import { useEffect, useState } from 'react';
@@ -15,7 +16,17 @@ type StartupState =
   | { status: 'ready' }
   | { status: 'failed'; error: Error };
 
-function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => void }) {
+function StartupFallback({
+  error,
+  onRetry,
+  canReset,
+  onResetSession,
+}: {
+  error?: Error;
+  onRetry?: () => void;
+  canReset?: boolean;
+  onResetSession?: () => void;
+}) {
   const [startWaitExpired, setStartWaitExpired] = useState(false);
   useEffect(() => {
     if (error) return;
@@ -61,6 +72,16 @@ function StartupFallback({ error, onRetry }: { error?: Error; onRetry?: () => vo
             >
               <Text style={styles.retryButtonText}>Try again</Text>
             </Pressable>
+            {canReset && onResetSession ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Reset local session and retry"
+                onPress={onResetSession}
+                style={styles.resetButton}
+              >
+                <Text style={styles.resetButtonText}>Reset local session</Text>
+              </Pressable>
+            ) : null}
           </>
         ) : null}
       </View>
@@ -89,10 +110,6 @@ export function EntryStartupBoundary() {
     void completeEssentialStartup({
       bootstrapPlatform,
       isRuntimeRegistered: () => coreRuntime.isRegistered(),
-      loadCatalog: async () => {
-        const { registerAppCatalog } = await import('@/boot/registerAppCatalog');
-        return { registerAppCatalog };
-      },
       initializeDeviceAccounts: () => deviceAccounts.initialize(),
       onStage: recordStartupStage,
     })
@@ -127,9 +144,19 @@ export function EntryStartupBoundary() {
   return (
     <StartupFallback
       error={state.status === 'failed' ? state.error : undefined}
+      canReset={attempt >= 2}
       onRetry={() => {
         setState({ status: 'starting' });
         setAttempt((value) => value + 1);
+      }}
+      onResetSession={() => {
+        void storage
+          .clearAllAsync()
+          .catch(() => undefined)
+          .finally(() => {
+            setState({ status: 'starting' });
+            setAttempt((value) => value + 1);
+          });
       }}
     />
   );
@@ -165,5 +192,15 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: '#20140E',
     fontWeight: '700',
+  },
+  resetButton: {
+    marginTop: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  resetButtonText: {
+    color: '#D8C8B8',
+    fontSize: 13,
+    textDecorationLine: 'underline',
   },
 });

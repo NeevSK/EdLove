@@ -42,6 +42,8 @@ export type { FireflyFeedbackSceneProps } from './components/FireflyFeedbackScen
 export { FireflyFeedbackScene } from './components/FireflyFeedbackScene';
 export type { FireflyMascotProps } from './components/FireflyMascot';
 export { FireflyMascot } from './components/FireflyMascot';
+export type { TutiiLivingProps } from './components/TutiiLiving';
+export { TutiiLiving } from './components/TutiiLiving';
 export type {
   FireflyProductMomentKind,
   FireflyProductMomentProps,

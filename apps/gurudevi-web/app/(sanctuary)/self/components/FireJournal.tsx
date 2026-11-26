@@ -1,5 +1,3 @@
-'use client';
-
 import type { FeatureSurfaceStateSnapshot } from '@repo/core/logic/capabilityDecision';
 import { FeatureStateBoundary } from '@repo/ui/components/FeatureStateBoundary.web';
 import { type Dispatch, type FormEvent, type SetStateAction, useState } from 'react';
@@ -65,7 +63,7 @@ export function FireJournal({
         <p className={styles.eyebrow}>
           {t('fireJournal.title') ? `Self · ${t('fireJournal.title')}` : 'Self · Fire Journal'}
         </p>
-        <h1 id="self-floor-title">
+        <h1 id="fire-journal-floor-title">
           {isReview
             ? 'Reflecting on what was set free.'
             : isPlan

@@ -2,10 +2,13 @@
 title: "UI Runtime Testing Standard"
 status: "active"
 created: 2026-09-07
-updated: 2026-09-07
+updated: 2026-11-17
 author: "Naveen"
-scribe: "Codex"
-tags: [ui, testing, vitest, react-native, nativewind, accessibility, quality]
+scribe: "Antigravity"
+tags: [ui, testing, vitest, react-native, nativewind, accessibility, quality, e2e]
+references:
+  - "docs/architecture/interaction-tree-and-e2e-testing-standard.md"
+  - "docs/engineering/rn-e2e-testing.md"
 ---
 
 # UI Runtime Testing Standard
@@ -13,6 +16,8 @@ tags: [ui, testing, vitest, react-native, nativewind, accessibility, quality]
 This is the canonical authority for how `@repo/ui` evidence is produced and
 how test results are interpreted. The production gate is runtime behavior, not
 the number of tests and not the number of mocks.
+
+For full-journey, user-perspective state-action tree crawling and end-to-end verification across web (Playwright / `agent-browser`) and mobile (Maestro / `agent-device`), see the companion standard: [`docs/architecture/interaction-tree-and-e2e-testing-standard.md`](interaction-tree-and-e2e-testing-standard.md).
 
 ## Decision
 

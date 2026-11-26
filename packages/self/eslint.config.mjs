@@ -10,6 +10,9 @@ export default [
       'scripts/**/*',
       // Archived UI kept for reference; not maintained, not linted.
       'src/components/archive/**',
+      // Unrouted legacy self views excluded from build
+      'src/screens/self/*.tsx',
+      'src/screens/self/*.web.tsx',
     ],
   },
   {

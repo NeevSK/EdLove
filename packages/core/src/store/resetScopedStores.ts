@@ -1,7 +1,6 @@
-import { useExperienceState } from '@repo/core/lib/experienceState';
-import { withScopedStateWritesPaused } from '@repo/core/lib/scopedStateStorage';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
-import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { eventBus, scopedState } from '@repo/core/effect/bindings/state';
+import { useExperienceState } from '@repo/core/lib/experienceState.store';
+import { useMutationQueue } from '@repo/core/lib/sync/mutationQueue.store';
 import { useScopeSessionStore } from '@repo/core/store/scopeSession';
 import { useActiveSubTabsStore } from '@repo/core/store/useActiveSubTabsStore';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
@@ -42,13 +41,16 @@ const activeSubTabsScopedDefaults = {
     showActiveSubTabs: true,
     autoHideChromeOnScroll: true,
     maxTabsPerDomain: 5,
+    headerLayout: 'greeting' as const,
+    tabBarLayout: 'auto' as const,
+    assistantButton: 'tutii' as const,
   },
   isChromeVisible: true,
 };
 
 export const resetScopedStores = () => {
-  sovereignBus.emit('feedback:clear', {});
-  withScopedStateWritesPaused(() => {
+  eventBus.emit('feedback:clear', {});
+  scopedState.pauseWrites(() => {
     useScopeSessionStore.getState().clear();
     useCedarDecisionStore.getState().clearDecisions();
     useAuthStore.setState(authScopedDefaults);

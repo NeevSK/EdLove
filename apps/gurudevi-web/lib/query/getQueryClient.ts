@@ -1,4 +1,5 @@
 import { subscribeToNetwork } from '@repo/core/adapters/subscribeToNetwork';
+import { queryClientConfig } from '@repo/core/effect/bindings/queryClient';
 import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
 import {
   defaultShouldDehydrateQuery,
@@ -22,15 +23,16 @@ if (!isServer) {
  * - 5 minute staleTime to eliminate immediate SSR hydration double-fetching
  * - 10 minute gcTime for background memory reclamation
  * - 'offlineFirst' networkMode to gracefully support offline usage
+ * - Retry by failure kind, backoff and failure feedback from core (queryClientConfig)
  * - Serialization inclusion for pending queries during SSR streaming
  */
 export function makeQueryClient(): QueryClient {
-  return new QueryClient({
-    defaultOptions: {
+  // Retry, backoff and failure feedback come from core, the same on every platform.
+  return new QueryClient(
+    queryClientConfig({
       queries: {
         staleTime: 5 * 60 * 1000,
         gcTime: 10 * 60 * 1000,
-        retry: 2,
         networkMode: 'offlineFirst',
         refetchOnWindowFocus: false,
       },
@@ -39,8 +41,8 @@ export function makeQueryClient(): QueryClient {
         shouldDehydrateQuery: (query) =>
           defaultShouldDehydrateQuery(query) || query.state.status === 'pending',
       },
-    },
-  });
+    }),
+  );
 }
 
 let browserQueryClient: QueryClient | undefined = undefined;

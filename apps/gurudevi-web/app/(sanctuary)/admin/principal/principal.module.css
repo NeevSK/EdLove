@@ -16,7 +16,7 @@
 }
 
 .eyebrow {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -63,7 +63,7 @@
 }
 
 .pulseLabel {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-ink-soft, #74675d);
   text-transform: uppercase;

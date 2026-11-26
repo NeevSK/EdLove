@@ -56,6 +56,9 @@ jobs:
       - name: 🌐 Gurudevi marketing web build
         run: pnpm --filter apps-gurudevi-marketing-web build
 
+      - name: 🌐 Gurudevi public site build (Astro)
+        run: pnpm --filter apps-gurudevi-public build
+
       - name: 🔐 Load optional audit environment from Doppler
         if: ${{ env.DOPPLER_TOKEN != '' }}
         uses: ./.github/actions/load-doppler-env
@@ -90,6 +93,9 @@ jobs:
 
       - name: 🔭 Observability ownership boundaries
         run: pnpm run check:observability-boundaries
+
+      - name: 🧭 Web stack ratchet (next/* imports, Explore backend clients)
+        run: node scripts/check-web-stack.mjs
 
       - name: 🧭 Sanctuary experience contract
         run: pnpm run check:sanctuary-experience

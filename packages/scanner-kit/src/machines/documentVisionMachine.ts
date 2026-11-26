@@ -1,8 +1,10 @@
-import { buildPartitionedKey, storage } from '@repo/core/lib/storage';
+import { buildPartitionedKey, storage } from '@repo/core/lib/storage.adapter';
 import { type ParsedStudent, parseStudents } from '@repo/scanner-kit/ocr/parsers/StudentParser';
 import type { OCRPipeline } from '@repo/scanner-kit/ocr/OCRPipeline';
 import { defaultOCRPipeline } from '@repo/scanner-kit/ocr/OCRPipeline';
-import { Cause, Effect, Exit } from 'effect';
+import * as Cause from 'effect/Cause';
+import * as Effect from 'effect/Effect';
+import * as Exit from 'effect/Exit';
 import { createActor, createMachine, types } from 'xstate';
 import { z } from 'zod';
 import { ParsedStudentRowSchema } from './ocrScannerMachine';

@@ -1,8 +1,7 @@
 'use client';
 
-import { subscribeToNetwork } from '@repo/core/adapters/subscribeToNetwork';
 import type { NetworkSnapshot } from '@repo/core/logic/interfaces/network.port';
-import { networkMonitor } from '@repo/core/platform/drivers/networkMonitor';
+import { network } from '@repo/core/effect/bindings/network';
 import { useSyncExternalStore } from 'react';
 
 const SERVER_SNAPSHOT: NetworkSnapshot = Object.freeze({
@@ -19,8 +18,8 @@ export interface OfflineStatus extends NetworkSnapshot {
 /** Reads the shared platform observation; unknown stays distinct from offline. */
 export function useOfflineStatus(): OfflineStatus {
   const snapshot = useSyncExternalStore(
-    subscribeToNetwork,
-    networkMonitor.getSnapshot,
+    network.subscribe,
+    network.getSnapshot,
     () => SERVER_SNAPSHOT,
   );
 

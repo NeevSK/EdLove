@@ -10,8 +10,8 @@ const appDir = path.join(repoRoot, 'apps', 'gurudevi-mobile');
 const outputDir = path.join(appDir, 'reports', 'route-bundles');
 const fixtures = [
   ['community-feed', 'app/(tabs)/community/index.tsx'],
-  ['community-chat', 'app/(tabs)/community/direct-messages.tsx'],
-  ['classroom-overview', 'app/(tabs)/workspace/classroom/index.tsx'],
+  ['self-floor', 'app/(tabs)/self/index.tsx'],
+  ['workspace-floor', 'app/(tabs)/workspace/index.tsx'],
   ['library-browse', 'app/(tabs)/library/index.tsx'],
 ];
 
@@ -50,11 +50,19 @@ for (const [name, entryFile] of fixtures) {
     );
 
     const sourceMap = JSON.parse(readFileSync(map, 'utf8'));
+    const moduleCount = Array.isArray(sourceMap.sources)
+      ? sourceMap.sources.length
+      : Array.isArray(sourceMap.sections)
+        ? sourceMap.sections.reduce(
+            (sum, section) => sum + (section?.map?.sources?.length ?? 0),
+            0,
+          )
+        : 0;
     results.push({
       name,
       entryFile,
       status: 'ready',
-      modules: sourceMap.sources?.length ?? 0,
+      modules: moduleCount,
       bundleBytes: statSync(bundle).size,
       sourcemapBytes: statSync(map).size,
     });

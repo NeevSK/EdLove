@@ -1,0 +1,107 @@
+---
+import { EDLOVE_URL, FOUNDER_URL, INTUITUI_URL, SOCIAL_LINKS } from '@repo/core/site';
+import { LANGUAGES, localePath, surfaceUrl, type SupportedLocale } from '../site';
+
+interface Props {
+  locale: SupportedLocale;
+  path: string;
+}
+const { locale, path } = Astro.props;
+const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
+const currentYear = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="site-footer__grid">
+    <div class="site-footer__brand">
+      <div class="brand brand--footer">
+        <img src="/gurudevi-mark.svg" alt="" width="28" height="28" loading="lazy" />
+        <span>Gurudevi</span>
+      </div>
+      <p>
+        An education ecology support system and sanctuary for education in Sri Lanka, connecting
+        teachers, students, schools, and families.
+      </p>
+      <small class="site-footer__brand-note">Rooted in pedagogical care, local-first trust, and sovereign privacy.</small>
+    </div>
+
+    <div>
+      <p class="eyebrow footer-label">Ecology</p>
+      <div class="footer-links">
+        <a href="/about">The Living Ecology</a>
+        <a href="/journal">Journal &amp; Updates</a>
+        <a href="/thuthimal">Thuthimal Heritage</a>
+        <a href="/faq">Questions &amp; Clarity</a>
+        <a href="/support">Support Desk</a>
+      </div>
+    </div>
+
+    <div>
+      <p class="eyebrow footer-label">Sanctuary</p>
+      <div class="footer-links">
+        <a href={surfaceUrl('explore', '/self')}>Open Platform ↗</a>
+        <a href={surfaceUrl('sanctuary', '/sign-in')}>Educator Sign In ↗</a>
+        <a href={surfaceUrl('sanctuary', '/welcome')}>School Gateway ↗</a>
+      </div>
+    </div>
+
+    <div>
+      <p class="eyebrow footer-label">Foundation &amp; Ecosystem</p>
+      <div class="footer-links">
+        <a href={EDLOVE_URL} {...external}>EdLove Foundation ↗</a>
+        <a href={INTUITUI_URL} {...external}>Intuitui Labs ↗</a>
+        <a href={FOUNDER_URL} {...external}>Neev / Research ↗</a>
+        <a href={SOCIAL_LINKS.linkedin} {...external}>LinkedIn ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="site-footer__bottom">
+    <div class="site-footer__upper-bar">
+      <nav class="site-footer__legal" aria-label="Legal and compliance">
+        <a href="/status">Status</a>
+        <span class="site-footer__colophon-divider" aria-hidden="true">·</span>
+        <a href="/guidelines">Community Guidelines</a>
+        <span class="site-footer__colophon-divider" aria-hidden="true">·</span>
+        <a href="/privacy">Privacy Policy</a>
+        <span class="site-footer__colophon-divider" aria-hidden="true">·</span>
+        <a href="/terms">Terms of Service</a>
+        <span class="site-footer__colophon-divider" aria-hidden="true">·</span>
+        <a href="/delete-account">Account &amp; Data</a>
+      </nav>
+
+      <div class="site-footer__languages" aria-label="Language selection">
+        {
+          LANGUAGES.map((lang, idx) => (
+            <span>
+              {idx > 0 && ' · '}
+              <a
+                href={localePath(lang.code, path)}
+                lang={lang.code}
+                class={`hover:underline ${locale === lang.code ? 'font-bold underline' : ''}`}
+              >
+                {lang.nativeLabel}
+              </a>
+            </span>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="site-footer__bottomline">
+      <span>© {currentYear} Gurudevi</span>
+      <span class="site-footer__colophon-divider" aria-hidden="true">·</span>
+      <span>Part of the <a href={EDLOVE_URL} {...external} class="site-footer__edlove-link">EdLove Foundation</a></span>
+      <span class="site-footer__colophon-divider" aria-hidden="true">·</span>
+      <span class="site-footer__made-with">
+        Made with ❤️ in <img
+          src="/flags/lk.svg"
+          alt="Flag of Sri Lanka"
+          width="22"
+          height="11"
+          loading="lazy"
+          class="inline-block shrink-0 rounded-[2px] ring-1 ring-black/15 dark:ring-white/20 align-baseline overflow-hidden shadow-xs object-cover"
+        />
+      </span>
+    </div>
+  </div>
+</footer>

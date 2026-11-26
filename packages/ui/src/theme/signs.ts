@@ -21,7 +21,8 @@ export type SignKind =
   | 'beat'
   | 'petal'
   | 'signal'
-  | 'charge';
+  | 'charge'
+  | 'dots';
 
 /** Each world's sign, from its folder (`worlds/<id>`). */
 export const SIGNS: Readonly<Record<WorldId, SignKind>> = byWorld((w) => w.sign);
@@ -39,6 +40,7 @@ export const SIGN_CYCLE_MS: Readonly<Record<SignKind, number>> = {
   petal: 2600,
   signal: 1400,
   charge: 1600,
+  dots: 1200,
 };
 
 /** Where each sign rests when it cannot move (0–1 of a loop): a pose that still says "waiting". */
@@ -54,4 +56,5 @@ export const SIGN_REST: Readonly<Record<SignKind, number>> = {
   petal: 0.3,
   signal: 0.2,
   charge: 0.5,
+  dots: 0.3,
 };

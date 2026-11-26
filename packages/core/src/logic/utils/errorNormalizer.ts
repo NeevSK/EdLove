@@ -1,7 +1,19 @@
 import { ORPCError } from '@orpc/client';
 import { ErrorCategory, SovereignError } from '@repo/core/types/Errors';
 import { ZodError } from 'zod';
+import { classifyFailure } from '@repo/core/logic/failure/classifyFailure';
 import { getAPIErrorStatus } from './errorPolicy';
+
+/** oRPC v2 errors carry a code, not a status; the kind gives the HTTP status back. */
+const STATUS_BY_KIND: Readonly<Record<string, number>> = {
+  UnauthorizedError: 401,
+  ForbiddenError: 403,
+  NotFoundError: 404,
+  ConflictError: 409,
+  ValidationError: 400,
+  RateLimitedError: 429,
+  UnavailableError: 503,
+};
 
 /**
  * normalizeError: The Sovereign Sanitizer
@@ -12,7 +24,7 @@ import { getAPIErrorStatus } from './errorPolicy';
 export const normalizeError = (error: unknown, instanceId?: string): SovereignError => {
   const attachInstance = (normalized: SovereignError): SovereignError => {
     if (instanceId && !normalized.details.instance) {
-      return new SovereignError({ ...normalized.details, instance: instanceId });
+      return new SovereignError({ ...normalized.details, instance: instanceId }, normalized.cause);
     }
     return normalized;
   };
@@ -20,7 +32,7 @@ export const normalizeError = (error: unknown, instanceId?: string): SovereignEr
   // 1. If already a SovereignError, just pass through (or add instance ID)
   if (error instanceof SovereignError) {
     if (instanceId && !error.details.instance) {
-      return new SovereignError({ ...error.details, instance: instanceId });
+      return new SovereignError({ ...error.details, instance: instanceId }, error.cause);
     }
     return error;
   }
@@ -28,7 +40,7 @@ export const normalizeError = (error: unknown, instanceId?: string): SovereignEr
   // Context construction may fail before oRPC owns the response. v2 errors
   // carry a code rather than the removed instance status property.
   if (error instanceof ORPCError) {
-    const status = getAPIErrorStatus(error) ?? 500;
+    const status = getAPIErrorStatus(error) ?? STATUS_BY_KIND[classifyFailure(error)?._tag ?? ''] ?? 500;
     return attachInstance(
       new SovereignError({
         status,

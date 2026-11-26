@@ -15,4 +15,4 @@ export {
   type ModularRequest,
 } from './modules/engine';
 export { generateSnapshot } from './snapshot/generator';
-export type { PermissionSnapshot, UserContext } from './snapshot/types';
+export type { PermissionSnapshot, SnapshotSubject } from './snapshot/types';

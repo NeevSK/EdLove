@@ -2,13 +2,13 @@ import { PowerSyncFormsAdapter } from '@repo/core/powersync';
 import { FormBuilderScreen } from '@repo/form-builder';
 import type { FormSchema } from '@repo/form-builder/engine';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
-import { useRouter } from 'expo-router';
 import { useCallback, useMemo } from 'react';
+import { useNavigator } from '@repo/ui/components/native/navigation';
 
 export { RouteErrorBoundary as ErrorBoundary };
 
 export default function CreateFormModalRoute() {
-  const router = useRouter();
+  const router = useNavigator();
   const formsAdapter = useMemo(() => new PowerSyncFormsAdapter(), []);
 
   const handleSave = useCallback(

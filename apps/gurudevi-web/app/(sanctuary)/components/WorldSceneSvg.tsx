@@ -1,5 +1,3 @@
-'use client';
-
 import { DEFAULT_WORLD, isWorldId, WORLDS } from '@repo/ui/theme';
 import {
   daylightAt,

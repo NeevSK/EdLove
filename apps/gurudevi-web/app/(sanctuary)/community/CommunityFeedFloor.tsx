@@ -1,15 +1,8 @@
-'use client';
-
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState, useTransition } from 'react';
+import { Link, useRouter } from '@tanstack/react-router';
+import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { useCommunityCanvas } from '../../../lib/canvas/useCommunityCanvas';
-import {
-  COMMUNITY_GROUP_PAGE_SIZE,
-  type CommunityGroup,
-  type CommunityGroupsResult,
-  parseCommunityGroupsResult,
-} from '../../../lib/community/groups-contract';
+import { parseCommunityGroupsResult } from '../../../lib/community/groups-contract';
+import { COMMUNITY_GROUP_PAGE_SIZE, type CommunityGroupView, type CommunityGroupsResult } from '@repo/core/types/communityView';
 import { getExploreSampleAnnouncements } from '../../../lib/community/announcements-contract';
 import {
   getExploreCapacityMeta,
@@ -20,6 +13,8 @@ import { useDomainWorkbench } from '../../../lib/workbench';
 import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPreferences';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
+import { RoomAperture } from '../components/RoomAperture';
+import { TutiiConciergeHub, type ConciergeStep } from '../components/TutiiConciergeHub';
 import { timeGreeting } from '../../../lib/timeGreeting';
 import { TaskStrip } from '../components/TaskStrip';
 import styles from './community.module.css';
@@ -54,6 +49,12 @@ export function CommunityFeedFloor({
   initialIncognito?: boolean;
 }>) {
   const [activePillar, setActivePillar] = useState<CommunityPillar>(initialPillar ?? 'feed');
+
+  useEffect(() => {
+    if (initialPillar) {
+      setActivePillar(initialPillar);
+    }
+  }, [initialPillar]);
   const exploreCapacity = useExploreCapacity();
   const roleLabel =
     primaryCapacity && isExploreCapacity(primaryCapacity)
@@ -103,11 +104,11 @@ export function CommunityFeedFloor({
     });
   };
 
-  const handleClearSelectedGroup = () => {
+  const handleClearSelectedGroup = useCallback(() => {
     setSelectedGroupId(null);
     const detailTask = workbench.state.tasks.find((t) => t.featureId === 'circle-detail');
     if (detailTask) workbench.close(detailTask.taskKey);
-  };
+  }, [workbench]);
 
   useEffect(() => {
     if (!isSearchActive) return;
@@ -191,8 +192,54 @@ export function CommunityFeedFloor({
   }
 
   function retry() {
-    startRefresh(() => router.refresh());
+    startRefresh(() => void router.invalidate());
   }
+
+  const sanghaSteps: Record<string, ConciergeStep> = useMemo(() => {
+    return {
+      welcome: {
+        id: 'welcome',
+        question: `Welcome to the Sangha, ${roleLabel || 'Friend'}. A living community gathered around mutual learning and care.`,
+        subtext: 'Where would you like to connect and gather today?',
+        options: [
+          {
+            id: 'forest',
+            emoji: '🌳',
+            title: 'Community Living Forest',
+            subtitle: 'Step into our shared visual forest where members plant living trees of purpose.',
+            outcomeText: 'The forest is alive with shared intentions. Step into the grove to view living trees.',
+            primaryActionLabel: 'Enter Community Forest',
+            onSelect: () => {
+              void router.navigate({ href: '/community/forest' });
+            },
+          },
+          {
+            id: 'circles',
+            emoji: '💬',
+            title: 'Educator & Peer Circles',
+            subtitle: 'Engage in thoughtful dialogue on pedagogy, pastoral care, and mutual encouragement.',
+            outcomeText: 'Peer wisdom strengthens every educator. Browse active circles and dialogue groups.',
+            primaryActionLabel: 'View Active Circles',
+            onSelect: () => {
+              setActivePillar('groups');
+              handleClearSelectedGroup();
+            },
+          },
+          {
+            id: 'announcements',
+            emoji: '📢',
+            title: 'School Voice & Updates',
+            subtitle: 'Stay attuned to schoolwide announcements, notices, and shared celebrations.',
+            outcomeText: 'Keep in harmony with community rhythms and shared news.',
+            primaryActionLabel: 'Read School Updates',
+            onSelect: () => {
+              void router.navigate({ href: '/community/announcements' });
+            },
+          },
+        ],
+      },
+    };
+  }, [roleLabel, router, handleClearSelectedGroup]);
 
   const breadcrumbText =
     activePillar === 'feed'
@@ -223,7 +270,8 @@ export function CommunityFeedFloor({
       greeting={timeGreeting(roleLabel ? roleLabel : 'Explorer')}
       breadcrumb={breadcrumbText}
     >
-      <TaskStrip
+      <RoomAperture kind="canopy">
+        <TaskStrip
         shellSlot
         tasks={workbench.state.tasks}
         focusedTaskKey={selectedGroupId ? 'circle-detail' : workbench.state.focusedTaskKey}
@@ -257,19 +305,30 @@ export function CommunityFeedFloor({
         onOpenQuickAccessItem={(item) => {
           quickAccess.trackUse(item.id);
           if (item.id === 'announcements') {
-            router.push('/community/announcements');
+            void router.navigate({ href: '/community/announcements' });
           } else if (item.id === 'circles') {
             setActivePillar('groups');
             handleClearSelectedGroup();
           } else if (item.id === 'forest') {
-            router.push('/community/forest');
+            void router.navigate({ href: '/community/forest' });
           }
         }}
         onToggleQuickAccessPin={quickAccess.togglePin}
       />
 
+      <TutiiConciergeHub
+        theme="community"
+        badge="Tutii · Human Sangha Concierge"
+        title="Community Gathering & Fellowship"
+        initialStepId="welcome"
+        steps={sanghaSteps}
+        storageKey="community_sangha"
+        minimizedPrompt="Meet community in fellowship with Tutii"
+        escapeHatchLabel="Browse stream directly ✕"
+      />
+
       {/* 3-PILLAR TRIAD SEGMENTED SWITCHER (Conforms to UI Kit Rule 9 Vector Glyphs) */}
-      <div className={styles.pillarNavHorizon} role="tablist" aria-label="Community Sections">
+        <div className={styles.pillarNavHorizon} role="tablist" aria-label="Community Sections">
         <div className={styles.pillarSegmentedPill}>
           <button
             type="button"
@@ -357,7 +416,8 @@ export function CommunityFeedFloor({
             </p>
           </div>
           <Link
-            href={`/workspace?claimCode=${encodeURIComponent(inviteCode)}`}
+            to="/c/$code"
+            params={{ code: inviteCode }}
             style={{
               padding: '0.5rem 1.1rem',
               borderRadius: 'var(--w-radius-full, 9999px)',
@@ -609,6 +669,7 @@ export function CommunityFeedFloor({
           )}
         </>
       )}
+      </RoomAperture>
     </SanctuaryFloorCanvas>
   );
 }
@@ -642,7 +703,7 @@ function CommunityGroupCard({
   group,
   onSelect,
 }: Readonly<{
-  group: CommunityGroup;
+  group: CommunityGroupView;
   onSelect?: () => void;
 }>) {
   return (

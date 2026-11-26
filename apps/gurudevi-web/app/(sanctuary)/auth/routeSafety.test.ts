@@ -17,4 +17,7 @@ describe('safeReturnPath', () => {
       expect(safeReturnPath(candidate)).toBe('/self');
     },
   );
+  it('falls back to Self for an allowed prefix that is not a page', () => {
+    expect(safeReturnPath('/workspace/no-such-place?x=1')).toBe('/self');
+  });
 });

@@ -155,7 +155,7 @@ function runAudit() {
   const zmodel = read('packages/schema/schema.zmodel');
   const cedar = read('packages/policies/src/schema/schema.cedarschema');
   const snapshotGenerator = read('packages/policies/src/snapshot/generator.ts');
-  const localEvaluator = read('packages/core/src/logic/permissions/localEvaluator.native.ts');
+  const localEvaluator = read('packages/core/src/logic/permissions/localEvaluator.adapter.native.ts');
   const snapshotTypes = read('packages/policies/src/snapshot/types.ts');
   const powerSyncSchema = read('packages/core/src/adapters/powersync/schema.ts');
   const snapshotMigration = read(

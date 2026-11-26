@@ -18,6 +18,8 @@ const nodeGlobals = Object.fromEntries(Object.keys(globals.node).map(k => [k, "r
 export default [
   {
     ignores: [
+      "**/*.web.ts",
+      "**/*.web.tsx",
       "node_modules",
       "dist",
       "build",
@@ -44,7 +46,8 @@ export default [
       "jest-setup.ts",
       "vitest-*.ts",
       "runtime-fixtures/**",
-      "supabase/**"
+      "supabase/**",
+      "src/navigation/**"
     ]
   },
   {

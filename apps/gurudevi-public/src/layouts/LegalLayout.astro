@@ -1,0 +1,17 @@
+---
+import { LegalNav } from '../components/legal/LegalNav';
+import PublicLayout from './PublicLayout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+}
+const { title, description, path } = Astro.props;
+---
+<PublicLayout locale="en" locales={['en']} path={path} title={title} description={description}>
+  <div class="legal-shell">
+    <LegalNav pathname={path} />
+    <slot />
+  </div>
+</PublicLayout>

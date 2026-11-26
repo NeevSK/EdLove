@@ -2,6 +2,16 @@ import type { Subject } from '@repo/core/types/authorization';
 
 export type SelfViewRole = 'admin' | 'founder' | 'principal' | 'teacher' | 'guardian' | 'student';
 
+/** Every role a Self feature can be for. */
+export const SELF_VIEW_ROLES = [
+  'student',
+  'teacher',
+  'guardian',
+  'principal',
+  'founder',
+  'admin',
+] as const satisfies readonly SelfViewRole[];
+
 type SelfRoleCapability =
   | 'AdminDashboard'
   | 'FounderDashboard'

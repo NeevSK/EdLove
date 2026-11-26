@@ -5,7 +5,7 @@ import {
   ChannelLinkInitiationSchema,
   ChannelResourceScopeSchema,
   ExternalChannelProviderSchema,
-} from '@repo/core/logic/omnichannel/channelAuthority';
+} from '@repo/core/logic/schemas/channelAuthority.schema';
 import { z } from 'zod';
 
 const authority = (action: 'read' | 'update') => ({ policy: { action, subject: 'User' } }) as const;

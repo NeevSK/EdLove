@@ -11,7 +11,7 @@ import type { OCRPipeline } from '@repo/scanner-kit/ocr/OCRPipeline';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createActor } from 'xstate';
 
-vi.mock('@repo/core/lib/storage', () => {
+vi.mock('@repo/core/lib/storage.adapter', () => {
   const store = new Map<string, string>();
   return {
     buildPartitionedKey: vi.fn(

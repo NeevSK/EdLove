@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useEffect, useState } from 'react';
 import { useSleepTracker } from '../../../../lib/sanctuary/selfBrowserAdapters';
 import styles from './sleep-tracker.module.css';

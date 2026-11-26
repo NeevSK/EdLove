@@ -41,6 +41,9 @@ const DRESSED = [
   'packages/ui/src/components/ActiveSubTabStrip.tsx',
   'apps/gurudevi-mobile/app/(tabs)/_layout.tsx',
   'apps/gurudevi-mobile/src/boot/WorldFonts.tsx',
+  'packages/form-builder/src/studio/MobileFormStudio.tsx',
+  'packages/form-builder/src/studio/sheets/QuizRubricSheet.tsx',
+  'packages/form-builder/src/runner',
 ];
 
 /** Where palettes are defined; raw colours are the point here. */
@@ -48,6 +51,7 @@ const PALETTE_FILES = new Set([
   'packages/ui/src/theme/worlds',
   'packages/ui/src/theme/scene/sky.ts',
   'packages/ui/src/theme/scene/landscape.ts',
+  'packages/ui/src/theme/scene/art',
   'packages/ui/src/theme/build.ts',
   'packages/ui/src/theme/color.ts',
   'packages/ui/src/theme/resolve.ts',

@@ -27,7 +27,7 @@ React Native Web is not the target runtime for new Gurudevi web work. The existi
 ### Domain Consolidation & Country-Code TLD (.lk) Strategy
 
 - **Active Canonical Runtime (Production)**: 100% standardized on `gurudevi.app` (`https://gurudevi.app` for public marketing & content, `https://sanctuary.gurudevi.app` for authenticated web workspace).
-- **Official Contact Emails**: Standardized as `support@gurudevi.app`, `gratitude@gurudevi.app`, `institutional@gurudevi.app`.
+- **Official Contact Emails** (owner decision, 12 Nov 2026): the institutional addresses are `support@gurudevi.lk`, `gratitude@gurudevi.lk` and `institutional@gurudevi.lk`, defined once in `@repo/core/config/publicUrls` and read through `@repo/core/site`. Web traffic stays on `gurudevi.app`.
 - **Future Country-Code TLD Milestone (`gurudevi.lk`)**: Sri Lanka country-code domain (`gurudevi.lk`) is preserved as an archived future institutional milestone when local entity incorporation and funding allow. There are zero active runtime dependencies on `.lk`. All active code and configuration strictly target `gurudevi.app`.
 
 

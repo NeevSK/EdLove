@@ -3,7 +3,7 @@ import { UserContextSchema } from '@repo/core/logic/schemas/user.schema';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { GrowthBookFeatureRolloutAdapter } from '../feature-rollout/growthBookFeatureRollout.adapter';
 
-vi.mock('@repo/core/lib/storage', () => ({
+vi.mock('@repo/core/lib/storage.adapter', () => ({
   storage: { getStringAsync: vi.fn(), setAsync: vi.fn() },
 }));
 vi.mock('@repo/core/platform/drivers/networkMonitor', () => ({

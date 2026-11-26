@@ -11,7 +11,7 @@ const SEED_FILES = [
   'packages/core/src/logic/permissions/baselineCapabilities.ts',
   'packages/core/src/logic/permissions/bondScope.ts',
   'packages/core/src/logic/permissions/cedarEvaluator.ts',
-  'packages/core/src/logic/permissions/localEvaluator.ts',
+  'packages/core/src/logic/permissions/localEvaluator.adapter.ts',
   'packages/core/src/logic/permissions/sovereignty.ts',
   'packages/core/src/store/useCedarDecisionStore.ts',
   'packages/core/src/store/usePerspectiveStore.ts',

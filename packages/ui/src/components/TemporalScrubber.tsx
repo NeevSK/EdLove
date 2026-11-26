@@ -14,7 +14,10 @@ import { scheduleOnRN } from 'react-native-worklets';
  * Adheres to the "Breath-like Motion" and "Sanctuary Glass" principles.
  */
 export const TemporalScrubber: React.FC = () => {
-  const { viewDate, setViewDate, intensity, phase } = useTemporalStore();
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const setViewDate = useTemporalStore((s) => s.setViewDate);
+  const intensity = useTemporalStore((s) => s.intensity);
+  const phase = useTemporalStore((s) => s.phase);
   const { width } = useWindowDimensions();
   const scrubberWidth = width * 0.8;
 

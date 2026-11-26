@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper.adapter';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { describeSelfCanvasPersistence } from './selfCanvasPersistence';
 import { useSelfCanvasStore } from './selfCanvasStore';

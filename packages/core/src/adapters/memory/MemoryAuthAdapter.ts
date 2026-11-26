@@ -1,13 +1,5 @@
-import type {
-  AccountDeletionRequest,
-  AccountLifecycleStatus,
-  AuthChangeEvent,
-  AuthMfaFactor,
-  AuthSession,
-  AuthSubscription,
-  AuthUser,
-  IAuthPort,
-} from '@repo/core/logic/ports/auth.port';
+import type { AccountDeletionRequest, AccountLifecycleStatus, AuthChangeEvent, AuthMfaFactor, AuthSubscription, IAuthPort } from '@repo/core/logic/ports/auth.port';
+import type { AuthSession, AuthUser } from '@repo/core/types/authSession';
 import { APIError } from '@repo/core/types/API';
 
 export class MemoryAuthAdapter implements IAuthPort {

@@ -185,7 +185,20 @@ export interface ImpactRipple {
 /**
  * Sacred Missions (Manifestos)
  */
-export type ManifestoVibe = 'creative' | 'analytical' | 'compassionate' | 'leadership' | 'wisdom';
+/**
+ * sanctuary_manifestos.vibe is free text. Growth and Community each had their own list; both kinds
+ * of value can be stored, so the contract is the union.
+ */
+export type ManifestoVibe =
+  | 'creative'
+  | 'analytical'
+  | 'compassionate'
+  | 'leadership'
+  | 'wisdom'
+  | 'visionary'
+  | 'supportive'
+  | 'academic'
+  | 'wellbeing';
 
 export interface SanctuaryManifesto {
   id: string;

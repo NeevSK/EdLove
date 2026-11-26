@@ -5,7 +5,18 @@
  * 1. 2GB RAM CONSTRAINTS: Avoid heavy blurs (>12px) and extreme shadows.
  * 2. SRI LANKA CONTEXT: High contrast for outdoor usage, calm colors for classroom focus.
  * 3. NO BLACK/GREY: Use Ink (#2A2318) for text and Shadow Violet for elevation.
+ * 4. PURE-RATIO PSYCHOPHYSICAL HARMONY: Proportional leading, optical tracking, and touch geometry.
  */
+
+import {
+  auditProportionalSpacing,
+  computeProportionalContainerSpacing,
+  computeProportionalLeading,
+  computeProportionalTracking,
+  computeProportionalWordSpacing,
+  generateFluidClamp,
+  PSYCHOPHYSICAL_RATIOS,
+} from '@intuitui-labs/a11y-gate';
 
 export const tokens = {
   colors: {
@@ -167,8 +178,12 @@ export const tokens = {
   },
 
   interaction: {
-    minTouchTarget: 44,
-    focusRingWidth: 2,
+    // Universal Mobile-First Floor: 48dp Android/Sanctuary strict floor guarantees
+    // reliable touch pad contact for thumbs on mobile, and effortless clicking with mouse.
+    minTouchTarget: 48,
+    minTouchTargetCompact: 44, // 44pt iOS compact fallback
+    focusRingWidth: PSYCHOPHYSICAL_RATIOS.FOCUS_RING_STROKE_MIN_PX,
+    focusRingOffset: PSYCHOPHYSICAL_RATIOS.FOCUS_RING_OFFSET_MIN_PX,
   },
 
   typography: {
@@ -189,14 +204,70 @@ export const tokens = {
     },
     // Semantic roles keep repeated content hierarchy consistent across
     // native, compact, and web surfaces without changing caller copy.
+    // Mathematical leading, optical tracking, and psychophysical ratios derived from a11y-gate.
+    // Mobile-First Floor: body is 16px to prevent iOS Safari auto-zoom on inputs and maintain
+    // Sinhala/Tamil diacritic clarity in outdoor sunlight.
     roles: {
-      display: { fontSize: 32, lineHeight: 38, fontWeight: '600' },
-      sectionTitle: { fontSize: 20, lineHeight: 26, fontWeight: '600' },
-      cardTitle: { fontSize: 16, lineHeight: 22, fontWeight: '600' },
-      body: { fontSize: 14, lineHeight: 21, fontWeight: '400' },
-      meta: { fontSize: 12, lineHeight: 17, fontWeight: '400' },
-      label: { fontSize: 12, lineHeight: 16, fontWeight: '600' },
+      display: {
+        fontSize: 32,
+        lineHeight: computeProportionalLeading(32, 'display').idealLineHeightPx,
+        fontWeight: '600',
+        letterSpacing: computeProportionalTracking(32).idealPx,
+        letterSpacingEm: computeProportionalTracking(32).idealEm,
+      },
+      sectionTitle: {
+        fontSize: 20,
+        lineHeight: computeProportionalLeading(20, 'headline').idealLineHeightPx,
+        fontWeight: '600',
+        letterSpacing: computeProportionalTracking(20).idealPx,
+        letterSpacingEm: computeProportionalTracking(20).idealEm,
+      },
+      cardTitle: {
+        fontSize: 16,
+        lineHeight: computeProportionalLeading(16, 'body').idealLineHeightPx,
+        fontWeight: '600',
+        letterSpacing: computeProportionalTracking(16).idealPx,
+        letterSpacingEm: computeProportionalTracking(16).idealEm,
+      },
+      body: {
+        fontSize: 16,
+        lineHeight: computeProportionalLeading(16, 'body').idealLineHeightPx,
+        fontWeight: '400',
+        letterSpacing: computeProportionalTracking(16).idealPx,
+        letterSpacingEm: computeProportionalTracking(16).idealEm,
+      },
+      meta: {
+        fontSize: 14,
+        lineHeight: computeProportionalLeading(14, 'micro').idealLineHeightPx,
+        fontWeight: '400',
+        letterSpacing: computeProportionalTracking(14).idealPx,
+        letterSpacingEm: computeProportionalTracking(14).idealEm,
+      },
+      label: {
+        fontSize: 14,
+        lineHeight: computeProportionalLeading(14, 'control').idealLineHeightPx,
+        fontWeight: '600',
+        letterSpacing: computeProportionalTracking(14).idealPx,
+        letterSpacingEm: computeProportionalTracking(14).idealEm,
+      },
     },
+    // Fluid Utopia mathematical scaling curves across viewports (360px mobile -> 1280px desktop)
+    fluid: {
+      display: generateFluidClamp({ minSizePx: 28, maxSizePx: 36, minViewportPx: 360, maxViewportPx: 1280 }),
+      sectionTitle: generateFluidClamp({ minSizePx: 18, maxSizePx: 22, minViewportPx: 360, maxViewportPx: 1280 }),
+      cardTitle: generateFluidClamp({ minSizePx: 15, maxSizePx: 17, minViewportPx: 360, maxViewportPx: 1280 }),
+      body: generateFluidClamp({ minSizePx: 16, maxSizePx: 17, minViewportPx: 360, maxViewportPx: 1280 }),
+      meta: generateFluidClamp({ minSizePx: 13, maxSizePx: 14, minViewportPx: 360, maxViewportPx: 1280 }),
+      label: generateFluidClamp({ minSizePx: 13, maxSizePx: 14, minViewportPx: 360, maxViewportPx: 1280 }),
+    },
+    curves: {
+      leading: computeProportionalLeading,
+      tracking: computeProportionalTracking,
+      wordSpacing: computeProportionalWordSpacing,
+      containerSpacing: computeProportionalContainerSpacing,
+      fluidClamp: generateFluidClamp,
+    },
+    ratios: PSYCHOPHYSICAL_RATIOS,
   },
 
   // Optimized for 2GB RAM devices
@@ -205,6 +276,44 @@ export const tokens = {
     shadowOpacityScale: 0.8,
   },
 } as const;
+
+/**
+ * Contextual Typography Resolution Engine.
+ * Dynamically resolves exact font size, proportional line-height, and optical tracking
+ * given a semantic role and runtime viewport width (defaults to 390px mobile).
+ */
+export function resolveTypography(
+  role: keyof typeof tokens.typography.roles,
+  viewportWidth: number = 390,
+): {
+  fontSize: number;
+  lineHeight: number;
+  letterSpacing: number;
+  isMobile: boolean;
+} {
+  const isMobile = viewportWidth < 768;
+  const fluidRanges: Record<string, [number, number]> = {
+    display: [28, 36],
+    sectionTitle: [18, 22],
+    cardTitle: [15, 17],
+    body: [16, 17.5],
+    meta: [13, 14],
+    label: [13, 14],
+  };
+  const [min, max] = fluidRanges[role] || [16, 16];
+  const ratio = Math.min(1, Math.max(0, (viewportWidth - 360) / (1280 - 360)));
+  const fontSize = Math.round((min + ratio * (max - min)) * 10) / 10;
+  const leadRole = role === 'display' ? 'display' : role === 'sectionTitle' ? 'headline' : (role === 'meta' ? 'micro' : 'body');
+  const lineHeight = computeProportionalLeading(fontSize, leadRole).idealLineHeightPx;
+  const letterSpacing = computeProportionalTracking(fontSize).idealPx;
+
+  return {
+    fontSize,
+    lineHeight,
+    letterSpacing,
+    isMobile,
+  };
+}
 
 export type Tokens = typeof tokens;
 export default tokens;
@@ -219,3 +328,12 @@ export {
   WIDE_CARD_STACKS_BELOW,
 } from './sizes';
 export { gapFor, type SpaceDensity, type SpaceRelation, space } from './space';
+export {
+  auditProportionalSpacing,
+  computeProportionalContainerSpacing,
+  computeProportionalLeading,
+  computeProportionalTracking,
+  computeProportionalWordSpacing,
+  generateFluidClamp,
+  PSYCHOPHYSICAL_RATIOS,
+} from '@intuitui-labs/a11y-gate';

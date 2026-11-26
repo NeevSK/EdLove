@@ -1,7 +1,7 @@
 // packages/core/src/spatial/districtCentroids.ts
 // Canonical Spatial Coordinates and Baseline Metrics for Sri Lanka's 25 Districts
 
-import type { DistrictSpatialSummary, ProvinceSpatialSummary, SpatialBoundingBox } from './types';
+import type { DistrictSpatialSummary, ProvinceSpatialSummary, SpatialBoundingBox } from '../types/spatial';
 
 export const SRI_LANKA_NATIONAL_BOUNDS: SpatialBoundingBox = {
   minLat: 5.9167, // Dondra Head

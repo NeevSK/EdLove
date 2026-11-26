@@ -1,5 +1,3 @@
-'use client';
-
 import { declaredPracticeCapability } from '@repo/core/logic/registry/capabilityManifest';
 import {
   resolveTemporalCoordinates,
@@ -31,6 +29,7 @@ import { useQuickAccessPreferences } from '../../../lib/workbench/quickAccessPre
 import type { FloorAtmosphereKind } from '../components/FloorAtmosphere';
 import type { FurnitureDefinition } from '../components/FloorStudioDrawer';
 import { SanctuaryFloorCanvas } from '../components/SanctuaryFloorCanvas';
+import { RoomAperture } from '../components/RoomAperture';
 import { DateTimeCombo } from '@repo/ui/components/web';
 import { timeGreeting } from '../../../lib/timeGreeting';
 import { TaskStrip } from '../components/TaskStrip';
@@ -134,18 +133,35 @@ const SELF_FURNITURE_ITEMS: readonly FurnitureDefinition[] = [
   },
 ];
 
+export type SelfPractice =
+  | 'breath'
+  | 'journal'
+  | 'mood'
+  | 'pulse'
+  | 'sleep'
+  | 'prep'
+  | 'goals'
+  | 'seeds'
+  | 'joy'
+  | 'gratitude'
+  | 'decisions'
+  | 'rhythm';
+
 export function SelfFloor({
   accountId,
   displayName,
   initialPracticing = false,
   initialCapacity,
   capacities = [],
+  practice,
 }: Readonly<{
   accountId?: string;
   displayName: string;
   initialPracticing?: boolean;
   initialCapacity?: string;
   capacities?: readonly string[];
+  /** A practice a link asked to open, such as a quick-access shortcut. */
+  practice?: SelfPractice;
 }>) {
   const [screen, setScreen] = useState<ScreenState>(initialScreen);
   const [isPracticing, setIsPracticing] = useState(initialPracticing || accountId === 'explore');
@@ -439,14 +455,33 @@ export function SelfFloor({
     openFeature(feature);
   }
 
+  // Opens on each new request, including from a shortcut while Self is already showing.
   useEffect(() => {
-    const practice = new URLSearchParams(window.location.search).get('practice');
+    if (!practice) return;
     if (practice === 'breath') {
       openFeature(requiredFeature('breath_guide'));
     } else if (practice === 'journal') {
       openFireJournal();
+    } else {
+      const featureIdMap: Record<string, string> = {
+        mood: 'mood_lotus',
+        pulse: 'daily_pulse',
+        sleep: 'sleep_tracker',
+        prep: 'tomorrow_prep',
+        goals: 'personal_goals',
+        seeds: 'wisdom_seeds',
+        joy: 'joy_jar',
+        gratitude: 'gratitude_glimmers',
+        decisions: 'decisions',
+        rhythm: 'daily_rhythm',
+      };
+      const targetId = featureIdMap[practice];
+      if (targetId) {
+        const feat = SELF_FEATURE_MANIFEST.all.find((candidate) => candidate.id === targetId);
+        if (feat) openFeature(feat);
+      }
     }
-  }, []);
+  }, [practice]);
 
   const journalActive = !showOverview && focusedTask?.featureId === fireJournalFeature.id;
   const wellbeingTaskActive =
@@ -635,39 +670,41 @@ export function SelfFloor({
             tasks={workbench.state.tasks}
           />
 
-          {showOverview ? (
-            <div className={styles.featureContentIn} key="self-home">
-              <SelfOverview
-                isArrangeMode={isArrangeMode}
-                displayName={displayName}
-                phase={canvas.phase}
-                groupOrder={canvas.groupOrder}
-                floorSectionOrder={selfFurnitureOrder}
-                manifestAll={canvas.sortedManifestAll}
-                onOpenFeature={openFeature}
-                onOpenFireJournal={openFireJournal}
-                pinnedFeatures={canvas.pinnedFeatures}
-                pinnedIds={quickAccess.pinnedIds}
-                usage={quickAccess.usage}
-                onTogglePin={quickAccess.togglePin}
-                fireJournalId={fireJournalFeature.id}
-                temporalIntent={coordinates.intent}
-                selectedDate={coordinates.date}
-                primaryRole={primaryRole}
-                otherRoles={capacities}
-                userId={accountId}
-                isExplore={isExplore}
-              />
-            </div>
-          ) : (
-            <div
-              className={styles.featureContentIn}
-              data-layout-mode={canvas.layoutMode}
-              key={focusedTask?.taskKey ?? 'self-feature'}
-            >
-              <div className={styles.activePracticeStage}>{practiceContent}</div>
-            </div>
-          )}
+          <RoomAperture kind="book">
+            {showOverview ? (
+              <div className={styles.featureContentIn} key="self-home">
+                <SelfOverview
+                  isArrangeMode={isArrangeMode}
+                  displayName={displayName}
+                  phase={canvas.phase}
+                  groupOrder={canvas.groupOrder}
+                  floorSectionOrder={selfFurnitureOrder}
+                  manifestAll={canvas.sortedManifestAll}
+                  onOpenFeature={openFeature}
+                  onOpenFireJournal={openFireJournal}
+                  pinnedFeatures={canvas.pinnedFeatures}
+                  pinnedIds={quickAccess.pinnedIds}
+                  usage={quickAccess.usage}
+                  onTogglePin={quickAccess.togglePin}
+                  fireJournalId={fireJournalFeature.id}
+                  temporalIntent={coordinates.intent}
+                  selectedDate={coordinates.date}
+                  primaryRole={primaryRole}
+                  otherRoles={capacities}
+                  userId={accountId}
+                  isExplore={isExplore}
+                />
+              </div>
+            ) : (
+              <div
+                className={styles.featureContentIn}
+                data-layout-mode={canvas.layoutMode}
+                key={focusedTask?.taskKey ?? 'self-feature'}
+              >
+                <div className={styles.activePracticeStage}>{practiceContent}</div>
+              </div>
+            )}
+          </RoomAperture>
 
           <DailySadhanaModal
             isOpen={showSadhanaModal}

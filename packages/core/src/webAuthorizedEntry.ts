@@ -1,4 +1,4 @@
-import { isEdloveAccountId } from './logic/utils/edloveUuidV8';
+import { isEdloveAccountId } from './logic/schemas/edloveUuidV8';
 
 /**
  * Browser-authorized entry contract.

@@ -97,7 +97,7 @@ export function WorldSkeleton({
     return () => cancelAnimation(glow);
   }, [shimmer, pace, glow]);
 
-  const lit = useAnimatedStyle(() => ({ opacity: glow.value * 0.16 }));
+  const lit = useAnimatedStyle(() => ({ opacity: glow.get() * 0.16 }));
   const shape = radiusStyle(radius ?? capRadius(world.recipes.surface.inset.radius, height / 2));
 
   return (

@@ -1,13 +1,20 @@
-'use client';
-
+import { getLocalLibraryItem } from '@/lib/library/localLibraryStore';
+import { PdfJsAdapter } from '@/lib/media/PdfJsAdapter';
+import { type OcrLanguage, useDocumentOcr } from '@/lib/media/useDocumentOcr';
+import { usePackDownloader } from '@/lib/media/usePackDownloader';
+import { getPendingUpload } from '@/lib/storage/assetIndexedDb';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
+import { fileKindOf } from '@repo/core/logic/files/fileKind';
+import { CANONICAL_COMMONS_RESOURCES } from '../../LibraryFloor';
 import type { MockDocumentOutlineItem as DocumentOutlineItem } from '@repo/core/api/library';
 import { orpcClient } from '@repo/core/api/orpcClient';
 import {
-  BrowserPdfAdapter,
   Button,
   DocumentView,
-  MediaAdapters,
+  FileCard,
+  H5pView,
+  Markdown,
+  Media,
   Notice,
   SegmentedControl,
 } from '@repo/ui/components/web';
@@ -24,7 +31,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useEffect, useState } from 'react';
 import styles from './reader.module.css';
 
@@ -53,11 +60,13 @@ export function DocumentReaderDesk({
   // Reading state
   const [theme, setTheme] = useState<ReadingTheme>('vellum');
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(24);
+  const [totalPages, setTotalPages] = useState(1);
   const [zoomLevel, setZoomLevel] = useState(100);
   const [zenMode, setZenMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [sidebarTab, setSidebarTab] = useState<'contents' | 'notes'>('contents');
+  const [sidebarTab, setSidebarTab] = useState<'contents' | 'notes' | 'ocr'>('contents');
+  const [ocrLanguage, setOcrLanguage] = useState<OcrLanguage>('eng');
+  const documentOcr = useDocumentOcr();
   const [bookmarked, setBookmarked] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [annotations, setAnnotations] = useState<ReaderAnnotation[]>([]);
@@ -96,12 +105,55 @@ export function DocumentReaderDesk({
     }
   }, [bookId, currentPage, theme, zoomLevel, annotations]);
 
-  // Document metadata state
-  const demoResource = getSandboxSamples<any[]>('library', 'getResources', [], []).find((r) => r.id === bookId);
+  // Document metadata state (checks local library store, then canonical commons, then sandbox dataset, then live oRPC)
+  const localItem = getLocalLibraryItem(bookId);
+  const demoResource =
+    CANONICAL_COMMONS_RESOURCES.find((r) => r.id === bookId) ??
+    getSandboxSamples<any[]>('library', 'getResources', [], []).find((r) => r.id === bookId);
+  const resolvedInitialUrl = localItem?.url ?? demoResource?.url ?? '/samples/mangroves-field-guide.pdf';
   const [documentTitle, setDocumentTitle] = useState(
-    demoResource?.title ?? `Educational Circular & Curriculum Specification (${bookId})`
+    localItem?.title ?? demoResource?.title ?? `Educational Circular & Curriculum Specification (${bookId})`
   );
-  const [documentUrl, setDocumentUrl] = useState(demoResource?.url ?? '/sample-curriculum.pdf');
+  const [documentUrl, setDocumentUrl] = useState(resolvedInitialUrl);
+  const [documentMime, setDocumentMime] = useState<string | undefined>(
+    localItem?.mime ??
+      (demoResource as any)?.mime ??
+      (resolvedInitialUrl.toLowerCase().endsWith('.pdf') ? 'application/pdf' : undefined),
+  );
+  const [documentFormat, setDocumentFormat] = useState<string>(
+    localItem?.format ?? (demoResource as any)?.format ?? 'pdf',
+  );
+  const [markdownBody, setMarkdownBody] = useState<string | null>(
+    localItem?.body_markdown ?? (demoResource as any)?.body_markdown ?? null,
+  );
+
+  // If this item has a pending/local IndexedDB upload, resolve a fresh blob URL on mount
+  useEffect(() => {
+    const assetId = localItem?.assetId;
+    if (!assetId) return;
+    let active = true;
+    let objectUrl: string | null = null;
+    (async () => {
+      try {
+        const rec = await getPendingUpload(assetId);
+        if (!active || !rec) return;
+        objectUrl = URL.createObjectURL(rec.blob);
+        setDocumentUrl(objectUrl);
+        if (rec.mime) setDocumentMime(rec.mime);
+      } catch {
+        // Fallback to existing documentUrl
+      }
+    })();
+    return () => {
+      active = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [localItem?.assetId]);
+  const packDownloader = usePackDownloader({
+    cacheKey: `library:${bookId}`,
+    remoteUri: documentUrl,
+    mime: documentMime,
+  });
   const [documentDescription, setDocumentDescription] = useState(
     demoResource?.description ?? 'Official Department of Educational Publications Edition • Verified Curriculum'
   );
@@ -120,6 +172,11 @@ export function DocumentReaderDesk({
         if (res.title) setDocumentTitle(res.title);
         if (res.description) setDocumentDescription(res.description);
         if (res.url) setDocumentUrl(res.url);
+        if ((res as any).mime) setDocumentMime((res as any).mime);
+        if ((res as any).format) setDocumentFormat((res as any).format);
+        if (typeof (res as any).body_markdown === 'string') {
+          setMarkdownBody((res as any).body_markdown);
+        }
         if (typeof res.verified === 'boolean') setIsVerified(res.verified);
         if (typeof (res as any).has_bookmarked === 'boolean') {
           setBookmarked((res as any).has_bookmarked);
@@ -205,7 +262,7 @@ export function DocumentReaderDesk({
       {!zenMode && (
         <header className={styles.readingDesk}>
           <div className={styles.titleArea}>
-            <Link className={styles.backLink} href="/library">
+            <Link className={styles.backLink} to="/library">
               ← Back to Sanctuary Library
             </Link>
             <h1 className={styles.documentHeading}>{documentTitle}</h1>
@@ -292,6 +349,32 @@ export function DocumentReaderDesk({
               />
             </div>
 
+            {/* Offline Pack Cache Control */}
+            <div aria-label="Offline cache" className={styles.toolGroup} role="group">
+              <Button
+                size="sm"
+                variant={packDownloader.isCachedOffline ? 'primary' : 'secondary'}
+                label={
+                  packDownloader.status === 'downloading'
+                    ? 'Saving…'
+                    : packDownloader.isCachedOffline
+                      ? 'Cached Offline'
+                      : 'Save Offline'
+                }
+                disabled={packDownloader.status === 'downloading'}
+                onClick={() => {
+                  if (packDownloader.isCachedOffline) {
+                    void packDownloader.removeOffline();
+                    setNotice('Removed offline copy from device cache');
+                  } else {
+                    void packDownloader.downloadOffline();
+                    setNotice('Saved & SHA-256 verified for offline reading');
+                  }
+                  setTimeout(() => setNotice(null), 3000);
+                }}
+              />
+            </div>
+
             {/* Bookmark & Actions */}
             <div className={styles.toolGroup}>
               <Button
@@ -369,7 +452,23 @@ export function DocumentReaderDesk({
                   paddingBottom: '0.25rem',
                 }}
               >
-                ✏️ Notes Desk ({annotations.length})
+                ✏️ Notes ({annotations.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setSidebarTab('ocr')}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  color: sidebarTab === 'ocr' ? 'var(--color-action, #a85022)' : 'inherit',
+                  borderBottom: sidebarTab === 'ocr' ? '2px solid var(--color-action, #a85022)' : 'none',
+                  paddingBottom: '0.25rem',
+                }}
+              >
+                🔍 OCR
               </button>
             </div>
 
@@ -390,7 +489,7 @@ export function DocumentReaderDesk({
                   </button>
                 ))}
               </nav>
-            ) : (
+            ) : sidebarTab === 'notes' ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 <form
                   onSubmit={(e) => {
@@ -484,6 +583,92 @@ export function DocumentReaderDesk({
                   )}
                 </div>
               </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 600 }}>
+                  OCR Language
+                  <select
+                    value={ocrLanguage}
+                    onChange={(e) => setOcrLanguage(e.target.value as OcrLanguage)}
+                    style={{
+                      width: '100%',
+                      marginTop: '0.25rem',
+                      padding: '0.4rem 0.5rem',
+                      borderRadius: '0.4rem',
+                      border: '1px solid rgba(104, 94, 85, 0.25)',
+                    }}
+                  >
+                    <option value="eng">English (eng)</option>
+                    <option value="sin">Sinhala (sin)</option>
+                    <option value="tam">Tamil (tam)</option>
+                  </select>
+                </label>
+                <Button
+                  size="sm"
+                  variant="primary"
+                  label={
+                    documentOcr.running
+                      ? `Extracting (${documentOcr.progress}%)…`
+                      : 'Extract Text (OCR)'
+                  }
+                  disabled={documentOcr.running}
+                  onClick={() => {
+                    void documentOcr.runOcr({
+                      uri: packDownloader.effectiveUri,
+                      name: localItem?.fileName ?? documentTitle,
+                      mime: documentMime,
+                      sha256: localItem?.sha256,
+                      language: ocrLanguage,
+                    });
+                  }}
+                />
+                {documentOcr.error && (
+                  <p style={{ fontSize: '0.75rem', color: '#cf222e', margin: 0 }}>
+                    {documentOcr.error}
+                  </p>
+                )}
+                {documentOcr.result && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.72rem', opacity: 0.7 }}>
+                      {documentOcr.result.method} • {documentOcr.result.pagesProcessed} page(s)
+                    </span>
+                    <textarea
+                      readOnly
+                      rows={8}
+                      value={documentOcr.result.text}
+                      style={{
+                        width: '100%',
+                        fontSize: '0.75rem',
+                        padding: '0.5rem',
+                        borderRadius: '0.4rem',
+                        border: '1px solid rgba(104, 94, 85, 0.2)',
+                      }}
+                    />
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      label="Pin OCR Text to Notes"
+                      onClick={() => {
+                        const text = documentOcr.result?.text.slice(0, 1000);
+                        if (!text) return;
+                        setAnnotations((prev) => [
+                          ...prev,
+                          {
+                            id: String(Date.now()),
+                            page: currentPage,
+                            text,
+                            timestamp: new Date().toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            }),
+                          },
+                        ]);
+                        setSidebarTab('notes');
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             )}
 
             <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid rgba(104, 94, 85, 0.12)' }}>
@@ -494,7 +679,7 @@ export function DocumentReaderDesk({
           </aside>
         )}
 
-        {/* Canonical DocumentView Canvas with MediaAdapters */}
+        {/* Canonical DocumentView / Markdown / H5P Canvas via app-level MediaAdapters */}
         <div className={styles.canvasArea}>
           <div
             className={styles.documentIframeWrapper}
@@ -503,16 +688,55 @@ export function DocumentReaderDesk({
               transformOrigin: 'top center',
             }}
           >
-            <MediaAdapters adapters={{ documents: { pdf: BrowserPdfAdapter } }}>
-              <DocumentView
+            {markdownBody ? (
+              <Markdown source={markdownBody} />
+            ) : documentFormat === 'h5p' || documentUrl.toLowerCase().endsWith('.h5p') ? (
+              <H5pView packageUrl={packDownloader.effectiveUri} title={documentTitle} />
+            ) : documentFormat === 'link' ? (
+              <FileCard
+                file={{ name: documentTitle, uri: documentUrl, mime: documentMime }}
+                href={documentUrl}
+                onOpen={openNativeWindow}
+              />
+            ) : ['image', 'audio', 'video'].includes(
+                fileKindOf({ name: localItem?.fileName ?? documentUrl, mime: documentMime }),
+              ) ? (
+              <Media
+                file={{
+                  name: localItem?.fileName ?? documentUrl,
+                  uri: packDownloader.effectiveUri,
+                  mime: documentMime,
+                }}
+                alt={documentTitle}
+              />
+            ) : fileKindOf({ name: localItem?.fileName ?? documentUrl, mime: documentMime }) ===
+              'pdf' ? (
+              <PdfJsAdapter
                 file={{
                   name: documentTitle,
-                  uri: `${documentUrl}#page=${currentPage}&toolbar=0&navpanes=0`,
+                  uri: packDownloader.effectiveUri,
                   mime: 'application/pdf',
+                }}
+                page={currentPage}
+                hideInternalNav
+                onDocumentLoad={({ numPages }) => {
+                  setTotalPages(numPages);
+                  setCurrentPage((p) => Math.min(Math.max(p, 1), numPages));
+                }}
+                onError={() => {
+                  setNotice('Could not render PDF in canvas; use External or Save Offline.');
+                }}
+              />
+            ) : (
+              <DocumentView
+                file={{
+                  name: localItem?.fileName ?? documentUrl,
+                  uri: packDownloader.effectiveUri,
+                  mime: documentMime,
                 }}
                 onOpenElsewhere={openNativeWindow}
               />
-            </MediaAdapters>
+            )}
           </div>
         </div>
       </div>

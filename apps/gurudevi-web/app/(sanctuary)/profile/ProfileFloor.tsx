@@ -1,8 +1,6 @@
-'use client';
-
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import type { WorkspaceAppearance } from '@repo/core/types';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
 import { resolveSurfaceUrl } from '../../../lib/surface-urls';
 import { type ProfileSection, useProfileCanvas } from '../../../lib/canvas/useProfileCanvas';
@@ -17,6 +15,7 @@ import { CreateAccountGuidanceModal } from './CreateAccountGuidanceModal';
 import styles from './profile.module.css';
 import { ThuthimalClaimModal } from './ThuthimalClaimModal';
 import { WebDeviceAccountModal } from './WebDeviceAccountModal';
+import { acceptAttributeFor, checkFile } from '@repo/core/logic/files/filePolicy';
 
 const FALLBACK_EXPLORE_PROFILE = {
   id: 'guest-explorer-profile',
@@ -286,8 +285,8 @@ export function ProfileFloor({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      alert('Avatar image must be smaller than 2MB.');
+    if (!checkFile({ name: file.name, mime: file.type, size: file.size }, 'avatar').ok) {
+      alert('Choose a PNG, JPEG or WebP image smaller than 2 MB.');
       return;
     }
 
@@ -571,7 +570,6 @@ export function ProfileFloor({
                         aria-label="Upload profile avatar"
                       >
                         {avatarUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
                           <img src={avatarUrl} alt={profileName} className={styles.avatarImg} />
                         ) : (
                           <span>👤</span>
@@ -580,7 +578,7 @@ export function ProfileFloor({
                       <input
                         id="avatar-file-input"
                         type="file"
-                        accept="image/png,image/jpeg,image/webp"
+                        accept={acceptAttributeFor('avatar')}
                         style={{ display: 'none' }}
                         onChange={handleAvatarFile}
                       />
@@ -625,10 +623,10 @@ export function ProfileFloor({
                       role="navigation"
                       aria-label="Profile Shortcuts"
                     >
-                      <Link href="/settings" className={styles.quickBtn}>
+                      <Link to="/settings" className={styles.quickBtn}>
                         ⚙️ Sanctuary Settings
                       </Link>
-                      <Link href="/profile/security" className={styles.quickBtn}>
+                      <Link to="/profile/security" className={styles.quickBtn}>
                         🛡️ Device & Security Floor
                       </Link>
                       <a
@@ -891,7 +889,7 @@ export function ProfileFloor({
                             marginTop: '0.75rem',
                           }}
                         >
-                          <Link
+                          <a
                             href={resolveSurfaceUrl('sanctuary', '/sign-in')}
                             style={{
                               padding: '0.35rem 0.85rem',
@@ -906,7 +904,7 @@ export function ProfileFloor({
                             }}
                           >
                             Go to Sanctuary ↗
-                          </Link>
+                          </a>
                           <button
                             type="button"
                             onClick={() => setIsGuidanceModalOpen(true)}
@@ -923,8 +921,8 @@ export function ProfileFloor({
                           >
                             Step into Sanctuary (Create Account) ↗
                           </button>
-                          <Link
-                            href="/welcome"
+                          <a
+                            href={resolveSurfaceUrl('explore', '/')}
                             style={{
                               padding: '0.35rem 0.85rem',
                               borderRadius: '999px',
@@ -936,9 +934,9 @@ export function ProfileFloor({
                             }}
                           >
                             Guest House →
-                          </Link>
+                          </a>
                           <Link
-                            href="/community"
+                            to="/community"
                             style={{
                               padding: '0.35rem 0.85rem',
                               borderRadius: '999px',
@@ -952,7 +950,7 @@ export function ProfileFloor({
                             Explore Circles →
                           </Link>
                           <Link
-                            href="/library"
+                            to="/library"
                             style={{
                               padding: '0.35rem 0.85rem',
                               borderRadius: '999px',
@@ -993,7 +991,7 @@ export function ProfileFloor({
                     <p className={styles.readOnly} role="note">
                       {isExplore
                         ? 'Guest sandbox mode. All reflections and notes are stored locally.'
-                        : 'Verified identity secured by Gurudevi Sanctuary.'}
+                        : 'Verified identity secured by Gurudevi App.'}
                     </p>
 
                     {/* Dynamic Profile Calibration Progress */}
@@ -1114,6 +1112,7 @@ export function ProfileFloor({
                       >
                         <select
                           className={styles.formInput}
+                          aria-label="Link Platform"
                           style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem' }}
                           value={newLinkPlatform}
                           onChange={(e) => setNewLinkPlatform(e.target.value)}
@@ -1127,6 +1126,7 @@ export function ProfileFloor({
                         <input
                           type="url"
                           placeholder="https://..."
+                          aria-label="Link URL"
                           className={styles.formInput}
                           style={{
                             flex: 1,
@@ -1223,7 +1223,7 @@ export function ProfileFloor({
                             📚 Sample Library Desk &amp; Curations
                           </h4>
                           <Link
-                            href="/library"
+                            to="/library"
                             style={{
                               fontSize: '0.75rem',
                               fontWeight: 650,
@@ -1246,7 +1246,8 @@ export function ProfileFloor({
                         </p>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                           <Link
-                            href="/library/reader/mangroves"
+                            to="/library/reader/$bookId"
+                            params={{ bookId: 'mangroves' }}
                             className={styles.linktreeItem}
                             style={{ textDecoration: 'none' }}
                           >
@@ -1264,7 +1265,8 @@ export function ProfileFloor({
                             </span>
                           </Link>
                           <Link
-                            href="/library/video/intro-botany"
+                            to="/library/video/$videoId"
+                            params={{ videoId: 'intro-botany' }}
                             className={styles.linktreeItem}
                             style={{ textDecoration: 'none' }}
                           >
@@ -1291,7 +1293,7 @@ export function ProfileFloor({
                           }}
                         >
                           <Link
-                            href="/library/contribute"
+                            to="/library/contribute"
                             className={styles.copyQrBtn}
                             style={{
                               textDecoration: 'none',
@@ -1302,7 +1304,7 @@ export function ProfileFloor({
                             + Contribute New Material
                           </Link>
                           <Link
-                            href="/library/tools"
+                            to="/library/tools"
                             className={styles.copyQrBtn}
                             style={{
                               textDecoration: 'none',

@@ -47,9 +47,9 @@ Do not install or select packages blindly. Query the canonical capability regist
 ### Mobile / Native Runtime
 | Library & Version | ❌ Banned Legacy Pattern (LLM Hallucination) | ✅ Mandatory Modern Standard | Why Legacy Fails |
 | :--- | :--- | :--- | :--- |
-| **`react-native-reanimated`** (v4.x / 4.7.1) | `useAnimatedGestureHandler({ ... })` | `<GestureDetector gesture={Gesture.Pan()}>` | Decoupled from RNGH; legacy handler deleted from runtime. |
-| **`react-native-reanimated`** (v4.x) | Omitting `react-native-worklets` | Co-install `react-native-worklets@^0.13.0` | Worklet runtime extracted into standalone package. |
-| **`react-native-gesture-handler`** (v3.x / 3.3.0) | `<PanGestureHandler onGestureEvent={...}>` | `<GestureDetector gesture={Gesture.Pan().onUpdate(...)}>` | Legacy class wrappers bypass Fabric UI-thread state. |
+| **`react-native-reanimated`** (v4.x / 4.8.0) | `useAnimatedGestureHandler({ ... })` | `<GestureDetector gesture={Gesture.Pan()}>` | Decoupled from RNGH; legacy handler deleted from runtime. |
+| **`react-native-reanimated`** (v4.x) | Omitting `react-native-worklets` | Co-install `react-native-worklets@^0.14.0` | Worklet runtime extracted into standalone package. |
+| **`react-native-gesture-handler`** (v3.x / 3.5.0) | `<PanGestureHandler onGestureEvent={...}>` | `<GestureDetector gesture={Gesture.Pan().onUpdate(...)}>` | Legacy class wrappers bypass Fabric UI-thread state. |
 | **`react-native-mmkv`** (v4.x / 4.3.2) | Manual JSI binding / Async storage await | Synchronous `storage.getString(k)` + `react-native-nitro-modules` | Rewritten on Nitro Modules for zero-overhead C++ interop. |
 | **React Native Core** (0.88.0-rc.3) | `NativeModules.MyModule` (Bridge) | `TurboModuleRegistry.getEnforcing(...)` | Bridge is severed on New Architecture. |
 
@@ -82,12 +82,12 @@ Server / API Runtime:
   authorization: cedar-policy 4.3
 
 Platform Spine:
-  react-native-reanimated: 4.7.1
-  react-native-worklets: 0.13.0
-  react-native-gesture-handler: 3.4.0
+  react-native-reanimated: 4.8.0
+  react-native-worklets: 0.14.0
+  react-native-gesture-handler: 3.5.0
   react-native-mmkv: 4.3.2 (Nitro Modules)
-  react-native-nitro-modules: 0.37.1
-  @shopify/react-native-skia: 3.7.0 (Graphite/WebGPU fork)
+  react-native-nitro-modules: 0.37.2
+  @shopify/react-native-skia: 3.11.0 (Graphite/WebGPU fork)
 
 Toolchain:
   package_manager: pnpm 12.15.0

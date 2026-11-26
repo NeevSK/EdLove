@@ -41,7 +41,7 @@ export default function TeacherSelfView() {
   const userId = context.userId;
   const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
   const [isSavingMood, setIsSavingMood] = useState(false);
-  const { viewDate } = useTemporalStore();
+  const viewDate = useTemporalStore((s) => s.viewDate);
   const justFinishedOnboarding = useUIStore((s) => s.justFinishedOnboarding);
   const setJustFinishedOnboarding = useUIStore((s) => s.setJustFinishedOnboarding);
   const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);

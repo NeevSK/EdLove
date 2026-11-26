@@ -2,7 +2,7 @@ import { mkdtempSync, rmdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { findUnregisteredFeatureModules, loadCatalogFile } from './catalogLoader';
+import { findUnregisteredFeatureModules, loadCatalogFile } from './catalogLoader.adapter';
 
 describe('modular catalog loader', () => {
   it('loads modules in order and rejects duplicate or escaping module names', () => {

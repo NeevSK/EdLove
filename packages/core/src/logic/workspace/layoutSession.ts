@@ -1,5 +1,5 @@
 import { getConsistentIdempotencyKey } from '@repo/core/lib/sync/idempotency';
-import { uuidv7 } from '@repo/core/logic/utils/uuid';
+import { v7 as uuidv7 } from 'uuid';
 import {
   type WorkspaceLayoutIntent,
   WorkspaceLayoutIntentSchema,
@@ -261,6 +261,7 @@ export class WorkspaceLayoutSession {
   private persist(): Promise<void> {
     const layout = this.snapshot.layout;
     const intent = this.remoteEnabled
+      // contract-check: checks the intent this session is about to persist
       ? WorkspaceLayoutIntentSchema.parse({
           version: 2,
           ...this.identity,

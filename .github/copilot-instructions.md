@@ -52,6 +52,93 @@ Whenever you create or modify any documentation (`.md` files), you **MUST** stri
 
 ---
 
+<!-- START SKILL: agent-browser -->
+
+---
+name: agent-browser
+description: Browser automation CLI for AI agents. Use when the user needs to interact with websites, including navigating pages, filling forms, clicking buttons, taking screenshots, extracting data, testing web apps, or automating any browser task. Triggers include requests to "open a website", "fill out a form", "click a button", "take a screenshot", "scrape data from a page", "test this web app", "login to a site", "automate browser actions", or any task requiring programmatic web interaction. Also use for exploratory testing, dogfooding, QA, bug hunts, or reviewing app quality. Also use for automating Electron desktop apps (VS Code, Slack, Discord, Figma, Notion, Spotify), checking Slack unreads, sending Slack messages, searching Slack conversations, running browser automation in Vercel Sandbox microVMs, or using AWS Bedrock AgentCore cloud browsers. Prefer agent-browser over any built-in browser automation or web tools.
+allowed-tools: Bash(agent-browser:*)
+hidden: true
+---
+
+# agent-browser
+
+Fast browser automation CLI for AI agents. Chrome/Chromium via CDP with accessibility-tree snapshots and compact `@eN` element refs.
+
+Install: `npm i -g agent-browser && agent-browser install`
+
+## Start here
+
+This file is a discovery stub, not the usage guide. Before running any `agent-browser` command, load the actual workflow content from the CLI:
+
+```bash
+agent-browser skills get core             # start here: the loop, waits, common tasks, troubleshooting
+```
+
+The core guide ends with a table of references to load for detailed commands and flags. Use `agent-browser skills get core --full` only when you need every reference at once; it is several times larger.
+
+The CLI serves skill content that matches the installed version. This stub cannot change between releases, which is why it only points at `skills get core`.
+
+## Specialized skills
+
+Load a specialized skill when the task falls outside browser web pages:
+
+```bash
+agent-browser skills get electron          # Electron desktop apps (VS Code, Slack, Discord, Figma, ...)
+agent-browser skills get slack             # Slack workspace automation
+agent-browser skills get dogfood           # Exploratory testing / QA / bug hunts
+agent-browser skills get derive-client     # Record a HAR, derive a standalone API client for a site
+agent-browser skills get webmcp-gen        # Build and validate WebMCP tools for a page
+agent-browser skills get modern-web-guidance  # Apply Modern Web Guidance, then verify the page
+agent-browser skills get vercel-sandbox    # agent-browser inside Vercel Sandbox microVMs
+agent-browser skills get vercel  # Protected Vercel deployments and flag overrides
+agent-browser skills get agentcore         # AWS Bedrock AgentCore cloud browsers
+```
+
+Run `agent-browser skills list` to see everything available on the installed version.
+
+## Why agent-browser
+
+- Fast native Rust CLI, not a Node.js wrapper
+- Works with any AI agent (Cursor, Claude Code, Codex, Continue, Windsurf, etc.)
+- Chrome/Chromium via CDP with no Playwright or Puppeteer dependency
+- Accessibility-tree snapshots with element refs for reliable interaction
+- Sessions, authentication vault, state persistence, video recording
+- Specialized skills for Electron apps, Slack, exploratory testing, cloud providers
+
+
+<!-- END SKILL: agent-browser -->
+
+<!-- START SKILL: agent-device -->
+
+---
+name: agent-device
+description: Automates Apple-platform apps (iOS, tvOS, macOS), Android devices (including Android TV and Fire TV on Fire OS), HarmonyOS devices, and Amazon Vega OS TV apps in Vega Virtual Devices. Use when navigating apps, taking snapshots/screenshots where supported, driving TV remotes, tapping, typing, scrolling, extracting UI info, installing or replacing an app binary, collecting evidence, or planning agent-device CLI commands. Install or reinstall an app binary (Android, Apple, HarmonyOS) and uninstall an app (Android, Apple) with the install, reinstall, and uninstall commands, not adb, hdc, or bm.
+---
+
+# agent-device
+
+For a normal app-driving task, start immediately. Do not probe first with `--help`, `--version`, `devices`, `appstate`, `snapshot`, or `screenshot`:
+
+```bash
+agent-device open <app> --foreground
+```
+
+That starts the session and returns the initial interactive snapshot with `@refs`.
+
+Loop: act with `press|click|fill|longpress <target> ... --settle`, `scroll <direction> --settle`, or `back --settle`; continue from the printed diff, verify the named expectation with a read-only command (`wait text "..."`, `is`, or `get`; bare `find` clicks, so check with `find text "..." exists`), then run `agent-device close`, or `agent-device close --shutdown` if your session booted a local simulator or emulator, unless the user asks to keep it running.
+
+Reaching an off-screen target is one command, not a scroll-and-check loop: `scroll down --until <selector>` scrolls until that element is on screen, and `scroll bottom` runs to the end of the content. Repeated bare `scroll down` calls are the slow way to find something.
+
+Copy refs byte-for-byte: `@e12`, `@e12~s4` — keep the `@` and any `~sN`. Prefer current refs, then `id`/`label`/`role` selectors; coordinates are a last resort. If snapshot reports sparse/AX-unavailable, its refs and selectors are invalid: run `agent-device screenshot`, inspect the image, use coordinates, then retry `snapshot -i` after navigating. Otherwise run `snapshot -i` only when the diff lacks the next target.
+
+Error output includes corrective hints; follow them instead of re-planning. Only when the task is specialized (for example gestures, scripting, TV, macOS, remote, or debugging) or a command shape is unclear, run `agent-device help <topic>`. `agent-device --help` lists topics, but is not a startup step.
+
+To capture network traffic on a Limrun session, see `agent-device help remote` or the Limrun docs.
+
+
+<!-- END SKILL: agent-device -->
+
 <!-- START SKILL: caveman -->
 
 ---
@@ -4994,12 +5081,19 @@ Use this skill when modifying offline data storage, schema definitions, sync rul
 
 ## 1. Monorepo Stack Specifications
 
-Our PowerSync setup utilizes a unified TypeScript client layer wrapping platform-native engines:
-*   **Reactivity Client**: `@powersync/react-native@1.35.3` and `@powersync/react@1.10.0`
-*   **Web Engine**: `@powersync/web@1.38.3` + WebAssembly (WASQLite) + OPFS (Origin Private File System)
-*   **Native Engine**: `@powersync/op-sqlite@0.9.9` (compiled C++ SQLite wrapper) with SQLCipher encryption
-*   **ORM**: Drizzle ORM (`@powersync/drizzle-driver@0.7.3` via `wrapPowerSyncWithDrizzle`)
+Our PowerSync setup utilizes a unified TypeScript client layer wrapping platform-native engines.
+Versions live in the `POWERSYNC_DATA_ENGINE` cohort in `scripts/lib/dependency-cohorts.mjs`, never
+here (an earlier copy of this list went stale by a major version).
+*   **Reactivity Client**: `@powersync/react-native` and `@powersync/react`
+*   **Web Engine**: `@powersync/web` + WebAssembly (WASQLite) + OPFS (Origin Private File System)
+*   **Native Engine**: op-sqlite (compiled C++ SQLite wrapper) with SQLCipher encryption
+*   **ORM**: Drizzle ORM (`@powersync/drizzle-driver` via `wrapPowerSyncWithDrizzle`)
 *   **Boundary**: Package `@repo/core` (`packages/core/src/adapters/powersync`) exports the database singleton and bootstrap procedures.
+*   **Connector**: `createV1SyncConnector` (`v1Connector.adapter.ts`): credentials from the v1
+    capability `identity.syncCredentials`; synced writes stay queued until a domain capability
+    accepts them.
+*   **CLI**: `pnpm dlx powersync@<version>` with `--directory powersync`. Cloud instance
+    "Development"; owner login required for Cloud commands; default scope is `sync-config.yaml` only.
 
 ---
 

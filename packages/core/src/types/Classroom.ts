@@ -17,31 +17,6 @@ export interface Classroom {
   updated_at: Date;
 }
 
-/**
- * Per-year snapshot of a student's academic record in one classroom.
- * Created at year-end rollover; never mutated after creation so historical
- * patterns are permanently preserved.
- */
-export interface StudentAcademicRecord {
-  id: string;
-  student_id: string;
-  classroom_id: string;
-  teacher_id?: string | null;
-  school_id: string;
-  academic_year: string; // e.g. '2026'
-  grade_number?: number | null;
-  subject?: string | null;
-  handle?: string | null; // Added handle field
-  avg_grade?: number | null;
-  highest_grade?: number | null;
-  lowest_grade?: number | null;
-  assignments_total: number;
-  assignments_submitted: number;
-  teacher_note?: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface ClassroomStudent {
   id: string;
   classroom_id: string;

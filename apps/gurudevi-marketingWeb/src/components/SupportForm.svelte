@@ -176,7 +176,7 @@ function mailtoHref() {
         </button>
 
         <a class="text-sm text-mud-brown/70 hover:text-mud-brown transition-colors" href={mailtoHref()}>
-          Prefer email? Contact support@gurudevi.app
+          Prefer email? Contact support@gurudevi.lk
         </a>
       </div>
 

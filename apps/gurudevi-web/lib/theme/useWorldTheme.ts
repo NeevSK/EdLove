@@ -1,5 +1,3 @@
-'use client';
-
 import { DEFAULT_WORLD, isWorldId, type WorldId } from '@repo/ui/theme';
 import { useSyncExternalStore } from 'react';
 

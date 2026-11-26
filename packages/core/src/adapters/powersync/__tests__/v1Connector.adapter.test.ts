@@ -2,19 +2,20 @@ import { describe, expect, it, vi } from 'vitest';
 import { createV1SyncConnector } from '../v1Connector.adapter';
 
 const grant = {
+  accountId: '018f3a3a-1234-7000-8000-000000000000',
   endpoint: 'https://instance.powersync.example.test',
   token: 'jwt',
   expiresAt: 1_800_000_000,
 };
-const clientReturning = (syncCredentials: () => Promise<typeof grant>) => ({
-  identity: { syncCredentials },
+const clientReturning = (syncGrant: () => Promise<typeof grant>) => ({
+  identity: { syncGrant },
 });
 const rejection = (code: string) => Object.assign(new Error(code), { code });
 
 describe('v1 sync connector', () => {
-  it('fetches a fresh grant from identity.syncCredentials on every call', async () => {
-    const syncCredentials = vi.fn(async () => grant);
-    const connector = createV1SyncConnector(clientReturning(syncCredentials));
+  it('fetches a fresh grant from identity.syncGrant on every call', async () => {
+    const syncGrant = vi.fn(async () => grant);
+    const connector = createV1SyncConnector(clientReturning(syncGrant));
 
     await expect(connector.fetchCredentials()).resolves.toEqual({
       endpoint: grant.endpoint,
@@ -22,7 +23,7 @@ describe('v1 sync connector', () => {
       expiresAt: new Date(1_800_000_000_000),
     });
     await connector.fetchCredentials();
-    expect(syncCredentials).toHaveBeenCalledTimes(2);
+    expect(syncGrant).toHaveBeenCalledTimes(2);
   });
 
   it('reports signed out as no credentials, so PowerSync stops rather than retries', async () => {
@@ -42,16 +43,14 @@ describe('v1 sync connector', () => {
   });
 
   it('asks for no grant and uploads nothing once sync is no longer admitted', async () => {
-    const syncCredentials = vi.fn(async () => grant);
-    let admitted = true;
-    const connector = createV1SyncConnector(clientReturning(syncCredentials), () => admitted);
-    admitted = false;
+    const syncGrant = vi.fn(async () => grant);
+    const connector = createV1SyncConnector(clientReturning(syncGrant), () => false);
     const getNextCrudTransaction = vi.fn(async () => null);
 
     await expect(connector.fetchCredentials()).resolves.toBeNull();
     // Not admitted is not "nothing to upload": fail so the queue waits for admission.
     await expect(connector.uploadData({ getNextCrudTransaction })).rejects.toThrow('not admitted');
-    expect(syncCredentials).not.toHaveBeenCalled();
+    expect(syncGrant).not.toHaveBeenCalled();
     expect(getNextCrudTransaction).not.toHaveBeenCalled();
   });
 

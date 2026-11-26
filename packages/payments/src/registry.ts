@@ -1,4 +1,4 @@
-import type { PaymentProvider } from '@repo/payments/types';
+import type { PaymentProvider } from '@repo/core/logic/ports/paymentProvider.port';
 
 export class PaymentRegistry {
   private providers: Map<string, PaymentProvider> = new Map();

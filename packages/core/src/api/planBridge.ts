@@ -20,20 +20,26 @@ import type {
   updateQuietHoursInputSchema,
 } from '@repo/core/api/planBridge.orpc.contract';
 import { APIError } from '@repo/core/types/API';
-import { defaultRetryPolicy } from '@repo/core/utils/effect';
-import { Data, Duration, Effect, pipe } from 'effect';
+import { defaultRetryPolicy, retryTransient } from '@repo/core/utils/effect';
+import * as Duration from 'effect/Duration';
+import * as Effect from 'effect/Effect';
+import * as Schema from 'effect/Schema';
+import { pipe } from 'effect/Function';
 import type { z } from 'zod';
 
 export type CreatePlanEventInput = z.infer<typeof createPlanEventInputSchema>;
 export type ScheduleNoticeInput = z.infer<typeof scheduleNoticeInputSchema>;
 export type UpdateQuietHoursInput = z.infer<typeof updateQuietHoursInputSchema>;
 
-export class PlanBridgeHttpError extends Data.TaggedError('PlanBridgeHttpError')<{
-  readonly message: string;
-  readonly status: string;
-  readonly code?: string;
-  readonly data?: Record<string, unknown>;
-}> {}
+export class PlanBridgeHttpError extends Schema.TaggedError<PlanBridgeHttpError>()(
+  'PlanBridgeHttpError',
+  {
+    message: Schema.String,
+    status: Schema.String,
+    code: Schema.optional(Schema.String),
+    data: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
+  },
+) {}
 
 function apiEffect<T>(fn: () => Promise<T>): Effect.Effect<T, PlanBridgeHttpError, never> {
   return pipe(
@@ -47,7 +53,7 @@ function apiEffect<T>(fn: () => Promise<T>): Effect.Effect<T, PlanBridgeHttpErro
           data: typeof e?.data === 'object' && e?.data !== null ? e.data : undefined,
         }),
     }),
-    Effect.retry(defaultRetryPolicy),
+    Effect.retry(retryTransient(defaultRetryPolicy)),
     Effect.timeout(Duration.seconds(15)),
     Effect.catchTag('TimeoutError', () =>
       Effect.fail(

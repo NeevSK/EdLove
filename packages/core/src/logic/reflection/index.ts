@@ -4,4 +4,4 @@
  */
 export * from './catalog';
 export * from './reframe';
-export * from './types';
+export * from '../../types/reflection';

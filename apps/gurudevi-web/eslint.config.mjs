@@ -1,3 +1,15 @@
-import { nextJsConfig } from '@repo/eslint-config/next-js';
+import { webAppConfig } from '@repo/eslint-config/web-app';
 
-export default nextJsConfig;
+export default [
+  {
+    ignores: [
+      '.wrangler/**',
+      'dist/**',
+      'dist-sanctuary/**',
+      'dist-explore/**',
+      '.turbo/**',
+      '.vercel/**',
+    ],
+  },
+  ...webAppConfig,
+];

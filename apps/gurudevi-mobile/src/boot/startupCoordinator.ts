@@ -7,7 +7,8 @@
 export interface EssentialStartupDependencies {
   bootstrapPlatform: () => Promise<void>;
   isRuntimeRegistered: () => boolean;
-  loadCatalog: () => Promise<{ registerAppCatalog: () => void }>;
+  /** Optional: omit on cold boot so domain catalogs register lazily post-admission. */
+  loadCatalog?: () => Promise<{ registerAppCatalog: () => void }>;
   initializeDeviceAccounts: () => Promise<unknown>;
   onStage?: (event: EssentialStartupStageEvent) => void;
   now?: () => number;
@@ -157,12 +158,14 @@ export async function completeEssentialStartup({
     }
   });
 
-  console.log('[boot trace] 3. Loading catalog via dynamic import...');
-  const { registerAppCatalog } = await measureStage('loadCatalog', onStage, now, () =>
-    withTimeout(loadCatalog(), ESSENTIAL_STARTUP_TIMEOUT_MS, 'loadCatalog'),
-  );
-  console.log('[boot trace] 4. Catalog loaded. Registering catalog...');
-  measureSyncStage('registerAppCatalog', onStage, now, registerAppCatalog);
+  if (loadCatalog) {
+    console.log('[boot trace] 3. Loading catalog via dynamic import...');
+    const { registerAppCatalog } = await measureStage('loadCatalog', onStage, now, () =>
+      withTimeout(loadCatalog(), ESSENTIAL_STARTUP_TIMEOUT_MS, 'loadCatalog'),
+    );
+    console.log('[boot trace] 4. Catalog loaded. Registering catalog...');
+    measureSyncStage('registerAppCatalog', onStage, now, registerAppCatalog);
+  }
   console.log('[boot trace] 5. Initializing device account scope...');
   await measureStage('initializeDeviceAccounts', onStage, now, () =>
     withTimeout(

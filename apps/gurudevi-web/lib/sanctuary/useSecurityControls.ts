@@ -1,5 +1,3 @@
-'use client';
-
 import { scopedQueryKey } from '@repo/core/lib/clientStateFoundation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';

@@ -5,10 +5,7 @@
  * Prevents invalid data from reaching the API and provides user-friendly error messages.
  */
 
-export interface ValidationResult {
-  isValid: boolean;
-  error?: string;
-}
+import type { ValidationResult } from '@repo/core/types/Form';
 
 export const validators = {
   /**

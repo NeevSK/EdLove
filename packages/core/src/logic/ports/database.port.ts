@@ -1,3 +1,5 @@
+import type { MutationType } from '@repo/core/types/mutationQueue';
+
 export type JsonValue =
   | null
   | boolean
@@ -11,8 +13,6 @@ export interface LocalReadQuery {
   statement: string;
   parameters?: readonly JsonValue[];
 }
-
-export type MutationType = 'CREATE' | 'UPDATE' | 'DELETE' | 'CUSTOM' | 'PATCH';
 
 export interface MutationIntent {
   type: MutationType;

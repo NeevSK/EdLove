@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import { Pebble } from '@repo/ui/components/web';
 import type { SelfFeatureManifestItem } from '@repo/self/features/catalog';

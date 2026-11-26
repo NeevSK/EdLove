@@ -1,4 +1,4 @@
-import type { WorkspaceLayoutRepository } from '@repo/core/logic/domains/workspaceLayout/ports';
+import type { WorkspaceLayoutRepository } from '@repo/core/logic/ports/workspaceLayout.port';
 import {
   type WorkspaceLayoutDelete,
   WorkspaceLayoutDeleteSchema,

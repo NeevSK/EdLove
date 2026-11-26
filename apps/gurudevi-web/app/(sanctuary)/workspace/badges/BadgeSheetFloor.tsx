@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import {
   getCanonicalSampleStudents,
@@ -117,10 +115,10 @@ export function BadgeSheetFloor({ mode, subjectId }: BadgeSheetFloorProps) {
           <button type="button" className={styles.printBtn} onClick={handlePrint}>
             🖨️ Print Badge Sheet
           </button>
-          <Link href="/workspace/kiosk" className={styles.backLink}>
+          <Link to="/workspace/kiosk" className={styles.backLink}>
             Open Kiosk Scanner →
           </Link>
-          <Link href="/workspace" className={styles.backLink}>
+          <Link to="/workspace" className={styles.backLink}>
             ← Roll Call
           </Link>
         </div>
@@ -159,7 +157,7 @@ export function BadgeSheetFloor({ mode, subjectId }: BadgeSheetFloorProps) {
                 <div className={styles.badgeCardHeader}>
                   <div className={styles.schoolCrestRow}>
                     <span className={styles.crestIcon}>🏛️</span>
-                    <h2 className={styles.schoolName}>Gurudevi Sanctuary</h2>
+                    <h2 className={styles.schoolName}>Gurudevi App</h2>
                   </div>
                   <span className={styles.badgeTypePill}>Student Pass</span>
                 </div>

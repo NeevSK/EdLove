@@ -1,10 +1,9 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useRef, useState } from 'react';
 import { useAcademicDomain } from '@/lib/domain';
 import { submitBrowserAssignment } from '../../../../lib/workspace/assignmentSubmissions';
 import styles from './submissions.module.css';
+import { acceptAttributeFor } from '@repo/core/logic/files/filePolicy';
 
 interface SubmissionsFloorProps {
   accountId: string;
@@ -84,7 +83,7 @@ export function SubmissionsFloor({ accountId, authSubjectId, displayName, capaci
         <div className={styles.titleArea}>
           <div style={{ marginBottom: '0.5rem' }}>
             <Link
-              href="/workspace"
+              to="/workspace"
               style={{
                 fontSize: '0.8rem',
                 fontWeight: 650,
@@ -163,7 +162,7 @@ export function SubmissionsFloor({ accountId, authSubjectId, displayName, capaci
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".pdf,.png,.jpg,.jpeg,.docx,.zip"
+                accept={acceptAttributeFor('submission')}
                 style={{ display: 'none' }}
                 onChange={handleFileChange}
               />

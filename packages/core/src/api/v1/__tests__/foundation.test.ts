@@ -15,6 +15,7 @@ describe('v1 API foundation', () => {
       'scopes',
       'entry',
       'createInitialBond',
+      'syncGrant',
     ]);
     expect(Object.keys(appContract.authority)).toEqual(['refreshSnapshot']);
     expectTypeOf(createV1Client()).toEqualTypeOf<AppContractClient>();

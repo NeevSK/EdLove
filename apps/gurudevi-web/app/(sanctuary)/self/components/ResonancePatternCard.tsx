@@ -1,5 +1,3 @@
-'use client';
-
 import { Activity, Sparkles } from 'lucide-react';
 
 interface ResonancePatternCardProps {

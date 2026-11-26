@@ -3,7 +3,7 @@ import { useOfflineStatus } from '@repo/core/offline/useOfflineStatus';
 import { useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { createWisdomNote, fetchWisdomNotes } from '@repo/self/data/selfFeature.data';
-import type { WisdomNote } from '@repo/self/types';
+import type { WisdomNote } from '@repo/core/types/Wellbeing';
 import { useCallback, useEffect, useState } from 'react';
 
 const WISDOM_CACHE_KEY = 'gurudevi-wisdom-cache';

@@ -25,7 +25,9 @@
     "**/.expo/**",
     "**/android/**",
     "**/ios/**",
-    "**/.gemini/**"
+    "**/.gemini/**",
+    "**/*.web.ts",
+    "**/*.web.tsx"
   ],
   "ignoreDependencies": ["@repo/types-shim", "husky", "lint-staged", "@repo/eslint-config"],
   "ignoreBinaries": ["turbo"]

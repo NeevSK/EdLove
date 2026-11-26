@@ -3,8 +3,8 @@ import {
   getAllDomains,
   registerDomains,
 } from '@repo/core/logic/registry/appCatalog';
-import { CITIZENSHIP } from '@repo/core/logic/registry/citizenship';
-import type { DomainEntry } from '@repo/core/logic/registry/domainEntry';
+import { CITIZENSHIP } from '@repo/core/types/citizenship';
+import type { DomainEntry } from '@repo/core/types/domainEntry';
 import { validateFeatureFlagManifest } from '@repo/core/logic/registry/featureLifecycleManifest';
 import { beforeEach, describe, expect, it } from 'vitest';
 

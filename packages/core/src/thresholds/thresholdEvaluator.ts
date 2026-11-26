@@ -6,7 +6,7 @@ import type {
   ThresholdCascade,
   ThresholdDefinition,
   ThresholdEvaluationResult,
-} from './types';
+} from '../types/thresholds';
 
 /**
  * Computes projected Matthew Effect divergence gap over time:

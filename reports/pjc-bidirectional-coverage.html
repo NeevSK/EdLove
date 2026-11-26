@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PJC Bidirectional Conformance & Reverse Coverage Matrix</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; background: #0b1120; color: #f8fafc; margin: 0; padding: 2rem; }
+    h1 { color: #38bdf8; font-size: 1.8rem; margin-bottom: 0.25rem; }
+    h2 { color: #94a3b8; font-size: 1.25rem; margin-top: 2rem; border-bottom: 1px solid #1e293b; padding-bottom: 0.5rem; }
+    .badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; }
+    .badge.success { background: #065f46; color: #34d399; }
+    .badge.warn { background: #854d0e; color: #fde047; }
+    .badge.danger { background: #991b1b; color: #f87171; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .card { background: #1e293b; padding: 1.25rem; border-radius: 0.5rem; border: 1px solid #334155; }
+    .card-val { font-size: 2rem; font-weight: 700; color: #f1f5f9; }
+    .card-lbl { font-size: 0.85rem; color: #94a3b8; margin-top: 0.25rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: #1e293b; border-radius: 0.5rem; overflow: hidden; }
+    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #334155; font-size: 0.9rem; }
+    th { background: #0f172a; color: #94a3b8; font-weight: 600; }
+    tr:last-child td { border-bottom: none; }
+    .code-tag { font-family: monospace; background: #0f172a; padding: 0.2rem 0.4rem; border-radius: 0.25rem; color: #e2e8f0; }
+  </style>
+</head>
+<body>
+  <h1>PJC Bidirectional Conformance & Coverage Matrix</h1>
+  <p style="color: #94a3b8;">Vice-Versa Analysis: Spec ➔ Code Traceability & Code ➔ Spec Dark Feature Detection</p>
+
+  <h2>1. Executive Summary & Coverage Metrics</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="card-val">47.8%</div>
+      <div class="card-lbl">Web Routes with PJC (33 / 69)</div>
+      <span class="badge warn">Code ➔ Spec</span>
+    </div>
+    <div class="card">
+      <div class="card-val">41.0%</div>
+      <div class="card-lbl">Mobile Routes with PJC (16 / 39)</div>
+      <span class="badge warn">Code ➔ Spec</span>
+    </div>
+    <div class="card">
+      <div class="card-val">40.4%</div>
+      <div class="card-lbl">Web Floor Components with PJC (19 / 47)</div>
+      <span class="badge danger">Code ➔ Spec</span>
+    </div>
+    <div class="card">
+      <div class="card-val">65.8%</div>
+      <div class="card-lbl">PJC Binding Integrity (77 / 117)</div>
+      <span class="badge warn">Spec ➔ Code</span>
+    </div>
+  </div>
+
+  <h2>2. Dark Features: Implemented Web Routes With NO PJC Attached (36)</h2>
+  <table>
+    <thead>
+      <tr><th>Uncataloged Web Route</th><th>Status</th><th>Recommended Action</th></tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td><span class="code-tag">/</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/account-recovery</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/architecture-lab</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/atlas</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/community</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/community/announcements</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/community/chat/[groupId]</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/community/dm/[userId]</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/community/forest</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/explore-intro</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/icon-lab</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/invitation-welcome</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/kit</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/kit/components</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/kit/components/temporal-horizon</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/kit/floor-redesign</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/kit/self</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/library</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/library/collections/[id]</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/library/contribute</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/library/curator</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/library/map</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/library/reader/[bookId]</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/library/review</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/library/tools</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/library/video/[videoId]</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/notifications</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/profile</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/profile/security</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/recovery</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/reset-password</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/settings</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/sign-in</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/support</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/verger-lab</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">/welcome</span></td>
+          <td><span class="badge danger">Uncataloged Code</span></td>
+          <td style="color: #94a3b8;">Declare user intent & scenario in PJC catalog</td>
+        </tr>
+      
+    </tbody>
+  </table>
+
+  <h2>3. Dark Features: Implemented Web Floor Components With NO PJC Attached (28)</h2>
+  <table>
+    <thead>
+      <tr><th>Component File</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/account-recovery/AccountRecoveryFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/admin/analytics/EnhancedAnalyticsFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/admin/documents/DocumentListFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/admin/forms/builder/FormBuilderFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/admin/founder/FounderFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/admin/principal/PrincipalFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/atlas/AtlasFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/community/announcements/AnnouncementsFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/community/chat/[groupId]/GroupChatFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/community/CommunityFeedFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/community/components/CommunityDirectMessagesStage.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/community/dm/[userId]/DirectMessageFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/community/forest/SchoolForestFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/library/collections/[id]/CollectionShelfDesk.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/library/contribute/ContributeDesk.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/library/curator/CuratorReviewDesk.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/library/LibraryFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/library/map/LibraryAtlasDesk.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/library/reader/[bookId]/DocumentReaderDesk.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/library/tools/ToolsWorkbenchDesk.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/library/video/[videoId]/VideoPlayerDesk.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/notifications/NotificationsFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/profile/ProfileFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/profile/security/SecurityFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/school/[id]/SchoolPublicFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/self/SelfFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/settings/SettingsFloor.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+        <tr>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/welcome/WelcomeStage.tsx</span></td>
+          <td><span class="badge danger">No PJC Binding</span></td>
+        </tr>
+      
+    </tbody>
+  </table>
+
+  <h2>4. Phantom / Broken PJC Bindings (Declared in Spec, Missing in Code: 40)</h2>
+  <table>
+    <thead>
+      <tr><th>Binding ID</th><th>Declared Reference</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td><strong>binding:admin.school_connection.web-0</strong></td>
+          <td><span class="code-tag">None</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:admin.school_connection.api-2</strong></td>
+          <td><span class="code-tag">None</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:principal.web_dashboard</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/PrincipalDashboard.web.tsx</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:ai.screen_shared</strong></td>
+          <td><span class="code-tag">packages/ui/src/screens/AIScreen.shared.tsx</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.contract_inspector</strong></td>
+          <td><span class="code-tag">packages/core/src/api/contractInspection.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.contract_inspector_test</strong></td>
+          <td><span class="code-tag">packages/core/src/api/__tests__/contractInspection.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.onboarding_handler</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/core/handlers/onboarding.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.onboarding_test</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/onboarding.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.daily_content_contract</strong></td>
+          <td><span class="code-tag">packages/core/src/api/dailyContent.orpc.contract.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.daily_content_handler</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/core/handlers/dailyContent.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.daily_content_test</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/daily-content.orpc.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.daily_content_contract_test</strong></td>
+          <td><span class="code-tag">packages/core/src/api/__tests__/dailyContent.contract.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.privacy_handler</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/core/handlers/privacy.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.privacy_api_test</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/privacy.orpc.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.privacy_contract_test</strong></td>
+          <td><span class="code-tag">packages/core/src/api/__tests__/privacy.contract.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.contract_conversion</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/core/orpc.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.contract_test</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/contract-conversion.characterization.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.native_client</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/orpc-client.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.native_admission</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/canonical-account.security.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.regular_rewards_test</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/rewards.orpc.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.readiness</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/core/readiness.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.authority_failure</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/authorization-context-failure.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.http</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/rpc-method-policy.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.mcp_door</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/doors/mcp.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.mcp</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/mcp-door.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.entitlement</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/orpc-entitlement.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.ai_cancel</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/ai-streaming-resilience.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.database_proof</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/integration/api-foundation.pg.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.rewards</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/core/routes/adRewards.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.rewards_test</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/adRewards.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:api.rewards_pg</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/__tests__/integration/ad-reward.pg.test.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:classroom.teacher_first_workspace.web-0</strong></td>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/workspace/page.tsx</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:classroom.teacher_first_workspace.authorization-4</strong></td>
+          <td><span class="code-tag">apps/sanctuary-api/src/core/handlers/workspaceProvisioning.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:teacher.attendance_screen</strong></td>
+          <td><span class="code-tag">packages/classroom/src/screens/AttendanceScreen.tsx</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:teacher.holistic_insights</strong></td>
+          <td><span class="code-tag">packages/classroom/src/components/ClassroomHolisticInsights.tsx</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:founder.route_mobile</strong></td>
+          <td><span class="code-tag">apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:founder.dashboard_screen</strong></td>
+          <td><span class="code-tag">packages/admin/src/screens/FounderDashboard.tsx</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:founder.stats_bridge</strong></td>
+          <td><span class="code-tag">packages/admin/src/bridge/founderWorkspace.ts</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:founder.ai_web</strong></td>
+          <td><span class="code-tag">apps/gurudevi-web/app/(sanctuary)/agent-lab/assistant/page.tsx</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+        <tr>
+          <td><strong>binding:founder.create_modal</strong></td>
+          <td><span class="code-tag">packages/admin/src/components/school/CreateSchoolModal.tsx</span></td>
+          <td><span class="badge danger">File Missing On Disk</span></td>
+        </tr>
+      
+    </tbody>
+  </table>
+</body>
+</html>

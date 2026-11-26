@@ -3,8 +3,8 @@ import {
   DEVICE_THEME_MODE_KEY,
   ensureDeviceThemePreference,
   isDeviceThemeMode,
-} from '@repo/core/lib/devicePreferences';
-import { storage } from '@repo/core/lib/storage';
+} from '@repo/core/lib/devicePreferences.adapter';
+import { storage } from '@repo/core/lib/storage.adapter';
 
 import {
   createContext,

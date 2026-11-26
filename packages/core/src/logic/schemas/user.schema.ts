@@ -1,8 +1,5 @@
-import {
-  BondSchema,
-  CapacitySchema,
-  IdentityStateSchema,
-} from '@repo/core/logic/schemas/identity.schema';
+import { BondSchema, IdentityStateSchema } from '@repo/core/logic/schemas/identity.schema';
+import { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 import { makeModelSchema } from '@repo/schema';
 import { z } from 'zod';
 
@@ -24,7 +21,7 @@ export const UserSchema = makeModelSchema('User')
   })
   .catchall(z.unknown());
 
-export type User = z.infer<typeof UserSchema>;
+export type UserRow = z.infer<typeof UserSchema>;
 
 export const TenantKindSchema = z.enum(['internal', 'customer', 'demo', 'sandbox']);
 

@@ -3,7 +3,7 @@ import {
   DEFAULT_AI_CONTEXT_POLICY,
   sanitizeContextEnvelope,
   useAIContextStore,
-} from '../contextRegistry';
+} from '../contextRegistry.store';
 
 describe('AIContextRegistry & 4-Tier Sensitivity Gate', () => {
   beforeEach(() => {

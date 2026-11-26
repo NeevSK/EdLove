@@ -6,6 +6,8 @@ import { PasswordlessEntry } from './PasswordlessEntry';
 const browserAuthRuntime = vi.hoisted(() => vi.fn());
 const signInWithOtp = vi.hoisted(() => vi.fn());
 const updateUser = vi.hoisted(() => vi.fn());
+const signInWithOAuth = vi.hoisted(() => vi.fn());
+const linkIdentity = vi.hoisted(() => vi.fn());
 
 vi.mock('./browserAuth', () => ({
   browserAuthRuntime,
@@ -16,7 +18,7 @@ describe('PasswordlessEntry email magic link', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     browserAuthRuntime.mockReturnValue({
-      client: { auth: { signInWithOtp, updateUser } },
+      client: { auth: { signInWithOtp, updateUser, signInWithOAuth, linkIdentity } },
       bootstrapIdentity: vi
         .fn()
         .mockResolvedValue({ status: 'signed-out', session: null, user: null }),
@@ -83,5 +85,66 @@ describe('PasswordlessEntry email magic link', () => {
     expect((await screen.findByRole('status')).textContent).toMatch(
       /existing work stays attached/i,
     );
+  });
+
+  it('triggers Google OAuth redirect for signed-out users', async () => {
+    const assignMock = vi.fn();
+    vi.stubGlobal('location', { ...window.location, assign: assignMock });
+
+    signInWithOAuth.mockResolvedValue({
+      data: { provider: 'google', url: 'https://supabase.example.com/auth/v1/authorize?provider=google' },
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    render(<PasswordlessEntry returnTo="/self" />);
+
+    await user.click(screen.getByRole('button', { name: /Continue with Google/i }));
+
+    expect(signInWithOAuth).toHaveBeenCalledWith({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/complete?next=%2Fself&returnTo=%2Fself`,
+      },
+    });
+    expect(assignMock).toHaveBeenCalledWith('https://supabase.example.com/auth/v1/authorize?provider=google');
+    vi.unstubAllGlobals();
+  });
+
+  it('falls back to direct OAuth when guest identity linking collides with existing account', async () => {
+    const assignMock = vi.fn();
+    vi.stubGlobal('location', { ...window.location, assign: assignMock });
+
+    browserAuthRuntime.mockReturnValue({
+      client: { auth: { signInWithOtp, updateUser, signInWithOAuth, linkIdentity } },
+      bootstrapIdentity: vi.fn().mockResolvedValue({
+        status: 'authenticated',
+        session: { user: { id: 'guest-1', is_anonymous: true } },
+      }),
+    });
+
+    linkIdentity.mockResolvedValue({
+      data: null,
+      error: { message: 'An identity with this email already exists', code: 'identity_already_exists' },
+    });
+    signInWithOAuth.mockResolvedValue({
+      data: { provider: 'google', url: 'https://supabase.example.com/auth/v1/authorize?provider=google' },
+      error: null,
+    });
+
+    const user = userEvent.setup();
+    render(<PasswordlessEntry returnTo="/self" />);
+
+    await user.click(screen.getByRole('button', { name: /Continue with Google/i }));
+
+    expect(linkIdentity).toHaveBeenCalled();
+    expect(signInWithOAuth).toHaveBeenCalledWith({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/complete?next=%2Fself&returnTo=%2Fself`,
+      },
+    });
+    expect(assignMock).toHaveBeenCalledWith('https://supabase.example.com/auth/v1/authorize?provider=google');
+    vi.unstubAllGlobals();
   });
 });

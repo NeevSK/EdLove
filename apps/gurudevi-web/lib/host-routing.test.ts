@@ -226,3 +226,20 @@ describe('Gurudevi hostname policy', () => {
     });
   });
 });
+
+describe('Subdomain Host-Routing for Edge Media', () => {
+  it('rewrites /badge.svg on school subdomain to include school query param', () => {
+    const decision = resolveHostRouting('ananda.gurudevi.app', '/badge.svg', 'GET');
+    expect(decision).toEqual({
+      kind: 'rewrite',
+      pathname: '/badge.svg?school=ananda',
+    });
+  });
+
+  it('allows /api/og directly on school subdomains', () => {
+    const decision = resolveHostRouting('visakha.gurudevi.app', '/api/og', 'GET');
+    expect(decision).toEqual({
+      kind: 'allow',
+    });
+  });
+});

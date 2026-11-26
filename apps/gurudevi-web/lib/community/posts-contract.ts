@@ -1,32 +1,10 @@
+import type { CommunityPostView } from '@repo/core/types/communityView';
 import { getSandboxSamples } from '@repo/core/api/sandboxDataset';
 import '@repo/core/api/community';
 
-export type CommunityPost = Readonly<{
-  id: string;
-  groupId: string;
-  authorId: string;
-  authorName: string | null;
-  authorRole: string | null;
-  content: string;
-  postType: string | null;
-  reactionCount: number;
-  commentCount: number;
-  createdAt: string;
-  userHasLiked?: boolean;
-}>;
 
-export type CommunityPostsResult =
-  | Readonly<{ kind: 'ready'; posts: readonly CommunityPost[]; hasMore: boolean }>
-  | Readonly<{ kind: 'denied' }>
-  | Readonly<{ kind: 'unavailable' }>;
 
-export type CommunityPostsQuery = Readonly<{
-  groupId?: string;
-  limit: number;
-  offset: number;
-}>;
 
-export const COMMUNITY_POSTS_PAGE_SIZE = 20;
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   return value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -34,9 +12,9 @@ function asRecord(value: unknown): Record<string, unknown> | null {
     : null;
 }
 
-export function parseCommunityPosts(value: unknown): readonly CommunityPost[] | null {
+export function parseCommunityPosts(value: unknown): readonly CommunityPostView[] | null {
   if (!Array.isArray(value)) return null;
-  const posts: CommunityPost[] = [];
+  const posts: CommunityPostView[] = [];
   for (const valueItem of value) {
     const item = asRecord(valueItem);
     if (!item || typeof item.id !== 'string' || typeof item.content !== 'string') continue;
@@ -98,7 +76,7 @@ export function parseCommunityPosts(value: unknown): readonly CommunityPost[] | 
 }
 
 /** Canonical explore mode posts from registered sandbox dataset */
-export function getExploreSamplePosts(groupId?: string): readonly CommunityPost[] {
+export function getExploreSamplePosts(groupId?: string): readonly CommunityPostView[] {
   const allPosts = getSandboxSamples<any[]>('community', 'getPosts', [groupId], []);
   const list = groupId
     ? allPosts.filter((p) => p.group_id === groupId)

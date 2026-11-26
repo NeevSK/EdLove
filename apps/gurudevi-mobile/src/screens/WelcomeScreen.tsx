@@ -1,11 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import {
-  Linking,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { LanguageUtils } from '@repo/core/logic';
@@ -13,10 +7,9 @@ import { useEnvironment } from '@repo/ui/context';
 import {
   Button,
   LanguagePicker,
-  SceneBackdrop,
   Surface,
   Text,
-  useScene,
+  useFloorPresence,
 } from '@repo/ui/components/native';
 import { Mascot } from '@repo/ui/components/Mascot';
 import { useWorld } from '@repo/ui/theme/native';
@@ -73,7 +66,7 @@ export function WelcomeScreen({ onLogin, onStartGuest }: WelcomeScreenProps) {
   const { isDark, setThemeMode } = useEnvironment();
   const world = useWorld();
   const wt = world.tokens;
-  const scene = useScene({ presence: 'full' });
+  useFloorPresence('full');
 
   const [isConnecting, setIsConnecting] = useState(false);
   const [activeRealm, setActiveRealm] = useState<RealmId>('self');
@@ -114,11 +107,7 @@ export function WelcomeScreen({ onLogin, onStartGuest }: WelcomeScreenProps) {
   }, []);
 
   return (
-    <View style={[styles.root, { backgroundColor: wt.ground }]}>
-      <SceneBackdrop
-        scene={scene}
-        wash={{ colour: wt.ground, edge: 0.12, text: 1.0, textFrom: 0.38 }}
-      />
+    <View style={styles.root}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView
           contentContainerStyle={styles.scrollContent}
@@ -127,15 +116,14 @@ export function WelcomeScreen({ onLogin, onStartGuest }: WelcomeScreenProps) {
         >
           {/* Top Bar: Brand Badge & Language Selector */}
           <View style={styles.topBar}>
-            <View
-              style={[
-                styles.brandBadge,
-                { backgroundColor: wt.raised, borderColor: wt.line },
-              ]}
-            >
+            <View style={[styles.brandBadge, { backgroundColor: wt.raised, borderColor: wt.line }]}>
               <View style={[styles.brandDot, { backgroundColor: wt.lamp }]} />
               <Text kind="caption" tone="soft" style={styles.brandBadgeText}>
-                {(world.definition.names[(i18n.language?.slice(0, 2) ?? 'en') as 'en' | 'si' | 'ta'] ?? world.id).toUpperCase()}
+                {(
+                  world.definition.names[
+                    (i18n.language?.slice(0, 2) ?? 'en') as 'en' | 'si' | 'ta'
+                  ] ?? world.id
+                ).toUpperCase()}
               </Text>
             </View>
 
@@ -144,10 +132,7 @@ export function WelcomeScreen({ onLogin, onStartGuest }: WelcomeScreenProps) {
                 onPress={toggleTheme}
                 accessibilityRole="button"
                 accessibilityLabel={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-                style={[
-                  styles.modePill,
-                  { backgroundColor: wt.raised, borderColor: wt.line },
-                ]}
+                style={[styles.modePill, { backgroundColor: wt.raised, borderColor: wt.line }]}
               >
                 <Text kind="caption" tone="ink">
                   {isDark ? '🌙 Dark' : '☀️ Light'}
@@ -264,7 +249,8 @@ export function WelcomeScreen({ onLogin, onStartGuest }: WelcomeScreenProps) {
                 </Text>
               </Pressable>
               <Text kind="caption" tone="faint">
-                {' '}and{' '}
+                {' '}
+                and{' '}
               </Text>
               <Pressable
                 onPress={() => openUrl(EXTERNAL_URLS.privacy)}

@@ -1,6 +1,4 @@
-'use client';
-
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import React, { useEffect, useState } from 'react';
 import { resolveSurfaceUrl } from '@/lib/surface-urls';
 import { editorialAdapter, type SchoolEditorialDraft } from '@/lib/domain';
@@ -69,7 +67,7 @@ export function SchoolPublicFloor({ schoolId }: Readonly<SchoolPublicFloorProps>
       {/* 1. Public Institutional Masthead */}
       <header className={styles.masthead}>
         <div className={styles.mastheadInner}>
-          <Link href={`/school/${fact.handle}`} className={styles.brandLink}>
+          <Link to="/school/$id" params={{ id: fact.handle }} className={styles.brandLink}>
             <div className={styles.brandCrest} aria-hidden="true">
               {fact.avatarUrl ? (
                 <img
@@ -387,7 +385,7 @@ export function SchoolPublicFloor({ schoolId }: Readonly<SchoolPublicFloorProps>
                       <div className={styles.articleFooter}>
                         <span>{article.subEntityName}</span>
                         <Link
-                          href={`/school/${fact.handle}/articles/${article.slug ?? article.id}`}
+                          to="/school/$id/articles/$slug" params={{ id: fact.handle, slug: article.slug ?? article.id }}
                           className={styles.readStoryLink}
                         >
                           Read Story ➔
@@ -471,7 +469,7 @@ export function SchoolPublicFloor({ schoolId }: Readonly<SchoolPublicFloorProps>
                       </div>
 
                       <Link
-                        href={`/school/${fact.handle}/articles/${article.slug ?? article.id}`}
+                        to="/school/$id/articles/$slug" params={{ id: fact.handle, slug: article.slug ?? article.id }}
                         className={styles.readStoryLink}
                       >
                         Read Full Story ➔
@@ -714,7 +712,7 @@ export function SchoolPublicFloor({ schoolId }: Readonly<SchoolPublicFloorProps>
           </div>
 
           <div className={styles.footerLinks}>
-            <Link href={`/school/${fact.handle}`}>School Home</Link>
+            <Link to="/school/$id" params={{ id: fact.handle }}>School Home</Link>
             <a href={resolveSurfaceUrl('sanctuary', '/welcome')}>Educator Portal</a>
             <a href={resolveSurfaceUrl('sanctuary', '/sign-in')}>Student Login</a>
           </div>
