@@ -1,14 +1,18 @@
 ---
 title: "Documentation Index"
-status: "active"
+status: "stalled"
 created: 2026-06-26
-updated: 2026-10-04
+updated: 2026-11-27
 author: "Naveen"
 scribe: "Antigravity"
-tags: [docs, index, changelog]
+tags: [docs, index, changelog, stalled]
 ---
 
 # Documentation Index
+
+> [!NOTE]
+> **Repository Status: Stalled (2026-11-27)**  
+> Active development on this repository is paused indefinitely because the primary maintainer is unavailable (bus factor).
 
 This index lists all design specifications, plans, guides, decisions, and workflow checklists for the Polymath Platform, organized by functional area according to the workspace documentation SOP.
 

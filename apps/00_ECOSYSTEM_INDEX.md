@@ -1,14 +1,18 @@
 ---
 title: "EdLove Web Ecosystem Index"
-status: "active"
+status: "stalled"
 created: 2026-02-12
-updated: 2026-08-24
+updated: 2026-11-27
 author: "Naveen"
 scribe: "opencode"
-tags: [apps, 00_ECOSYSTEM_INDEX.md]
+tags: [apps, 00_ECOSYSTEM_INDEX.md, stalled]
 ---
 
 # EdLove Web Ecosystem Index
+
+> [!NOTE]
+> **Repository Status: Stalled (2026-11-27)**  
+> Active development on this repository is paused indefinitely because the primary maintainer is unavailable (bus factor).
 
 Welcome to the EdLove ecosystem monorepo.
 

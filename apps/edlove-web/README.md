@@ -1,14 +1,18 @@
 ---
 title: "EDLOVE.ORG"
-status: "active"
+status: "stalled"
 created: 2026-02-02
-updated: 2026-10-15
+updated: 2026-11-27
 author: "Naveen"
 scribe: "Antigravity"
-tags: [apps, edlove-web, nextjs16, ssg, education-commons]
+tags: [apps, edlove-web, nextjs16, ssg, education-commons, stalled]
 ---
 
 # EDLOVE.ORG
+
+> [!NOTE]
+> **Repository Status: Stalled (2026-11-27)**  
+> Active development on this repository is paused indefinitely because the primary maintainer is unavailable (bus factor).
 
 > **"The digital sanctuary for educational transformation."**
 

@@ -1,14 +1,18 @@
 ---
 title: "Gurudevi Mobile Flagship"
-status: "active"
+status: "stalled"
 created: 2026-02-05
-updated: 2026-10-15
+updated: 2026-11-27
 author: "Naveen"
 scribe: "Antigravity"
-tags: [apps, gurudevi-mobile, expo, react-native, offline-first, teachers]
+tags: [apps, gurudevi-mobile, expo, react-native, offline-first, teachers, stalled]
 ---
 
 # Gurudevi Mobile Flagship
+
+> [!NOTE]
+> **Repository Status: Stalled (2026-11-27)**  
+> Active development on this repository is paused indefinitely because the primary maintainer is unavailable (bus factor).
 
 > **The daily operational haven for teachers, students, and school leaders on iOS and Android.**
 

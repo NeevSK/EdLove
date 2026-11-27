@@ -1,5 +1,9 @@
 # Gurudevi Web — Unified Browser Platform
 
+> [!NOTE]
+> **Repository Status: Stalled (2026-11-27)**  
+> Active development on this repository is paused indefinitely because the primary maintainer is unavailable (bus factor).
+
 > **Live Environment**: [gurudevi.app](https://gurudevi.app)
 
 Gurudevi Web is the browser home of the **Gurudevi Sanctuary**. It brings together public community discovery, educational stories, and the complete authenticated workspace for teachers, school leaders, students, and families in a modern, accessible web interface.
