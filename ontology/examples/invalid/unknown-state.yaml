@@ -1,7 +1,7 @@
 # Planted defect 6: a bond state that does not exist.
 - id: gd:b4
   person: gd:kamala
-  institution: gd:royal
+  circle: gd:royal
   capacity: principal
   state: archived
   valid_from: "2026-01-05T00:00:00+05:30"

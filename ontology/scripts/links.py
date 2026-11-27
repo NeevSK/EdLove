@@ -379,6 +379,8 @@ def build(root: Path, with_conformance: bool = False) -> Graph:
         if not lk.get("stored_in"):
             g.gap("CLASS_NOT_STORED", cid, "no stored_in in links.yaml")
     for cn in oclasses:
+        if oclasses[cn].get("abstract"):
+            continue
         if cn not in (links.get("classes") or {}):
             g.gap("CLASS_NOT_STORED", f"class:{cn}", "not in links.yaml")
     for mn, m in sorted(models.items()):
@@ -503,8 +505,8 @@ def build(root: Path, with_conformance: bool = False) -> Graph:
             continue
         if lk.get("outside"):
             g.node(cid, outside=lk["outside"])
-        tr = lk.get("transition")
-        if tr:
+        trs = lk.get("transition") or []
+        for tr in trs if isinstance(trs, list) else [trs]:
             if f"transition:{tr}" not in g.nodes:
                 g.gap("LINK_BROKEN", cid, f"names transition {tr}, not in gurudevi.yaml")
             else:

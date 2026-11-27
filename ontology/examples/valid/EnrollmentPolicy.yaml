@@ -1,0 +1,10 @@
+# The psychology course asks for LKR 4,000 before joining; no one needs to approve.
+- id: gd:p1
+  circle: gd:psych
+  needs_approval: false
+  payment_order: before
+  amount: 4000
+  currency: LKR
+  state: in_force
+  valid_from: "2026-01-01T00:00:00+05:30"
+  recorded_at: "2025-12-20T09:00:00+05:30"

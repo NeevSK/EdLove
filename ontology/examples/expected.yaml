@@ -14,12 +14,16 @@ invalid:
   teacher-grants-enrol:
     class: Authority
     caught_by: capacity-decides-powers
-  enrollment-teacher-capacity:
+  enrolled-without-bond:
     class: Enrollment
     caught_by: native
-    expect: "'student' was expected"
+    expect: "'bond' is a required property"
+  pay-first-without-amount:
+    class: EnrollmentPolicy
+    caught_by: native
+    expect: "'amount' is a required property"
   grade-14:
-    class: Enrollment
+    class: GradeClass
     caught_by: native
     expect: greater than the maximum of 13
   ended-without-end:

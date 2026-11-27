@@ -1,7 +1,7 @@
-# Two active bonds for the same person, institution and capacity (Kamala already has gd:b3).
+# Two active bonds for the same person, circle and capacity (Kamala already has gd:b3).
 - id: gd:b5
   person: gd:kamala
-  institution: gd:royal
+  circle: gd:royal
   capacity: principal
   state: active
   valid_from: "2024-06-01T00:00:00+05:30"

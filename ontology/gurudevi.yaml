@@ -21,8 +21,9 @@ name: gurudevi
 title: Gurudevi ontology
 description: >-
   What exists in Gurudevi and how each thing comes into being and changes.
-  First slice: the shared case (Person, Institution, Bond, Enrollment, Authority), then the
-  school structure the code already has (Section, GradeClass, AcademicCycle, Group, InviteCode).
+  The shared case (Person, circles such as Institution, Bond, Authority), the school structure
+  the code already has (Section, GradeClass, AcademicCycle, Group, InviteCode), and joining:
+  Enrollment, EnrollmentPolicy, Payment, TuitionBatch.
 version: 0.1.0
 license: https://creativecommons.org/publicdomain/zero/1.0/
 prefixes:
@@ -78,6 +79,12 @@ annotations:
         class: Authority
         via: granted_by
 
+      - id: policy-within-circle
+        says: A circle's enrollment policy is only in force while the circle is.
+        kind: within_interval
+        class: EnrollmentPolicy
+        via: circle
+
       - id: invite-code-within-institution
         says: An invite code is only open while its institution is.
         kind: within_interval
@@ -98,10 +105,10 @@ annotations:
           guardian: [view_reports]
 
       - id: one-active-bond
-        says: A person has at most one active bond with an institution in each capacity.
+        says: A person has at most one active bond with a circle in each capacity.
         kind: unique_while
         class: Bond
-        keys: [person, institution, capacity]
+        keys: [person, circle, capacity]
         when:
           state: active
 
@@ -165,7 +172,33 @@ classes:
               who: [person]
               why: The person closes their place in Gurudevi; their history is kept.
 
+  Circle:
+    abstract: true
+    description: >-
+      Anything a person can join and belong to through a bond: a school, a section, a grade
+      class, a group, a tuition batch.
+    mixins:
+      - Holon
+      - Bitemporal
+    slots:
+      - id
+      - state
+    slot_usage:
+      state:
+        range: HolonState
+    rules:
+      - description: A closed circle must say when it closed.
+        preconditions:
+          slot_conditions:
+            state:
+              equals_string: ended
+        postconditions:
+          slot_conditions:
+            valid_to:
+              required: true
+
   Institution:
+    is_a: Circle
     description: A school, tuition institute or other organisation people bond with.
     mixins:
       - Holon
@@ -212,15 +245,16 @@ classes:
 
   Bond:
     description: >-
-      How a person joins an institution, in one capacity. It exists only while both
-      sides do.
+      How a person belongs to a circle (a school, a section, a class, a group, a tuition
+      batch), in one capacity. It forms when an enrollment completes and exists only while
+      both sides do.
     mixins:
       - Coupling
       - Bitemporal
     slots:
       - id
       - person
-      - institution
+      - circle
       - capacity
       - state
     rules:
@@ -241,52 +275,33 @@ classes:
       #                each starts in `start` unless it says `to`
       #   internal:    true = carried out by the system or the API, never offered to users
       #                as an action on a screen
+      #   after:       the step elsewhere that this one follows from
       #   who:         `person` = the bond's own person; `system` = Gurudevi itself;
       #                any other word is a capacity, held in an active bond with `within`
       #   needs:       the power (Authority) the actor must hold, if any
       #   ends:        objects that end at the same valid time as this transition
       #   why:         one line of purpose, in plain words
+      #
+      # Joining is not a bond step: it is an Enrollment, which may be invited, made with a
+      # code, asked for, made by the person themselves or placed by the school, and may wait
+      # for approval or payment as the circle's EnrollmentPolicy says (Neev, 27 Nov 2026).
       lifecycle:
         value:
           state: state
-          within: institution
-          start: invited
+          within: circle
+          start: active
           create:
-            - id: bond.invite
-              who: [principal, founder]
-              needs: invite
-              why: An institution asks a person to join it in a capacity.
-            - id: bond.join
-              to: active
-              who: [person]
-              internal: true
-              why: >-
-                A person makes their own first bond, which starts active. How a first bond
-                is made; no screen offers it as an action (Neev, 27 Nov 2026).
+            id: bond.form
+            who: [system]
+            internal: true
+            after: enrollment.complete
+            why: A bond forms when an enrollment completes.
           transitions:
-            - id: bond.accept
-              from: invited
-              to: active
-              who: [person]
-              why: The person agrees to join, so the bond starts.
-            - id: bond.decline
-              from: invited
-              to: ended
-              who: [person]
-              why: The person says no, so the invitation ends without a bond.
-            - id: bond.withdraw
-              from: invited
-              to: ended
-              who: [principal, founder]
-              internal: true
-              why: >-
-                The institution takes back an invitation not yet accepted. Not offered to
-                users for now (Neev, 27 Nov 2026).
             - id: bond.suspend
               from: active
               to: suspended
               who: [principal]
-              why: The institution pauses a bond without ending it.
+              why: The circle pauses a bond without ending it.
             - id: bond.restore
               from: suspended
               to: active
@@ -304,23 +319,199 @@ classes:
               from: suspended
               to: ended
               who: [principal]
-              why: The institution ends a paused bond.
+              why: The circle ends a paused bond.
 
   Enrollment:
-    is_a: Bond
-    description: A bond in the student capacity, with a grade and an academic year.
+    description: >-
+      The official act of joining a circle in a capacity: joining a school, a class, a paid
+      course, or moving to a new school. It starts one of several ways, meets the conditions
+      the circle's policy sets (approval, payment before or after, in any order the policy
+      allows) and, once the circle recognises it, completes and a bond forms.
     close_mappings:
       - oneroster:Enrollment
+    mixins:
+      - Recognition
+      - Bitemporal
     slots:
-      - grade
-      - academic_year
+      - id
+      - person
+      - circle
+      - capacity
+      - way
+      - policy
+      - bond
+      - state
     slot_usage:
-      capacity:
-        equals_string: student
+      state:
+        range: EnrollmentState
+      bond:
+        required: false
+      policy:
+        required: false
+    rules:
+      - description: A completed enrollment names the bond it formed.
+        preconditions:
+          slot_conditions:
+            state:
+              equals_string: enrolled
+        postconditions:
+          slot_conditions:
+            bond:
+              required: true
+      - description: An ended enrollment must say when it ended.
+        preconditions:
+          slot_conditions:
+            state:
+              equals_string: ended
+        postconditions:
+          slot_conditions:
+            valid_to:
+              required: true
     annotations:
       ufo: relator
-      # Until Neev decides otherwise, an enrollment follows the Bond lifecycle unchanged.
-      # See "Open questions" in ontology/README.md.
+      lifecycle:
+        value:
+          state: state
+          within: circle
+          start: started
+          create:
+            id: enrollment.start
+            who: [person, principal, founder]
+            why: >-
+              Someone starts joining: the circle invites, a person uses a code or asks, a
+              person joins on their own, or the school places a student.
+          transitions:
+            - id: enrollment.complete
+              from: started
+              to: enrolled
+              who: [person, principal, founder, system]
+              why: >-
+                The conditions are met (the missing agreement is given, payment is in as the
+                policy says) and the circle recognises the person as joined; a bond forms.
+            - id: enrollment.decline
+              from: started
+              to: ended
+              who: [person, principal, founder]
+              why: Either side says no before it completes.
+            - id: enrollment.lapse
+              from: started
+              to: ended
+              who: [system]
+              internal: true
+              why: The conditions are not met in time (payment past its grace, a code expired).
+
+  EnrollmentPolicy:
+    description: >-
+      What a circle asks of anyone joining it: whether someone must approve, whether payment
+      is needed and whether it comes before or after joining, and how long payment may wait.
+    mixins:
+      - Norm
+      - Bitemporal
+    slots:
+      - id
+      - circle
+      - needs_approval
+      - payment_order
+      - amount
+      - currency
+      - grace_days
+      - state
+    slot_usage:
+      state:
+        range: PolicyState
+      amount:
+        required: false
+      currency:
+        required: false
+    rules:
+      - description: A policy that asks for payment first says how much.
+        preconditions:
+          slot_conditions:
+            payment_order:
+              equals_string: before
+        postconditions:
+          slot_conditions:
+            amount:
+              required: true
+      - description: A policy that takes payment later says how much.
+        preconditions:
+          slot_conditions:
+            payment_order:
+              equals_string: after
+        postconditions:
+          slot_conditions:
+            amount:
+              required: true
+      - description: A withdrawn policy must say when it stopped.
+        preconditions:
+          slot_conditions:
+            state:
+              equals_string: ended
+        postconditions:
+          slot_conditions:
+            valid_to:
+              required: true
+    annotations:
+      ufo: mode
+      lifecycle:
+        value:
+          state: state
+          within: circle
+          start: in_force
+          create:
+            id: policy.set
+            who: [principal, founder]
+            why: A circle says what joining it asks for.
+          transitions:
+            - id: policy.withdraw
+              from: in_force
+              to: ended
+              who: [principal, founder]
+              why: The circle stops a policy; enrollments already made under it keep it.
+
+  Payment:
+    description: >-
+      Money paid by a person, once, for an enrollment. Fixed once made; a refund is its own
+      payment the other way.
+    mixins:
+      - Course
+      - Bitemporal
+    slots:
+      - id
+      - person
+      - enrollment
+      - amount
+      - currency
+    annotations:
+      ufo: event
+      lifecycle:
+        value:
+          create:
+            id: payment.record
+            who: [person, system]
+            why: A payment is made and recorded against an enrollment.
+
+  TuitionBatch:
+    is_a: Circle
+    description: A tuition class or paid course a person can join, run by a tutor or an institute.
+    slots:
+      - name
+    annotations:
+      ufo: kind
+      lifecycle:
+        value:
+          state: state
+          start: active
+          create:
+            id: batch.open
+            who: [founder, teacher]
+            why: A tutor or institute opens a class people can join.
+          transitions:
+            - id: batch.close
+              from: active
+              to: ended
+              who: [founder, teacher]
+              why: The class stops; its members' history is kept.
 
   Authority:
     description: >-
@@ -352,7 +543,7 @@ classes:
       lifecycle:
         value:
           state: state
-          within: granted_by.institution
+          within: granted_by.circle
           start: held
           create:
             id: authority.grant
@@ -366,6 +557,7 @@ classes:
               why: A power is taken back while the bond goes on.
 
   Section:
+    is_a: Circle
     description: A part of a school that holds a run of grades (for example the primary section).
     mixins:
       - Holon
@@ -407,6 +599,7 @@ classes:
               why: The section stops; its history and its classes' history are kept.
 
   GradeClass:
+    is_a: Circle
     description: One class of one grade in one academic cycle (for example 7B in 2026), within a school.
     mixins:
       - Holon
@@ -450,6 +643,7 @@ classes:
               why: The class ends with its cycle or is closed; its history is kept.
 
   Group:
+    is_a: Circle
     description: A community circle people join, within a school.
     mixins:
       - Holon
@@ -568,9 +762,48 @@ slots:
   institution:
     range: Institution
     required: true
-    description: The institution this bond joins.
+    description: The institution this is part of.
+  circle:
+    range: Circle
+    required: true
+    description: The circle joined.
     annotations:
       ufo: mediation
+      reality: recognised_by
+  way:
+    range: EnrollmentWay
+    required: true
+    description: How the enrollment started.
+  policy:
+    range: EnrollmentPolicy
+    description: The circle's policy the enrollment follows.
+  bond:
+    range: Bond
+    description: The bond an enrollment formed.
+  enrollment:
+    range: Enrollment
+    required: true
+    description: The enrollment a payment is for.
+  needs_approval:
+    range: boolean
+    required: true
+    description: Whether someone in the circle must approve before joining completes.
+  payment_order:
+    range: PaymentOrder
+    required: true
+    description: Whether payment is needed, and whether it comes before or after joining.
+  amount:
+    range: decimal
+    required: true
+    description: An amount of money.
+  currency:
+    range: string
+    required: true
+    description: ISO 4217 currency code, for example LKR.
+  grace_days:
+    range: integer
+    minimum_value: 0
+    description: How many days payment may come after joining.
   capacity:
     range: Capacity
     required: true
@@ -603,10 +836,6 @@ slots:
     maximum_value: 13
     required: true
     description: School grade, 1 to 13.
-  academic_year:
-    range: integer
-    required: true
-    description: The academic year this enrollment is for.
 
 enums:
   Capacity:
@@ -620,7 +849,6 @@ enums:
   BondState:
     description: Lifecycle of a bond.
     permissible_values:
-      invited: {}
       active: {}
       suspended: {}
       ended: {}
@@ -628,6 +856,31 @@ enums:
     description: Lifecycle of a person's or an institution's place in Gurudevi.
     permissible_values:
       active: {}
+      ended: {}
+  EnrollmentState:
+    description: Lifecycle of an enrollment.
+    permissible_values:
+      started: {}
+      enrolled: {}
+      ended: {}
+  EnrollmentWay:
+    description: How an enrollment started.
+    permissible_values:
+      invited: {description: The circle invited a named person.}
+      invite_code: {description: The person used an invite code.}
+      request: {description: The person asked to join.}
+      own: {description: The person joined on their own (their first bond).}
+      placed: {description: The school placed the person (for example a student in a class).}
+  PaymentOrder:
+    description: Whether joining needs payment, and when.
+    permissible_values:
+      none: {description: No payment.}
+      before: {description: Payment before joining completes.}
+      after: {description: Joining completes first; payment follows within the grace days.}
+  PolicyState:
+    description: Lifecycle of an enrollment policy.
+    permissible_values:
+      in_force: {}
       ended: {}
   InviteState:
     description: Lifecycle of an invite code.

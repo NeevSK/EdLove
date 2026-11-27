@@ -52,16 +52,28 @@ classes:
         match: close
         why: >-
           A bond row joins a person to any circle (entity_type PLATFORM, SCHOOL, CLASSROOM,
-          COMMUNITY), not only to an institution.
+          COMMUNITY), as the ontology now says; the platform itself is not a circle yet.
         slots:
           id: {field: id, match: exact}
           person: {field: user_id, match: exact}
-          institution: {field: entity_id, match: close, why: "entity_id may also name a classroom, a community or the platform."}
+          circle: {field: entity_id, match: close, why: "entity_id names the circle and entity_type says which kind; GLOBAL names the platform."}
           capacity: {field: capacity, match: close, why: "Free string, not a closed set."}
           state: {field: status, match: close}
           valid_from: {field: valid_from, match: exact}
           valid_to: {field: valid_until, match: exact}
           recorded_at: {field: created_at, match: close, why: "Set once per row; a change to the row keeps no record time of its own."}
+      - model: StudentGradeClassEnrollment
+        match: close
+        why: A student's bond with a grade class in an academic cycle, kept in its own table.
+        slots:
+          id: {field: id, match: exact}
+          person: {field: student_id, match: exact}
+          circle: {field: grade_class_id, match: exact}
+          capacity: {match: missing, why: "Implied by the table (student); there is no capacity column."}
+          state: {field: status, match: close}
+          valid_from: {field: effective_from, match: exact}
+          valid_to: {field: effective_to, match: exact}
+          recorded_at: {field: created_at, match: close, why: "Set once per row."}
     also_in:
       - SchoolMembership
       - GuardianBond
@@ -69,24 +81,73 @@ classes:
       - GroupMember
       - GradeClassTeacherAssignment
       - AcademicCycleLeadershipAssignment
+      - ClassroomStudent
 
   Enrollment:
     stored_in:
-      - model: StudentGradeClassEnrollment
+      - model: SchoolJoinRequest
         match: close
-        why: An enrollment is in a grade class within an academic cycle, not a grade number and a year.
+        why: Stores only the enrollments that start as a request to join a school.
         slots:
           id: {field: id, match: exact}
-          person: {field: student_id, match: exact}
-          institution: {field: school_id, match: exact}
-          capacity: {match: missing, why: "Implied by the table; there is no capacity column."}
+          person: {field: user_id, match: exact}
+          circle: {field: school_id, match: exact}
+          capacity: {field: role, match: close, why: "Free string named role, not capacity."}
+          way: {match: missing, why: "Implied by the table (request)."}
+          policy: {match: missing, why: "No enrollment policy is stored anywhere yet."}
+          bond: {match: missing, why: "The bond made on approval is not linked back."}
           state: {field: status, match: close}
-          grade: {field: grade_class_id, match: differs, why: "Points to a GradeClass row; Enrollment could take a grade_class slot instead (proposed)."}
-          academic_year: {field: academic_cycle_id, match: differs, why: "Points to an AcademicCycle row; Enrollment could take an academic_cycle slot instead (proposed)."}
-          valid_from: {field: effective_from, match: exact}
-          valid_to: {field: effective_to, match: exact}
-          recorded_at: {field: created_at, match: close, why: "Set once per row."}
-    also_in: [ClassroomStudent]
+          valid_from: {field: created_at, match: close, why: "Row creation time, not valid time."}
+          valid_to: {match: missing}
+          recorded_at: {match: missing}
+    also_in: [ClassroomJoinRequest]
+
+  EnrollmentPolicy:
+    stored_in:
+      - model: TuitionBatch
+        match: differs
+        why: Only a monthly fee on the batch; no approval rule, payment order or grace is stored anywhere.
+        slots:
+          id: {match: missing, why: "No policy row; the fee sits on the batch."}
+          circle: {field: id, match: close, why: "The batch itself."}
+          needs_approval: {match: missing}
+          payment_order: {match: missing}
+          amount: {field: monthly_fee, match: close, why: "A monthly fee, not a fee to join."}
+          currency: {match: missing, why: "Assumed LKR."}
+          grace_days: {match: missing}
+          state: {match: missing}
+          valid_from: {match: missing}
+          valid_to: {match: missing}
+          recorded_at: {match: missing}
+
+  Payment:
+    stored_in:
+      - model: Receipt
+        match: close
+        why: A receipt is for an invoice, not an enrollment, and does not name the payer.
+        slots:
+          id: {field: id, match: exact}
+          person: {match: missing, why: "No payer column."}
+          enrollment: {field: invoice_id, match: differs, why: "Points to an invoice, not an enrollment."}
+          amount: {field: amount, match: exact}
+          currency: {field: currency, match: exact}
+          valid_from: {field: paid_at, match: exact}
+          valid_to: {match: missing, why: "A payment is fixed once made; nothing to end."}
+          recorded_at: {field: created_at, match: exact}
+    also_in: [PaymentIntent]
+
+  TuitionBatch:
+    stored_in:
+      - model: TuitionBatch
+        match: close
+        why: Run by a tutor (tutor_user_id), with or without an institute.
+        slots:
+          id: {field: id, match: exact}
+          name: {field: subject_name, match: close, why: "Subject name; custom_alias may hold a display name."}
+          state: {field: is_active, match: close, why: "A true/false flag: true is active, false is ended."}
+          valid_from: {field: created_at, match: close, why: "Row creation time, not valid time."}
+          valid_to: {match: missing}
+          recorded_at: {match: missing}
 
   Authority:
     stored_in:
@@ -183,8 +244,11 @@ capabilities:
   identity.entry:
     reads: [Person, Bond]
   identity.createInitialBond:
-    transition: bond.join
-    match: exact
+    transition: [enrollment.start, enrollment.complete, bond.form]
+    match: close
+    why: >-
+      Starts an enrollment of way own and completes it in the same call (no conditions), so
+      the person's first bond forms at once. No Enrollment row is kept.
   identity.syncGrant:
     outside: Signs a sync grant and stores nothing.
   identity.deletion.status:
@@ -208,8 +272,8 @@ capabilities:
     transition: institution.register
     match: close
     why: >-
-      In the same step it also makes the founder's bond (bond.join) and a community group
-      (group.create).
+      In the same step it also enrols the founder (an enrollment of way own, completed at
+      once, forming their bond) and starts a community group (group.create).
   ops.institutions.update:
     edits: [Institution]
   ops.institutions.createInviteCode:

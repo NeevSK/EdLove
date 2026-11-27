@@ -1,6 +1,6 @@
 # Planted defect 7: a bond with no person.
 - id: gd:b2
-  institution: gd:royal
+  circle: gd:royal
   capacity: principal
   state: active
   valid_from: "2026-01-05T00:00:00+05:30"

@@ -1,7 +1,7 @@
 # A bond that stops being true before it started.
 - id: gd:b6
   person: gd:nimal
-  institution: gd:royal
+  circle: gd:royal
   capacity: teacher
   state: ended
   valid_from: "2025-01-01T00:00:00+05:30"

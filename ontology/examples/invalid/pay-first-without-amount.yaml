@@ -1,0 +1,8 @@
+# Planted defect 10: a policy that asks for payment first but says no amount.
+- id: gd:p2
+  circle: gd:psych
+  needs_approval: false
+  payment_order: before
+  state: in_force
+  valid_from: "2026-01-01T00:00:00+05:30"
+  recorded_at: "2025-12-20T09:00:00+05:30"

@@ -1,10 +1,22 @@
-# Sita is a student at Royal College, grade 10, in 2026.
+# Sita joins Royal College as a student: the school placed her, and the enrollment completed
+# on her first day, forming bond gd:b6.
 - id: gd:e2
   person: gd:sita
-  institution: gd:royal
+  circle: gd:royal
   capacity: student
-  state: active
-  grade: 10
-  academic_year: 2026
+  way: placed
+  bond: gd:b6
+  state: enrolled
   valid_from: "2026-01-05T00:00:00+05:30"
   recorded_at: "2026-01-05T09:00:00+05:30"
+# Sita asks to join a paid psychology course; the course takes payment before joining, so
+# her enrollment waits.
+- id: gd:e6
+  person: gd:sita
+  circle: gd:psych
+  capacity: student
+  way: request
+  policy: gd:p1
+  state: started
+  valid_from: "2026-03-01T00:00:00+05:30"
+  recorded_at: "2026-03-01T10:00:00+05:30"

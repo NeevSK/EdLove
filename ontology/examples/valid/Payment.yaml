@@ -1,0 +1,8 @@
+# Sita pays for the course; her enrollment can now complete.
+- id: gd:pay1
+  person: gd:sita
+  enrollment: gd:e6
+  amount: 4000
+  currency: LKR
+  valid_from: "2026-03-02T18:30:00+05:30"
+  recorded_at: "2026-03-02T18:30:05+05:30"

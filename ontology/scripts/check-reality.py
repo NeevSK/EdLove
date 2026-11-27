@@ -117,7 +117,7 @@ def check(req: str, name: str) -> str | None:
 
 findings = []
 for name in sorted(schema.get("classes") or {}):
-    if classes[name].get("mixin"):
+    if classes[name].get("mixin") or classes[name].get("abstract"):
         continue
     forms = form_of(name)
     if len(forms) != 1:
@@ -128,8 +128,9 @@ for name in sorted(schema.get("classes") or {}):
         if msg:
             findings.append((name, forms[0], f"{req}: {msg}"))
 
-placed = sum(1 for n in schema.get("classes") or {} if not classes[n].get("mixin") and len(form_of(n)) == 1)
-total = sum(1 for n in schema.get("classes") or {} if not classes[n].get("mixin"))
+concrete = [n for n in schema.get("classes") or {} if not classes[n].get("mixin") and not classes[n].get("abstract")]
+placed = sum(1 for n in concrete if len(form_of(n)) == 1)
+total = len(concrete)
 print(f"reality check: {placed} of {total} classes placed, {len(findings)} findings")
 for name, form, msg in findings:
     print(f"  {name} ({form}): {msg}")
