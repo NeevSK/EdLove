@@ -23,6 +23,7 @@ Usage (repo root):
   python -I ontology/scripts/links.py check          build, then fail on a gap count above
                                                      its ceiling in tooling/ratchet.json
   python -I ontology/scripts/links.py update         lower the ceilings to today's counts
+                                     [--raise]      or set them to today's counts (new scope)
   python -I ontology/scripts/links.py impact NODE [--graph FILE]
   python -I ontology/scripts/links.py ripple BASE.json HEAD.json
 """
@@ -48,6 +49,7 @@ GAP_CODES = [
     "CAPABILITY_TOUCHES_UNMODELLED",  # a capability writes a table no class is stored in
     "TABLE_NO_CLASS",  # a table no ontology class is stored in (also_in counts)
     "TABLE_NOT_PLACED",  # a table in no landscape subdomain
+    "TABLE_NOT_IN_SCHEMA",  # a table the code reads or writes that schema.zmodel lacks
     "MODULE_NO_CARD",  # an API module with no card
     "POLICY_RESOURCE_UNKNOWN",  # a Cedar resource with no table
     "FEATURE_NO_CAPABILITY",  # a screen feature that names no capability
@@ -482,11 +484,15 @@ def build(root: Path, with_conformance: bool = False) -> Graph:
                 g.edge(g.node(f"dbfn:{name}"), "used_by", cid)
                 for rel2, name2 in sorted(db_functions().get(name, set())):
                     if rel2 != "calls_db_function":
+                        if name2 not in table_model and f"table:{name2}" not in g.nodes:
+                            g.gap("TABLE_NOT_IN_SCHEMA", f"table:{name2}", "used by a Postgres function, absent from schema.zmodel")
                         g.node(f"table:{name2}")
                         g.edge(f"table:{name2}", f"{rel2}_by", f"dbfn:{name}")
                 continue
             tid = f"table:{name}"
-            if tid not in g.nodes:
+            if name not in table_model:
+                if tid not in g.nodes:
+                    g.gap("TABLE_NOT_IN_SCHEMA", tid, "read or written by the API, absent from schema.zmodel")
                 g.node(tid, note="not in schema.zmodel")
             g.edge(tid, f"{rel}_by", cid)
             if rel == "writes" and not stored.get(table_model.get(name, "")):
@@ -780,7 +786,10 @@ def main(argv: list[str]) -> int:
         print("FAIL no ontologyLinkGaps in tooling/ratchet.json; run `links.py update` once")
         return 1
     if cmd == "update":
-        nxt = {k: min(v, (ceil or {}).get(k, v)) if ceil else v for k, v in c.items()}
+        # Lowers only. `update --raise` sets every ceiling to today's count: for a change that
+        # adds scope (new classes bring their own gaps). The raise shows in the ratchet diff.
+        raise_ = "--raise" in argv
+        nxt = {k: v if raise_ or not ceil else min(v, ceil.get(k, v)) for k, v in c.items()}
         ratchet["ontologyLinkGaps"] = nxt
         rfile.write_text(json.dumps(ratchet, indent=2) + "\n")
         print("ceilings written to tooling/ratchet.json (ontologyLinkGaps)")

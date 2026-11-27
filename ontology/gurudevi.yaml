@@ -21,7 +21,8 @@ name: gurudevi
 title: Gurudevi ontology
 description: >-
   What exists in Gurudevi and how each thing comes into being and changes.
-  First slice: the shared case (Person, Institution, Bond, Enrollment, Authority).
+  First slice: the shared case (Person, Institution, Bond, Enrollment, Authority), then the
+  school structure the code already has (Section, GradeClass, AcademicCycle, Group, InviteCode).
 version: 0.1.0
 license: https://creativecommons.org/publicdomain/zero/1.0/
 prefixes:
@@ -76,6 +77,12 @@ annotations:
         kind: within_interval
         class: Authority
         via: granted_by
+
+      - id: invite-code-within-institution
+        says: An invite code is only open while its institution is.
+        kind: within_interval
+        class: InviteCode
+        via: institution
 
       - id: capacity-decides-powers
         says: The capacity of a bond decides which powers it can grant.
@@ -358,6 +365,189 @@ classes:
               who: [principal, founder]
               why: A power is taken back while the bond goes on.
 
+  Section:
+    description: A part of a school that holds a run of grades (for example the primary section).
+    mixins:
+      - Holon
+      - Bitemporal
+    slots:
+      - id
+      - name
+      - institution
+      - state
+    slot_usage:
+      state:
+        range: HolonState
+    rules:
+      - description: An ended section must say when it ended.
+        preconditions:
+          slot_conditions:
+            state:
+              equals_string: ended
+        postconditions:
+          slot_conditions:
+            valid_to:
+              required: true
+    annotations:
+      ufo: kind
+      lifecycle:
+        value:
+          state: state
+          within: institution
+          start: active
+          create:
+            id: section.create
+            who: [principal]
+            why: A school marks out a section.
+          transitions:
+            - id: section.close
+              from: active
+              to: ended
+              who: [principal]
+              why: The section stops; its history and its classes' history are kept.
+
+  GradeClass:
+    description: One class of one grade in one academic cycle (for example 7B in 2026), within a school.
+    mixins:
+      - Holon
+      - Bitemporal
+    slots:
+      - id
+      - name
+      - institution
+      - grade
+      - academic_cycle
+      - state
+    slot_usage:
+      state:
+        range: HolonState
+    rules:
+      - description: An ended gradeClass must say when it ended.
+        preconditions:
+          slot_conditions:
+            state:
+              equals_string: ended
+        postconditions:
+          slot_conditions:
+            valid_to:
+              required: true
+    annotations:
+      ufo: kind
+      lifecycle:
+        value:
+          state: state
+          within: institution
+          start: active
+          create:
+            id: grade_class.create
+            who: [principal]
+            why: A school opens a class of a grade for an academic cycle.
+          transitions:
+            - id: grade_class.close
+              from: active
+              to: ended
+              who: [principal]
+              why: The class ends with its cycle or is closed; its history is kept.
+
+  Group:
+    description: A community circle people join, within a school.
+    mixins:
+      - Holon
+      - Bitemporal
+    slots:
+      - id
+      - name
+      - institution
+      - state
+    slot_usage:
+      state:
+        range: HolonState
+    rules:
+      - description: An ended group must say when it ended.
+        preconditions:
+          slot_conditions:
+            state:
+              equals_string: ended
+        postconditions:
+          slot_conditions:
+            valid_to:
+              required: true
+    annotations:
+      ufo: kind
+      lifecycle:
+        value:
+          state: state
+          within: institution
+          start: active
+          create:
+            id: group.create
+            who: [person]
+            why: A person starts a group.
+          transitions:
+            - id: group.close
+              from: active
+              to: ended
+              who: [person]
+              why: The group stops; its posts and members' history are kept.
+
+  AcademicCycle:
+    description: The span of time a school draws for a school year (for example 2026).
+    mixins:
+      - Context
+      - Bitemporal
+    slots:
+      - id
+      - name
+      - drawn_by
+    annotations:
+      ufo: kind
+      # A context is drawn, not lived through: its valid time is the span it frames, and
+      # whether it is planned, running or over follows from that time and today's date.
+
+  InviteCode:
+    description: >-
+      A code an institution gives out so that anyone holding it may join in a capacity.
+      It stands for invitations not yet accepted.
+    mixins:
+      - Norm
+      - Bitemporal
+    slots:
+      - id
+      - institution
+      - capacity
+      - state
+    slot_usage:
+      state:
+        range: InviteState
+    rules:
+      - description: A withdrawn invite code must say when it was withdrawn.
+        preconditions:
+          slot_conditions:
+            state:
+              equals_string: ended
+        postconditions:
+          slot_conditions:
+            valid_to:
+              required: true
+    annotations:
+      ufo: mode
+      lifecycle:
+        value:
+          state: state
+          within: institution
+          start: open
+          create:
+            id: invite.create
+            who: [principal, founder]
+            needs: invite
+            why: An institution gives out a code anyone holding it may use to join.
+          transitions:
+            - id: invite.withdraw
+              from: open
+              to: ended
+              who: [principal, founder]
+              why: The institution takes the code back; bonds already made with it go on.
+
 slots:
   id:
     identifier: true
@@ -397,6 +587,16 @@ slots:
     range: Power
     required: true
     description: What the authority lets its holder do.
+  academic_cycle:
+    range: AcademicCycle
+    required: true
+    description: The academic cycle this belongs to.
+  drawn_by:
+    range: Institution
+    required: true
+    description: The institution that draws this span of time.
+    annotations:
+      reality: drawn_by
   grade:
     range: integer
     minimum_value: 1
@@ -428,6 +628,11 @@ enums:
     description: Lifecycle of a person's or an institution's place in Gurudevi.
     permissible_values:
       active: {}
+      ended: {}
+  InviteState:
+    description: Lifecycle of an invite code.
+    permissible_values:
+      open: {}
       ended: {}
   AuthorityState:
     description: Lifecycle of an authority.

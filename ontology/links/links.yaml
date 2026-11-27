@@ -81,8 +81,8 @@ classes:
           institution: {field: school_id, match: exact}
           capacity: {match: missing, why: "Implied by the table; there is no capacity column."}
           state: {field: status, match: close}
-          grade: {field: grade_class_id, match: differs, why: "Points to a GradeClass row, which the ontology does not have yet."}
-          academic_year: {field: academic_cycle_id, match: differs, why: "Points to an AcademicCycle row, which the ontology does not have yet."}
+          grade: {field: grade_class_id, match: differs, why: "Points to a GradeClass row; Enrollment could take a grade_class slot instead (proposed)."}
+          academic_year: {field: academic_cycle_id, match: differs, why: "Points to an AcademicCycle row; Enrollment could take an academic_cycle slot instead (proposed)."}
           valid_from: {field: effective_from, match: exact}
           valid_to: {field: effective_to, match: exact}
           recorded_at: {field: created_at, match: close, why: "Set once per row."}
@@ -100,6 +100,75 @@ classes:
           state: {match: missing, why: "revoked_at stands in for ended."}
           valid_from: {field: granted_at, match: exact}
           valid_to: {field: revoked_at, match: exact}
+          recorded_at: {match: missing}
+
+  Section:
+    stored_in:
+      - model: Section
+        match: exact
+        slots:
+          id: {field: id, match: exact}
+          name: {field: name, match: exact}
+          institution: {field: school_id, match: exact}
+          state: {match: missing, why: "No lifecycle column; deleted_at stands in for ended (soft deletion)."}
+          valid_from: {field: created_at, match: close, why: "Row creation time, not valid time."}
+          valid_to: {field: deleted_at, match: close, why: "Soft deletion keeps the row."}
+          recorded_at: {match: missing}
+
+  GradeClass:
+    stored_in:
+      - model: GradeClass
+        match: close
+        why: The grade comes through grade_level_id (GradeLevel.grade_number), not a column of its own.
+        slots:
+          id: {field: id, match: exact}
+          name: {field: name, match: exact}
+          institution: {field: school_id, match: exact}
+          grade: {field: grade_level_id, match: differs, why: "Points to a GradeLevel row that holds the grade number."}
+          academic_cycle: {field: academic_cycle_id, match: exact}
+          state: {field: status, match: close}
+          valid_from: {field: created_at, match: close, why: "Row creation time, not valid time."}
+          valid_to: {match: missing, why: "No end time; status archived stands in for ended."}
+          recorded_at: {match: missing}
+
+  Group:
+    stored_in:
+      - model: Group
+        match: close
+        why: A group may also belong to a classroom (classroom_id), not only a school.
+        slots:
+          id: {field: id, match: exact}
+          name: {field: name, match: exact}
+          institution: {field: school_id, match: exact}
+          state: {match: missing, why: "No lifecycle column."}
+          valid_from: {field: created_at, match: close, why: "Row creation time, not valid time."}
+          valid_to: {match: missing}
+          recorded_at: {match: missing}
+
+  AcademicCycle:
+    stored_in:
+      - model: AcademicCycle
+        match: exact
+        slots:
+          id: {field: id, match: exact}
+          name: {field: name, match: exact}
+          drawn_by: {field: school_id, match: exact}
+          valid_from: {field: starts_at, match: exact}
+          valid_to: {field: ends_at, match: exact}
+          recorded_at: {field: created_at, match: close, why: "Set once per row."}
+
+  InviteCode:
+    stored_in:
+      - model: InviteCode
+        match: close
+        why: A code may be used a number of times (max_uses), so it stands for many invitations.
+        slots:
+          id: {field: id, match: exact}
+          institution: {field: school_id, match: exact}
+          capacity: {field: role, match: close, why: "Free string named role, not capacity."}
+          state: {field: is_active, match: close, why: "A true/false flag: true is open, false is ended."}
+          valid_from: {field: created_at, match: close, why: "Row creation time, not valid time."}
+          valid_to: {match: missing, why: "No time is kept for when a code was withdrawn."}
           recorded_at: {match: missing}
 
 # Each API capability in apps/sanctuary-api/src/modules/catalog.ts, anchored to the ontology.
@@ -139,22 +208,18 @@ capabilities:
     transition: institution.register
     match: close
     why: >-
-      In the same step it also makes the founder's bond (already active, with no invite)
-      and a community group.
+      In the same step it also makes the founder's bond (bond.join) and a community group
+      (group.create).
   ops.institutions.update:
     edits: [Institution]
   ops.institutions.createInviteCode:
-    transition: bond.invite
-    match: close
-    why: An invite code invites anyone who has the code, not one named person.
+    transition: invite.create
+    match: exact
   ops.institutions.listInviteCodes:
-    reads: [Bond]
-    match: close
-    why: An invite code stands for invitations not yet accepted.
+    reads: [InviteCode]
   ops.institutions.revokeInviteCode:
-    transition: bond.withdraw
-    match: close
-    why: Withdraws an invite code, which stands for invitations not yet accepted.
+    transition: invite.withdraw
+    match: exact
 
 # Ontology values and where the code spells the same set. links.py compares every source
 # with the ontology enum, and names words spelt more than one way.
