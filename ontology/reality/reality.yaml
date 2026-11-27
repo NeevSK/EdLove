@@ -1,0 +1,154 @@
+# Gurudevi reality forms: the upper layer above ontology/gurudevi.yaml.
+#
+# The written model of reality is the doc "Gurudevi's model of reality", tab "Reality first"
+# (levels L0 to L7). This file is its machine-readable part: the FORMS a thing in Gurudevi can
+# take, and the requirements each form puts on any class that takes it. It holds no
+# Gurudevi classes. gurudevi.yaml classes take a form as a mixin, and
+# scripts/check-reality.py refuses a class that does not meet its form's requirements.
+#
+# Levels (from the doc): L0 reality as such (space, time, plies, order); L1 how
+# distinctions persist; L2 holons; L3 relations; L4 the symbolic ply; L5 human social
+# reality; L6 education; L7 Gurudevi. Forms are defined at the level where they first hold.
+#
+# Each form's `requires` annotation lists checks by id. The ids are implemented in
+# scripts/check-reality.py; an unknown id is an error there.
+
+id: https://gurudevi.lk/ontology/reality
+name: reality
+title: Gurudevi reality forms
+description: >-
+  The forms a thing can take in Gurudevi's model of reality, and what each form requires.
+version: 0.1.0
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  linkml: https://w3id.org/linkml/
+  gdr: https://gurudevi.lk/ontology/reality/
+  prov: http://www.w3.org/ns/prov#
+default_prefix: gdr
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  # ---------------------------------------------------------------- L1: how distinctions persist
+  Thing:
+    mixin: true
+    description: Persists by inertia; wears out or breaks. A phone, a building, a printed book.
+    annotations:
+      level: 1
+      ends_by: retire
+      requires:
+        value: [is_recorded]
+
+  Context:
+    mixin: true
+    description: Its boundary is found or drawn by someone. A district, a term, a timetable slot.
+    annotations:
+      level: 1
+      ends_by: redraw
+      requires:
+        value: [is_recorded, names_who_draws]
+
+  Holon:
+    mixin: true
+    description: >-
+      Keeps itself going by taking order in and giving waste out; whole in itself and part of
+      something larger. A person, a household, a school community.
+    annotations:
+      level: 2
+      ends_by: end_keeping_history
+      requires:
+        value: [is_recorded, has_course]
+
+  Structure:
+    mixin: true
+    description: >-
+      Persists while it is used and survives the replacement of any user. A language, a
+      syllabus, an exam, a law, a position.
+    annotations:
+      level: 1
+      ends_by: version_or_lapse
+      requires:
+        value: [is_recorded, has_course]
+
+  Course:
+    mixin: true
+    description: Occurs once and is then fixed. A lesson, a day's attendance, a payment.
+    annotations:
+      level: 1
+      ends_by: never
+      requires:
+        value: [is_recorded, never_changes_once_over]
+
+  # ---------------------------------------------------------------- L3: relations
+  Coupling:
+    mixin: true
+    description: >-
+      A live relation known by its parties. It exists only while both are in it; its record
+      stays after it ends.
+    annotations:
+      level: 3
+      ufo: relator
+      ends_by: end_keeping_history
+      requires:
+        value: [is_recorded, has_course, has_two_parties, ending_keeps_history]
+
+  Position:
+    mixin: true
+    description: >-
+      A use-sustained place that survives whoever holds it (class teacher of 7B). Held through
+      a coupling.
+    annotations:
+      level: 3
+      ufo: role
+      ends_by: version_or_lapse
+      requires:
+        value: [is_recorded, has_course, held_through_coupling]
+
+  # ---------------------------------------------------------------- L4: the symbolic ply
+  Recognition:
+    mixin: true
+    description: Something counts as something else in a context, because someone recognises it.
+    annotations:
+      level: 4
+      ends_by: withdraw_or_expire
+      requires:
+        value: [is_recorded, has_course, names_who_recognises]
+
+  Norm:
+    mixin: true
+    description: >-
+      What may, must or must not happen. Authority, consent and grants are norms: given, can be
+      withdrawn, can expire.
+    annotations:
+      level: 4
+      ends_by: withdraw_or_expire
+      requires:
+        value: [is_recorded, has_course, has_source, can_be_withdrawn]
+
+  Bitemporal:
+    mixin: true
+    description: >-
+      Every stored thing is a record: a claim about the world with two times, when it was
+      true (valid time) and when Gurudevi learned it (recorded time). Offline acts are
+      checked at their own valid time.
+    annotations:
+      level: 4
+    slots:
+      - valid_from
+      - valid_to
+      - recorded_at
+
+slots:
+  valid_from:
+    range: datetime
+    required: true
+    description: When it became true in the world (valid time). Stored with its time zone.
+  valid_to:
+    range: datetime
+    description: When it stopped being true in the world. Empty means still true.
+  recorded_at:
+    range: datetime
+    required: true
+    slot_uri: prov:generatedAtTime
+    description: When Gurudevi learned it (recorded time).

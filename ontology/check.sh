@@ -10,3 +10,6 @@ linkml lint --max-warnings 0 "$dir/gurudevi.yaml"
 
 echo "== examples"
 python -I "$dir/scripts/check-examples.py" "$dir"
+
+echo "== reality forms (report only until gurudevi.yaml takes its forms)"
+python -I "$dir/scripts/check-reality.py" "$dir" --report

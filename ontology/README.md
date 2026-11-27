@@ -18,6 +18,8 @@ pin its behaviour, and the pinned tools in CI. Nothing here touches the running 
 | `examples/invalid/<defect>.yaml` | One planted defect each (the seven from the shared case, plus two) | Written |
 | `examples/expected.yaml` | Which check must catch each defect | Written |
 | `scripts/check-examples.py` | Runs the examples against the schema | Written |
+| `reality/reality.yaml` | The reality forms (Thing, Context, Holon, Structure, Course, Coupling, Position, Recognition, Norm) and what each form requires. The machine-readable part of the model of reality, one level above `gurudevi.yaml` | Written |
+| `scripts/check-reality.py` | Refuses a class that takes no reality form, or breaks its form's requirements | Written |
 | `check.sh` | Every ontology check that exists so far | Written |
 | `tools/install.sh` | Installs the pinned tools, verifies checksums, asserts versions | Written |
 | `tools/requirements.in`, `tools/requirements.lock.txt` | LinkML pin and its full Python lock | `.in` written, `.lock.txt` generated (`install.sh --relock`) |
@@ -49,6 +51,29 @@ ok: 5 valid files pass; 9 invalid examples behave as expected
 For a rule-caught example, the check asserts that LinkML alone still **passes** it. That
 proves the rule is needed, and it fails the day someone moves the fact into native LinkML
 without updating `expected.yaml`.
+
+## Reality forms: the layer above
+
+The model of reality (levels L0 to L7, in the doc "Gurudevi's model of reality") says what
+kinds of thing exist before anything is educational. `reality/reality.yaml` holds its forms,
+and each form lists the checks a class must pass to take it. For example, a Coupling needs two
+parties, a lifecycle, and an ending that keeps history; a Course never changes once over; a
+Norm can be withdrawn and is tied to its source.
+
+`check-reality.py` runs in report mode in `check.sh` until `gurudevi.yaml` takes its forms
+(that wiring changes `gurudevi.yaml`, so it waits for Neev's yes). Wired, the check fails CI
+on any finding. On the proposed wiring it reports today:
+
+```
+reality check: 5 of 5 classes placed, 4 findings
+  Institution (Holon): is_recorded: is not recorded with two times (no Bitemporal)
+  Institution (Holon): has_course: has no lifecycle, but every distinction has a course
+  Person (Holon): is_recorded: is not recorded with two times (no Bitemporal)
+  Person (Holon): has_course: has no lifecycle, but every distinction has a course
+```
+
+Adding the `Bond` table's real `archived` state to the Bond lifecycle is refused for Bond and,
+by inheritance, for Enrollment (`ending_keeps_history`).
 
 ## How the file is written
 
