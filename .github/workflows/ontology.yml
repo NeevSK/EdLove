@@ -8,13 +8,31 @@ name: Ontology
 on:
   pull_request:
     paths:
+      # Every layer the links graph reads (ontology/scripts/links.py), so a change anywhere
+      # in the chain from reality to screen runs the checks and shows its ripple.
       - 'ontology/**'
       - '.github/workflows/ontology.yml'
+      - 'packages/schema/schema.zmodel'
+      - 'apps/sanctuary-api/src/**'
+      - 'apps/gurudevi-mobile/supabase/migrations/**'
+      - 'packages/core/src/api/**'
+      - 'packages/policies/src/**'
+      - 'packages/*/src/constants/*Registry.ts'
+      - 'docs/architecture/domains/**'
+      - 'tooling/ratchet.json'
   push:
     branches: [main]
     paths:
       - 'ontology/**'
       - '.github/workflows/ontology.yml'
+      - 'packages/schema/schema.zmodel'
+      - 'apps/sanctuary-api/src/**'
+      - 'apps/gurudevi-mobile/supabase/migrations/**'
+      - 'packages/core/src/api/**'
+      - 'packages/policies/src/**'
+      - 'packages/*/src/constants/*Registry.ts'
+      - 'docs/architecture/domains/**'
+      - 'tooling/ratchet.json'
   workflow_dispatch:
 
 permissions:
@@ -27,6 +45,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.13'
@@ -47,3 +67,15 @@ jobs:
           } >> "$GITHUB_PATH"
       - name: Ontology checks
         run: bash ontology/check.sh
+      - name: Ripple of this change through the links graph
+        if: always() && github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/base" "$BASE_SHA"
+          if [ ! -f "$RUNNER_TEMP/base/ontology/links/links.yaml" ]; then
+            echo "Base has no links graph yet; nothing to compare." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          python -I ontology/scripts/links.py build --root "$RUNNER_TEMP/base" --out "$RUNNER_TEMP/base-out"
+          python -I ontology/scripts/links.py ripple "$RUNNER_TEMP/base-out/graph.json" ontology/links/out/graph.json | tee -a "$GITHUB_STEP_SUMMARY"

@@ -44,5 +44,22 @@
     "PRACTICE_NO_CONSUMER": 2,
     "CHANNEL_UNPROVEN": 6
   },
-  "directRpcAndRealtimeSites": 31
+  "directRpcAndRealtimeSites": 31,
+  "ontologyLinkGaps": {
+    "LINK_BROKEN": 0,
+    "CLASS_NOT_STORED": 0,
+    "SLOT_NOT_STORED": 7,
+    "SLOT_DIFFERS": 5,
+    "VALUES_DIFFER": 31,
+    "VALUE_SPELLINGS": 3,
+    "TRANSITION_NOT_BUILT": 9,
+    "CAPABILITY_UNANCHORED": 0,
+    "CAPABILITY_DIFFERS": 4,
+    "CAPABILITY_TOUCHES_UNMODELLED": 8,
+    "TABLE_NO_CLASS": 102,
+    "TABLE_NOT_PLACED": 2,
+    "MODULE_NO_CARD": 0,
+    "POLICY_RESOURCE_UNKNOWN": 16,
+    "FEATURE_NO_CAPABILITY": 27
+  }
 }

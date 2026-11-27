@@ -1,0 +1,174 @@
+# The links between layers that no tool can read off the code: which table stores each
+# ontology class, which column stores each slot, and which ontology change each API
+# capability carries out. Everything else in the chain (reality form -> class, model ->
+# table, capability -> table, policy -> resource -> table, feature -> subject, subdomain ->
+# model, module -> card) is read from the files themselves by ontology/scripts/links.py.
+#
+# One fact, one place: a link is written here once, never in a second file. links.py
+# refuses a link whose target does not exist (LINK_BROKEN) and reports every gap and
+# deviation it can see. Known gaps are counted, not hidden: tooling/ratchet.json
+# (`ontologyLinkGaps`) holds the ceiling per gap code, and a count may only go down.
+#
+# match:
+#   exact    stores or does the same thing
+#   close    stores or does it, with a difference written in `why`
+#   differs  something is there, but it means or does something else (a deviation)
+#   missing  nothing stores it today (written so the gap is a decision, not an oversight)
+
+classes:
+  Person:
+    stored_in:
+      - model: User
+        match: close
+        why: >-
+          users also holds the account, citizenship, pricing tier and Thuthimal fields, so
+          the person and their account share one row.
+        slots:
+          id: {field: id, match: exact}
+          display_name: {field: display_name, match: exact}
+          state: {match: missing, why: "No lifecycle column; deleted_at stands in for ended."}
+          valid_from: {field: created_at, match: close, why: "Row creation time, not valid time."}
+          valid_to: {field: deleted_at, match: differs, why: "Ending is a deletion here; the ontology keeps the person."}
+          recorded_at: {match: missing}
+    also_in: [GuardianIdentity]
+
+  Institution:
+    stored_in:
+      - model: School
+        match: close
+        why: schools holds schools only; tuition institutes are in their own table.
+        slots:
+          id: {field: id, match: exact}
+          name: {field: name, match: exact}
+          state: {match: missing, why: "No lifecycle column; deleted_at stands in for ended."}
+          valid_from: {field: created_at, match: close, why: "Row creation time, not valid time."}
+          valid_to: {field: deleted_at, match: differs, why: "Closing is a deletion here; the ontology keeps the institution."}
+          recorded_at: {match: missing}
+    also_in: [TuitionInstitute, EduSchool, SchoolRegistry]
+
+  Bond:
+    stored_in:
+      - model: Bond
+        match: close
+        why: >-
+          A bond row joins a person to any circle (entity_type PLATFORM, SCHOOL, CLASSROOM,
+          COMMUNITY), not only to an institution.
+        slots:
+          id: {field: id, match: exact}
+          person: {field: user_id, match: exact}
+          institution: {field: entity_id, match: close, why: "entity_id may also name a classroom, a community or the platform."}
+          capacity: {field: capacity, match: close, why: "Free string, not a closed set."}
+          state: {field: status, match: close}
+          valid_from: {field: valid_from, match: exact}
+          valid_to: {field: valid_until, match: exact}
+          recorded_at: {field: created_at, match: close, why: "Set once per row; a change to the row keeps no record time of its own."}
+    also_in:
+      - SchoolMembership
+      - GuardianBond
+      - StudentGuardianRelationship
+      - GroupMember
+      - GradeClassTeacherAssignment
+      - AcademicCycleLeadershipAssignment
+
+  Enrollment:
+    stored_in:
+      - model: StudentGradeClassEnrollment
+        match: close
+        why: An enrollment is in a grade class within an academic cycle, not a grade number and a year.
+        slots:
+          id: {field: id, match: exact}
+          person: {field: student_id, match: exact}
+          institution: {field: school_id, match: exact}
+          capacity: {match: missing, why: "Implied by the table; there is no capacity column."}
+          state: {field: status, match: close}
+          grade: {field: grade_class_id, match: differs, why: "Points to a GradeClass row, which the ontology does not have yet."}
+          academic_year: {field: academic_cycle_id, match: differs, why: "Points to an AcademicCycle row, which the ontology does not have yet."}
+          valid_from: {field: effective_from, match: exact}
+          valid_to: {field: effective_to, match: exact}
+          recorded_at: {field: created_at, match: close, why: "Set once per row."}
+    also_in: [ClassroomStudent]
+
+  Authority:
+    stored_in:
+      - model: GuardianAssessmentPermission
+        match: close
+        why: The only table that stores a granted power; other powers live in capacity strings and Cedar.
+        slots:
+          id: {field: id, match: exact}
+          granted_by: {field: relationship_id, match: differs, why: "Granted by a guardian relationship, not by a Bond."}
+          power: {field: permission_key, match: close}
+          state: {match: missing, why: "revoked_at stands in for ended."}
+          valid_from: {field: granted_at, match: exact}
+          valid_to: {field: revoked_at, match: exact}
+          recorded_at: {match: missing}
+
+# Each API capability in apps/sanctuary-api/src/modules/catalog.ts, anchored to the ontology.
+#   transition: the ontology change it carries out (with match and why)
+#   reads / edits: the classes it reads or changes without a lifecycle step
+#   outside: why it has no place in the ontology
+capabilities:
+  identity.session:
+    outside: Reads the signed-in session; nothing in the world changes.
+  identity.scopes:
+    reads: [Bond]
+  identity.entry:
+    reads: [Person, Bond]
+  identity.createInitialBond:
+    transition: bond.invite
+    match: differs
+    why: >-
+      The person makes their own first bond and it starts active. In the ontology a bond is
+      only created by bond.invite (principal or founder) and starts invited.
+  identity.syncGrant:
+    outside: Signs a sync grant and stores nothing.
+  identity.deletion.status:
+    reads: [Person]
+  identity.deletion.request:
+    transition: person.close
+    match: differs
+    why: Asks for the account to be deleted; person.close keeps the person's history.
+  identity.deletion.cancel:
+    edits: [Person]
+    match: differs
+    why: Withdraws a pending deletion; the ontology has no pending close to withdraw.
+  authority.refreshSnapshot:
+    reads: [Bond, Authority]
+  ops.institutions.handleAvailable:
+    reads: [Institution]
+  ops.institutions.provision:
+    transition: institution.register
+    match: close
+    why: >-
+      In the same step it also makes the founder's bond (already active, with no invite)
+      and a community group.
+  ops.institutions.update:
+    edits: [Institution]
+  ops.institutions.createInviteCode:
+    transition: bond.invite
+    match: close
+    why: An invite code invites anyone who has the code, not one named person.
+  ops.institutions.listInviteCodes:
+    reads: [Bond]
+    match: close
+    why: An invite code stands for invitations not yet accepted.
+  ops.institutions.revokeInviteCode:
+    edits: [Bond]
+    match: differs
+    why: The ontology has no step for an institution to withdraw an invitation; only the person can decline.
+
+# Ontology values and where the code spells the same set. links.py compares every source
+# with the ontology enum, and names words spelt more than one way.
+vocabularies:
+  Capacity:
+    - zod: packages/core/src/api/identity.generated.ts#CapacitySchema
+    - zod: packages/core/src/api/v1/contract.ts#INITIAL_BOND_CAPACITIES
+    - cedar: principal.capacity
+  BondState:
+    - zmodel: Bond.status
+  Power:
+    - zmodel: GuardianAssessmentPermission.permission_key
+
+# Screen features (packages/*/src/constants/*Registry.ts) and the capabilities they call.
+# Empty today: no feature names a capability yet, so every feature shows as
+# FEATURE_NO_CAPABILITY until it is linked here.
+features: {}

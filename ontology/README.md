@@ -20,6 +20,9 @@ pin its behaviour, and the pinned tools in CI. Nothing here touches the running 
 | `scripts/check-examples.py` | Runs the examples against the schema | Written |
 | `reality/reality.yaml` | The reality forms (Thing, Context, Holon, Structure, Course, Coupling, Position, Recognition, Norm) and what each form requires. The machine-readable part of the model of reality, one level above `gurudevi.yaml` | Written |
 | `scripts/check-reality.py` | Refuses a class that takes no reality form, or breaks its form's requirements | Written |
+| `links/links.yaml` | The joins no tool can read off the code: table per class, column per slot, ontology change per API capability, where the code spells each enum | Written |
+| `scripts/links.py` | Builds the links graph from every layer's own files, checks it, and answers impact and ripple questions | Written |
+| `links/out/graph.json`, `links/out/links.md` | The graph and its report | Generated (`links.py build`); CI fails if stale |
 | `check.sh` | Every ontology check that exists so far | Written |
 | `tools/install.sh` | Installs the pinned tools, verifies checksums, asserts versions | Written |
 | `tools/requirements.in`, `tools/requirements.lock.txt` | LinkML pin and its full Python lock | `.in` written, `.lock.txt` generated (`install.sh --relock`) |
@@ -51,6 +54,41 @@ ok: 5 valid files pass; 9 invalid examples behave as expected
 For a rule-caught example, the check asserts that LinkML alone still **passes** it. That
 proves the rule is needed, and it fails the day someone moves the fact into native LinkML
 without updating `expected.yaml`.
+
+## Links: one chain from reality to the screen
+
+Every layer is joined to the next, and a break anywhere is named. The chain:
+
+reality level → reality form → ontology class → slot / enum / transition → zmodel model →
+field / table → API capability (catalog.ts) → handler file and the tables it reads or
+writes (router.ts, SQL, Postgres functions in migrations) → module → card → Cedar resource →
+policy file → authorization subject → screen feature. Landscape subdomains join models and
+modules from the side.
+
+Only the joins no tool can see are written by hand, once, in `links/links.yaml`. The rest is
+read from the files themselves, so it cannot drift. The API's own capability conformance
+(`apps/sanctuary-api/scripts/capability-conformance.ts`) stays the owner of contract,
+handler, evidence and client links; `links.py build --conformance` folds its report in
+rather than repeating it.
+
+Gaps have fixed codes (`LINK_BROKEN`, `SLOT_DIFFERS`, `VALUES_DIFFER`, `VALUE_SPELLINGS`,
+`TRANSITION_NOT_BUILT`, `CAPABILITY_DIFFERS`, `CAPABILITY_TOUCHES_UNMODELLED`,
+`TABLE_NO_CLASS`, `FEATURE_NO_CAPABILITY` and others; see `links.py`). Known gaps are
+counted in `tooling/ratchet.json` (`ontologyLinkGaps`), the same ratchet the rest of the repo
+uses: a count may only go down, and `LINK_BROKEN` is always 0. So a new deviation (say a
+table starts holding a status value the ontology lacks) fails the check, and fixing one lets
+the ceiling drop with `links.py update`.
+
+How a change shows itself:
+
+- `check.sh` rebuilds the graph and fails if `links/out` is stale, so every change to the
+  chain appears in the PR diff.
+- The Ontology workflow runs on every path the graph reads (schema, API, migrations,
+  policies, registries, cards), and on a pull request writes the ripple against the base
+  branch (nodes and links added or removed, gaps opened or closed, everything downstream)
+  to the job summary.
+- `python -I ontology/scripts/links.py impact slot:Bond.state` shows what a node must stay
+  true to (upstream) and everything it reaches (downstream), with the open gaps on the way.
 
 ## Reality forms: the layer above
 
