@@ -1,5 +1,9 @@
 # Gurudevi Public — Canonical Marketing, Journal & Public Portal
 
+> [!NOTE]
+> **Repository Status: Stalled (2026-11-27)**  
+> Active development on this repository is paused indefinitely because the primary maintainer is unavailable (bus factor).
+
 > **Live Production**: [gurudevi.app](https://gurudevi.app)  
 > *(Authenticated workspaces & Explore showroom live in `apps/gurudevi-web` at [sanctuary.gurudevi.app](https://sanctuary.gurudevi.app) and [explore.gurudevi.app](https://explore.gurudevi.app))*
 

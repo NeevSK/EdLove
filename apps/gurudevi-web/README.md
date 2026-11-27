@@ -1,5 +1,9 @@
 # Gurudevi Web — Browser Sanctuary & Explore Platform
 
+> [!NOTE]
+> **Repository Status: Stalled (2026-11-27)**  
+> Active development on this repository is paused indefinitely because the primary maintainer is unavailable (bus factor).
+
 > **Live Environments**: [sanctuary.gurudevi.app](https://sanctuary.gurudevi.app) · [explore.gurudevi.app](https://explore.gurudevi.app)
 > *(Public landing, journal, and SEO live in `apps/gurudevi-public` at [gurudevi.app](https://gurudevi.app))*
 

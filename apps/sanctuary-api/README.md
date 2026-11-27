@@ -1,14 +1,18 @@
 ---
 title: "Sanctuary API"
-status: "active"
+status: "stalled"
 created: 2026-08-20
-updated: 2026-10-15
+updated: 2026-11-27
 author: "Naveen"
 scribe: "Antigravity"
-tags: [apps, sanctuary-api, hono, orpc, openapi]
+tags: [apps, sanctuary-api, hono, orpc, openapi, stalled]
 ---
 
 # Sanctuary API
+
+> [!NOTE]
+> **Repository Status: Stalled (2026-11-27)**  
+> Active development on this repository is paused indefinitely because the primary maintainer is unavailable (bus factor).
 
 The sovereign backend and verification service for the EdLove & Gurudevi Sanctuary ecosystem. Built with **Node.js**, **Hono**, and **oRPC**, providing type-safe RPC contracts, OpenAPI schemas, and telemetry for the mobile and web clients.
 

@@ -1,14 +1,18 @@
 ---
 title: "EdLove & Gurudevi Sanctuary"
-status: "active"
+status: "stalled"
 created: 2025-11-03
-updated: 2026-10-15
+updated: 2026-11-27
 author: "Naveen"
 scribe: "Antigravity"
-tags: [edlove, gurudevi, sanctuary, offline-first, education-commons, humane-tech]
+tags: [edlove, gurudevi, sanctuary, offline-first, education-commons, humane-tech, stalled]
 ---
 
 # EdLove & Gurudevi Sanctuary
+
+> [!NOTE]
+> **Repository Status: Stalled (2026-11-27)**  
+> Active development on this repository is paused indefinitely because the primary maintainer is unavailable (bus factor).
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-7.1.0--beta-blue)](https://www.typescriptlang.org/)
