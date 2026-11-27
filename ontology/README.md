@@ -60,20 +60,17 @@ and each form lists the checks a class must pass to take it. For example, a Coup
 parties, a lifecycle, and an ending that keeps history; a Course never changes once over; a
 Norm can be withdrawn and is tied to its source.
 
-`check-reality.py` runs in report mode in `check.sh` until `gurudevi.yaml` takes its forms
-(that wiring changes `gurudevi.yaml`, so it waits for Neev's yes). Wired, the check fails CI
-on any finding. On the proposed wiring it reports today:
+`gurudevi.yaml` imports `reality/reality.yaml`, and each class takes one form as a mixin:
+Person and Institution are Holons, Bond (and so Enrollment) is a Coupling, Authority is a Norm.
+`Bitemporal` now lives in `reality.yaml`. `check-reality.py` runs in `check.sh` and fails CI
+on any finding.
 
-```
-reality check: 5 of 5 classes placed, 4 findings
-  Institution (Holon): is_recorded: is not recorded with two times (no Bitemporal)
-  Institution (Holon): has_course: has no lifecycle, but every distinction has a course
-  Person (Holon): is_recorded: is not recorded with two times (no Bitemporal)
-  Person (Holon): has_course: has no lifecycle, but every distinction has a course
-```
-
-Adding the `Bond` table's real `archived` state to the Bond lifecycle is refused for Bond and,
-by inheritance, for Enrollment (`ending_keeps_history`).
+Wiring it first found 4 gaps, now closed (Neev approved, 27 Nov 2026): Person and Institution
+had no lifecycle and no recorded time. Each now has `Bitemporal`, a `state` (`HolonState`:
+active, ended) and a lifecycle (`person.register`, `person.close`, `institution.register`,
+`institution.close`) whose end keeps history. Adding the `Bond` table's real `archived`
+state to the Bond lifecycle is refused for Bond and, by inheritance, for Enrollment
+(`ending_keeps_history`).
 
 ## How the file is written
 

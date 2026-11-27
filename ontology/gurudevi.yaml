@@ -35,6 +35,7 @@ default_prefix: gd
 default_range: string
 imports:
   - linkml:types
+  - reality/reality
 
 # ---------------------------------------------------------------------------------------
 # Layer 5: rules across things.
@@ -109,24 +110,14 @@ annotations:
 
 classes:
   # -------------------------------------------------------------------------------------
-  # Layer 4: time. Written once as a mixin; the columns are generated.
-  # -------------------------------------------------------------------------------------
-  Bitemporal:
-    mixin: true
-    description: >-
-      When something was true in the world (valid time) and when Gurudevi learned it
-      (recorded time). Offline acts are checked at their own valid time.
-    slots:
-      - valid_from
-      - valid_to
-      - recorded_at
-
-  # -------------------------------------------------------------------------------------
   # Layer 1: meaning. `ufo` annotations give the UFO kind (kind, role, relator, phase,
   # mode); the OntoUML check (layer 2) reads them.
   # -------------------------------------------------------------------------------------
   Person:
     description: One human, one account for a whole life. The root of everything.
+    mixins:
+      - Holon
+      - Bitemporal
     exact_mappings:
       - schema:Person
     disjoint_with:
@@ -134,11 +125,44 @@ classes:
     slots:
       - id
       - display_name
+      - state
+    slot_usage:
+      state:
+        range: HolonState
+    rules:
+      - description: An ended person record must say when it ended.
+        preconditions:
+          slot_conditions:
+            state:
+              equals_string: ended
+        postconditions:
+          slot_conditions:
+            valid_to:
+              required: true
     annotations:
       ufo: kind
+      # A person's place in Gurudevi has a course like any holon (reality form Holon). Ending
+      # it keeps the person's history; nothing is deleted.
+      lifecycle:
+        value:
+          state: state
+          start: active
+          create:
+            id: person.register
+            who: [person]
+            why: A person takes their place in Gurudevi, once for a whole life.
+          transitions:
+            - id: person.close
+              from: active
+              to: ended
+              who: [person]
+              why: The person closes their place in Gurudevi; their history is kept.
 
   Institution:
     description: A school, tuition institute or other organisation people bond with.
+    mixins:
+      - Holon
+      - Bitemporal
     exact_mappings:
       - schema:Organization
     close_mappings:
@@ -146,14 +170,45 @@ classes:
     slots:
       - id
       - name
+      - state
+    slot_usage:
+      state:
+        range: HolonState
+    rules:
+      - description: A closed institution must say when it closed.
+        preconditions:
+          slot_conditions:
+            state:
+              equals_string: ended
+        postconditions:
+          slot_conditions:
+            valid_to:
+              required: true
     annotations:
       ufo: kind
+      # An institution has a course like any holon (reality form Holon). Closing it keeps its
+      # history and the history of every bond with it.
+      lifecycle:
+        value:
+          state: state
+          start: active
+          create:
+            id: institution.register
+            who: [founder]
+            why: A school, tuition institute or other organisation takes its place in Gurudevi.
+          transitions:
+            - id: institution.close
+              from: active
+              to: ended
+              who: [founder, principal]
+              why: The institution stops; its history and its bonds' history are kept.
 
   Bond:
     description: >-
       How a person joins an institution, in one capacity. It exists only while both
       sides do.
     mixins:
+      - Coupling
       - Bitemporal
     slots:
       - id
@@ -247,6 +302,7 @@ classes:
       A power a bond grants (mark, enrol, invite, view reports). Held while its valid
       time is open; never outlives the bond that grants it.
     mixins:
+      - Norm
       - Bitemporal
     slots:
       - id
@@ -333,18 +389,6 @@ slots:
     range: integer
     required: true
     description: The academic year this enrollment is for.
-  valid_from:
-    range: datetime
-    required: true
-    description: When it became true in the world (valid time). Stored with its time zone.
-  valid_to:
-    range: datetime
-    description: When it stopped being true in the world. Empty means still true.
-  recorded_at:
-    range: datetime
-    required: true
-    slot_uri: prov:generatedAtTime
-    description: When Gurudevi learned it (recorded time).
 
 enums:
   Capacity:
@@ -361,6 +405,11 @@ enums:
       invited: {}
       active: {}
       suspended: {}
+      ended: {}
+  HolonState:
+    description: Lifecycle of a person's or an institution's place in Gurudevi.
+    permissible_values:
+      active: {}
       ended: {}
   AuthorityState:
     description: Lifecycle of an authority.
