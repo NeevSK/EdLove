@@ -28,7 +28,7 @@ classes:
           display_name: {field: display_name, match: exact}
           state: {match: missing, why: "No lifecycle column; deleted_at stands in for ended."}
           valid_from: {field: created_at, match: close, why: "Row creation time, not valid time."}
-          valid_to: {field: deleted_at, match: differs, why: "Ending is a deletion here; the ontology keeps the person."}
+          valid_to: {field: deleted_at, match: close, why: "Soft deletion: the row and its history stay (Neev, 27 Nov 2026)."}
           recorded_at: {match: missing}
     also_in: [GuardianIdentity]
 
@@ -42,7 +42,7 @@ classes:
           name: {field: name, match: exact}
           state: {match: missing, why: "No lifecycle column; deleted_at stands in for ended."}
           valid_from: {field: created_at, match: close, why: "Row creation time, not valid time."}
-          valid_to: {field: deleted_at, match: differs, why: "Closing is a deletion here; the ontology keeps the institution."}
+          valid_to: {field: deleted_at, match: close, why: "Soft deletion: the row and its history stay (Neev, 27 Nov 2026)."}
           recorded_at: {match: missing}
     also_in: [TuitionInstitute, EduSchool, SchoolRegistry]
 
@@ -114,23 +114,23 @@ capabilities:
   identity.entry:
     reads: [Person, Bond]
   identity.createInitialBond:
-    transition: bond.invite
-    match: differs
-    why: >-
-      The person makes their own first bond and it starts active. In the ontology a bond is
-      only created by bond.invite (principal or founder) and starts invited.
+    transition: bond.join
+    match: exact
   identity.syncGrant:
     outside: Signs a sync grant and stores nothing.
   identity.deletion.status:
     reads: [Person]
   identity.deletion.request:
     transition: person.close
-    match: differs
-    why: Asks for the account to be deleted; person.close keeps the person's history.
+    match: close
+    why: >-
+      Asks to close the account. It closes after a waiting period by soft deletion
+      (users.deleted_at), so the history stays. A later "completed" step by a privileged
+      worker is named in the migration but not built.
   identity.deletion.cancel:
     edits: [Person]
-    match: differs
-    why: Withdraws a pending deletion; the ontology has no pending close to withdraw.
+    match: close
+    why: Withdraws a close that has not taken effect yet, during the waiting period.
   authority.refreshSnapshot:
     reads: [Bond, Authority]
   ops.institutions.handleAvailable:
@@ -152,9 +152,9 @@ capabilities:
     match: close
     why: An invite code stands for invitations not yet accepted.
   ops.institutions.revokeInviteCode:
-    edits: [Bond]
-    match: differs
-    why: The ontology has no step for an institution to withdraw an invitation; only the person can decline.
+    transition: bond.withdraw
+    match: close
+    why: Withdraws an invite code, which stands for invitations not yet accepted.
 
 # Ontology values and where the code spells the same set. links.py compares every source
 # with the ontology enum, and names words spelt more than one way.

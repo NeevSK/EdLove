@@ -136,7 +136,8 @@ replaces the YAML-in-a-string form of the Level 0 prototype).
 | `state` | The enum slot that holds the state |
 | `within` | Where permissions are checked: a slot, or a dotted path such as `granted_by.institution` |
 | `start` | The state a new one starts in |
-| `create` | The capability that brings a new one into `start` (`id`, `who`, `needs`, `why`) |
+| `create` | The capability, or a list of them, that brings a new one into being (`id`, `who`, `needs`, `why`; `to` when it starts somewhere other than `start`) |
+| `internal` | `true` on a step the system or API carries out but no screen offers to users (for example `bond.join`, `bond.withdraw`) |
 | `transitions[]` | `id` (capability id), `from`, `to`, `who`, optional `needs` and `ends`, `why` |
 
 `who` holds `person` (the bond's own person), `system` (Gurudevi itself), or a capacity

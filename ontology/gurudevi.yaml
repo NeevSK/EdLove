@@ -230,7 +230,10 @@ classes:
       ufo: relator
       # Layer 3: ontogeny. Each transition is one capability; its id is the join key
       # used by CUE, Cedar, TypeSpec, oRPC, the handler file and the XState event.
-      #   create:      the capability that brings a new one into its start state
+      #   create:      the capability (or list of them) that brings a new one into being;
+      #                each starts in `start` unless it says `to`
+      #   internal:    true = carried out by the system or the API, never offered to users
+      #                as an action on a screen
       #   who:         `person` = the bond's own person; `system` = Gurudevi itself;
       #                any other word is a capacity, held in an active bond with `within`
       #   needs:       the power (Authority) the actor must hold, if any
@@ -242,10 +245,17 @@ classes:
           within: institution
           start: invited
           create:
-            id: bond.invite
-            who: [principal, founder]
-            needs: invite
-            why: An institution asks a person to join it in a capacity.
+            - id: bond.invite
+              who: [principal, founder]
+              needs: invite
+              why: An institution asks a person to join it in a capacity.
+            - id: bond.join
+              to: active
+              who: [person]
+              internal: true
+              why: >-
+                A person makes their own first bond, which starts active. How a first bond
+                is made; no screen offers it as an action (Neev, 27 Nov 2026).
           transitions:
             - id: bond.accept
               from: invited
@@ -257,6 +267,14 @@ classes:
               to: ended
               who: [person]
               why: The person says no, so the invitation ends without a bond.
+            - id: bond.withdraw
+              from: invited
+              to: ended
+              who: [principal, founder]
+              internal: true
+              why: >-
+                The institution takes back an invitation not yet accepted. Not offered to
+                users for now (Neev, 27 Nov 2026).
             - id: bond.suspend
               from: active
               to: suspended

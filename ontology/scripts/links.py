@@ -320,9 +320,10 @@ def build(root: Path, with_conformance: bool = False) -> Graph:
             elif rng in oclasses:
                 g.edge(f"class:{rng}", "range_of", sid)
         lc = ann(c, "lifecycle") or {}
-        steps = ([lc["create"]] if lc.get("create") else []) + (lc.get("transitions") or [])
+        create = lc.get("create") or []
+        steps = (create if isinstance(create, list) else [create]) + (lc.get("transitions") or [])
         for t in steps:
-            tid = g.node(f"transition:{t['id']}", who=t.get("who"))
+            tid = g.node(f"transition:{t['id']}", who=t.get("who"), internal=t.get("internal"))
             g.edge(cid, "changes_by", tid)
 
     # Data: models, fields, tables
