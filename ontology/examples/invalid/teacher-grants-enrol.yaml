@@ -1,0 +1,8 @@
+# Planted defect 2: a teacher bond (gd:b1) granting the power to enrol.
+- id: gd:a3
+  granted_by: gd:b1
+  power: enrol
+  state: ended
+  valid_from: "2024-02-01T00:00:00+05:30"
+  valid_to: "2024-03-01T00:00:00+05:30"
+  recorded_at: "2024-02-01T10:00:00+05:30"

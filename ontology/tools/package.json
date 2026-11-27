@@ -1,0 +1,10 @@
+{
+  "name": "gurudevi-ontology-tools",
+  "private": true,
+  "description": "Pinned Node tools for the ontology checks. Not part of the pnpm workspace; installed by ontology/tools/install.sh with npm ci.",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@typespec/compiler": "1.18.0",
+    "ontouml-js": "0.5.0"
+  }
+}

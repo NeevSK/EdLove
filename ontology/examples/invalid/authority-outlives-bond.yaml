@@ -1,0 +1,7 @@
+# Planted defect 1: an authority still held after its bond (gd:b1) ended.
+- id: gd:a2
+  granted_by: gd:b1
+  power: mark
+  state: held
+  valid_from: "2024-02-01T00:00:00+05:30"
+  recorded_at: "2024-02-01T10:00:00+05:30"

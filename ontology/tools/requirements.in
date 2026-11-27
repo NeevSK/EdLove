@@ -1,0 +1,2 @@
+# Top-level pin. The full, transitive lock is requirements.lock.txt.
+linkml==1.12.1

@@ -1,0 +1,46 @@
+# What each example must do. Read by ontology/scripts/check-examples.py.
+#
+# valid/<Class>.yaml   every object must pass. Together they are the context the
+#                      cross-object rules are checked against.
+# invalid/<name>.yaml  one defect each.
+#   caught_by: native  LinkML itself must refuse it today, with a message containing `expect`.
+#   caught_by: <rule>  only that rule (gurudevi.yaml, rules section) can see it. Until the
+#                      rule checks are generated (build steps 3 and 4), the check asserts
+#                      that LinkML alone still PASSES it, so we know the rule is needed.
+invalid:
+  authority-outlives-bond:
+    class: Authority
+    caught_by: authority-within-bond
+  teacher-grants-enrol:
+    class: Authority
+    caught_by: capacity-decides-powers
+  enrolled-without-bond:
+    class: Enrollment
+    caught_by: native
+    expect: "'bond' is a required property"
+  pay-first-without-amount:
+    class: EnrollmentPolicy
+    caught_by: native
+    expect: "'amount' is a required property"
+  grade-14:
+    class: GradeClass
+    caught_by: native
+    expect: greater than the maximum of 13
+  ended-without-end:
+    class: Enrollment
+    caught_by: native
+    expect: "'valid_to' is a required property"
+  unknown-state:
+    class: Bond
+    caught_by: native
+    expect: "'archived' is not one of"
+  bond-without-person:
+    class: Bond
+    caught_by: native
+    expect: "'person' is a required property"
+  two-active-bonds:
+    class: Bond
+    caught_by: one-active-bond
+  ends-before-it-starts:
+    class: Bond
+    caught_by: interval-order

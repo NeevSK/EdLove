@@ -1,0 +1,16 @@
+# The people in the shared case.
+- id: gd:nimal
+  display_name: Nimal
+  state: active
+  valid_from: '2026-01-05T08:00:00+05:30'
+  recorded_at: '2026-01-05T08:00:00+05:30'
+- id: gd:sita
+  display_name: Sita
+  state: active
+  valid_from: '2026-01-05T08:00:00+05:30'
+  recorded_at: '2026-01-05T08:00:00+05:30'
+- id: gd:kamala
+  display_name: Kamala
+  state: active
+  valid_from: '2026-01-05T08:00:00+05:30'
+  recorded_at: '2026-01-05T08:00:00+05:30'

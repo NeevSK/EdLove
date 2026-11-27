@@ -1,0 +1,285 @@
+# The whole landscape, area by area. Skeleton = the domain index
+# (docs/architecture/domains/README.md), which takes its areas from the platform map.
+# For each subdomain:
+#   concepts: the things it owns, in existing words (a proposal; nothing here enters
+#             gurudevi.yaml without Neev's yes)
+#   models:   the zmodel models that already store them (packages/schema/schema.zmodel)
+#   note:     anything the reasoning had to decide or could not
+# landscape.py reads this, the harvest claims and gurudevi.yaml, and writes the coverage map.
+domains:
+  wellbeing:
+    title: Wellbeing
+    kind: business
+    subdomains:
+      wellbeing.mood:
+        title: Mood and energy
+        concepts: [MoodEntry, SleepEntry]
+        models: [MoodLog, SleepLog]
+      wellbeing.journal:
+        title: Journals and thought records
+        concepts: [JournalEntry, ThoughtRecord, DecisionEntry, JoyMoment, GratitudeGlimmer]
+        models: [FireJournalEntry, ThoughtRecord, DecisionJournal, JoyMoment, GratitudeGlimmer, WhisperedMoment]
+      wellbeing.reflection:
+        title: Reflection
+        concepts: [Reflection]
+        models: [LearningReflection]
+      wellbeing.practice:
+        title: Practice and goals
+        concepts: [Practice, Goal, Todo, Reminder]
+        models: [TodoList, Todo, PersonalReminder, DailyPrepItem]
+        note: To-dos and reminders placed here as personal planning; could be their own subdomain.
+  learning:
+    title: Learning
+    kind: business
+    subdomains:
+      learning.classrooms:
+        title: Classrooms
+        concepts: [Classroom]
+        models: [Classroom, PersonalClassroom, ClassroomGradeClass, ClassroomJoinRequest, ClassroomLegacyRecord]
+      learning.relations:
+        title: Teaching relations
+        concepts: [ClassroomMembership, TeachingAssignment]
+        models: [ClassroomStudent, GradeClassTeacherAssignment]
+        note: Both are bonds in the ontology's sense (person joins a classroom or grade class in a capacity).
+      learning.lessons:
+        title: Lessons and materials
+        concepts: [Lesson, Material]
+        models: [Lesson, Material]
+      learning.assignments:
+        title: Assignments and submissions
+        concepts: [Assignment, Submission]
+        models: [Assignment, AssignmentSubmission]
+      learning.assessments:
+        title: Assessments and quizzes
+        concepts: [Assessment, Question, Attempt]
+        models: []
+      learning.grading:
+        title: Grading
+        concepts: [Grade, GradeMark, GradingSettings]
+        models: [Grade, GradeMark, SchoolGrade, ClassroomGradingSettings]
+      learning.notes:
+        title: Classroom notes
+        concepts: [ClassroomNote]
+        models: [ClassroomNote, PrincipalNote]
+  ops:
+    title: Institution operations
+    kind: business
+    subdomains:
+      ops.institutions:
+        title: Schools and academic structure
+        concepts: [Institution, Section, GradeLevel, GradeClass, Subject, InviteCode]
+        models: [School, EduSchool, SchoolRegistry, SchoolRegistryClaim, JurisdictionNode, Section, GradeLevel, GradeClass,
+                 GradeClassSubject, Subject, InviteCode, SchoolInviteCode, SchoolJoinRequest, SchoolMembership,
+                 AcademicCycleLeadershipAssignment, SchoolModePolicy, SchoolModeUsageDaily]
+      ops.enrolment:
+        title: Enrolment
+        concepts: [Enrollment]
+        models: [StudentGradeClassEnrollment]
+      ops.timetables:
+        title: Timetables
+        concepts: [Timetable, TimetablePeriod]
+        models: [TimetablePeriod]
+      ops.attendance:
+        title: Attendance
+        concepts: [AttendanceMark, AttendanceSession]
+        models: [AttendanceRecord, DailyAttendance, AttendanceSession, TeacherDailyAttendance, TeacherAttendanceSession]
+        note: Owner still open (Learning or Ops). Two student shapes and two teacher shapes exist.
+      ops.staff:
+        title: Staff and workforce
+        concepts: [StaffLeave]
+        models: [StaffLeave]
+      ops.welfare:
+        title: Welfare
+        concepts: [HouseholdWelfare]
+        models: []
+        note: Only TypeScript types exist (HouseholdWelfareStatus, WelfareVerificationStatus).
+      ops.inventory:
+        title: Inventory
+        concepts: [InventoryItem, InventoryRequest]
+        models: [InventoryItem, InventoryRequest]
+      ops.events:
+        title: Events and forms
+        concepts: [SchoolEvent]
+        models: [SchoolEvent]
+      ops.finance:
+        title: Fees and accounting
+        concepts: [Account, LedgerEntry, Invoice, Receipt, Payment, Budget]
+        models: [Account, LedgerEntry, FinancialTransaction, Budget, Invoice, Receipt, PaymentIntent]
+      ops.tutoring:
+        title: Tutoring institutes
+        concepts: [Institution, TuitionBatch]
+        models: [TuitionInstitute, TuitionBatch]
+        note: A tuition institute is an Institution with other capacities (lead_tutor, assistant_tutor, paper_marker).
+  family:
+    title: Family and guardianship
+    kind: business
+    subdomains:
+      family.verification:
+        title: Guardian verification
+        concepts: [GuardianBond, GuardianVerification]
+        models: [GuardianIdentity, GuardianBond, StudentGuardianRelationship]
+      family.access:
+        title: Guardian access
+        concepts: [GuardianPermission]
+        models: [GuardianAssessmentPermission, GuardianAssessmentReadAuditEvent, GuardianNotification, GuardianNotificationSetting]
+  community:
+    title: Community and messaging
+    kind: business
+    subdomains:
+      community.groups:
+        title: Groups
+        concepts: [Group, GroupMembership]
+        models: [Group, GroupMember, GroupMessage]
+      community.posts:
+        title: Posts and reactions
+        concepts: [Post, Comment, Reaction]
+        models: [Post, CommunityComment, CommunityReaction, CommunityCommentUpvote, SanctuaryManifesto, ManifestoEndorsement]
+      community.conversations:
+        title: Conversations
+        concepts: [Conversation, Message]
+        models: [DirectConversation, DirectMessage]
+      community.notices:
+        title: Notices
+        concepts: [Notice]
+        models: [Announcement, SchoolNoticeEvent]
+      community.moderation:
+        title: Moderation and safety
+        concepts: [Block, Report]
+        models: [UserBlock]
+  library:
+    title: Library and commons
+    kind: business
+    subdomains:
+      library.resources:
+        title: Resources
+        concepts: [Resource]
+        models: [LibraryResource, ResourceEngagement]
+      library.collections:
+        title: Collections
+        concepts: [Collection, CollectionNode]
+        models: [LibraryCollection, CollectionNode, CollectionNodeEvent]
+      library.editorial:
+        title: Authoring and review
+        concepts: [EditorialSubmission]
+        models: []
+        note: Lives in packages/editorial types (EditorialStatus, SubmissionStatus), not in the schema.
+      library.media:
+        title: Media
+        concepts: [MediaObject]
+        models: []
+      library.commons:
+        title: Public commons
+        concepts: []
+        models: []
+  journey:
+    title: Journey and profile
+    kind: business
+    subdomains:
+      journey.profile:
+        title: Profile
+        concepts: [Profile]
+        models: [UserSocialLink]
+      journey.record:
+        title: Life record
+        concepts: [LifeEvent]
+        models: [StudentLongitudinalEvent]
+      journey.achievements:
+        title: Achievements and milestones
+        concepts: [Milestone]
+        models: [GrowthEvent, UserGrowthState]
+      journey.portfolio:
+        title: Careers and portfolio
+        concepts: []
+        models: []
+      journey.transitions:
+        title: Transitions
+        concepts: [Transition]
+        models: []
+  rewards:
+    title: Rewards
+    kind: business
+    subdomains:
+      rewards.ledger:
+        title: Gratitude ledger
+        concepts: [Gift]
+        models: [ThuthimalGift, GratitudeGift, ImpactRipple, ProGift, UserEnergyBalance, AdRewardTransaction]
+        note: UserEnergyBalance and AdRewardTransaction (an attention economy) look at odds with the 2026-11-11 "no points" decision.
+  agents:
+    title: AI and agents
+    kind: business
+    subdomains:
+      agents.assist:
+        title: Assistance
+        concepts: [AiMessage]
+        models: [AiMessage, WebEvidenceCache]
+      agents.runs:
+        title: Agent runs and proposals
+        concepts: [AgentRun, Proposal]
+        models: []
+      agents.delegation:
+        title: Delegation grants
+        concepts: [DelegationGrant, Delegation]
+        models: []
+      agents.memory:
+        title: Agent memory
+        concepts: [AgentMemory]
+        models: []
+  platform:
+    title: Platform services
+    kind: platform
+    subdomains:
+      identity:
+        title: Identity and accounts
+        concepts: [Person, Session]
+        models: [User, UserPreferences]
+      authority:
+        title: Bonds and authority
+        concepts: [Bond, Enrollment, Authority, Capacity, Citizenship]
+        models: [Bond]
+      consent:
+        title: Consent, privacy and minors
+        concepts: [Consent, SharingGrant, Grant]
+        models: []
+      audit:
+        title: Audit
+        concepts: [AuditEvent]
+        models: [SentinelAuditLog]
+      records:
+        title: Records lifecycle
+        concepts: [RecordVersion, Correction, LegalHold]
+        models: []
+      notify:
+        title: Notifications and delivery
+        concepts: [Notification, DeliveryAttempt]
+        models: [Notification, PushToken]
+      files:
+        title: Files and media
+        concepts: [StoredObject]
+        models: []
+      search:
+        title: Search
+        concepts: []
+        models: []
+      calendar:
+        title: Time and calendar
+        concepts: [AcademicCycle, Term, CalendarEvent]
+        models: [AcademicCycle, Term, CalendarEvent]
+      entitlements:
+        title: Entitlements and billing
+        concepts: [Entitlement]
+        models: [UserEntitlementGrant, PricingManifest]
+      integrations:
+        title: Integrations
+        concepts: [Connection]
+        models: []
+      exports:
+        title: Exports
+        concepts: [Export]
+        models: []
+      devices:
+        title: Devices and trust
+        concepts: [Device]
+        models: []
+unplaced:
+  MappingTopology: A saved visualisation layout; client state, not a domain fact.
+  FeatureFlag: Runtime switch; belongs to runtime, not the ontology.

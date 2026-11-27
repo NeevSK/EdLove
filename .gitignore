@@ -195,3 +195,9 @@ apps/gurudevi-mobile/reports/
 
 .vercel
 .env*
+
+# Pinned ontology tools (ontology/tools/install.sh)
+.ontology-tools/
+!ontology/tools/requirements.lock.txt
+!ontology/harvest/docs.txt
+!ontology/harvest/out/

@@ -1,0 +1,9 @@
+# Planted defect 4: a class of grade 14.
+- id: gd:gc14
+  name: 14A
+  institution: gd:royal
+  grade: 14
+  academic_cycle: gd:ac2026
+  state: active
+  valid_from: "2026-01-05T00:00:00+05:30"
+  recorded_at: "2026-01-05T09:00:00+05:30"

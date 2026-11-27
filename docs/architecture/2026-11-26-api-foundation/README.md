@@ -22,6 +22,11 @@ The live Claude Docs stay the originals; these files are Markdown exports (diagr
 | 4 | [04-api-from-zero-top-down.md](04-api-from-zero-top-down.md) | draft, open questions for Neev | Users → areas → capabilities → rules → TypeSpec; Level 0 ontology |
 | 5 | [05-ontology-tools-tested-on-one-case.md](05-ontology-tools-tested-on-one-case.md) | evidence | LinkML, SHACL, OWL/ROBOT, OntoUML, Alloy 6, TLA+, XState, CUE, KCL, Pkl, Nickel, Dhall on one case |
 | 6 | [../../decisions/2026-11-26-gurudevi-tool-selection.md](../../decisions/2026-11-26-gurudevi-tool-selection.md) | decision | One tool per layer, what is left out, missing layers, build order |
+| 7 | [06-cold-start-notes-step-1.md](06-cold-start-notes-step-1.md) | notes | Where the docs were enough, and unclear, for a fresh agent building step 1 |
+
+## Build progress
+
+- Step 1, the ontology folder: [`ontology/`](../../../ontology/README.md).
 
 ## Evidence (runnable inputs and raw results)
 

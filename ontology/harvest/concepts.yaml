@@ -1,0 +1,31 @@
+# Hand-written alignment: which names in the sources mean which ontology concept.
+# This is a PROPOSAL for Neev to check. It decides nothing in gurudevi.yaml; it only groups
+# names so reconcile.py can show where sources disagree. Add names as the harvest finds them.
+concepts:
+  Person:
+    note: One human, one account for life.
+    names: [User, users, Person, People, GuardianIdentity, Profile, Account holder]
+  Institution:
+    note: A school, tuition institute or other organisation people bond with.
+    names: [School, schools, EduSchool, SchoolRegistry, TuitionInstitute, Institution, Organisation, Organization, Org, Entity, Tenant]
+  Bond:
+    note: How a person joins an institution in one capacity.
+    names: [Bond, bonds, SchoolMembership, GuardianBond, StudentGuardianRelationship, Membership, GroupMember,
+            AcademicCycleLeadershipAssignment, GradeClassTeacherAssignment]
+  Enrollment:
+    note: A bond in the student capacity.
+    names: [Enrollment, Enrolment, ClassroomStudent, StudentGradeClassEnrollment, StudentEnrollment]
+  Authority:
+    note: A power a bond grants.
+    names: [Authority, Power, Permission, GuardianAssessmentPermission, Grant, Capability]
+  Invitation:
+    note: Not in the ontology yet. How a bond is asked for or offered (bond.invite).
+    names: [InviteCode, SchoolInviteCode, ClassroomJoinRequest, SchoolJoinRequest, SchoolRegistryClaim, Invitation, Invite, JoinRequest]
+  Classroom:
+    note: Not in the shared case yet. Where teaching happens.
+    names: [Classroom, PersonalClassroom, GradeClass, ClassroomGradeClass, TuitionBatch, Section, Class]
+  AcademicCycle:
+    note: Not in the shared case yet. The year and terms that bonds and enrollments sit in.
+    names: [AcademicCycle, AcademicYear, Term, academic_year]
+capacity_aliases: {}
+state_aliases: {}

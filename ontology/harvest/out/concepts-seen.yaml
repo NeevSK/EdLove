@@ -1,0 +1,1428 @@
+/api/v1/classroom/attendance/batch-record:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+/capabilities/bootstrap/v1:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+/identity/resolveIdentity:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+1100_CASH_BANK:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+1200_STUDENT_AR:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+1AB:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+1C:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+2026-10-11 many-doors dossier:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+20260915090000_persist_active_bond_scope:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+'@repo/accounting':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/admin':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/ai':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/analytics':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/classroom':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/community':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/core':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/database':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/editorial':
+- docs/architecture/domains/library/resources.md
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/eslint-config, @repo/typescript-config, @repo/types-shim, @repo/scripts':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/form-builder':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/graphics':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/library':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/payments':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/people':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/platform-mcp':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/policies':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/profile':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/scanner-kit':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/schema':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/self':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/ui':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/verger-android':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/verger-core':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/verger-react':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+'@repo/workforce':
+- docs/architecture/platform-capability-and-implementation-ledger.md
+ACADEMIC_CYCLE:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+ACCOUNT:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+AI and agents:
+- docs/architecture/domains/README.md
+AI assistant:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+AI, durable-agent and Inngest routes/workers:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+ANNOUNCEMENT:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+API Gate A baseline:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+API on Render:
+- docs/architecture/arrive-journey.md
+ASSIGNMENT:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+ATTENDANCE_SESSION:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+AcademicCycle:
+- packages/schema/schema.zmodel
+AcademicCycleLeadershipAssignment:
+- packages/schema/schema.zmodel
+Account:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+- docs/architecture/authority-model.md
+- docs/architecture/domains/platform/identity.md
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+- packages/schema/schema.zmodel
+Account Destinations:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+Account deletion:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+Account recovery:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+Account switching:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+Account/citizen:
+- docs/architecture/authentication-and-sovereign-identity.md
+Active Perspective Context Pill:
+- docs/architecture/tripartite-multi-perspective-architecture.md
+Active scope:
+- docs/architecture/authority-model.md
+AdRewardTransaction:
+- packages/schema/schema.zmodel
+Administrative Registration Cohorts:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Advisory enforcement point (PEP):
+- docs/architecture/authority-model.md
+AiMessage:
+- packages/schema/schema.zmodel
+Alignment:
+- docs/architecture/domains/library/resources.md
+Android bundle:
+- docs/architecture/arrive-journey.md
+Announcement:
+- packages/schema/schema.zmodel
+Anonymous guest code:
+- docs/architecture/arrive-journey.md
+App (oRPC `/api/v1` for mobile and web):
+- docs/architecture/domains/README.md
+App settings:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+Approvals:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Area:
+- docs/architecture/domains/wellbeing/growth.md
+Assessment definition:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+Assignment:
+- packages/schema/schema.zmodel
+Assignment queue/submission:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+AssignmentSubmission:
+- packages/schema/schema.zmodel
+Assignments:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Attempt:
+- docs/architecture/domains/learning/assessments.md
+Attendance:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Attendance history:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+AttendanceRecord:
+- packages/schema/schema.zmodel
+AttendanceSession:
+- packages/schema/schema.zmodel
+Audit:
+- docs/architecture/domains/README.md
+Audit trail:
+- docs/architecture/data-governance-and-records.md
+Authentication:
+- docs/architecture/authority-model.md
+Authoritative enforcement point:
+- docs/architecture/authority-model.md
+Authorization:
+- docs/architecture/authority-model.md
+- docs/architecture/platform-capability-and-implementation-ledger.md
+BOND:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+Bond:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+- docs/architecture/authority-model.md
+- docs/architecture/platform-map.md
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+- packages/schema/schema.zmodel
+Bonds (`public:
+- docs/architecture/domains/platform/authority.md
+Bonds and authority:
+- docs/architecture/domains/README.md
+Bonds listing:
+- docs/architecture/authority-model.md
+Budget:
+- packages/schema/schema.zmodel
+Business domains:
+- docs/architecture/platform-map.md
+Calendar/observations:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+CalendarEvent:
+- packages/schema/schema.zmodel
+Can-do moment:
+- docs/architecture/domains/wellbeing/growth.md
+Capability:
+- docs/architecture/places-roles-and-features.md
+Capability decision coverage:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+Capability token:
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+CapabilityToken:
+- docs/architecture/gurudevi-data-state-lifecycle.md
+Capacity:
+- docs/architecture/authority-model.md
+- docs/architecture/places-roles-and-features.md
+Catalog:
+- docs/architecture/places-roles-and-features.md
+Cedar:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+Cedar engine and role policies:
+- docs/architecture/authority-model.md
+Cedar policies:
+- docs/architecture/authority-model.md
+Channels:
+- docs/architecture/platform-map.md
+Citizenship:
+- docs/architecture/authority-model.md
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+Classroom:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+- docs/architecture/domains/learning/relations.md
+- packages/schema/schema.zmodel
+Classroom Delivery Venue Scope:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Classroom Learning:
+- docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md
+Classroom Workspace:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Classroom notes:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Classroom registry:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+ClassroomGradeClass:
+- packages/schema/schema.zmodel
+ClassroomGradingSettings:
+- packages/schema/schema.zmodel
+ClassroomJoinRequest:
+- packages/schema/schema.zmodel
+ClassroomLegacyRecord:
+- packages/schema/schema.zmodel
+ClassroomNote:
+- docs/architecture/domains/learning/relations.md
+- packages/schema/schema.zmodel
+ClassroomStudent:
+- docs/architecture/domains/learning/relations.md
+- packages/schema/schema.zmodel
+Client RPC:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+Client gate:
+- docs/architecture/authority-model.md
+Client snapshot reader:
+- docs/architecture/authority-model.md
+ClimateSensingScreen:
+- docs/architecture/arrive-journey.md
+Co-curricular unit:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+CollectionNode:
+- docs/architecture/domains/library/resources.md
+- packages/schema/schema.zmodel
+CollectionNodeEvent:
+- packages/schema/schema.zmodel
+Commercial & Independent Institutions:
+- docs/architecture/domains/ops/institutions.md
+Commercial Batch:
+- docs/architecture/tripartite-multi-perspective-architecture.md
+Commercial Tuition:
+- docs/architecture/tripartite-multi-perspective-architecture.md
+Communication bridge:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Community:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Community & Communication:
+- docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md
+Community and messaging:
+- docs/architecture/domains/README.md
+Community/conversation:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+CommunityComment:
+- packages/schema/schema.zmodel
+CommunityCommentUpvote:
+- packages/schema/schema.zmodel
+CommunityReaction:
+- packages/schema/schema.zmodel
+Consent, privacy and minors:
+- docs/architecture/domains/README.md
+Consent/delegation/channel linkage:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+Create/join/QR:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Credential:
+- docs/architecture/authentication-and-sovereign-identity.md
+Credential binding:
+- docs/architecture/authority-model.md
+Credential bindings in `auth_identities`:
+- docs/architecture/domains/platform/identity.md
+Credential issuer adapter:
+- docs/architecture/authentication-and-sovereign-identity.md
+Cross-Classroom Moderation View:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+DAILY_ATTENDANCE:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+DailyAttendance:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+- packages/schema/schema.zmodel
+DailyPrepItem:
+- packages/schema/schema.zmodel
+Deactivation/reactivation:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+Decision snapshot:
+- docs/architecture/authority-model.md
+DecisionJournal:
+- packages/schema/schema.zmodel
+Default-deny domain namespaces:
+- docs/architecture/authority-model.md
+Delegation:
+- docs/architecture/authentication-and-sovereign-identity.md
+- docs/architecture/authority-model.md
+Developer/platform control:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Device:
+- docs/architecture/authority-model.md
+Device/session control:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+DeviceAccountManager:
+- docs/architecture/arrive-journey.md
+Devices and trust:
+- docs/architecture/domains/README.md
+DirectConversation:
+- packages/schema/schema.zmodel
+DirectMessage:
+- packages/schema/schema.zmodel
+Domain-namespaced engine:
+- docs/architecture/authority-model.md
+DomainEntrySchema mobileSupport/webSupport:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+Durable agents/workflows:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Durable operations:
+- docs/architecture/domains/README.md
+EDU_SCHOOL:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+EdLove Commons:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+EdLove Sovereign UUIDv8 Identity:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+Editorial/public exchange:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+Editorial/publication:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+EduSchool:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+- docs/architecture/domains/ops/institutions.md
+- packages/schema/schema.zmodel
+Entitlement:
+- docs/architecture/multi-tenant-institutional-handoff.md
+Entitlements and billing:
+- docs/architecture/domains/README.md
+Entity:
+- docs/architecture/2026-10-10-sri-lanka-education-civic-ontology-ontogeny-and-er-architecture.md
+- docs/architecture/authority-model.md
+Events/calendar:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Events/realtime:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Exports:
+- docs/architecture/domains/README.md
+FEATURE_FLAG_MANIFEST:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+FINANCIAL_TRANSACTION:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+FIRST_CLASS:
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+Faculty/coverage:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Family and guardianship:
+- docs/architecture/domains/README.md
+Family learner hub:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Feature:
+- docs/architecture/places-roles-and-features.md
+Feature flags:
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+FeatureFlag:
+- packages/schema/schema.zmodel
+FeatureGatingResult:
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+FeatureJourneySpec:
+- docs/architecture/2026-10-26-role-journey-and-feature-catalog-master-plan.md
+Files and media:
+- docs/architecture/domains/README.md
+Finance/accounting:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+FinancialTransaction:
+- packages/schema/schema.zmodel
+Fire Journal:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+FireJournalEntry:
+- packages/schema/schema.zmodel
+Floor:
+- docs/architecture/places-roles-and-features.md
+Forms:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Founder/developer:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Full/public profile:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+GET /guardian/students/:studentId/assessments:
+- docs/decisions/2026-08-12-grade-school-grade-marks-domain.md
+GRADE_CLASS:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+GRADE_CLASS_SUBJECT:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+GRADE_LEVEL:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+GRADE_MARK:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+GUARDIAN_BOND:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+Gate 1 — Citizenship:
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+Gate 2 — Entitlement:
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+Gate 3 — Cedar (authz):
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+Gate A:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+Goals/growth:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Grade:
+- packages/schema/schema.zmodel
+Grade-Level & Subject Domain Scope:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+GradeClass:
+- docs/decisions/2026-08-12-grade-school-grade-marks-domain.md
+- packages/schema/schema.zmodel
+GradeClassSubject:
+- packages/schema/schema.zmodel
+GradeClassTeacherAssignment:
+- docs/architecture/domains/learning/relations.md
+- packages/schema/schema.zmodel
+GradeLevel:
+- docs/decisions/2026-08-12-grade-school-grade-marks-domain.md
+- packages/schema/schema.zmodel
+GradeMark:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+- docs/architecture/domains/learning/assessments.md
+- docs/decisions/2026-08-12-grade-school-grade-marks-domain.md
+- packages/schema/schema.zmodel
+Gradebook/marks:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Grades/feedback:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Grading scale:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+Grant:
+- docs/architecture/authority-model.md
+- docs/architecture/data-governance-and-records.md
+Grants, delegation and device trust levels:
+- docs/architecture/authority-model.md
+GratitudeGift:
+- packages/schema/schema.zmodel
+GratitudeGlimmer:
+- packages/schema/schema.zmodel
+Group:
+- packages/schema/schema.zmodel
+GroupMember:
+- packages/schema/schema.zmodel
+GroupMessage:
+- packages/schema/schema.zmodel
+Groups, posts, comments and reactions:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+Growth Sanctuary:
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+GrowthEvent:
+- packages/schema/schema.zmodel
+Guardian:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Guardian Bond (bond):
+- docs/architecture/tripartite-multi-perspective-architecture.md
+Guardian/family bridge:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+GuardianAssessmentPermission:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+- packages/schema/schema.zmodel
+GuardianAssessmentReadAuditEvent:
+- packages/schema/schema.zmodel
+GuardianBond:
+- packages/schema/schema.zmodel
+GuardianIdentity:
+- packages/schema/schema.zmodel
+GuardianNotification:
+- packages/schema/schema.zmodel
+GuardianNotificationSetting:
+- packages/schema/schema.zmodel
+Guest:
+- docs/architecture/arrive-journey.md
+Guest lease:
+- docs/architecture/arrive-journey.md
+Gurudevi:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+- docs/architecture/platform-map.md
+Hierarchy/invites/cycles/profile:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Horizon:
+- docs/architecture/data-governance-and-records.md
+IAuthPort:
+- docs/architecture/authentication-and-sovereign-identity.md
+IAuthzPort:
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+IEntitlementPort:
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+INVENTORY_ITEM:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+Identity & Scope:
+- docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md
+Identity and accounts:
+- docs/architecture/domains/README.md
+Identity authority API:
+- docs/architecture/authentication-and-sovereign-identity.md
+Identity, account and perspective:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+ImpactRipple:
+- packages/schema/schema.zmodel
+Institution:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+Institution operations:
+- docs/architecture/domains/README.md
+Institution roster/bridge/runway:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Institution-type template:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+Institutional Bond:
+- docs/architecture/tripartite-multi-perspective-architecture.md
+Institutional Bond (bond):
+- docs/architecture/tripartite-multi-perspective-architecture.md
+Institutional Community HQ Group (`public:
+- docs/architecture/domains/ops/institutions.md
+Institutional ERP & Operations Scope:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Institutional Founder/Principal Bond (`public:
+- docs/architecture/domains/ops/institutions.md
+Institutional Schools:
+- docs/architecture/domains/ops/institutions.md
+Instructional Delivery Groups:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Integrations:
+- docs/architecture/domains/README.md
+Intended future (Aug 2026):
+- docs/atlas/DATA_MODEL_LINEAGE.md
+Internal trigger / hook:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+InventoryItem:
+- packages/schema/schema.zmodel
+InventoryRequest:
+- packages/schema/schema.zmodel
+InviteCode:
+- packages/schema/schema.zmodel
+Invoice:
+- packages/schema/schema.zmodel
+JURISDICTION_NODE:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+Journey and profile:
+- docs/architecture/domains/README.md
+JoyMoment:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+- packages/schema/schema.zmodel
+JurisdictionNode:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+- packages/schema/schema.zmodel
+LEDGER_ENTRY:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+LESSON:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+LESSON_PLAN:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+Learner room:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Learning:
+- docs/architecture/domains/README.md
+Learning and classroom work:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+LearningReflection:
+- packages/schema/schema.zmodel
+LedgerEntry:
+- packages/schema/schema.zmodel
+Legacy (Feb 2026):
+- docs/atlas/DATA_MODEL_LINEAGE.md
+Legal hold:
+- docs/architecture/data-governance-and-records.md
+Lesson:
+- docs/architecture/domains/library/resources.md
+- packages/schema/schema.zmodel
+Lessons/planner:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Lessons/study center:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Level 1:
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+Library:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Library and EdLove Commons:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+Library and commons:
+- docs/architecture/domains/README.md
+Library/commons:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+LibraryCollection:
+- docs/architecture/domains/library/resources.md
+- packages/schema/schema.zmodel
+LibraryResource:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+- docs/architecture/domains/library/resources.md
+- packages/schema/schema.zmodel
+Live authority boundary:
+- docs/architecture/authority-model.md
+ManifestoEndorsement:
+- packages/schema/schema.zmodel
+MappingTopology:
+- packages/schema/schema.zmodel
+Material:
+- docs/architecture/domains/library/resources.md
+- packages/schema/schema.zmodel
+Materials/resources:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Messaging bots (WhatsApp and others):
+- docs/architecture/domains/README.md
+MoodLog:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+- packages/schema/schema.zmodel
+Morning brief:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Mute/block/safety:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+Native /api/* oRPC fallback and mounts:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+Neutral local-data port adoption:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+Notification:
+- packages/schema/schema.zmodel
+Notification preferences:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+Notifications and delivery:
+- docs/architecture/domains/README.md
+Notifications inbox:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+Notifications/channels:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Notifications/notices:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Observations/insights:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Offline Outbox Queue:
+- docs/architecture/2026-10-26-temporal-interaction-and-lifecycle-playbook.md
+Offline/local continuity:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Onboarding:
+- docs/architecture/arrive-journey.md
+- docs/architecture/authority-model.md
+Outbox AUTH_EXPIRED pause engine:
+- docs/architecture/multi-tenant-institutional-handoff.md
+Outbox schema migration:
+- docs/architecture/multi-tenant-institutional-handoff.md
+Overview Hub:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Own profile and identity:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+PAYMENT_INTENT:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+PDP (Policy Decision Point):
+- apps/sanctuary-api/docs/architecture/2026-06-26-guest-session-lifecycle.md
+PEP (Policy Enforcement Point):
+- apps/sanctuary-api/docs/architecture/2026-06-26-guest-session-lifecycle.md
+Pack:
+- docs/architecture/domains/library/resources.md
+Participating contexts and Workspace:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+Partner standards (OneRoster, LTI …):
+- docs/architecture/domains/README.md
+PaymentIntent:
+- packages/schema/schema.zmodel
+Payments:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+PermissionSnapshot:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+Person:
+- docs/architecture/2026-10-10-sri-lanka-education-civic-ontology-ontogeny-and-er-architecture.md
+Person and control:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+Personal Custom Alias:
+- docs/architecture/tripartite-multi-perspective-architecture.md
+Personal Educator Vault:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Personal Practice & Wellbeing:
+- docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md
+Personal Sanctuary:
+- docs/architecture/tripartite-multi-perspective-architecture.md
+Personal wellbeing/reflection:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+PersonalClassroom:
+- packages/schema/schema.zmodel
+PersonalReminder:
+- packages/schema/schema.zmodel
+Place:
+- docs/architecture/places-roles-and-features.md
+Places:
+- docs/architecture/platform-map.md
+Platform Operations:
+- docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md
+Platform pulse/topology:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Platform services:
+- docs/architecture/platform-map.md
+Platform::Account:
+- docs/architecture/authority-model.md
+Platform::Bond:
+- docs/architecture/authority-model.md
+Policy decision point (PDP):
+- docs/architecture/authority-model.md
+Polymorphically Bounded Scopes:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Position:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+Post:
+- packages/schema/schema.zmodel
+PowerSyncDatabaseFactory:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+PricingManifest:
+- packages/schema/schema.zmodel
+Principal echo/feedback:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Principal/leadership:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+PrincipalNote:
+- packages/schema/schema.zmodel
+PrincipalOnboardingView:
+- docs/architecture/2026-10-26-institutional-onboarding-tutii-mastery-plan.md
+Privacy ledger:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+ProGift:
+- packages/schema/schema.zmodel
+Product activity and audit:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Profile & Settings:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Profile history/journey:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+Progress:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Proof of Authority (POA):
+- apps/sanctuary-api/docs/architecture/2026-06-26-guest-session-lifecycle.md
+Provider link:
+- docs/architecture/authentication-and-sovereign-identity.md
+Provider subject:
+- docs/architecture/authentication-and-sovereign-identity.md
+PushToken:
+- packages/schema/schema.zmodel
+RECEIPT:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+Receipt:
+- packages/schema/schema.zmodel
+Records lifecycle:
+- docs/architecture/domains/README.md
+Reflection bridge:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Relation:
+- docs/architecture/domains/learning/relations.md
+RelationBinding:
+- docs/architecture/domains/learning/relations.md
+RelationItem:
+- docs/architecture/domains/learning/relations.md
+Request budgets:
+- docs/architecture/domains/README.md
+ResourceEngagement:
+- packages/schema/schema.zmodel
+Resources, collections, search and engagement:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+Resources/commons signals:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Retention:
+- docs/architecture/data-governance-and-records.md
+Review state:
+- docs/architecture/domains/learning/assessments.md
+Rewards:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+- docs/architecture/domains/README.md
+RoleDefinition:
+- docs/architecture/2026-10-10-sri-lanka-education-civic-ontology-ontogeny-and-er-architecture.md
+RoleOccupancy:
+- docs/architecture/2026-10-10-sri-lanka-education-civic-ontology-ontogeny-and-er-architecture.md
+Roster/students:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Runtime and edge:
+- docs/architecture/platform-map.md
+SANCTUARY_PLATFORM_DEVELOPER_SUBJECTS:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+SANCTUARY_PLATFORM_FOUNDER_SUBJECTS:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+SCHOOL:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+SECOND_CLASS:
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+SECTION:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+SNAPSHOT_SIGNING_PRIVATE_KEY:
+- docs/architecture/authority-model.md
+SSE and event dispatch:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+STAFF_LEAVE:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+STOCK_MOVEMENT:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+STUDENT_ENROLLMENT:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+SUBJECT:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+SUBMISSION:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+SanctuaryGuard:
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+SanctuaryManifesto:
+- packages/schema/schema.zmodel
+School:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+- docs/decisions/2026-08-12-grade-school-grade-marks-domain.md
+- packages/schema/schema.zmodel
+School / Institution (`public:
+- docs/architecture/domains/ops/institutions.md
+School calendar:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+School enrolment:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+School governance/operations:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+SchoolCreationScreen:
+- docs/architecture/2026-10-26-institutional-onboarding-tutii-mastery-plan.md
+SchoolEvent:
+- packages/schema/schema.zmodel
+SchoolGrade:
+- packages/schema/schema.zmodel
+SchoolInviteCode:
+- packages/schema/schema.zmodel
+SchoolJoinRequest:
+- packages/schema/schema.zmodel
+SchoolKind:
+- docs/architecture/domains/ops/institutions.md
+SchoolLevel:
+- docs/architecture/domains/ops/institutions.md
+SchoolMembership:
+- packages/schema/schema.zmodel
+SchoolModePolicy:
+- packages/schema/schema.zmodel
+SchoolModeUsageDaily:
+- packages/schema/schema.zmodel
+SchoolNoticeEvent:
+- packages/schema/schema.zmodel
+SchoolRegistry:
+- packages/schema/schema.zmodel
+SchoolRegistryClaim:
+- packages/schema/schema.zmodel
+Scope:
+- docs/architecture/authentication-and-sovereign-identity.md
+Scope switching:
+- docs/architecture/authority-model.md
+ScopeSession:
+- docs/architecture/arrive-journey.md
+Search:
+- docs/architecture/domains/README.md
+Section:
+- docs/decisions/2026-08-12-grade-school-grade-marks-domain.md
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+- packages/schema/schema.zmodel
+SecureDrizzleProxy:
+- docs/architecture/gurudevi-data-state-lifecycle.md
+Self:
+- docs/architecture/arrive-journey.md
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Self-rating:
+- docs/architecture/domains/wellbeing/growth.md
+SentinelAuditLog:
+- packages/schema/schema.zmodel
+Server-only maintenance:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+Session:
+- docs/architecture/authentication-and-sovereign-identity.md
+- docs/architecture/multi-tenant-institutional-handoff.md
+Session/lifecycle coordinator:
+- docs/architecture/authentication-and-sovereign-identity.md
+SignOutIncompleteError:
+- docs/architecture/authentication-and-sovereign-identity.md
+Signed offline permission snapshots (`public:
+- docs/architecture/domains/platform/authority.md
+SleepLog:
+- packages/schema/schema.zmodel
+Snapshot generator:
+- docs/architecture/authority-model.md
+Snapshot issuer on the server:
+- docs/architecture/authority-model.md
+Snapshot storage and sync:
+- docs/architecture/authority-model.md
+Social links/contact:
+- docs/decisions/2026-09-15-gurudevi-account-destinations-functional-authority.md
+Soul & Core Covenant:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+SovereignBus:
+- docs/architecture/gurudevi-data-state-lifecycle.md
+SovereignRoute:
+- apps/sanctuary-api/docs/architecture/2026-06-26-guest-session-lifecycle.md
+'Sphere A: Curricular Academic (LMS)':
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+'Sphere B: Co-Curricular & Athletics':
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+'Sphere C: Campus Operations & ERP':
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+'Sphere D: Personal Educator Sanctuary':
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Sri Lanka's Personal Data Protection Act, No:
+- docs/architecture/data-governance-and-records.md
+Staff occupancy:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+StaffLeave:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+- packages/schema/schema.zmodel
+Step:
+- docs/architecture/domains/learning/assessments.md
+Student:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Student pulse:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Student subject choice:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+StudentClassroomList:
+- docs/architecture/2026-10-26-role-journey-and-feature-catalog-master-plan.md
+StudentGradeClassEnrollment:
+- packages/schema/schema.zmodel
+StudentGuardianRelationship:
+- docs/architecture/domains/learning/relations.md
+- packages/schema/schema.zmodel
+StudentLongitudinalEvent:
+- packages/schema/schema.zmodel
+Subject:
+- packages/schema/schema.zmodel
+Substrate:
+- docs/architecture/platform-map.md
+Supabase Auth:
+- docs/architecture/authentication-and-sovereign-identity.md
+Supabase branch:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+Support and operators:
+- docs/architecture/domains/README.md
+T1 Cycle rollover:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+T2 Promotion, retention, leaving:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+T4 Grade 5 Scholarship to Grade 6 admission:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+T6 Movement within a school:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+T9 Staff appointment, transfer, acting, retirement:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+TEACHER_ASSIGNMENT:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+TERM:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+TIER 1:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+TIER 2:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+TIER 3:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+TIER 4:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+TIER 5:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+TIER 6:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+TIMETABLE_PERIOD:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+Tab shell:
+- docs/architecture/arrive-journey.md
+Teacher:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+Teacher and student pair:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+TeacherAttendanceSession:
+- packages/schema/schema.zmodel
+TeacherClassroomList:
+- docs/architecture/2026-10-26-role-journey-and-feature-catalog-master-plan.md
+TeacherDailyAttendance:
+- packages/schema/schema.zmodel
+TeacherWorkspaceFloor:
+- docs/architecture/places-roles-and-features.md
+TeachingRelation:
+- docs/architecture/domains/learning/relations.md
+TenantPartitionedStorageAdapter:
+- docs/architecture/multi-tenant-institutional-handoff.md
+Term:
+- packages/schema/schema.zmodel
+The flow navigator:
+- docs/architecture/domains/wellbeing/growth.md
+The journal:
+- docs/architecture/domains/wellbeing/growth.md
+The moments engine:
+- docs/architecture/domains/wellbeing/growth.md
+The radar:
+- docs/architecture/domains/wellbeing/growth.md
+ThoughtRecord:
+- packages/schema/schema.zmodel
+Thread item:
+- docs/architecture/domains/learning/relations.md
+ThuthimalGift:
+- packages/schema/schema.zmodel
+Time and calendar:
+- docs/architecture/domains/README.md
+Timetable:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+TimetablePeriod:
+- packages/schema/schema.zmodel
+Todo:
+- packages/schema/schema.zmodel
+TodoList:
+- packages/schema/schema.zmodel
+TuitionBatch:
+- packages/schema/schema.zmodel
+TuitionInstitute:
+- packages/schema/schema.zmodel
+Tutii:
+- docs/architecture/2026-10-26-institutional-onboarding-tutii-mastery-plan.md
+Type 2:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+Type 3:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+USER:
+- docs/architecture/2026-10-26-sovereign-educational-hierarchy-and-lifecycle-master-plan.md
+User:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+- docs/architecture/tripartite-multi-perspective-architecture.md
+- packages/schema/schema.zmodel
+User MCP and external agents:
+- docs/architecture/domains/README.md
+UserBlock:
+- packages/schema/schema.zmodel
+UserEnergyBalance:
+- packages/schema/schema.zmodel
+UserEntitlementGrant:
+- packages/schema/schema.zmodel
+UserGrowthState:
+- packages/schema/schema.zmodel
+UserPreferences:
+- packages/schema/schema.zmodel
+UserSocialLink:
+- packages/schema/schema.zmodel
+Variant:
+- docs/architecture/domains/library/resources.md
+Version:
+- docs/architecture/domains/library/resources.md
+Wanderer:
+- apps/sanctuary-api/docs/architecture/2026-06-26-guest-session-lifecycle.md
+WebEvidenceCache:
+- packages/schema/schema.zmodel
+Webhooks, WhatsApp/Telegram ingress, PayHere:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+Welcome:
+- docs/architecture/arrive-journey.md
+Wellbeing:
+- docs/architecture/domains/README.md
+Wellbeing/community/knowledge signals:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+WhatsApp Ingress:
+- docs/architecture/2026-10-26-holistic-educational-sanctuary-and-sovereign-erp-master-plan.md
+WhisperedMoment:
+- packages/schema/schema.zmodel
+Witness:
+- docs/architecture/domains/wellbeing/growth.md
+Work:
+- docs/architecture/domains/library/resources.md
+Workers and schedules:
+- docs/architecture/domains/README.md
+Workforce, finance and institutional operations:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+Workforce/HR:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Workspace:
+- docs/architecture/2026-09-15-workspace-classroom-domain-authority.md
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Workspace/Classroom authority audit:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+Zone A:
+- docs/architecture/gurudevi-data-state-lifecycle.md
+Zone B:
+- docs/architecture/gurudevi-data-state-lifecycle.md
+Zone C:
+- docs/architecture/gurudevi-data-state-lifecycle.md
+academic_cycle_leadership_assignments:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+academic_cycles:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+academic_grade_levels:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+academic_subjects:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+academic_terms:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+admin:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+agent:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+announcements:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+apps/edlove-web:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+apps/gurudevi-marketingWeb:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+apps/gurudevi-mobile:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+apps/gurudevi-web:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+apps/sanctuary-api:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+assessment:
+- docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md
+assignments:
+- docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md
+attendance:
+- docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+- docs/architecture/platform-capability-and-implementation-ledger.md
+- docs/atlas/DATA_MODEL_LINEAGE.md
+attendance-v1:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+auth_identities:
+- docs/architecture/authentication-and-sovereign-identity.md
+authority:
+- docs/architecture/domains/platform/authority.md
+authorizeCapability:
+- docs/architecture/authority-model.md
+badges:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+bonds:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+canonical_account_id:
+- docs/architecture/authentication-and-sovereign-identity.md
+capability lease/snapshot:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+capability record:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+channel:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+claim:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+classroom:
+- apps/sanctuary-api/docs/architecture/2026-10-13-phase-1-capability-constitution.md
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+classroom-coordination:
+- docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md
+classroom_notes:
+- apps/sanctuary-api/docs/architecture/2026-10-13-phase-1-capability-constitution.md
+classroom_students:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+classrooms:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+clear_invalid_selected_bond:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+climate:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+community:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+community migration control matrix:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+contact_points:
+- docs/architecture/2026-10-10-sri-lanka-education-civic-ontology-ontogeny-and-er-architecture.md
+content pack:
+- docs/architecture/domains/library/resources.md
+conversion ledger:
+- docs/architecture/arrive-journey.md
+core domains:
+- docs/architecture/authority-model.md
+dailyContent:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+daily_attendance:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+demoProvider:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+docs/atlas/capabilities:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+docs/stack-map/landscape/stack-map:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+domain capability family:
+- docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md
+domain matrices:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+domain migration matrix:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+editorial:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+educational:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+enforced policy fingerprint (`public:
+- docs/architecture/domains/platform/authority.md
+event:battle_of_the_blues:
+- docs/architecture/2026-10-10-sri-lanka-education-civic-ontology-ontogeny-and-er-architecture.md
+event:battle_of_the_maroons:
+- docs/architecture/2026-10-10-sri-lanka-education-civic-ontology-ontogeny-and-er-architecture.md
+event:battle_of_the_north:
+- docs/architecture/2026-10-10-sri-lanka-education-civic-ontology-ontogeny-and-er-architecture.md
+event:bradby_shield:
+- docs/architecture/2026-10-10-sri-lanka-education-civic-ontology-ontogeny-and-er-architecture.md
+events:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+- docs/architecture/platform-capability-and-implementation-ledger.md
+feature UI state:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+founder:
+- docs/architecture/arrive-journey.md
+founder bond:
+- docs/architecture/arrive-journey.md
+generic subdomains:
+- docs/architecture/authority-model.md
+grade_class_subjects:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+grade_class_teacher_assignments:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+- docs/decisions/2026-08-12-grade-school-grade-marks-domain.md
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+grade_classes:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+- docs/decisions/2026-08-12-grade-school-grade-marks-domain.md
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+grade_levels:
+- docs/decisions/2026-08-12-grade-school-grade-marks-domain.md
+grade_marks:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+gradebook:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+grading:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+guard_user_preferences_active_bond:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+guardian_bonds:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+- supabase/migrations/20260908010000_multi_perspective_tables.sql
+gurudevi-pack:
+- docs/architecture/domains/library/resources.md
+gurudevi-perspective-storage:
+- docs/architecture/tripartite-multi-perspective-architecture.md
+handle_new_user_preferences:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+identity:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+- docs/architecture/arrive-journey.md
+- docs/architecture/domains/platform/identity.md
+issueSnapshot:
+- docs/architecture/authority-model.md
+kiosk:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+learning:
+- docs/architecture/domains/learning/assessments.md
+- docs/architecture/domains/learning/relations.md
+learning-content:
+- docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md
+library:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+- docs/architecture/domains/library/resources.md
+library migration control matrix:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+linked managed Supabase database:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+lists:
+- supabase/migrations/20261030000000_generic_todos.sql
+mapping:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+membership-and-roster:
+- docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md
+messaging:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+neutral local-data port:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+neutral sync/query/outbox seam:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+notices:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+older Hono/data-odyssey/ERP plans:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+onboarding:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+ops:
+- docs/architecture/domains/ops/institutions.md
+originGuard:
+- docs/architecture/arrive-journey.md
+outbox_messages:
+- docs/architecture/gurudevi-data-state-lifecycle.md
+outbox_social:
+- docs/architecture/gurudevi-data-state-lifecycle.md
+package READMEs:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+packages/:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+packages/core/src/lib/persistenceBoundary:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+packages/core/src/logic/capabilityDecision:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+packages/self:
+- docs/architecture/arrive-journey.md
+packages/self/src/privacy:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+packages/ui/src/components/FeatureStateBoundary:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+people:
+- docs/architecture/2026-10-10-sri-lanka-education-civic-ontology-ontogeny-and-er-architecture.md
+permission_snapshots:
+- docs/architecture/gurudevi-data-state-lifecycle.md
+plan:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+planBridge:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+planDownload:
+- docs/architecture/domains/library/resources.md
+platform spine:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+platform status:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+platform_broadcasts:
+- supabase/migrations/20261031000000_platform_broadcasts.sql
+policy_version:
+- docs/architecture/gurudevi-data-state-lifecycle.md
+pricing_manifest:
+- docs/architecture/gurudevi-data-state-lifecycle.md
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+principalNotes:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+privacy:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+profile:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+ps_crud:
+- docs/architecture/gurudevi-data-state-lifecycle.md
+public:
+- docs/architecture/authentication-and-sovereign-identity.md
+relief_assignments:
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+resolveCapabilityDecision:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+resolveCapabilityDecision(input):
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+rewards:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+role_definitions:
+- docs/architecture/2026-10-10-sri-lanka-education-civic-ontology-ontogeny-and-er-architecture.md
+role_occupancies:
+- docs/architecture/2026-10-10-sri-lanka-education-civic-ontology-ontogeny-and-er-architecture.md
+sanctuaryFeature:
+- docs/architecture/authority-model.md
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+school:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+school_invite_codes:
+- supabase/migrations/20260908010000_multi_perspective_tables.sql
+school_memberships:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+school_registry:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+school_sub_entities:
+- docs/architecture/2026-10-10-sri-lanka-education-civic-ontology-ontogeny-and-er-architecture.md
+self:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+shadow students:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+shared Cedar registry:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+shared managed Supabase PostgreSQL database:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+social:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+student_grade_class_enrollments:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+student_guardian_relationships:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+- docs/decisions/2026-10-20-institutional-structure-canonical-model.md
+submissions:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+sync:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+teacher_daily_attendance:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+teacher_profiles / principal_profiles / student_profiles:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+teaching assignment:
+- docs/architecture/2026-10-23-api-v0-v1-gate-d-domain-capability-constitution.md
+timetable:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+timetable_versions:
+- docs/decisions/2026-08-12-grade-school-grade-marks-domain.md
+todos:
+- supabase/migrations/20261030000000_generic_todos.sql
+tradition_events:
+- docs/architecture/2026-10-10-sri-lanka-education-civic-ontology-ontogeny-and-er-architecture.md
+tuition:
+- docs/architecture/platform-capability-and-implementation-ledger.md
+tuition_batches:
+- supabase/migrations/20260908010000_multi_perspective_tables.sql
+tuition_institutes:
+- supabase/migrations/20260908010000_multi_perspective_tables.sql
+useFeatureRegistry:
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+usePerspectiveStore:
+- docs/architecture/tripartite-multi-perspective-architecture.md
+useSanctuaryFeature:
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md
+users:
+- docs/atlas/DATA_MODEL_LINEAGE.md
+verifyPack:
+- docs/architecture/domains/library/resources.md
+web_evidence_cache:
+- supabase/migrations/20260908000000_web_evidence_cache.sql
+wellbeing:
+- docs/architecture/domains/wellbeing/growth.md
+workspace migration control matrix:
+- docs/decisions/2026-09-15-gurudevi-cross-domain-platform-readiness.md
+workspace-provisioning:
+- docs/architecture/2026-10-24-d1a-platform-domain-api-ledger.md
+workspaceFeatureRegistry:
+- docs/architecture/platform-capability-and-implementation-ledger.md

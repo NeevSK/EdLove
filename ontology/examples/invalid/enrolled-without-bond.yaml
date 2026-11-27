@@ -1,0 +1,9 @@
+# Planted defect 3: an enrollment that says it completed but names no bond.
+- id: gd:e3
+  person: gd:sita
+  circle: gd:royal
+  capacity: student
+  way: request
+  state: enrolled
+  valid_from: "2026-01-05T00:00:00+05:30"
+  recorded_at: "2026-01-05T09:00:00+05:30"
